@@ -1,0 +1,16 @@
+spring:
+  profiles:
+    include: stdout
+
+graceful:
+  shutdown.enabled: false
+
+management.endpoint:
+  health.cache.time-to-live: 0
+  info.cache.time-to-live: 0
+
+api:
+  health-timeout: 400ms
+
+info:
+  test-message: 'Info Test'
