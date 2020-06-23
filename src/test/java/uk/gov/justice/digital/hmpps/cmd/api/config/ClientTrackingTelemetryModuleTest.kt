@@ -66,10 +66,10 @@ class ClientTrackingTelemetryModuleTest(
 
     private fun createJwt(user: String?, roles: List<String>, duration: Long): String =
             jwtAuthenticationHelper.createJwt(
-                            subject = user,
-                            roles = roles,
-                            scope = listOf("read", "write"),
-                            expiryTime = Duration.ofDays(duration)
-                    )
+                    subject = user,
+                    roles = roles,
+                    scope = listOf("read", "write"),
+                    expiryTime = Duration.ofDays(duration)
+            )
 
 }

@@ -28,9 +28,9 @@ class EntityWithJwtAuthorisationBuilder(@Autowired val jwtAuthenticationHelper: 
 
     fun createJwt(user: String, roles: List<String>): String =
             jwtAuthenticationHelper.createJwt(
-                            subject = user,
-                            roles = roles,
-                            scope = listOf("read", "write"),
-                            expiryTime = Duration.ofDays(1)
-                    )
+                    subject = user,
+                    roles = roles,
+                    scope = listOf("read", "write"),
+                    expiryTime = Duration.ofDays(1)
+            )
 }
