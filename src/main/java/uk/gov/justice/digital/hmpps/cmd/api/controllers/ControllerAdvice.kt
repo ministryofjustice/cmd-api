@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestClientResponseException
 import uk.gov.justice.digital.hmpps.cmd.api.dto.ErrorResponse
+import javax.persistence.EntityExistsException
 import javax.validation.ValidationException
 
 @RestControllerAdvice(basePackages = ["uk.gov.justice.digital.hmpps.cmd.controllers"])
@@ -62,14 +63,13 @@ class ControllerAdvice {
                 .body(ErrorResponse(status = (HttpStatus.INTERNAL_SERVER_ERROR.value()), developerMessage = (e.message)))
     }
 
-    /* TODO: We don't have a database yet.
-        @ExceptionHandler(EntityExistsException::class)
-        fun handleEntityExistsException(e: Exception): ResponseEntity<ErrorResponse> {
-            return ResponseEntity
-                    .status(HttpStatus.CONFLICT)
-                    .body(ErrorResponse(status = (HttpStatus.CONFLICT.value()), developerMessage = (e.message)))
-        }
-    */
+    @ExceptionHandler(EntityExistsException::class)
+    fun handleEntityExistsException(e: Exception): ResponseEntity<ErrorResponse> {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ErrorResponse(status = (HttpStatus.CONFLICT.value()), developerMessage = (e.message)))
+    }
+
     companion object {
         private val log = LoggerFactory.getLogger(ControllerAdvice::class.java)
     }
