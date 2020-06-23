@@ -33,7 +33,7 @@ class JwtAuthenticationHelper {
                   expiryTime: Duration = Duration.ofHours(1),
                   jwtId: String = UUID.randomUUID().toString()): String {
         val claims = mutableMapOf<String, Any>("client_id" to "elite2apiclient")
-        subject?.let {claims["user_name"] = subject }
+        subject?.let { claims["user_name"] = subject }
         roles?.let { claims["authorities"] = roles }
         scope?.let { claims["scope"] = scope }
         return Jwts.builder()

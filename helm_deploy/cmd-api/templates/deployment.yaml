@@ -29,15 +29,15 @@ spec:
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: app
-                  operator: In
-                  values:
-                  - {{ template "app.name" . }}
-              topologyKey: kubernetes.io/hostname
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - {{ template "app.name" . }}
+                topologyKey: kubernetes.io/hostname
       containers:
         - name: cmd-api
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -60,4 +60,4 @@ spec:
             initialDelaySeconds: 60
             timeoutSeconds: 30
             failureThreshold: 5
-{{ include "deployment.envs" . | nindent 10 }}
+  {{ include "deployment.envs" . | nindent 10 }}

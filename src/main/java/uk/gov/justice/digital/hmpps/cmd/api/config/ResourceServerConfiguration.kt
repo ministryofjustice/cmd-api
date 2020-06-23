@@ -4,7 +4,6 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.core.convert.converter.Converter
 import org.springframework.security.authentication.AbstractAuthenticationToken
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
-import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
@@ -46,7 +45,7 @@ class ResourceServerConfiguration : WebSecurityConfigurerAdapter() {
     }
 
 
-    class AuthAwareTokenConverter : Converter<Jwt   , AbstractAuthenticationToken> {
+    class AuthAwareTokenConverter : Converter<Jwt, AbstractAuthenticationToken> {
         private val jwtGrantedAuthoritiesConverter: Converter<Jwt, Collection<GrantedAuthority>> = JwtGrantedAuthoritiesConverter()
 
         override fun convert(jwt: Jwt): AbstractAuthenticationToken? = AuthAwareAuthenticationToken(jwt, extractAuthorities(jwt))
