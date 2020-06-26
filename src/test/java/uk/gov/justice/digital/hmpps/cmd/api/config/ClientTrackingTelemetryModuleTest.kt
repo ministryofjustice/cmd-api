@@ -23,7 +23,6 @@ import java.time.Duration
 @Import(JwtAuthenticationHelper::class, ClientTrackingTelemetryModule::class)
 @ContextConfiguration(initializers = [ConfigFileApplicationContextInitializer::class])
 @ActiveProfiles("test")
-
 class ClientTrackingTelemetryModuleTest(
         @Autowired val clientTrackingTelemetryModule: ClientTrackingTelemetryModule,
         @Autowired val jwtAuthenticationHelper: JwtAuthenticationHelper

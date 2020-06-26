@@ -3,7 +3,7 @@ spring:
     include: stdout
 
   flyway:
-    locations: classpath:db/migration,classpath:db/test/migration
+    locations: classpath:db/migration/h2,classpath:db/migration/general,classpath:db/test/migration
 
   h2:
     console:
@@ -14,7 +14,7 @@ spring:
     show-sql: true
 
   datasource:
-    url: 'jdbc:h2:mem:cmd-api-db-test;MODE=PostgreSQL;IFEXISTS=FALSE'
+    url: 'jdbc:h2:mem:cmd-api-db-test;MODE=PostgreSQL'
     continue-on-error: true
     username: cmd
     password: dummy
