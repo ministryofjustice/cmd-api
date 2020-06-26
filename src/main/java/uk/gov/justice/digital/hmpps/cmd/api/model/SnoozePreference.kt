@@ -12,7 +12,7 @@ data class SnoozePreference (
         var quantumId: String,
 
         @Column(nullable = false)
-        var snooze: LocalDate
+        var snooze: LocalDate?
 ) {
 
     @Id

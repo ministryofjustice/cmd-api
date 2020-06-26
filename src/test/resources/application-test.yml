@@ -2,6 +2,15 @@ spring:
   profiles:
     include: stdout
 
+  flyway:
+    enabled: true
+    locations: classpath:db/migration,classpath:db/test/migration
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
   jpa:
     show-sql: true
 
@@ -11,11 +20,6 @@ spring:
     username: cmd
     password: dummy
     initialization-mode: always
-
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
 
 graceful:
   shutdown.enabled: false

@@ -5,15 +5,15 @@ import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.model.SnoozePreference
 import java.time.LocalDate
 
-internal class SnoozePreferenceTest
+class SnoozePreferenceTest {
 
-@Test
-fun `Should return a valid date`() {
-    val quantumId = "XYZ"
-    val date = LocalDate.now()
-    val snoozePref = SnoozePreference(quantumId, date)
+    @Test
+    fun `Should return a valid date`() {
+        val quantumId = "XYZ"
+        val date = LocalDate.now()
+        val snoozePref = SnoozePreference(quantumId, date)
 
-    Assertions.assertThat(snoozePref.quantumId).isEqualTo(quantumId)
-    Assertions.assertThat(snoozePref.snooze).isEqualTo(date)
-    Assertions.assertThat(snoozePref.id).isNotNull()
+        Assertions.assertThat(snoozePref.quantumId).isEqualTo(quantumId)
+        Assertions.assertThat(snoozePref.snooze).isEqualTo(date)
+    }
 }
