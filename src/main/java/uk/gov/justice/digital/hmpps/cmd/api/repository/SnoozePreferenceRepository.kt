@@ -7,7 +7,7 @@ import java.time.LocalDate
 import java.util.*
 
 @Repository
-interface NotificationSnoozePreferenceRepository : CrudRepository<SnoozePreference, UUID> {
+interface SnoozePreferenceRepository : CrudRepository<SnoozePreference, UUID> {
 
-   fun findByQuantumIdAndSnoozeGreaterThanEqual(quantumId : String, date : LocalDate) : SnoozePreference
+   fun findByQuantumIdAndSnoozeGreaterThanEqual(quantumId : String, date : LocalDate) : Optional<SnoozePreference>
 }
