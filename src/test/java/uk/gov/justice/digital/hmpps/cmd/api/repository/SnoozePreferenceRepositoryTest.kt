@@ -1,10 +1,8 @@
 package uk.gov.justice.digital.hmpps.cmd.api.repository
 
-import io.mockk.clearMocks
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.test.context.ActiveProfiles
@@ -22,7 +20,7 @@ class SnoozePreferenceRepositoryTest(
 
     @BeforeEach
     fun resetAllMocks() {
-        repository.deleteAll();
+        repository.deleteAll()
     }
 
     @Test

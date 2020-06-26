@@ -6,7 +6,7 @@ import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.model.SnoozePreference
 import java.time.LocalDate
 
-class SnoozePreferenceDtoTest() {
+class SnoozePreferenceDtoTest {
 
     @Test
     fun `Create Snooze Preference Dto`() {
