@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.cmd.api
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Bean
-import java.time.LocalDate
+import java.time.Clock
 
 @SpringBootApplication
 class CmdApiApplication {
@@ -16,8 +16,7 @@ class CmdApiApplication {
     }
 
     @Bean
-    fun getLocalDate() : LocalDate
-    {
-        return LocalDate.now()
+    fun initialiseClock(): Clock? {
+        return Clock.systemDefaultZone()
     }
 }

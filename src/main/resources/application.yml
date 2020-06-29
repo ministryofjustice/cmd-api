@@ -2,9 +2,6 @@ spring:
   application:
     name: cmd-api
 
-  profiles:
-    include: stdout
-
   jpa:
     open-in-view: false
     show-sql: false

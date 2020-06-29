@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    include: stdout
 
   flyway:
     locations: classpath:db/migration/h2,classpath:db/migration/general
@@ -7,7 +9,7 @@ spring:
     show-sql: true
 
   datasource:
-    url: 'jdbc:h2:mem:cmd-api-db;MODE=PostgreSQL;IFEXISTS=FALSE'
+    url: 'jdbc:h2:mem:cmd-api-db;MODE=PostgreSQL;'
     continue-on-error: true
     username: cmd
     password: dummy

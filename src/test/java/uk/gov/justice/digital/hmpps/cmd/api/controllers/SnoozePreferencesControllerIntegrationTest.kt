@@ -12,10 +12,18 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.jdbc.Sql
+import org.springframework.test.context.jdbc.SqlConfig
+import org.springframework.test.context.jdbc.SqlGroup
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import java.time.LocalDate
 
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SqlGroup(
+        Sql(scripts = ["classpath:snooze/before-test.sql"], config = SqlConfig(transactionMode = SqlConfig.TransactionMode.ISOLATED)),
+        Sql(scripts = ["classpath:snooze/after-test.sql"], config = SqlConfig(transactionMode = SqlConfig.TransactionMode.ISOLATED), executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+)
 @ActiveProfiles(value = ["test"])
 @DisplayName("Integration Tests for SnoozePreferencesController")
 class SnoozePreferencesControllerIntegrationTest(
@@ -29,7 +37,8 @@ class SnoozePreferencesControllerIntegrationTest(
         val response = getNotificationPreference(A_USER)
         with(response) {
             assertThat(statusCode).isEqualTo(HttpStatus.OK)
-            assertThat(jsonTester.from(body)).extractingJsonPathStringValue("$.snoozeDate").isEqualTo("2020-06-27")
+            // we use an insert of CURRENT_DATE + 1 in the test data.
+            assertThat(jsonTester.from(body)).extractingJsonPathStringValue("$.snoozeDate").isEqualTo(LocalDate.now().plusDays(1).toString())
         }
     }
 

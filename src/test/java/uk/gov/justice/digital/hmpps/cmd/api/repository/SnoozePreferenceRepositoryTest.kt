@@ -26,27 +26,25 @@ class SnoozePreferenceRepositoryTest(
     @Test
     fun `Should return a preference with a future date`() {
         val quantumId = "XYZ"
-        repository.save(SnoozePreference(quantumId,now.plusDays(20)))
+        repository.save(SnoozePreference(quantumId, now.plusDays(20)))
 
         val pref = repository.findByQuantumIdAndSnoozeGreaterThanEqual(quantumId, now)
-        assertThat(pref.isPresent)
+        assertThat(pref).isNotNull
 
-        val preference = pref.get()
-        assertThat(preference.quantumId).isEqualTo(quantumId)
-        assertThat(preference.snooze).isEqualTo(now.plusDays(20))
+        assertThat(pref?.quantumId).isEqualTo(quantumId)
+        assertThat(pref?.snooze).isEqualTo(now.plusDays(20))
     }
 
     @Test
     fun `Should return a preference with today's date`() {
         val quantumId = "XYZ"
-        repository.save(SnoozePreference(quantumId,now))
+        repository.save(SnoozePreference(quantumId, now))
 
         val pref = repository.findByQuantumIdAndSnoozeGreaterThanEqual(quantumId, now)
-        assertThat(pref.isPresent)
+        assertThat(pref).isNotNull
 
-        val preference = pref.get()
-        assertThat(preference.quantumId).isEqualTo(quantumId)
-        assertThat(preference.snooze).isEqualTo(now)
+        assertThat(pref?.quantumId).isEqualTo(quantumId)
+        assertThat(pref?.snooze).isEqualTo(now)
     }
 
     @Test
@@ -55,7 +53,7 @@ class SnoozePreferenceRepositoryTest(
         repository.save(SnoozePreference(quantumId,now.minusDays(10)))
 
         val pref = repository.findByQuantumIdAndSnoozeGreaterThanEqual(quantumId, now)
-        assertThat(pref.isEmpty)
+        assertThat(pref).isNull()
     }
 
 }

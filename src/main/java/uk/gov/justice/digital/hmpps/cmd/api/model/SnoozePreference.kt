@@ -12,12 +12,11 @@ data class SnoozePreference (
         var quantumId: String,
 
         @Column(nullable = false)
-        var snooze: LocalDate?
-) {
+        var snooze: LocalDate,
 
-    @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    @Column(name = "uuid", updatable = false, nullable = false)
-    var id: UUID? = null
-}
+        @Id
+        @GeneratedValue(generator = "UUID")
+        @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+        @Column(name = "uuid", updatable = false, nullable = false)
+        var id: UUID? = null
+)

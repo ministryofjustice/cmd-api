@@ -9,5 +9,5 @@ import java.util.*
 @Repository
 interface SnoozePreferenceRepository : CrudRepository<SnoozePreference, UUID> {
 
-   fun findByQuantumIdAndSnoozeGreaterThanEqual(quantumId : String, date : LocalDate) : Optional<SnoozePreference>
+   fun findByQuantumIdAndSnoozeGreaterThanEqual(quantumId: String, date: LocalDate): SnoozePreference?
 }

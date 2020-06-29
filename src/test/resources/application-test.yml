@@ -3,7 +3,7 @@ spring:
     include: stdout
 
   flyway:
-    locations: classpath:db/migration/h2,classpath:db/migration/general,classpath:db/test/migration
+    locations: classpath:db/migration/h2,classpath:db/migration/general
 
   h2:
     console:
