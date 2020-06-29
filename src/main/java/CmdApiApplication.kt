@@ -16,7 +16,7 @@ class CmdApiApplication {
     }
 
     @Bean
-    fun initialiseClock(): Clock? {
+    fun initialiseClock(): Clock {
         return Clock.systemDefaultZone()
     }
 }
