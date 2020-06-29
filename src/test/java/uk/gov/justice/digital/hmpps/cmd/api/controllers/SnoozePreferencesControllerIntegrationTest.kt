@@ -44,7 +44,7 @@ class SnoozePreferencesControllerIntegrationTest(
     }
 
     @Test
-    fun `It doesn't return a notification preference`() {
+    fun `It doesn't return a notification preference when there isn't one`() {
         val response = getNotificationPreference(A_USER_NO_PREFERENCE)
         with(response) {
             assertThat(statusCode).isEqualTo(HttpStatus.OK)
@@ -61,8 +61,24 @@ class SnoozePreferencesControllerIntegrationTest(
     }
 
     @Test
+    fun `It updates an existing preference when the existing preference is in the past`() {
+        val response = putNotificationPreference(A_USER_OLD, LocalDate.now())
+        with(response) {
+            assertThat(statusCode).isEqualTo(HttpStatus.OK)
+        }
+    }
+
+    @Test
     fun `It creates a new preference`() {
         val response = putNotificationPreference(A_USER_NO_PREFERENCE, LocalDate.now())
+        with(response) {
+            assertThat(statusCode).isEqualTo(HttpStatus.OK)
+        }
+    }
+
+    @Test
+    fun `It creates a new preference even if the date is older than today`() {
+        val response = putNotificationPreference(A_USER_NO_PREFERENCE, LocalDate.now().minusDays(45))
         with(response) {
             assertThat(statusCode).isEqualTo(HttpStatus.OK)
         }
@@ -87,6 +103,7 @@ class SnoozePreferencesControllerIntegrationTest(
         private const val UPDATE_NOTIFICATION_PREFERENCES_TEMPLATE = "/preferences/notifications/snooze"
 
         private const val A_USER = "API_TEST_USER"
+        private const val A_USER_OLD = "API_TEST_USER_OLD_P"
         private const val A_USER_NO_PREFERENCE = "API_TEST_USER_NP"
         private val NO_ROLES = listOf<String>()
     }

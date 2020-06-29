@@ -28,7 +28,7 @@ class SnoozeNotificationPreferenceService(@Autowired val repository: SnoozePrefe
 
     fun createOrUpdateSnoozePreference(newDate: LocalDate) {
         val quantumId = authenticationFacade.currentUsername
-        val preference = repository.findByQuantumIdAndSnoozeGreaterThanEqual(quantumId, LocalDate.now(clock))
+        val preference = repository.findByQuantumId(quantumId)
         if (preference != null) {
             preference.snooze = newDate
             repository.save(preference)
