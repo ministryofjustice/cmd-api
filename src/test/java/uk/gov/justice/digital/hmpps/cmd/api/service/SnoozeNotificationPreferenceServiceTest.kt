@@ -105,14 +105,15 @@ internal class SnoozeNotificationPreferenceServiceTest {
         fun `Should updates an existing preference`() {
             val quantumId = "XYZ"
             val snoozePref = SnoozePreference(quantumId, now.plusDays(1))
-            every { repository.findByQuantumId(any()) } returns snoozePref
-            every { authenticationFacade.currentUsername } returns quantumId
-            every { repository.save(snoozePref) } returns snoozePref
-
             val newPrefDate = now.plusDays(3)
             // This should equals() with the one created in the service code
             val compareSnoozePref = SnoozePreference(quantumId, newPrefDate)
+
+            every { repository.findByQuantumId(any()) } returns snoozePref
+            every { authenticationFacade.currentUsername } returns quantumId
+            every { repository.save(snoozePref) } returns snoozePref
             every { repository.save(compareSnoozePref) } returns compareSnoozePref
+
             service.createOrUpdateSnoozePreference(newPrefDate)
 
             verify { repository.findByQuantumId(quantumId) }
@@ -124,12 +125,12 @@ internal class SnoozeNotificationPreferenceServiceTest {
         fun `Should update an existing preference that has an older date`() {
             val quantumId = "XYZ"
             val snoozePref = SnoozePreference(quantumId, now.plusDays(1))
-            every { repository.findByQuantumId(any()) } returns snoozePref
-            every { authenticationFacade.currentUsername } returns quantumId
-
             val newPrefDate = now.minusDays(3)
             val compareSnoozePref = SnoozePreference(quantumId, newPrefDate)
+            every { repository.findByQuantumId(any()) } returns snoozePref
+            every { authenticationFacade.currentUsername } returns quantumId
             every { repository.save(compareSnoozePref) } returns compareSnoozePref
+
             service.createOrUpdateSnoozePreference(newPrefDate)
 
             verify { repository.findByQuantumId(quantumId) }
@@ -140,12 +141,12 @@ internal class SnoozeNotificationPreferenceServiceTest {
         @Test
         fun `Should create a new preference with a future date`() {
             val quantumId = "XYZ"
-            every { repository.findByQuantumId(any()) } returns null
-            every { authenticationFacade.currentUsername } returns quantumId
-
             val newPrefDate = now.plusDays(3)
             val compareSnoozePref = SnoozePreference(quantumId, newPrefDate)
+            every { repository.findByQuantumId(any()) } returns null
+            every { authenticationFacade.currentUsername } returns quantumId
             every { repository.save(compareSnoozePref) } returns compareSnoozePref
+
             service.createOrUpdateSnoozePreference(newPrefDate)
 
             verify { repository.findByQuantumId(quantumId) }
@@ -156,12 +157,13 @@ internal class SnoozeNotificationPreferenceServiceTest {
         @Test
         fun `Should create a new preference with an older date`() {
             val quantumId = "XYZ"
-            every { repository.findByQuantumId(any()) } returns null
-            every { authenticationFacade.currentUsername } returns quantumId
-
             val newPrefDate = now.minusDays(3)
             val compareSnoozePref = SnoozePreference(quantumId, newPrefDate)
+
+            every { repository.findByQuantumId(any()) } returns null
+            every { authenticationFacade.currentUsername } returns quantumId
             every { repository.save(compareSnoozePref) } returns compareSnoozePref
+
             service.createOrUpdateSnoozePreference(newPrefDate)
 
             verify { repository.findByQuantumId(quantumId) }
