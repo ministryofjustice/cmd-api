@@ -1,4 +1,4 @@
-create table if not exists notification_snooze_preference
+create table if not exists user_preference
 (
     UUID         uuid primary key,
     QUANTUM_ID   varchar(128) not null,

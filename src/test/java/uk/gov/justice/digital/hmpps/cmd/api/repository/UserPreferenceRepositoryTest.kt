@@ -8,14 +8,14 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.test.context.ActiveProfiles
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.model.SnoozePreference
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.repository.SnoozePreferenceRepository
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.repository.UserPreferenceRepository
 import java.time.LocalDate
 
 @ActiveProfiles("test")
 @DataJpaTest
-class SnoozePreferenceRepositoryTest(
-        @Autowired val repository: SnoozePreferenceRepository
+class UserPreferenceRepositoryTest(
+        @Autowired val repository: UserPreferenceRepository
 ) {
 
     private val now: LocalDate = LocalDate.now()
@@ -32,7 +32,7 @@ class SnoozePreferenceRepositoryTest(
         @Test
         fun `Should return a preference with a future date`() {
             val quantumId = "XYZ"
-            repository.save(SnoozePreference(quantumId, now.plusDays(20)))
+            repository.save(UserPreference(quantumId, now.plusDays(20)))
 
             val pref = repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(quantumId, now)
             assertThat(pref).isNotNull
@@ -44,7 +44,7 @@ class SnoozePreferenceRepositoryTest(
         @Test
         fun `Should return a preference with today's date`() {
             val quantumId = "XYZ"
-            repository.save(SnoozePreference(quantumId, now))
+            repository.save(UserPreference(quantumId, now))
 
             val pref = repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(quantumId, now)
             assertThat(pref).isNotNull
@@ -56,7 +56,7 @@ class SnoozePreferenceRepositoryTest(
         @Test
         fun `Should not return a preference with a past date`() {
             val quantumId = "XYZ"
-            repository.save(SnoozePreference(quantumId, now.minusDays(10)))
+            repository.save(UserPreference(quantumId, now.minusDays(10)))
 
             val pref = repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(quantumId, now)
             assertThat(pref).isNull()
@@ -71,7 +71,7 @@ class SnoozePreferenceRepositoryTest(
         @Test
         fun `Should get a preference with a future date`() {
             val quantumId = "XYZ"
-            repository.save(SnoozePreference(quantumId, now.plusDays(20)))
+            repository.save(UserPreference(quantumId, now.plusDays(20)))
 
             val result = repository.findByQuantumId(quantumId)
 
@@ -83,7 +83,7 @@ class SnoozePreferenceRepositoryTest(
         @Test
         fun `Should get preference with a past date`() {
             val quantumId = "XYZ"
-            repository.save(SnoozePreference(quantumId, now.minusDays(10)))
+            repository.save(UserPreference(quantumId, now.minusDays(10)))
 
             // If we use the other repository method `findByQuantumIdAndSnoozeGreaterThanEqual`
             // we might not return anything when there is actually an entry.

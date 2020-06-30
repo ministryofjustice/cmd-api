@@ -16,7 +16,7 @@ import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.context.jdbc.SqlConfig
 import org.springframework.test.context.jdbc.SqlGroup
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.dto.UpdateSnoozeRequest
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.dto.UpdateSnoozeUntilRequest
 import java.time.LocalDate
 
 @ExtendWith(SpringExtension::class)
@@ -26,8 +26,8 @@ import java.time.LocalDate
         Sql(scripts = ["classpath:snooze/after-test.sql"], config = SqlConfig(transactionMode = SqlConfig.TransactionMode.ISOLATED), executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 )
 @ActiveProfiles(value = ["test"])
-@DisplayName("Integration Tests for SnoozePreferencesController")
-class SnoozePreferencesControllerIntegrationTest(
+@DisplayName("Integration Tests for userPreferencesController")
+class UserPreferenceControllerIntegrationTest(
         @Autowired val testRestTemplate: TestRestTemplate,
         @Autowired val entityBuilder: EntityWithJwtAuthorisationBuilder
 ) {
@@ -88,7 +88,7 @@ class SnoozePreferencesControllerIntegrationTest(
             testRestTemplate.exchange(
                     UPDATE_NOTIFICATION_PREFERENCES_TEMPLATE,
                     HttpMethod.PUT,
-                    entityBuilder.entityWithJwtAuthorisation(user, NO_ROLES, UpdateSnoozeRequest(date)),
+                    entityBuilder.entityWithJwtAuthorisation(user, NO_ROLES, UpdateSnoozeUntilRequest(date)),
                     Void::class.java)
 
     fun getNotificationPreference(user: String): ResponseEntity<String> =
