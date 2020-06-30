@@ -7,8 +7,8 @@ import io.swagger.annotations.ApiResponses
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.dto.PreferenceDto
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.dto.UpdateSnoozeRequest
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.dto.UserPreferenceDto
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.service.SnoozeNotificationPreferenceService
 
 @Api(tags = ["notification-preferences"])
@@ -18,10 +18,10 @@ class SnoozePreferencesController(val snoozeNotificationPreferenceService: Snooz
 
     @ApiOperation(value = "Retrieve all notification preferences")
     @ApiResponses(value = [
-        ApiResponse(code = 200, message = "OK", response = PreferenceDto::class)
+        ApiResponse(code = 200, message = "OK", response = UserPreferenceDto::class)
     ])
     @GetMapping("/preferences/notifications")
-    fun getNotificationPreferences(): ResponseEntity<PreferenceDto> {
+    fun getNotificationPreferences(): ResponseEntity<UserPreferenceDto> {
         return ResponseEntity.ok(snoozeNotificationPreferenceService.getSnoozePreference())
     }
 
@@ -31,7 +31,7 @@ class SnoozePreferencesController(val snoozeNotificationPreferenceService: Snooz
     ])
     @PutMapping("/preferences/notifications/snooze")
     fun updateSnoozeNotificationPreferences(@RequestBody request: UpdateSnoozeRequest): ResponseEntity<Void> {
-        snoozeNotificationPreferenceService.createOrUpdateSnoozePreference(request.snooze)
+        snoozeNotificationPreferenceService.createOrUpdateSnoozePreference(request.snoozeUntil)
         return ResponseEntity.ok().build()
     }
 }

@@ -12,6 +12,6 @@ class UpdateSnoozeRequestTest {
         val date = LocalDate.now()
         val updateSnoozeRequest = UpdateSnoozeRequest(date)
 
-        Assertions.assertThat(updateSnoozeRequest.snooze).isEqualTo(date)
+        Assertions.assertThat(updateSnoozeRequest.snoozeUntil).isEqualTo(date)
     }
 }

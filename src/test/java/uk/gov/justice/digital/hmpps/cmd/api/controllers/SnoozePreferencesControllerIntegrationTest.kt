@@ -39,7 +39,7 @@ class SnoozePreferencesControllerIntegrationTest(
         with(response) {
             assertThat(statusCode).isEqualTo(HttpStatus.OK)
             // we use an insert of CURRENT_DATE + 1 in the test data.
-            assertThat(jsonTester.from(body)).extractingJsonPathStringValue("$.snooze").isEqualTo(LocalDate.now().plusDays(1).toString())
+            assertThat(jsonTester.from(body)).extractingJsonPathStringValue("$.snoozeUntil").isEqualTo(LocalDate.now().plusDays(1).toString())
         }
     }
 
@@ -48,7 +48,7 @@ class SnoozePreferencesControllerIntegrationTest(
         val response = getNotificationPreference(A_USER_NO_PREFERENCE)
         with(response) {
             assertThat(statusCode).isEqualTo(HttpStatus.OK)
-            assertThat(jsonTester.from(body)).extractingJsonPathStringValue("$.snooze").isNull()
+            assertThat(jsonTester.from(body)).extractingJsonPathStringValue("$.snoozeUntil").isNull()
         }
     }
 

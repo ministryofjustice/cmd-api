@@ -38,62 +38,62 @@ internal class SnoozeNotificationPreferenceServiceTest {
         fun `Should get preference with future date`() {
             val quantumId = "XYZ"
             val snoozePref = SnoozePreference(quantumId, now.plusDays(1))
-            every { repository.findByQuantumIdAndSnoozeGreaterThanEqual(any(), eq(now)) } returns snoozePref
+            every { repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(any(), eq(now)) } returns snoozePref
             every { authenticationFacade.currentUsername } returns quantumId
 
             val returnValue = service.getSnoozePreference()
 
-            verify { repository.findByQuantumIdAndSnoozeGreaterThanEqual(quantumId, now) }
+            verify { repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(quantumId, now) }
             confirmVerified(repository)
 
             assertThat(returnValue).isNotNull
-            assertThat(returnValue.snooze).isEqualTo(snoozePref.snooze)
+            assertThat(returnValue.snoozeUntil).isEqualTo(snoozePref.snoozeUntil)
         }
 
         @Test
         fun `Should get preference with today's date`() {
             val quantumId = "XYZ"
             val snoozePref = SnoozePreference(quantumId, now)
-            every { repository.findByQuantumIdAndSnoozeGreaterThanEqual(any(), eq(now)) } returns snoozePref
+            every { repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(any(), eq(now)) } returns snoozePref
             every { authenticationFacade.currentUsername } returns quantumId
 
             val returnValue = service.getSnoozePreference()
 
-            verify { repository.findByQuantumIdAndSnoozeGreaterThanEqual(quantumId, now) }
+            verify { repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(quantumId, now) }
             confirmVerified(repository)
 
             assertThat(returnValue).isNotNull
-            assertThat(returnValue.snooze).isEqualTo(snoozePref.snooze)
+            assertThat(returnValue.snoozeUntil).isEqualTo(snoozePref.snoozeUntil)
         }
 
         @Test
         fun `Should get preference with past date`() {
             val quantumId = "XYZ"
-            every { repository.findByQuantumIdAndSnoozeGreaterThanEqual(any(), eq(now)) } returns null
+            every { repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(any(), eq(now)) } returns null
             every { authenticationFacade.currentUsername } returns quantumId
 
             val returnValue = service.getSnoozePreference()
 
-            verify { repository.findByQuantumIdAndSnoozeGreaterThanEqual(quantumId, now) }
+            verify { repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(quantumId, now) }
             confirmVerified(repository)
 
             assertThat(returnValue).isNotNull
-            assertThat(returnValue.snooze).isNull()
+            assertThat(returnValue.snoozeUntil).isNull()
         }
 
         @Test
         fun `Should handle preference not found`() {
             val quantumId = "XYZ"
-            every { repository.findByQuantumIdAndSnoozeGreaterThanEqual(any(), eq(now)) } returns null
+            every { repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(any(), eq(now)) } returns null
             every { authenticationFacade.currentUsername } returns quantumId
 
             val returnValue = service.getSnoozePreference()
 
-            verify { repository.findByQuantumIdAndSnoozeGreaterThanEqual(quantumId, now) }
+            verify { repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(quantumId, now) }
             confirmVerified(repository)
 
             assertThat(returnValue).isNotNull
-            assertThat(returnValue.snooze).isNull()
+            assertThat(returnValue.snoozeUntil).isNull()
         }
     }
 

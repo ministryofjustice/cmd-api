@@ -34,11 +34,11 @@ class SnoozePreferenceRepositoryTest(
             val quantumId = "XYZ"
             repository.save(SnoozePreference(quantumId, now.plusDays(20)))
 
-            val pref = repository.findByQuantumIdAndSnoozeGreaterThanEqual(quantumId, now)
+            val pref = repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(quantumId, now)
             assertThat(pref).isNotNull
 
             assertThat(pref?.quantumId).isEqualTo(quantumId)
-            assertThat(pref?.snooze).isEqualTo(now.plusDays(20))
+            assertThat(pref?.snoozeUntil).isEqualTo(now.plusDays(20))
         }
 
         @Test
@@ -46,11 +46,11 @@ class SnoozePreferenceRepositoryTest(
             val quantumId = "XYZ"
             repository.save(SnoozePreference(quantumId, now))
 
-            val pref = repository.findByQuantumIdAndSnoozeGreaterThanEqual(quantumId, now)
+            val pref = repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(quantumId, now)
             assertThat(pref).isNotNull
 
             assertThat(pref?.quantumId).isEqualTo(quantumId)
-            assertThat(pref?.snooze).isEqualTo(now)
+            assertThat(pref?.snoozeUntil).isEqualTo(now)
         }
 
         @Test
@@ -58,7 +58,7 @@ class SnoozePreferenceRepositoryTest(
             val quantumId = "XYZ"
             repository.save(SnoozePreference(quantumId, now.minusDays(10)))
 
-            val pref = repository.findByQuantumIdAndSnoozeGreaterThanEqual(quantumId, now)
+            val pref = repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(quantumId, now)
             assertThat(pref).isNull()
         }
 
@@ -77,7 +77,7 @@ class SnoozePreferenceRepositoryTest(
 
             assertThat(result).isNotNull
             assertThat(result?.quantumId).isEqualTo(quantumId)
-            assertThat(result?.snooze).isEqualTo(now.plusDays(20))
+            assertThat(result?.snoozeUntil).isEqualTo(now.plusDays(20))
         }
 
         @Test
@@ -91,7 +91,7 @@ class SnoozePreferenceRepositoryTest(
 
             assertThat(result).isNotNull
             assertThat(result?.quantumId).isEqualTo(quantumId)
-            assertThat(result?.snooze).isEqualTo(now.minusDays(10))
+            assertThat(result?.snoozeUntil).isEqualTo(now.minusDays(10))
         }
 
     }

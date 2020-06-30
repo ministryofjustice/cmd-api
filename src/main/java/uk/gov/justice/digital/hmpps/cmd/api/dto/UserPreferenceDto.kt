@@ -8,14 +8,14 @@ import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api
 import java.time.LocalDate
 
 @ApiModel(description = "Preference")
-data class PreferenceDto @JsonCreator constructor(
+data class UserPreferenceDto @JsonCreator constructor(
         @ApiModelProperty(required = true, value = "Date to snooze until", position = 1, example = "2020-08-27")
-        @JsonProperty("snooze")
-        val snooze: LocalDate?) {
+        @JsonProperty("snoozeUntil")
+        val snoozeUntil: LocalDate?) {
 
     companion object {
-        fun from(snoozePreference: SnoozePreference): PreferenceDto {
-            return PreferenceDto(snoozePreference.snooze)
+        fun from(snoozePreference: SnoozePreference): UserPreferenceDto {
+            return UserPreferenceDto(snoozePreference.snoozeUntil)
         }
     }
 }

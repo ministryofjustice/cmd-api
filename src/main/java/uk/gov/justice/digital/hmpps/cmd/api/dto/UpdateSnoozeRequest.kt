@@ -8,5 +8,5 @@ import java.time.LocalDate
 @ApiModel(description = "Update Snooze Request")
 data class UpdateSnoozeRequest(
         @ApiModelProperty(required = true, value = "Date to snooze until", position = 1, example = "2020-08-27")
-        @JsonProperty("snooze")
-        val snooze: LocalDate)
+        @JsonProperty("snoozeUntil")
+        val snoozeUntil: LocalDate)
