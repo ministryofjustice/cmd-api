@@ -11,12 +11,12 @@ import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.dto.UserPreferenceDto
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.service.UserPreferenceService
 
-@Api(tags = ["notification-preferences"])
+@Api(tags = ["user-preferences"])
 @RestController
 @RequestMapping(produces = [APPLICATION_JSON_VALUE])
 class UserPreferenceController(val userPreferenceService: UserPreferenceService) {
 
-    @ApiOperation(value = "Retrieve all notification preferences")
+    @ApiOperation(value = "Retrieve all preferences for a user")
     @ApiResponses(value = [
         ApiResponse(code = 200, message = "OK", response = UserPreferenceDto::class)
     ])
@@ -25,7 +25,7 @@ class UserPreferenceController(val userPreferenceService: UserPreferenceService)
         return ResponseEntity.ok(userPreferenceService.getuserPreference())
     }
 
-    @ApiOperation(value = "Update the snooze notification preference")
+    @ApiOperation(value = "Update the notification snooze until preference for a user")
     @ApiResponses(value = [
         ApiResponse(code = 200, message = "OK")
     ])
