@@ -2,6 +2,8 @@ package uk.gov.justice.digital.hmpps.cmd.api.repository
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
@@ -23,37 +25,75 @@ class SnoozePreferenceRepositoryTest(
         repository.deleteAll()
     }
 
-    @Test
-    fun `Should return a preference with a future date`() {
-        val quantumId = "XYZ"
-        repository.save(SnoozePreference(quantumId, now.plusDays(20)))
+    @Nested
+    @DisplayName("Get Snooze Preference tests")
+    inner class GetPreferenceTests {
 
-        val pref = repository.findByQuantumIdAndSnoozeGreaterThanEqual(quantumId, now)
-        assertThat(pref).isNotNull
+        @Test
+        fun `Should return a preference with a future date`() {
+            val quantumId = "XYZ"
+            repository.save(SnoozePreference(quantumId, now.plusDays(20)))
 
-        assertThat(pref?.quantumId).isEqualTo(quantumId)
-        assertThat(pref?.snooze).isEqualTo(now.plusDays(20))
+            val pref = repository.findByQuantumIdAndSnoozeGreaterThanEqual(quantumId, now)
+            assertThat(pref).isNotNull
+
+            assertThat(pref?.quantumId).isEqualTo(quantumId)
+            assertThat(pref?.snooze).isEqualTo(now.plusDays(20))
+        }
+
+        @Test
+        fun `Should return a preference with today's date`() {
+            val quantumId = "XYZ"
+            repository.save(SnoozePreference(quantumId, now))
+
+            val pref = repository.findByQuantumIdAndSnoozeGreaterThanEqual(quantumId, now)
+            assertThat(pref).isNotNull
+
+            assertThat(pref?.quantumId).isEqualTo(quantumId)
+            assertThat(pref?.snooze).isEqualTo(now)
+        }
+
+        @Test
+        fun `Should not return a preference with a past date`() {
+            val quantumId = "XYZ"
+            repository.save(SnoozePreference(quantumId, now.minusDays(10)))
+
+            val pref = repository.findByQuantumIdAndSnoozeGreaterThanEqual(quantumId, now)
+            assertThat(pref).isNull()
+        }
+
     }
 
-    @Test
-    fun `Should return a preference with today's date`() {
-        val quantumId = "XYZ"
-        repository.save(SnoozePreference(quantumId, now))
+    @Nested
+    @DisplayName("Update Snooze Preference tests")
+    inner class UpdatePreferenceTests {
 
-        val pref = repository.findByQuantumIdAndSnoozeGreaterThanEqual(quantumId, now)
-        assertThat(pref).isNotNull
+        @Test
+        fun `Should get a preference with a future date`() {
+            val quantumId = "XYZ"
+            repository.save(SnoozePreference(quantumId, now.plusDays(20)))
 
-        assertThat(pref?.quantumId).isEqualTo(quantumId)
-        assertThat(pref?.snooze).isEqualTo(now)
-    }
+            val result = repository.findByQuantumId(quantumId)
 
-    @Test
-    fun `Should not return a preference with a past date`() {
-        val quantumId = "XYZ"
-        repository.save(SnoozePreference(quantumId,now.minusDays(10)))
+            assertThat(result).isNotNull
+            assertThat(result?.quantumId).isEqualTo(quantumId)
+            assertThat(result?.snooze).isEqualTo(now.plusDays(20))
+        }
 
-        val pref = repository.findByQuantumIdAndSnoozeGreaterThanEqual(quantumId, now)
-        assertThat(pref).isNull()
+        @Test
+        fun `Should get preference with a past date`() {
+            val quantumId = "XYZ"
+            repository.save(SnoozePreference(quantumId, now.minusDays(10)))
+
+            // If we use the other repository method `findByQuantumIdAndSnoozeGreaterThanEqual`
+            // we might not return anything when there is actually an entry.
+            val result = repository.findByQuantumId(quantumId)
+
+            assertThat(result).isNotNull
+            assertThat(result?.quantumId).isEqualTo(quantumId)
+            assertThat(result?.snooze).isEqualTo(now.minusDays(10))
+        }
+
     }
 
 }
