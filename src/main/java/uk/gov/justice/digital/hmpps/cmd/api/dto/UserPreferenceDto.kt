@@ -7,9 +7,9 @@ import io.swagger.annotations.ApiModelProperty
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
 import java.time.LocalDate
 
-@ApiModel(description = "Preference")
+@ApiModel(description = "User Preference")
 data class UserPreferenceDto @JsonCreator constructor(
-        @ApiModelProperty(required = true, value = "Date to snooze until", position = 1, example = "2020-08-27")
+        @ApiModelProperty(required = true, value = "Date to snooze notifications until", position = 1, example = "2020-08-27")
         @JsonProperty("snoozeUntil")
         val snoozeUntil: LocalDate?) {
 
