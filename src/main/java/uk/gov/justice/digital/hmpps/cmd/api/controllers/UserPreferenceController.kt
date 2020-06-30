@@ -25,7 +25,7 @@ class UserPreferenceController(val userPreferenceService: UserPreferenceService)
         return ResponseEntity.ok(userPreferenceService.getuserPreference())
     }
 
-    @ApiOperation(value = "Update the notification snooze preference for a user")
+    @ApiOperation(value = "Update the notification snooze until preference for a user")
     @ApiResponses(value = [
         ApiResponse(code = 200, message = "OK")
     ])
