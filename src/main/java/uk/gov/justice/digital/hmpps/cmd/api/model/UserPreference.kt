@@ -6,8 +6,8 @@ import java.util.*
 import javax.persistence.*
 
 @Entity
-@Table(name = "notification_snooze_preference")
-data class SnoozePreference (
+@Table(name = "user_preference")
+data class UserPreference(
         @Column(nullable = false)
         var quantumId: String,
 
