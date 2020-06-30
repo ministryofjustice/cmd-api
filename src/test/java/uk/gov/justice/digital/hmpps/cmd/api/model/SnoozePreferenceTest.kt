@@ -14,6 +14,6 @@ class SnoozePreferenceTest {
         val snoozePref = SnoozePreference(quantumId, date)
 
         Assertions.assertThat(snoozePref.quantumId).isEqualTo(quantumId)
-        Assertions.assertThat(snoozePref.snooze).isEqualTo(date)
+        Assertions.assertThat(snoozePref.snoozeUntil).isEqualTo(date)
     }
 }

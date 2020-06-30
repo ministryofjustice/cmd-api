@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.dto.PreferenceDto
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.dto.UserPreferenceDto
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.model.SnoozePreference
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.repository.SnoozePreferenceRepository
 import java.time.Clock
@@ -14,29 +14,29 @@ import java.time.LocalDate
 @Service
 @Transactional
 class SnoozeNotificationPreferenceService(@Autowired val repository: SnoozePreferenceRepository, @Autowired val clock: Clock, @Autowired val authenticationFacade: AuthenticationFacade) {
-    fun getSnoozePreference(): PreferenceDto {
+    fun getSnoozePreference(): UserPreferenceDto {
         val quantumId = authenticationFacade.currentUsername
-        val preference = repository.findByQuantumIdAndSnoozeGreaterThanEqual(quantumId, LocalDate.now(clock))
-        return if (preference != null) {
-            log.debug("Found snooze preference for user ${preference.quantumId} (${preference.snooze})")
-            PreferenceDto.from(preference)
+        val userPreferences = repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(quantumId, LocalDate.now(clock))
+        return if (userPreferences != null) {
+            log.debug("Found snooze preference for user ${userPreferences.quantumId} (${userPreferences.snoozeUntil})")
+            UserPreferenceDto.from(userPreferences)
         } else {
-            log.debug("Found no notification for user $quantumId")
-            PreferenceDto(null)
+            log.debug("Found no snooze preference for user $quantumId")
+            UserPreferenceDto(null)
         }
     }
 
     fun createOrUpdateSnoozePreference(newDate: LocalDate) {
         val quantumId = authenticationFacade.currentUsername
-        val preference = repository.findByQuantumId(quantumId)
-        if (preference != null) {
-            preference.snooze = newDate
-            repository.save(preference)
-            log.debug("Updated snooze preference for user ${preference.quantumId} (${preference.snooze})")
+        val userPreferences = repository.findByQuantumId(quantumId)
+        if (userPreferences != null) {
+            userPreferences.snoozeUntil = newDate
+            repository.save(userPreferences)
+            log.debug("Updated snooze preference for user ${userPreferences.quantumId} (${userPreferences.snoozeUntil})")
         } else {
             val newPreference = SnoozePreference(quantumId, newDate)
             repository.save(newPreference)
-            log.debug("Created snooze preference for user ${newPreference.quantumId} (${newPreference.snooze})")
+            log.debug("Created snooze preference for user ${newPreference.quantumId} (${newPreference.snoozeUntil})")
         }
     }
 
