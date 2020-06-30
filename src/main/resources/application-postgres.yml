@@ -1,5 +1,10 @@
 spring:
+
+  flyway:
+    locations: classpath:db/migration/postgres,classpath:db/migration/general
+    baseline-on-migrate: true
+
   datasource:
-    url: 'jdbc:postgresql://${DATABASE_ENDPOINT}/${DATABASE_NAME}?sslmode=require'
-    username: ${DATABASE_USERNAME}
-    password: ${DATABASE_PASSWORD}
+    url: 'jdbc:postgresql://${DATABASE_ENDPOINT:localhost:5432}/${DATABASE_NAME:cmd-api-db}'
+    username: '${DATABASE_USERNAME:root}'
+    password: '${DATABASE_PASSWORD:dev}'
