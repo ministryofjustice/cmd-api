@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.model
+package uk.gov.justice.digital.hmpps.cmd.api.model
 
 import org.hibernate.annotations.GenericGenerator
 import java.time.LocalDate

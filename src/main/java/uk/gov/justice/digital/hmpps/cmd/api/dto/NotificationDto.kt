@@ -1,0 +1,51 @@
+package uk.gov.justice.digital.hmpps.cmd.api.dto
+
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+import io.swagger.annotations.ApiModel
+import io.swagger.annotations.ApiModelProperty
+import uk.gov.justice.digital.hmpps.cmd.api.model.ShiftNotification
+import uk.gov.justice.digital.hmpps.cmd.api.model.ShiftTaskNotification
+import java.time.LocalDateTime
+import java.util.*
+
+@ApiModel(description = "Notification")
+data class NotificationDto @JsonCreator constructor(
+        @ApiModelProperty(required = true, value = "Description of notification", position = 1, example = "Your shift on 2020-04-20 has changed.")
+        @JsonProperty("description")
+        val description: String,
+        @ApiModelProperty(required = true, value = "When the shift was modified", position = 2, example = "2020-04-20T17:45:55")
+        @JsonProperty("lastModified")
+        val lastModified: LocalDateTime,
+        @ApiModelProperty(required = true, value = "Whether the notification has been acknowledged", position = 3, example = "true")
+        @JsonProperty("read")
+        val read: Boolean,
+        @ApiModelProperty(required = true, value = "Unique identifier for the notification", position = 4, example = "69e285c3-17e7-49ce-9bc5-30e0f8a57825")
+        @JsonProperty("uuid")
+        val uuid: UUID?
+) {
+
+    companion object {
+        fun fromShift(shiftNotifications: Collection<ShiftNotification>): List<NotificationDto> {
+            return shiftNotifications.map { from(it) }
+        }
+
+        fun fromTask(shiftTaskNotifications: Collection<ShiftTaskNotification>): List<NotificationDto> {
+            return shiftTaskNotifications.map { from(it) }
+        }
+
+        private fun from(shiftNotification: ShiftNotification): NotificationDto {
+            return NotificationDto(shiftNotification.description,
+                    shiftNotification.lastModifiedDateTime,
+                    shiftNotification.read,
+                    shiftNotification.id)
+        }
+
+        private fun from(shiftTaskNotification: ShiftTaskNotification): NotificationDto {
+            return NotificationDto(shiftTaskNotification.description,
+                    shiftTaskNotification.lastModifiedDateTime,
+                    shiftTaskNotification.read,
+                    shiftTaskNotification.id)
+        }
+    }
+}

@@ -7,9 +7,9 @@ import io.swagger.annotations.ApiResponses
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.dto.UpdateSnoozeUntilRequest
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.dto.UserPreferenceDto
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.service.UserPreferenceService
+import uk.gov.justice.digital.hmpps.cmd.api.dto.UpdateSnoozeUntilRequest
+import uk.gov.justice.digital.hmpps.cmd.api.dto.UserPreferenceDto
+import uk.gov.justice.digital.hmpps.cmd.api.service.UserPreferenceService
 
 @Api(tags = ["user-preferences"])
 @RestController
@@ -22,7 +22,7 @@ class UserPreferenceController(val userPreferenceService: UserPreferenceService)
     ])
     @GetMapping("/preferences/notifications")
     fun getNotificationPreferences(): ResponseEntity<UserPreferenceDto> {
-        return ResponseEntity.ok(userPreferenceService.getuserPreference())
+        return ResponseEntity.ok(userPreferenceService.getUserPreference())
     }
 
     @ApiOperation(value = "Update the notification snooze until preference for a user")
@@ -31,7 +31,7 @@ class UserPreferenceController(val userPreferenceService: UserPreferenceService)
     ])
     @PutMapping("/preferences/notifications/snooze")
     fun updateSnoozeNotificationPreferences(@RequestBody untilRequest: UpdateSnoozeUntilRequest): ResponseEntity<Void> {
-        userPreferenceService.createOrUpdateuserPreference(untilRequest.snoozeUntil)
+        userPreferenceService.createOrUpdateUserPreference(untilRequest.snoozeUntil)
         return ResponseEntity.ok().build()
     }
 }

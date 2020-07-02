@@ -2,8 +2,7 @@ package uk.gov.justice.digital.hmpps.cmd.api.dto
 
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.dto.UserPreferenceDto
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
+import uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
 import java.time.LocalDate
 
 class UserPreferenceDtoTest {

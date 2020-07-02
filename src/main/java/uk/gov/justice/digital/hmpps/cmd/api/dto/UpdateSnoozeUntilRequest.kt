@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.dto
+package uk.gov.justice.digital.hmpps.cmd.api.dto
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.annotations.ApiModel
