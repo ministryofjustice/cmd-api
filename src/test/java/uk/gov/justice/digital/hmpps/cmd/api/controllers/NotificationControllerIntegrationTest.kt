@@ -117,8 +117,6 @@ class NotificationControllerIntegrationTest(
             assertThat(jsonTester.from(body)).extractingJsonPathValue("$").asList().hasSize(4)
         }
 
-        Thread.sleep(2000L)
-
         val responseTwo = getNotificationPreference(A_USER, "/notifications?unreadOnly=true")
         with(responseTwo) {
             assertThat(statusCode).isEqualTo(HttpStatus.OK)
