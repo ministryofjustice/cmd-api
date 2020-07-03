@@ -11,6 +11,9 @@ ALTER TABLE "ShiftNotification"
     ADD COLUMN ID SERIAL PRIMARY KEY;
 
 ALTER TABLE "ShiftNotification"
+    ADD COLUMN "NOTIFICATION_TYPE" smallint;
+
+ALTER TABLE "ShiftNotification"
     RENAME COLUMN "QuantumId" to "QUANTUM_ID";
 ALTER TABLE "ShiftNotification"
     RENAME COLUMN "DateTime" to "DATE_TIME";
@@ -28,8 +31,6 @@ ALTER TABLE "ShiftNotification"
     RENAME COLUMN "SentEmail" to "SENT_EMAIL";
 ALTER TABLE "ShiftNotification"
     RENAME COLUMN "LastModifiedDateTimeInSeconds" to "LAST_MODIFIED_DATE_TIME_IN_SECONDS";
-ALTER TABLE "ShiftNotification"
-    RENAME COLUMN "NotificationType" to "NOTIFICATION_TYPE";
 
 ALTER TABLE "ShiftTaskNotification"
     ADD COLUMN ID SERIAL PRIMARY KEY;

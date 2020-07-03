@@ -42,8 +42,7 @@ create table "ShiftNotification"
     "Read"                          boolean default false    not null,
     "SentSms"                       boolean default false    not null,
     "SentEmail"                     boolean default false    not null,
-    "LastModifiedDateTimeInSeconds" bigint                   not null,
-    "NotificationType"              smallint
+    "LastModifiedDateTimeInSeconds" bigint not null
 );
 
 
