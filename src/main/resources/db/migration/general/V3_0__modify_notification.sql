@@ -8,7 +8,8 @@ ALTER TABLE "ShiftTaskNotification"
     DROP CONSTRAINT IF EXISTS "ShiftNotification_QuantumId_LastModifiedDateTime_TaskDate_TaskS";
 
 ALTER TABLE "ShiftNotification"
-    ADD COLUMN uuid UUID PRIMARY KEY;
+    ADD COLUMN ID SERIAL PRIMARY KEY;
+
 ALTER TABLE "ShiftNotification"
     RENAME COLUMN "QuantumId" to "QUANTUM_ID";
 ALTER TABLE "ShiftNotification"
@@ -27,9 +28,12 @@ ALTER TABLE "ShiftNotification"
     RENAME COLUMN "SentEmail" to "SENT_EMAIL";
 ALTER TABLE "ShiftNotification"
     RENAME COLUMN "LastModifiedDateTimeInSeconds" to "LAST_MODIFIED_DATE_TIME_IN_SECONDS";
+ALTER TABLE "ShiftNotification"
+    RENAME COLUMN "NotificationType" to "NOTIFICATION_TYPE";
 
 ALTER TABLE "ShiftTaskNotification"
-    ADD COLUMN uuid UUID PRIMARY KEY;
+    ADD COLUMN ID SERIAL PRIMARY KEY;
+
 ALTER TABLE "ShiftTaskNotification"
     RENAME COLUMN "QuantumId" to "QUANTUM_ID";
 ALTER TABLE "ShiftTaskNotification"

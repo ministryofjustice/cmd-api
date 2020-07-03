@@ -7,7 +7,6 @@ import io.swagger.annotations.ApiModelProperty
 import uk.gov.justice.digital.hmpps.cmd.api.model.ShiftNotification
 import uk.gov.justice.digital.hmpps.cmd.api.model.ShiftTaskNotification
 import java.time.LocalDateTime
-import java.util.*
 
 @ApiModel(description = "Notification")
 data class NotificationDto @JsonCreator constructor(
@@ -19,10 +18,7 @@ data class NotificationDto @JsonCreator constructor(
         val lastModified: LocalDateTime,
         @ApiModelProperty(required = true, value = "Whether the notification has been acknowledged", position = 3, example = "true")
         @JsonProperty("read")
-        val read: Boolean,
-        @ApiModelProperty(required = true, value = "Unique identifier for the notification", position = 4, example = "69e285c3-17e7-49ce-9bc5-30e0f8a57825")
-        @JsonProperty("uuid")
-        val uuid: UUID?
+        val read: Boolean
 ) {
 
     companion object {
@@ -37,15 +33,13 @@ data class NotificationDto @JsonCreator constructor(
         private fun from(shiftNotification: ShiftNotification): NotificationDto {
             return NotificationDto(shiftNotification.description,
                     shiftNotification.lastModifiedDateTime,
-                    shiftNotification.read,
-                    shiftNotification.id)
+                    shiftNotification.read)
         }
 
         private fun from(shiftTaskNotification: ShiftTaskNotification): NotificationDto {
             return NotificationDto(shiftTaskNotification.description,
                     shiftTaskNotification.lastModifiedDateTime,
-                    shiftTaskNotification.read,
-                    shiftTaskNotification.id)
+                    shiftTaskNotification.read)
         }
     }
 }

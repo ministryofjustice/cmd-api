@@ -1,8 +1,6 @@
 package uk.gov.justice.digital.hmpps.cmd.api.model
 
-import org.hibernate.annotations.GenericGenerator
 import java.time.LocalDateTime
-import java.util.*
 import javax.persistence.*
 
 @Entity
@@ -45,8 +43,7 @@ data class ShiftTaskNotification(
         var lastModifiedDateTimeInSeconds: Long,
 
         @Id
-        @GeneratedValue(generator = "UUID")
-        @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-        @Column(name = "uuid", updatable = false, nullable = false)
-        var id: UUID? = null
+        @Column(name = "ID")
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        val id: Long? = null
 )

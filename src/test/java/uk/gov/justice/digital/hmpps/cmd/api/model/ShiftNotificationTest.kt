@@ -19,6 +19,7 @@ class ShiftNotificationTest {
         val sentSms = true
         val sentEmail = false
         val lastModSec = 1234L
+        val notificationType = 0L
 
         val shiftNotification = ShiftNotification(
                 quantumId,
@@ -29,7 +30,8 @@ class ShiftNotificationTest {
                 read,
                 sentSms,
                 sentEmail,
-                lastModSec
+                lastModSec,
+                notificationType
         )
 
         Assertions.assertThat(shiftNotification.quantumId).isEqualTo(quantumId)
@@ -41,6 +43,7 @@ class ShiftNotificationTest {
         Assertions.assertThat(shiftNotification.sentSms).isEqualTo(sentSms)
         Assertions.assertThat(shiftNotification.sentEmail).isEqualTo(sentEmail)
         Assertions.assertThat(shiftNotification.lastModifiedDateTimeInSeconds).isEqualTo(lastModSec)
+        Assertions.assertThat(shiftNotification.notificationType).isEqualTo(notificationType)
 
     }
 }

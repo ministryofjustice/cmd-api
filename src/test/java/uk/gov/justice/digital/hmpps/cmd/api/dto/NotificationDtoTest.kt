@@ -63,6 +63,7 @@ class NotificationDtoTest {
             val sentSms = true
             val sentEmail = false
             val lastModSec = 1234L
+            val notificationType = 0L
 
             return ShiftNotification(
                     quantumId,
@@ -73,7 +74,9 @@ class NotificationDtoTest {
                     read,
                     sentSms,
                     sentEmail,
-                    lastModSec
+                    lastModSec,
+                    notificationType
+
             )
         }
 

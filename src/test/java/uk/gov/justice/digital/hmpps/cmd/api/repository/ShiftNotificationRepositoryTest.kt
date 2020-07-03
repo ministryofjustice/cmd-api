@@ -32,7 +32,7 @@ class ShiftNotificationRepositoryTest(
         fun `Should return a notification between the dates`() {
             val quantumId = "XYZ"
             val date = now.atStartOfDay()
-            val notification = ShiftNotification(quantumId, now.minusDays(3).atStartOfDay(), "AnyText", now.minusDays(4).atStartOfDay(), date, false, false, false, 1234L)
+            val notification = ShiftNotification(quantumId, now.minusDays(3).atStartOfDay(), "AnyText", now.minusDays(4).atStartOfDay(), date, false, false, false, 1234L, 0L)
             repository.save(notification)
 
             val notifications = repository.findAllByQuantumIdAndLastModifiedDateTimeIsBetween(
@@ -48,7 +48,7 @@ class ShiftNotificationRepositoryTest(
         fun `Should not return a notification earlier than between the dates`() {
             val quantumId = "XYZ"
             val date = now.minusDays(3).atStartOfDay()
-            val notification = ShiftNotification(quantumId, now.minusDays(3).atStartOfDay(), "AnyText", now.minusDays(4).atStartOfDay(), date, false, false, false, 1234L)
+            val notification = ShiftNotification(quantumId, now.minusDays(3).atStartOfDay(), "AnyText", now.minusDays(4).atStartOfDay(), date, false, false, false, 1234L, 0L)
             repository.save(notification)
 
             val notifications = repository.findAllByQuantumIdAndLastModifiedDateTimeIsBetween(
@@ -62,7 +62,7 @@ class ShiftNotificationRepositoryTest(
         fun `Should not return a notification later than between the dates`() {
             val quantumId = "XYZ"
             val date = now.plusDays(3).atStartOfDay()
-            val notification = ShiftNotification(quantumId, now.minusDays(3).atStartOfDay(), "AnyText", now.minusDays(4).atStartOfDay(), date, false, false, false, 1234L)
+            val notification = ShiftNotification(quantumId, now.minusDays(3).atStartOfDay(), "AnyText", now.minusDays(4).atStartOfDay(), date, false, false, false, 1234L, 0L)
             repository.save(notification)
 
             val notifications = repository.findAllByQuantumIdAndLastModifiedDateTimeIsBetween(
