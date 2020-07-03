@@ -22,11 +22,11 @@ data class NotificationDto @JsonCreator constructor(
 ) {
 
     companion object {
-        fun fromShift(shiftNotifications: Collection<ShiftNotification>): List<NotificationDto> {
+        fun fromShifts(shiftNotifications: Collection<ShiftNotification>): List<NotificationDto> {
             return shiftNotifications.map { from(it) }
         }
 
-        fun fromTask(shiftTaskNotifications: Collection<ShiftTaskNotification>): List<NotificationDto> {
+        fun fromTasks(shiftTaskNotifications: Collection<ShiftTaskNotification>): List<NotificationDto> {
             return shiftTaskNotifications.map { from(it) }
         }
 

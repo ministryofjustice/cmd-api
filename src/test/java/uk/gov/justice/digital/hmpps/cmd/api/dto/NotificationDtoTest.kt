@@ -11,7 +11,7 @@ class NotificationDtoTest {
     @Test
     fun `Create Notification Dto from collection of ShiftNotification`() {
         val shifts = listOf(getValidShiftNotification())
-        val notificationDtos = NotificationDto.fromShift(shifts)
+        val notificationDtos = NotificationDto.fromShifts(shifts)
 
         Assertions.assertThat(notificationDtos).hasSize(1)
 
@@ -24,7 +24,7 @@ class NotificationDtoTest {
     @Test
     fun `Create Notification Dto from empty collection of ShiftNotification`() {
         val shifts: List<ShiftNotification> = listOf()
-        val notificationDtos = NotificationDto.fromShift(shifts)
+        val notificationDtos = NotificationDto.fromShifts(shifts)
 
         Assertions.assertThat(notificationDtos).hasSize(0)
     }
@@ -32,7 +32,7 @@ class NotificationDtoTest {
     @Test
     fun `Create Notification Dto from collection of ShiftTaskNotification`() {
         val shifts = listOf(getValidShiftTaskNotification())
-        val notificationDtos = NotificationDto.fromTask(shifts)
+        val notificationDtos = NotificationDto.fromTasks(shifts)
 
         Assertions.assertThat(notificationDtos).hasSize(1)
 
@@ -45,7 +45,7 @@ class NotificationDtoTest {
     @Test
     fun `Create Notification Dto from empty collection of ShiftTaskNotification`() {
         val shifts: List<ShiftTaskNotification> = listOf()
-        val notificationDtos = NotificationDto.fromTask(shifts)
+        val notificationDtos = NotificationDto.fromTasks(shifts)
 
         Assertions.assertThat(notificationDtos).hasSize(0)
     }
