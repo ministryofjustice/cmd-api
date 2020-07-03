@@ -33,7 +33,7 @@ data class ShiftNotification(
         @Column(nullable = false)
         var lastModifiedDateTimeInSeconds: Long,
 
-        @Column(nullable = false)
+        @Column
         var notificationType: Long,
 
         @Id
