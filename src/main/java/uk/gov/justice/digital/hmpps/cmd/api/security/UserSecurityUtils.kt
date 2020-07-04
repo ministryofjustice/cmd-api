@@ -1,10 +1,9 @@
-package uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.security
+package uk.gov.justice.digital.hmpps.cmd.api.security
 
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Component
-import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
 
 @Component
 class UserSecurityUtils : AuthenticationFacade {

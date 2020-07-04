@@ -42,6 +42,7 @@ create table "ShiftNotification"
     "SentSms"                       boolean default false    not null,
     "SentEmail"                     boolean default false    not null,
     "LastModifiedDateTimeInSeconds" bigint                   not null,
+    "NotificationType"              smallint,
     constraint "ShiftNotification_QuantumId_LastModifiedDateTime_ShiftDate"
         primary key ("QuantumId", "LastModifiedDateTime", "ShiftDate")
 );

@@ -1,5 +1,9 @@
 package uk.gov.justice.digital.hmpps.cmd.api.controllers
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.springframework.beans.BeansException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.info.BuildProperties
@@ -19,10 +23,19 @@ import java.time.LocalDateTime
 import java.time.ZonedDateTime
 import java.util.*
 
+
 @Configuration
 @EnableSwagger2
 class SwaggerConfiguration(@Autowired val applicationContext: ApplicationContext) {
 
+    @Bean
+    fun serializingObjectMapper(): ObjectMapper? {
+        val objectMapper = ObjectMapper()
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+        objectMapper.registerModule(JavaTimeModule())
+        objectMapper.registerModule(KotlinModule())
+        return objectMapper
+    }
 
     @Bean
     fun api(): Docket {

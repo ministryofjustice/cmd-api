@@ -8,10 +8,9 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
+import uk.gov.justice.digital.hmpps.cmd.api.repository.UserPreferenceRepository
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.repository.UserPreferenceRepository
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.service.UserPreferenceService
 import java.time.Clock
 import java.time.LocalDate
 import java.time.ZoneId
@@ -41,7 +40,7 @@ internal class UserPreferenceServiceTest {
             every { repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(any(), eq(now)) } returns userPref
             every { authenticationFacade.currentUsername } returns quantumId
 
-            val returnValue = service.getuserPreference()
+            val returnValue = service.getUserPreference()
 
             verify { repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(quantumId, now) }
             confirmVerified(repository)
@@ -57,7 +56,7 @@ internal class UserPreferenceServiceTest {
             every { repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(any(), eq(now)) } returns userPref
             every { authenticationFacade.currentUsername } returns quantumId
 
-            val returnValue = service.getuserPreference()
+            val returnValue = service.getUserPreference()
 
             verify { repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(quantumId, now) }
             confirmVerified(repository)
@@ -72,7 +71,7 @@ internal class UserPreferenceServiceTest {
             every { repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(any(), eq(now)) } returns null
             every { authenticationFacade.currentUsername } returns quantumId
 
-            val returnValue = service.getuserPreference()
+            val returnValue = service.getUserPreference()
 
             verify { repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(quantumId, now) }
             confirmVerified(repository)
@@ -87,7 +86,7 @@ internal class UserPreferenceServiceTest {
             every { repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(any(), eq(now)) } returns null
             every { authenticationFacade.currentUsername } returns quantumId
 
-            val returnValue = service.getuserPreference()
+            val returnValue = service.getUserPreference()
 
             verify { repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(quantumId, now) }
             confirmVerified(repository)
@@ -114,7 +113,7 @@ internal class UserPreferenceServiceTest {
             every { repository.save(userPref) } returns userPref
             every { repository.save(userPrefToCompare) } returns userPrefToCompare
 
-            service.createOrUpdateuserPreference(newDate)
+            service.createOrUpdateUserPreference(newDate)
 
             verify { repository.findByQuantumId(quantumId) }
             verify { repository.save(userPrefToCompare) }
@@ -131,7 +130,7 @@ internal class UserPreferenceServiceTest {
             every { authenticationFacade.currentUsername } returns quantumId
             every { repository.save(userPrefToCompare) } returns userPrefToCompare
 
-            service.createOrUpdateuserPreference(newDate)
+            service.createOrUpdateUserPreference(newDate)
 
             verify { repository.findByQuantumId(quantumId) }
             verify { repository.save(userPrefToCompare) }
@@ -147,7 +146,7 @@ internal class UserPreferenceServiceTest {
             every { authenticationFacade.currentUsername } returns quantumId
             every { repository.save(userPrefToCompare) } returns userPrefToCompare
 
-            service.createOrUpdateuserPreference(newDate)
+            service.createOrUpdateUserPreference(newDate)
 
             verify { repository.findByQuantumId(quantumId) }
             verify { repository.save(userPrefToCompare) }
@@ -164,7 +163,7 @@ internal class UserPreferenceServiceTest {
             every { authenticationFacade.currentUsername } returns quantumId
             every { repository.save(userPrefToCompare) } returns userPrefToCompare
 
-            service.createOrUpdateuserPreference(newDate)
+            service.createOrUpdateUserPreference(newDate)
 
             verify { repository.findByQuantumId(quantumId) }
             verify { repository.save(userPrefToCompare) }

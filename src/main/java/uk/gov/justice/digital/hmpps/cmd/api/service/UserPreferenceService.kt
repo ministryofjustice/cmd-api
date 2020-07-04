@@ -1,20 +1,21 @@
-package uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.service
+package uk.gov.justice.digital.hmpps.cmd.api.service
 
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.cmd.api.dto.UserPreferenceDto
+import uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
+import uk.gov.justice.digital.hmpps.cmd.api.repository.UserPreferenceRepository
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.dto.UserPreferenceDto
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.repository.UserPreferenceRepository
 import java.time.Clock
 import java.time.LocalDate
 
 @Service
 @Transactional
 class UserPreferenceService(@Autowired val repository: UserPreferenceRepository, @Autowired val clock: Clock, @Autowired val authenticationFacade: AuthenticationFacade) {
-    fun getuserPreference(): UserPreferenceDto {
+
+    fun getUserPreference(): UserPreferenceDto {
         val quantumId = authenticationFacade.currentUsername
         val userPreferences = repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(quantumId, LocalDate.now(clock))
         return if (userPreferences != null) {
@@ -26,7 +27,7 @@ class UserPreferenceService(@Autowired val repository: UserPreferenceRepository,
         }
     }
 
-    fun createOrUpdateuserPreference(newDate: LocalDate) {
+    fun createOrUpdateUserPreference(newDate: LocalDate) {
         val quantumId = authenticationFacade.currentUsername
         val userPreferences = repository.findByQuantumId(quantumId)
         if (userPreferences != null) {
