@@ -16,14 +16,15 @@ import java.time.LocalTime
 import java.util.*
 
 @Service
-class NotificationService(@Autowired val shiftNotificationRepository: ShiftNotificationRepository, @Autowired val shiftTaskNotificationRepository: ShiftTaskNotificationRepository, @Autowired val clock: Clock, @Autowired val authenticationFacade: AuthenticationFacade, @Value("\${notifications.to.defaultMonths}") var plusMonths: Long) {
+class NotificationService(@Autowired val shiftNotificationRepository: ShiftNotificationRepository, @Autowired val shiftTaskNotificationRepository: ShiftTaskNotificationRepository, @Autowired val clock: Clock, @Autowired val authenticationFacade: AuthenticationFacade, @Value("\${notifications.to.defaultMonths}") var monthStep: Long) {
 
     @Transactional
     fun getNotifications(unreadOnlyParam: Optional<Boolean>, fromParam: Optional<LocalDate>, toParam: Optional<LocalDate>): Collection<NotificationDto> {
         val quantumId = authenticationFacade.currentUsername
 
         val unreadOnly = unreadOnlyParam.orElse(false)
-        val (from, to) = calculateFromAndToDates(fromParam, toParam)
+        val from = calculateFromDateTime(fromParam, toParam)
+        val to = calculateToDateTime(toParam, from)
         log.debug("Finding UnreadOnly: ($unreadOnly) Notifications between ($from) and ($to)")
 
         val shiftDtos = getShiftNotifications(quantumId, from, to, unreadOnly)
@@ -54,32 +55,30 @@ class NotificationService(@Autowired val shiftNotificationRepository: ShiftNotif
         return shiftDtos
     }
 
-    private fun calculateFromAndToDates(fromParam: Optional<LocalDate>, toParam: Optional<LocalDate>): Pair<LocalDateTime, LocalDateTime> {
-        val from: LocalDate
-        val to: LocalDate
-
-        if (fromParam.isPresent && toParam.isPresent) {
-            // Use the passed in values
-            from = fromParam.get()
-            to = toParam.get()
-        } else if (fromParam.isPresent) {
+    private fun calculateFromDateTime(fromParam: Optional<LocalDate>, toParam: Optional<LocalDate>): LocalDateTime {
+        val from = if (fromParam.isPresent) {
             // Use the passed in 'from' param
-            from = fromParam.get()
-            // But set 'to' to be the end day of 3 months into the relative future
-            val toDate = from.plusMonths(plusMonths)
-            to = toDate.withDayOfMonth(toDate.lengthOfMonth())
+            fromParam.get()
         } else if (toParam.isPresent) {
-            // Use the passed in 'to' param
-            to = toParam.get()
-            // But set the 'from' to be the start day of 3 months into the relative past
-            from = to.minusMonths(plusMonths).withDayOfMonth(1)
+            // Set the 'from' to be the start day of 3 months into the relative past
+            toParam.get().minusMonths(monthStep).withDayOfMonth(1)
         } else {
-            // Use both defaults
-            from = LocalDate.now(clock).withDayOfMonth(1)
-            val toDate = from.plusMonths(plusMonths)
-            to = toDate.withDayOfMonth(toDate.lengthOfMonth())
+            // Use the default
+            LocalDate.now(clock).withDayOfMonth(1)
         }
-        return Pair(from.atTime(LocalTime.MIN), to.atTime(LocalTime.MAX))
+        return from.atTime(LocalTime.MIN)
+    }
+
+    private fun calculateToDateTime(toParam: Optional<LocalDate>, calculatedFromDateTime: LocalDateTime): LocalDateTime {
+        val to = if (toParam.isPresent) {
+            // Use the passed in 'from' param
+            toParam.get()
+        } else {
+            // Use the default
+            val toDate = calculatedFromDateTime.toLocalDate().plusMonths(monthStep)
+            toDate.withDayOfMonth(toDate.lengthOfMonth())
+        }
+        return to.atTime(LocalTime.MAX)
     }
 
     private fun filterUnread(unreadOnly: Boolean, read: Boolean) =
