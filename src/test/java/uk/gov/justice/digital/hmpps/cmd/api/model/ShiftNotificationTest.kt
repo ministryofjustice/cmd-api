@@ -11,39 +11,26 @@ class ShiftNotificationTest {
         val date = LocalDateTime.now()
 
         val quantumId = "XYZ"
-        val dateTime = date.plusDays(1)
         val description = "Any Description,"
         val shiftDate = date.plusDays(2)
         val lastModified = date.plusDays(3)
-        val read = false
-        val sentSms = true
-        val sentEmail = false
-        val lastModSec = 1234L
         val notificationType = 0L
+        val processed = false
 
         val shiftNotification = ShiftNotification(
                 quantumId,
-                dateTime,
                 description,
                 shiftDate,
                 lastModified,
-                read,
-                sentSms,
-                sentEmail,
-                lastModSec,
-                notificationType
+                notificationType,
+                processed
         )
 
         Assertions.assertThat(shiftNotification.quantumId).isEqualTo(quantumId)
-        Assertions.assertThat(shiftNotification.dateTime).isEqualTo(dateTime)
         Assertions.assertThat(shiftNotification.description).isEqualTo(description)
         Assertions.assertThat(shiftNotification.shiftDate).isEqualTo(shiftDate)
         Assertions.assertThat(shiftNotification.lastModifiedDateTime).isEqualTo(lastModified)
-        Assertions.assertThat(shiftNotification.read).isEqualTo(read)
-        Assertions.assertThat(shiftNotification.sentSms).isEqualTo(sentSms)
-        Assertions.assertThat(shiftNotification.sentEmail).isEqualTo(sentEmail)
-        Assertions.assertThat(shiftNotification.lastModifiedDateTimeInSeconds).isEqualTo(lastModSec)
         Assertions.assertThat(shiftNotification.notificationType).isEqualTo(notificationType)
-
+        Assertions.assertThat(shiftNotification.processed).isEqualTo(processed)
     }
 }

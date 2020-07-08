@@ -16,9 +16,9 @@ data class NotificationDto @JsonCreator constructor(
         @ApiModelProperty(required = true, value = "When the shift was modified", position = 2, example = "2020-04-20T17:45:55")
         @JsonProperty("lastModified")
         val lastModified: LocalDateTime,
-        @ApiModelProperty(required = true, value = "Whether the notification has been acknowledged", position = 3, example = "true")
-        @JsonProperty("read")
-        val read: Boolean
+        @ApiModelProperty(required = true, value = "Whether the notification has been processed", position = 3, example = "true")
+        @JsonProperty("processed")
+        val processed: Boolean
 ) {
 
     companion object {
@@ -33,13 +33,13 @@ data class NotificationDto @JsonCreator constructor(
         private fun from(shiftNotification: ShiftNotification): NotificationDto {
             return NotificationDto(shiftNotification.description,
                     shiftNotification.lastModifiedDateTime,
-                    shiftNotification.read)
+                    shiftNotification.processed)
         }
 
         private fun from(shiftTaskNotification: ShiftTaskNotification): NotificationDto {
             return NotificationDto(shiftTaskNotification.description,
                     shiftTaskNotification.lastModifiedDateTime,
-                    shiftTaskNotification.read)
+                    shiftTaskNotification.processed)
         }
     }
 }
