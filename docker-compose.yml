@@ -13,18 +13,5 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=dev
 
-  cmd-db:
-    image: postgres:10.6
-    networks:
-      - hmpps
-    container_name: cmd-db
-    restart: always
-    ports:
-      - '5432:5432'
-    environment:
-      - POSTGRES_PASSWORD=dev
-      - POSTGRES_USER=root
-      - POSTGRES_DB=public
-
 networks:
   hmpps:
