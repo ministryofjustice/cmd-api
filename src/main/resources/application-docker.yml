@@ -4,7 +4,7 @@ spring:
     locations: classpath:db/migration/postgres,classpath:db/migration/general,classpath:db/migration/docker
 
   datasource:
-    url: 'jdbc:postgresql://${DATABASE_ENDPOINT:localhost:5432}/${DATABASE_NAME:public}'
+    url: 'jdbc:postgresql://${DATABASE_ENDPOINT:localhost:5432}/${DATABASE_NAME:postgres}'
     username: '${DATABASE_USERNAME:root}'
     password: '${DATABASE_PASSWORD:dev}'
 
