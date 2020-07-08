@@ -10,4 +10,6 @@ interface ShiftNotificationRepository : CrudRepository<ShiftNotification, Long> 
 
    fun findAllByQuantumIdAndLastModifiedDateTimeIsBetween(quantumId: String, from: LocalDateTime, to: LocalDateTime): Collection<ShiftNotification>
 
+   fun findAllByAcknowledgedIsFalse(): Collection<ShiftNotification>
+
 }

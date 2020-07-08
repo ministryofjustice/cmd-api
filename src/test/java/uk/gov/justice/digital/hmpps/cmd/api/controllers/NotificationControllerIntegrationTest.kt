@@ -48,7 +48,7 @@ class NotificationControllerIntegrationTest(
             val notification = notificationList.findLast { it.description == "any description aa" }
             assertThat(notification).isNotNull
             assertThat(notification?.description).isEqualTo("any description aa")
-            assertThat(notification?.read).isFalse()
+            assertThat(notification?.acknowledged).isFalse()
             assertThat(notification?.lastModified).isEqualTo(LocalDate.now().atStartOfDay())
         }
     }
@@ -65,7 +65,7 @@ class NotificationControllerIntegrationTest(
 
     @Test
     fun `It returns notifications with an unread only preference of false`() {
-        val response = getNotificationPreference(A_USER, "/notifications?unreadOnly=false")
+        val response = getNotificationPreference(A_USER, "/notifications?unacknowledgedOnly=false")
         with(response) {
             assertThat(statusCode).isEqualTo(HttpStatus.OK)
             // we have one read and one not for each type so there should be 4 returned
@@ -75,7 +75,7 @@ class NotificationControllerIntegrationTest(
 
     @Test
     fun `It returns notifications with an unread preference of true`() {
-        val response = getNotificationPreference(A_USER, "/notifications?unreadOnly=true")
+        val response = getNotificationPreference(A_USER, "/notifications?unacknowledgedOnly=true")
         with(response) {
             assertThat(statusCode).isEqualTo(HttpStatus.OK)
             // we have one read and one not for each type so there should be 2 returned
@@ -133,7 +133,7 @@ class NotificationControllerIntegrationTest(
     fun `It returns notifications applying both dates and unread filters`() {
         val from = LocalDate.now().plusDays(2)
         val to = LocalDate.now().plusDays(8)
-        val response = getNotificationPreference(A_USER, "/notifications?from=$from&to=$to&unreadOnly=true")
+        val response = getNotificationPreference(A_USER, "/notifications?from=$from&to=$to&unacknowledgedOnly=true")
         with(response) {
             assertThat(statusCode).isEqualTo(HttpStatus.OK)
             // we use an insert of CURRENT_DATE+7 for 2/4 in the test data with one of those unread. so there should be 1 returned
@@ -150,7 +150,7 @@ class NotificationControllerIntegrationTest(
             assertThat(jsonTester.from(body)).extractingJsonPathValue("$").asList().hasSize(4)
         }
 
-        val responseTwo = getNotificationPreference(A_USER, "/notifications?unreadOnly=true")
+        val responseTwo = getNotificationPreference(A_USER, "/notifications?unacknowledgedOnly=true")
         with(responseTwo) {
             assertThat(statusCode).isEqualTo(HttpStatus.OK)
             // there should now be 0 unread notifications

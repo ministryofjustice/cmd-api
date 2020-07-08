@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.test.context.ActiveProfiles
 import uk.gov.justice.digital.hmpps.cmd.api.model.ShiftTaskNotification
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @ActiveProfiles("test")
 @DataJpaTest
@@ -32,7 +33,7 @@ class ShiftTaskNotificationRepositoryTest(
         fun `Should return a notification between the dates`() {
             val quantumId = "XYZ"
             val date = now.atStartOfDay()
-            val notification = ShiftTaskNotification(quantumId, now.minusDays(3).atStartOfDay(), "AnyText", now.minusDays(4).atStartOfDay(), 1234, 1235, "Any Activity", date, false, false, false, 1234L)
+            val notification = getValidShiftTaskNotification(date, date)
             repository.save(notification)
 
             val notifications = repository.findAllByQuantumIdAndLastModifiedDateTimeIsBetween(
@@ -48,7 +49,7 @@ class ShiftTaskNotificationRepositoryTest(
         fun `Should not return a notification earlier than between the dates`() {
             val quantumId = "XYZ"
             val date = now.minusDays(3).atStartOfDay()
-            val notification = ShiftTaskNotification(quantumId, now.minusDays(3).atStartOfDay(), "AnyText", now.minusDays(4).atStartOfDay(), 1234, 1235, "Any Activity", date, false, false, false, 1234L)
+            val notification = getValidShiftTaskNotification(date, date)
             repository.save(notification)
 
             val notifications = repository.findAllByQuantumIdAndLastModifiedDateTimeIsBetween(
@@ -62,7 +63,7 @@ class ShiftTaskNotificationRepositoryTest(
         fun `Should not return a notification later than between the dates`() {
             val quantumId = "XYZ"
             val date = now.plusDays(3).atStartOfDay()
-            val notification = ShiftTaskNotification(quantumId, now.minusDays(3).atStartOfDay(), "AnyText", now.minusDays(4).atStartOfDay(), 1234, 1235, "Any Activity", date, false, false, false, 1234L)
+            val notification = getValidShiftTaskNotification(date, date)
             repository.save(notification)
 
             val notifications = repository.findAllByQuantumIdAndLastModifiedDateTimeIsBetween(
@@ -73,4 +74,27 @@ class ShiftTaskNotificationRepositoryTest(
         }
     }
 
+    companion object {
+
+        fun getValidShiftTaskNotification(taskDate: LocalDateTime, lastModified: LocalDateTime): ShiftTaskNotification {
+
+            val quantumId = "XYZ"
+            val description = "Any Description,"
+            val taskStartSec = 123
+            val taskEndSec = 456
+            val activity = "Any Activity"
+            val acknowledged = false
+
+            return ShiftTaskNotification(
+                    quantumId,
+                    description,
+                    taskDate,
+                    taskStartSec,
+                    taskEndSec,
+                    activity,
+                    lastModified,
+                    acknowledged
+            )
+        }
+    }
 }
