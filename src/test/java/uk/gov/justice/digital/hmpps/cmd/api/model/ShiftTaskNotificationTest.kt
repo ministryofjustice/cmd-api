@@ -17,7 +17,7 @@ class ShiftTaskNotificationTest {
         val taskEndSec = 456
         val activity = "Any Activity"
         val lastModified = date.plusDays(3)
-        val acknowledged = false
+        val processed = false
 
         val shiftTaskNotification = ShiftTaskNotification(
                 quantumId,
@@ -27,7 +27,7 @@ class ShiftTaskNotificationTest {
                 taskEndSec,
                 activity,
                 lastModified,
-                acknowledged
+                processed
         )
 
         Assertions.assertThat(shiftTaskNotification.quantumId).isEqualTo(quantumId)
@@ -37,7 +37,7 @@ class ShiftTaskNotificationTest {
         Assertions.assertThat(shiftTaskNotification.taskEndTimeInSeconds).isEqualTo(taskEndSec)
         Assertions.assertThat(shiftTaskNotification.activity).isEqualTo(activity)
         Assertions.assertThat(shiftTaskNotification.lastModifiedDateTime).isEqualTo(lastModified)
-        Assertions.assertThat(shiftTaskNotification.acknowledged).isEqualTo(acknowledged)
+        Assertions.assertThat(shiftTaskNotification.processed).isEqualTo(processed)
 
     }
 }

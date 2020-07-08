@@ -87,7 +87,7 @@ class ShiftNotificationRepositoryTest(
             val quantumId = "XYZ"
             val description = "Any Description,"
             val notificationType = 0L
-            val acknowledged = false
+            val processed = false
 
             return ShiftNotification(
                     quantumId,
@@ -95,7 +95,7 @@ class ShiftNotificationRepositoryTest(
                     shiftDate,
                     lastModified,
                     notificationType,
-                    acknowledged
+                    processed
             )
         }
     }

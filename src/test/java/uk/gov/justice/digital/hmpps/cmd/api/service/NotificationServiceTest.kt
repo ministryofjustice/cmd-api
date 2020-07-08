@@ -41,7 +41,7 @@ internal class NotificationServiceTest {
             val quantumId = "XYZ"
             val from = Optional.of(LocalDate.now(clock).minusDays(1))
             val to = Optional.of(LocalDate.now(clock).plusDays(1))
-            val unacknowledgedOnly = Optional.of(false)
+            val unprocessedOnly = Optional.of(false)
 
             val shiftNotifications = listOf(getValidShiftNotification())
             val shiftTaskNotifications = listOf(getValidShiftTaskNotification())
@@ -51,7 +51,7 @@ internal class NotificationServiceTest {
             every { shiftTaskNotificationRepository.saveAll(shiftTaskNotifications) } returns shiftTaskNotifications
             every { authenticationFacade.currentUsername } returns quantumId
 
-            val returnValue = service.getNotifications(unacknowledgedOnly, from, to)
+            val returnValue = service.getNotifications(unprocessedOnly, from, to)
 
             verify { shiftNotificationRepository.findAllByQuantumIdAndLastModifiedDateTimeIsBetween(quantumId, from.get().atTime(LocalTime.MIN), to.get().atTime(LocalTime.MAX)) }
             verify { shiftNotificationRepository.saveAll(shiftNotifications) }
@@ -68,7 +68,7 @@ internal class NotificationServiceTest {
             val quantumId = "XYZ"
             val from = Optional.of(LocalDate.now(clock).minusDays(1))
             val to = Optional.of(LocalDate.now(clock).plusDays(1))
-            val unacknowledgedOnly = Optional.of(false)
+            val unprocessedOnly = Optional.of(false)
 
             val shiftNotifications = listOf(getValidShiftNotification())
             val shiftTaskNotifications: List<ShiftTaskNotification> = listOf()
@@ -78,7 +78,7 @@ internal class NotificationServiceTest {
             every { shiftTaskNotificationRepository.saveAll(shiftTaskNotifications) } returns shiftTaskNotifications
             every { authenticationFacade.currentUsername } returns quantumId
 
-            val returnValue = service.getNotifications(unacknowledgedOnly, from, to)
+            val returnValue = service.getNotifications(unprocessedOnly, from, to)
 
             verify { shiftNotificationRepository.findAllByQuantumIdAndLastModifiedDateTimeIsBetween(quantumId, from.get().atTime(LocalTime.MIN), to.get().atTime(LocalTime.MAX)) }
             verify { shiftNotificationRepository.saveAll(shiftNotifications) }
@@ -95,7 +95,7 @@ internal class NotificationServiceTest {
             val quantumId = "XYZ"
             val from = Optional.of(LocalDate.now(clock).minusDays(1))
             val to = Optional.of(LocalDate.now(clock).plusDays(1))
-            val unacknowledgedOnly = Optional.of(false)
+            val unprocessedOnly = Optional.of(false)
 
             val shiftNotifications: List<ShiftNotification> = listOf()
             val shiftTaskNotifications = listOf(getValidShiftTaskNotification())
@@ -105,7 +105,7 @@ internal class NotificationServiceTest {
             every { shiftTaskNotificationRepository.saveAll(shiftTaskNotifications) } returns shiftTaskNotifications
             every { authenticationFacade.currentUsername } returns quantumId
 
-            val returnValue = service.getNotifications(unacknowledgedOnly, from, to)
+            val returnValue = service.getNotifications(unprocessedOnly, from, to)
 
             verify { shiftNotificationRepository.findAllByQuantumIdAndLastModifiedDateTimeIsBetween(quantumId, from.get().atTime(LocalTime.MIN), to.get().atTime(LocalTime.MAX)) }
             verify { shiftNotificationRepository.saveAll(shiftNotifications) }
@@ -122,7 +122,7 @@ internal class NotificationServiceTest {
             val quantumId = "XYZ"
             val from = Optional.of(LocalDate.now(clock).minusDays(1))
             val to = Optional.of(LocalDate.now(clock).plusDays(1))
-            val unacknowledgedOnly = Optional.of(false)
+            val unprocessedOnly = Optional.of(false)
 
             val shiftNotifications: List<ShiftNotification> = listOf()
             val shiftTaskNotifications: List<ShiftTaskNotification> = listOf()
@@ -131,7 +131,7 @@ internal class NotificationServiceTest {
             every { shiftNotificationRepository.saveAll(shiftNotifications) } returns shiftNotifications
             every { shiftTaskNotificationRepository.saveAll(shiftTaskNotifications) } returns shiftTaskNotifications
             every { authenticationFacade.currentUsername } returns quantumId
-            val returnValue = service.getNotifications(unacknowledgedOnly, from, to)
+            val returnValue = service.getNotifications(unprocessedOnly, from, to)
 
             verify { shiftNotificationRepository.findAllByQuantumIdAndLastModifiedDateTimeIsBetween(quantumId, from.get().atTime(LocalTime.MIN), to.get().atTime(LocalTime.MAX)) }
             verify { shiftNotificationRepository.saveAll(shiftNotifications) }
@@ -148,7 +148,7 @@ internal class NotificationServiceTest {
             val quantumId = "XYZ"
             val from = Optional.of(LocalDate.now(clock).minusDays(1))
             val to = Optional.of(LocalDate.now(clock).plusDays(1))
-            val unacknowledgedOnly = Optional.of(false)
+            val unprocessedOnly = Optional.of(false)
 
             val shiftNotifications: List<ShiftNotification> = listOf()
             val shiftTaskNotifications: List<ShiftTaskNotification> = listOf()
@@ -158,7 +158,7 @@ internal class NotificationServiceTest {
             every { shiftTaskNotificationRepository.saveAll(shiftTaskNotifications) } returns shiftTaskNotifications
             every { authenticationFacade.currentUsername } returns quantumId
 
-            service.getNotifications(unacknowledgedOnly, from, to)
+            service.getNotifications(unprocessedOnly, from, to)
 
             // Should use the from and to passed in.
             verify { shiftNotificationRepository.findAllByQuantumIdAndLastModifiedDateTimeIsBetween(quantumId, from.get().atTime(LocalTime.MIN), to.get().atTime(LocalTime.MAX)) }
@@ -175,7 +175,7 @@ internal class NotificationServiceTest {
             val quantumId = "XYZ"
             val from = Optional.empty<LocalDate>()
             val to = Optional.empty<LocalDate>()
-            val unacknowledgedOnly = Optional.of(false)
+            val unprocessedOnly = Optional.of(false)
 
             // Should use class defaults.
             val defaultFrom = LocalDate.now(clock).withDayOfMonth(1)
@@ -190,7 +190,7 @@ internal class NotificationServiceTest {
             every { shiftTaskNotificationRepository.saveAll(shiftTaskNotifications) } returns shiftTaskNotifications
             every { authenticationFacade.currentUsername } returns quantumId
 
-            service.getNotifications(unacknowledgedOnly, from, to)
+            service.getNotifications(unprocessedOnly, from, to)
 
             verify { shiftNotificationRepository.findAllByQuantumIdAndLastModifiedDateTimeIsBetween(quantumId, defaultFrom.atTime(LocalTime.MIN), defaultTo.atTime(LocalTime.MAX)) }
             verify { shiftNotificationRepository.saveAll(shiftNotifications) }
@@ -205,7 +205,7 @@ internal class NotificationServiceTest {
             val quantumId = "XYZ"
             val from = Optional.empty<LocalDate>()
             val to = Optional.of(LocalDate.now(clock))
-            val unacknowledgedOnly = Optional.of(false)
+            val unprocessedOnly = Optional.of(false)
 
             // Should count back 3 months to create the 'to'.
             val defaultFrom = to.get().minusMonths(3).withDayOfMonth(1)
@@ -218,7 +218,7 @@ internal class NotificationServiceTest {
             every { shiftTaskNotificationRepository.saveAll(shiftTaskNotifications) } returns shiftTaskNotifications
             every { authenticationFacade.currentUsername } returns quantumId
 
-            service.getNotifications(unacknowledgedOnly, from, to)
+            service.getNotifications(unprocessedOnly, from, to)
 
             verify { shiftNotificationRepository.findAllByQuantumIdAndLastModifiedDateTimeIsBetween(quantumId, defaultFrom.atTime(LocalTime.MIN), to.get().atTime(LocalTime.MAX)) }
             verify { shiftNotificationRepository.saveAll(shiftNotifications) }
@@ -233,7 +233,7 @@ internal class NotificationServiceTest {
             val quantumId = "XYZ"
             val from = Optional.of(LocalDate.now(clock))
             val to = Optional.empty<LocalDate>()
-            val unacknowledgedOnly = Optional.of(false)
+            val unprocessedOnly = Optional.of(false)
 
             // Should use class defaults.
             val toDate = from.get().plusMonths(3)
@@ -247,7 +247,7 @@ internal class NotificationServiceTest {
             every { shiftTaskNotificationRepository.saveAll(shiftTaskNotifications) } returns shiftTaskNotifications
             every { authenticationFacade.currentUsername } returns quantumId
 
-            service.getNotifications(unacknowledgedOnly, from, to)
+            service.getNotifications(unprocessedOnly, from, to)
 
             verify { shiftNotificationRepository.findAllByQuantumIdAndLastModifiedDateTimeIsBetween(quantumId, from.get().atTime(LocalTime.MIN), defaultTo.atTime(LocalTime.MAX)) }
             verify { shiftNotificationRepository.saveAll(shiftNotifications) }
@@ -267,7 +267,7 @@ internal class NotificationServiceTest {
             val shiftDate = date.plusDays(2)
             val lastModified = date.plusDays(3)
             val notificationType = 0L
-            val acknowledged = false
+            val processed = false
 
             return ShiftNotification(
                     quantumId,
@@ -275,7 +275,7 @@ internal class NotificationServiceTest {
                     shiftDate,
                     lastModified,
                     notificationType,
-                    acknowledged
+                    processed
             )
         }
 
@@ -289,7 +289,7 @@ internal class NotificationServiceTest {
             val taskEndSec = 456
             val activity = "Any Activity"
             val lastModified = date.plusDays(3)
-            val acknowledged = false
+            val processed = false
 
             return ShiftTaskNotification(
                     quantumId,
@@ -299,7 +299,7 @@ internal class NotificationServiceTest {
                     taskEndSec,
                     activity,
                     lastModified,
-                    acknowledged
+                    processed
             )
         }
     }

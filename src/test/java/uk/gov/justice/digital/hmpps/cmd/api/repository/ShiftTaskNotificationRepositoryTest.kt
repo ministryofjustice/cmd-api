@@ -83,7 +83,7 @@ class ShiftTaskNotificationRepositoryTest(
             val taskStartSec = 123
             val taskEndSec = 456
             val activity = "Any Activity"
-            val acknowledged = false
+            val processed = false
 
             return ShiftTaskNotification(
                     quantumId,
@@ -93,7 +93,7 @@ class ShiftTaskNotificationRepositoryTest(
                     taskEndSec,
                     activity,
                     lastModified,
-                    acknowledged
+                    processed
             )
         }
     }

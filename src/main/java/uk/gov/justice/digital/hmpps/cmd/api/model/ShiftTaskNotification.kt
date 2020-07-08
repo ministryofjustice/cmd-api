@@ -28,7 +28,7 @@ data class ShiftTaskNotification(
         var lastModifiedDateTime: LocalDateTime,
 
         @Column(nullable = false)
-        var acknowledged: Boolean,
+        var processed: Boolean,
 
         @Id
         @Column(name = "ID")

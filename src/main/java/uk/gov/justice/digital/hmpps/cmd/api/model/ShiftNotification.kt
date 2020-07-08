@@ -22,7 +22,7 @@ data class ShiftNotification(
         var notificationType: Long,
 
         @Column(nullable = false)
-        var acknowledged: Boolean,
+        var processed: Boolean,
 
         @Id
         @Column(name = "ID")

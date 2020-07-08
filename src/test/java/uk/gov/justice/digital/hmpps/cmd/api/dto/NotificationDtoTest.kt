@@ -18,7 +18,7 @@ class NotificationDtoTest {
         val first = notificationDtos[0]
         Assertions.assertThat(first.description).isEqualTo(shifts[0].description)
         Assertions.assertThat(first.lastModified).isEqualTo(shifts[0].lastModifiedDateTime)
-        Assertions.assertThat(first.acknowledged).isEqualTo(shifts[0].acknowledged)
+        Assertions.assertThat(first.processed).isEqualTo(shifts[0].processed)
     }
 
     @Test
@@ -39,7 +39,7 @@ class NotificationDtoTest {
         val first = notificationDtos[0]
         Assertions.assertThat(first.description).isEqualTo(shifts[0].description)
         Assertions.assertThat(first.lastModified).isEqualTo(shifts[0].lastModifiedDateTime)
-        Assertions.assertThat(first.acknowledged).isEqualTo(shifts[0].acknowledged)
+        Assertions.assertThat(first.processed).isEqualTo(shifts[0].processed)
     }
 
     @Test
@@ -59,7 +59,7 @@ class NotificationDtoTest {
             val shiftDate = date.plusDays(2)
             val lastModified = date.plusDays(3)
             val notificationType = 0L
-            val acknowledged = false
+            val processed = false
 
             return ShiftNotification(
                     quantumId,
@@ -67,7 +67,7 @@ class NotificationDtoTest {
                     shiftDate,
                     lastModified,
                     notificationType,
-                    acknowledged
+                    processed
             )
         }
 
@@ -81,7 +81,7 @@ class NotificationDtoTest {
             val taskEndSec = 456
             val activity = "Any Activity"
             val lastModified = date.plusDays(3)
-            val acknowledged = false
+            val processed = false
 
             return ShiftTaskNotification(
                     quantumId,
@@ -91,7 +91,7 @@ class NotificationDtoTest {
                     taskEndSec,
                     activity,
                     lastModified,
-                    acknowledged
+                    processed
             )
         }
     }

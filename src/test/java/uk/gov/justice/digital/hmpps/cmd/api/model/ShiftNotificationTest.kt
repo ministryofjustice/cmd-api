@@ -15,7 +15,7 @@ class ShiftNotificationTest {
         val shiftDate = date.plusDays(2)
         val lastModified = date.plusDays(3)
         val notificationType = 0L
-        val acknowledged = false
+        val processed = false
 
         val shiftNotification = ShiftNotification(
                 quantumId,
@@ -23,7 +23,7 @@ class ShiftNotificationTest {
                 shiftDate,
                 lastModified,
                 notificationType,
-                acknowledged
+                processed
         )
 
         Assertions.assertThat(shiftNotification.quantumId).isEqualTo(quantumId)
@@ -31,6 +31,6 @@ class ShiftNotificationTest {
         Assertions.assertThat(shiftNotification.shiftDate).isEqualTo(shiftDate)
         Assertions.assertThat(shiftNotification.lastModifiedDateTime).isEqualTo(lastModified)
         Assertions.assertThat(shiftNotification.notificationType).isEqualTo(notificationType)
-        Assertions.assertThat(shiftNotification.acknowledged).isEqualTo(acknowledged)
+        Assertions.assertThat(shiftNotification.processed).isEqualTo(processed)
     }
 }
