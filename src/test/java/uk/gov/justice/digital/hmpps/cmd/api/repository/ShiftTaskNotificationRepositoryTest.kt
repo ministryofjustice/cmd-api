@@ -74,16 +74,67 @@ class ShiftTaskNotificationRepositoryTest(
         }
     }
 
+    @Nested
+    @DisplayName("Get Unprocessed Notification tests")
+    inner class GetUnsentNotificationTests {
+
+        @Test
+        fun `Should only return unprocessed notifications`() {
+            val firstDate = now.plusDays(3).atStartOfDay()
+            val unProcessedNotification = getValidShiftTaskNotification(firstDate, firstDate)
+            repository.save(unProcessedNotification)
+
+            val notifications = repository.findAllByProcessedIsFalse().toList()
+
+            // Only one gets returned
+            assertThat(notifications).hasSize(1)
+
+            // Basic check that it's the unprocessed one
+            assertThat(notifications[0].lastModified).isEqualTo(firstDate)
+        }
+
+        @Test
+        fun `Should only return unprocessed notifications when there are processed ones too`() {
+            val firstDate = now.plusDays(3).atStartOfDay()
+            val unProcessedNotification = getValidShiftTaskNotification(firstDate, firstDate)
+            repository.save(unProcessedNotification)
+
+            val secondDate = now.plusDays(5).atStartOfDay()
+            val processedNotification = getValidShiftTaskNotification(secondDate, secondDate, true)
+            repository.save(processedNotification)
+
+            val notifications = repository.findAllByProcessedIsFalse().toList()
+
+            // Only one gets returned
+            assertThat(notifications).hasSize(1)
+
+            // Basic check that it's the unprocessed one
+            assertThat(notifications[0].lastModified).isEqualTo(firstDate)
+        }
+
+        @Test
+        fun `Should not return any unprocessed notifications when there are none`() {
+            val firstDate = now.plusDays(3).atStartOfDay()
+            val processedNotification = getValidShiftTaskNotification(firstDate, firstDate, true)
+            repository.save(processedNotification)
+
+            val notifications = repository.findAllByProcessedIsFalse().toList()
+
+            // none gets returned
+            assertThat(notifications).hasSize(0)
+
+        }
+    }
+
     companion object {
 
-        fun getValidShiftTaskNotification(taskDate: LocalDateTime, lastModified: LocalDateTime): ShiftTaskNotification {
+        fun getValidShiftTaskNotification(taskDate: LocalDateTime, lastModified: LocalDateTime, processed: Boolean = false): ShiftTaskNotification {
 
             val quantumId = "XYZ"
             val description = "Any Description,"
             val taskStartSec = 123
             val taskEndSec = 456
             val activity = "Any Activity"
-            val processed = false
 
             return ShiftTaskNotification(
                     quantumId,

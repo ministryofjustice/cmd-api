@@ -10,4 +10,6 @@ interface ShiftTaskNotificationRepository : CrudRepository<ShiftTaskNotification
 
    fun findAllByQuantumIdAndLastModifiedIsBetween(quantumId: String, from: LocalDateTime, to: LocalDateTime): Collection<ShiftTaskNotification>
 
+   fun findAllByProcessedIsFalse(): Collection<ShiftTaskNotification>
+
 }
