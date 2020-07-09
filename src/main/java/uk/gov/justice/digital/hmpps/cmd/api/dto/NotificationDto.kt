@@ -32,13 +32,13 @@ data class NotificationDto @JsonCreator constructor(
 
         private fun from(shiftNotification: ShiftNotification): NotificationDto {
             return NotificationDto(shiftNotification.description,
-                    shiftNotification.lastModifiedDateTime,
+                    shiftNotification.lastModified,
                     shiftNotification.processed)
         }
 
         private fun from(shiftTaskNotification: ShiftTaskNotification): NotificationDto {
             return NotificationDto(shiftTaskNotification.description,
-                    shiftTaskNotification.lastModifiedDateTime,
+                    shiftTaskNotification.lastModified,
                     shiftTaskNotification.processed)
         }
     }

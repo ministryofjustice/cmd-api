@@ -16,7 +16,7 @@ data class ShiftNotification(
         var shiftDate: LocalDateTime,
 
         @Column(nullable = false)
-        var lastModifiedDateTime: LocalDateTime,
+        var lastModified: LocalDateTime,
 
         @Column
         var notificationType: Long,

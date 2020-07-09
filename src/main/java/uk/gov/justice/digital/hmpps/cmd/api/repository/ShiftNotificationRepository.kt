@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 @Repository
 interface ShiftNotificationRepository : CrudRepository<ShiftNotification, Long> {
 
-   fun findAllByQuantumIdAndLastModifiedDateTimeIsBetween(quantumId: String, from: LocalDateTime, to: LocalDateTime): Collection<ShiftNotification>
+   fun findAllByQuantumIdAndLastModifiedIsBetween(quantumId: String, from: LocalDateTime, to: LocalDateTime): Collection<ShiftNotification>
 
    fun findAllByProcessedIsFalse(): Collection<ShiftNotification>
 

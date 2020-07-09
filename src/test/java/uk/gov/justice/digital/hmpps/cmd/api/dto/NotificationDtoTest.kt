@@ -17,7 +17,7 @@ class NotificationDtoTest {
 
         val first = notificationDtos[0]
         Assertions.assertThat(first.description).isEqualTo(shifts[0].description)
-        Assertions.assertThat(first.lastModified).isEqualTo(shifts[0].lastModifiedDateTime)
+        Assertions.assertThat(first.lastModified).isEqualTo(shifts[0].lastModified)
         Assertions.assertThat(first.processed).isEqualTo(shifts[0].processed)
     }
 
@@ -38,7 +38,7 @@ class NotificationDtoTest {
 
         val first = notificationDtos[0]
         Assertions.assertThat(first.description).isEqualTo(shifts[0].description)
-        Assertions.assertThat(first.lastModified).isEqualTo(shifts[0].lastModifiedDateTime)
+        Assertions.assertThat(first.lastModified).isEqualTo(shifts[0].lastModified)
         Assertions.assertThat(first.processed).isEqualTo(shifts[0].processed)
     }
 

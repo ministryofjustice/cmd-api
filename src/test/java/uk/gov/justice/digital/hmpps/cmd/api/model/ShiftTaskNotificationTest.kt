@@ -36,7 +36,7 @@ class ShiftTaskNotificationTest {
         Assertions.assertThat(shiftTaskNotification.taskStartTimeInSeconds).isEqualTo(taskStartSec)
         Assertions.assertThat(shiftTaskNotification.taskEndTimeInSeconds).isEqualTo(taskEndSec)
         Assertions.assertThat(shiftTaskNotification.activity).isEqualTo(activity)
-        Assertions.assertThat(shiftTaskNotification.lastModifiedDateTime).isEqualTo(lastModified)
+        Assertions.assertThat(shiftTaskNotification.lastModified).isEqualTo(lastModified)
         Assertions.assertThat(shiftTaskNotification.processed).isEqualTo(processed)
 
     }

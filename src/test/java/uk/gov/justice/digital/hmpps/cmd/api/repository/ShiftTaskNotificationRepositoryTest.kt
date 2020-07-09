@@ -36,7 +36,7 @@ class ShiftTaskNotificationRepositoryTest(
             val notification = getValidShiftTaskNotification(date, date)
             repository.save(notification)
 
-            val notifications = repository.findAllByQuantumIdAndLastModifiedDateTimeIsBetween(
+            val notifications = repository.findAllByQuantumIdAndLastModifiedIsBetween(
                     quantumId,
                     now.minusDays(1).atStartOfDay(),
                     now.plusDays(1).atStartOfDay())
@@ -52,7 +52,7 @@ class ShiftTaskNotificationRepositoryTest(
             val notification = getValidShiftTaskNotification(date, date)
             repository.save(notification)
 
-            val notifications = repository.findAllByQuantumIdAndLastModifiedDateTimeIsBetween(
+            val notifications = repository.findAllByQuantumIdAndLastModifiedIsBetween(
                     quantumId,
                     now.minusDays(1).atStartOfDay(),
                     now.plusDays(1).atStartOfDay())
@@ -66,7 +66,7 @@ class ShiftTaskNotificationRepositoryTest(
             val notification = getValidShiftTaskNotification(date, date)
             repository.save(notification)
 
-            val notifications = repository.findAllByQuantumIdAndLastModifiedDateTimeIsBetween(
+            val notifications = repository.findAllByQuantumIdAndLastModifiedIsBetween(
                     quantumId,
                     now.minusDays(1).atStartOfDay(),
                     now.plusDays(1).atStartOfDay())

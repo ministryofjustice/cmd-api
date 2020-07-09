@@ -29,7 +29,7 @@ class ShiftNotificationTest {
         Assertions.assertThat(shiftNotification.quantumId).isEqualTo(quantumId)
         Assertions.assertThat(shiftNotification.description).isEqualTo(description)
         Assertions.assertThat(shiftNotification.shiftDate).isEqualTo(shiftDate)
-        Assertions.assertThat(shiftNotification.lastModifiedDateTime).isEqualTo(lastModified)
+        Assertions.assertThat(shiftNotification.lastModified).isEqualTo(lastModified)
         Assertions.assertThat(shiftNotification.notificationType).isEqualTo(notificationType)
         Assertions.assertThat(shiftNotification.processed).isEqualTo(processed)
     }
