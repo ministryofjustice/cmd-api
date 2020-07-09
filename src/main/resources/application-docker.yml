@@ -1,0 +1,15 @@
+spring:
+
+  flyway:
+    locations: classpath:db/migration/postgres,classpath:db/migration/general,classpath:db/migration/docker
+
+  datasource:
+    url: 'jdbc:postgresql://${DATABASE_ENDPOINT:localhost:5432}/${DATABASE_NAME:check-my-diary}'
+    username: '${DATABASE_USERNAME:check-my-diary}'
+    password: '${DATABASE_PASSWORD:check-my-diary}'
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          public-key-location: classpath:local-public-key.pub

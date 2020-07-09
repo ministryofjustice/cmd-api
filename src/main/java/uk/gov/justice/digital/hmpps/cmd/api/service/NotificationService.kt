@@ -34,7 +34,7 @@ class NotificationService(@Autowired val shiftNotificationRepository: ShiftNotif
     }
 
     private fun getShiftTaskNotifications(quantumId: String, fromDateTime: LocalDateTime, toDateTime: LocalDateTime, unprocessedOnly: Boolean): List<NotificationDto> {
-        val tasks = shiftTaskNotificationRepository.findAllByQuantumIdAndLastModifiedDateTimeIsBetween(
+        val tasks = shiftTaskNotificationRepository.findAllByQuantumIdAndLastModifiedIsBetween(
                 quantumId,
                 fromDateTime,
                 toDateTime).filter { filterUnread(unprocessedOnly, it.processed) }
@@ -45,7 +45,7 @@ class NotificationService(@Autowired val shiftNotificationRepository: ShiftNotif
     }
 
     private fun getShiftNotifications(quantumId: String, fromDateTime: LocalDateTime, toDateTime: LocalDateTime, unprocessedOnly: Boolean): List<NotificationDto> {
-        val shifts = shiftNotificationRepository.findAllByQuantumIdAndLastModifiedDateTimeIsBetween(
+        val shifts = shiftNotificationRepository.findAllByQuantumIdAndLastModifiedIsBetween(
                 quantumId,
                 fromDateTime,
                 toDateTime).filter { filterUnread(unprocessedOnly, it.processed) }

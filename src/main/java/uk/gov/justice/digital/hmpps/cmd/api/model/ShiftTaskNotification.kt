@@ -25,7 +25,7 @@ data class ShiftTaskNotification(
         var activity: String,
 
         @Column(nullable = false)
-        var lastModifiedDateTime: LocalDateTime,
+        var lastModified: LocalDateTime,
 
         @Column(nullable = false)
         var processed: Boolean,
