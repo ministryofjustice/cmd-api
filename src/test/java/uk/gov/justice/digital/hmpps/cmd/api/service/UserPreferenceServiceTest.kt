@@ -37,12 +37,12 @@ internal class UserPreferenceServiceTest {
         fun `Should get preference with future date`() {
             val quantumId = "XYZ"
             val userPref = UserPreference(quantumId, now.plusDays(1))
-            every { repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(any(), eq(now)) } returns userPref
+            every { repository.findByQuantumId(any()) } returns userPref
             every { authenticationFacade.currentUsername } returns quantumId
 
-            val returnValue = service.getUserPreference()
+            val returnValue = service.getUserSnoozePreference()
 
-            verify { repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(quantumId, now) }
+            verify { repository.findByQuantumId(quantumId) }
             confirmVerified(repository)
 
             assertThat(returnValue).isNotNull
@@ -53,12 +53,12 @@ internal class UserPreferenceServiceTest {
         fun `Should get preference with today's date`() {
             val quantumId = "XYZ"
             val userPref = UserPreference(quantumId, now)
-            every { repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(any(), eq(now)) } returns userPref
+            every { repository.findByQuantumId(any()) } returns userPref
             every { authenticationFacade.currentUsername } returns quantumId
 
-            val returnValue = service.getUserPreference()
+            val returnValue = service.getUserSnoozePreference()
 
-            verify { repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(quantumId, now) }
+            verify { repository.findByQuantumId(quantumId) }
             confirmVerified(repository)
 
             assertThat(returnValue).isNotNull
@@ -68,12 +68,12 @@ internal class UserPreferenceServiceTest {
         @Test
         fun `Should get preference with past date`() {
             val quantumId = "XYZ"
-            every { repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(any(), eq(now)) } returns null
+            every { repository.findByQuantumId(any()) } returns null
             every { authenticationFacade.currentUsername } returns quantumId
 
-            val returnValue = service.getUserPreference()
+            val returnValue = service.getUserSnoozePreference()
 
-            verify { repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(quantumId, now) }
+            verify { repository.findByQuantumId(quantumId) }
             confirmVerified(repository)
 
             assertThat(returnValue).isNotNull
@@ -83,12 +83,12 @@ internal class UserPreferenceServiceTest {
         @Test
         fun `Should handle preference not found`() {
             val quantumId = "XYZ"
-            every { repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(any(), eq(now)) } returns null
+            every { repository.findByQuantumId(any()) } returns null
             every { authenticationFacade.currentUsername } returns quantumId
 
-            val returnValue = service.getUserPreference()
+            val returnValue = service.getUserSnoozePreference()
 
-            verify { repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(quantumId, now) }
+            verify { repository.findByQuantumId(quantumId) }
             confirmVerified(repository)
 
             assertThat(returnValue).isNotNull

@@ -1,10 +1,8 @@
-INSERT INTO shift_task_notification (id, description, last_modified, quantum_id,
-                                     task_date, task_start_time_in_seconds, task_end_time_in_seconds,
-                                     processed)
-values (1, 'any description aa', CURRENT_DATE, 'API_TEST_USER', '2020-04-05', '1235', '1236', false),
-       (2, 'any description bb', CURRENT_DATE + 7, 'API_TEST_USER', '2020-04-05', '1235', '1236', true);
+INSERT INTO shift_notification (quantum_id, shift_date, shift_modified, processed, shift_type, action_type)
+VALUES ('API_TEST_USER', '2020-04-05', CURRENT_DATE, false, 'SHIFT', 'ADD'),
+       ('API_TEST_USER', '2020-04-05', CURRENT_DATE + 7, true, 'SHIFT', 'EDIT');
 
-INSERT INTO shift_notification (id, description, last_modified, quantum_id,
-                                shift_date, processed, notification_type)
-values (3, 'any description cc', CURRENT_DATE + 7, 'API_TEST_USER', '2020-04-05', false, 0),
-       (4, 'any description dd', CURRENT_DATE, 'API_TEST_USER', '2020-04-05', true, 1)
+INSERT INTO shift_notification (quantum_id, shift_date, shift_modified, task_start, task_end, task, processed,
+                                shift_type, action_type)
+VALUES ('API_TEST_USER', '2020-04-05', CURRENT_DATE + 7, '1235', '1236', 'watch', false, 'OVERTIME_TASK', 'DELETE'),
+       ('API_TEST_USER', '2020-04-05', CURRENT_DATE, '1235', '1236', 'watch', true, 'SHIFT_TASK', 'EDIT');

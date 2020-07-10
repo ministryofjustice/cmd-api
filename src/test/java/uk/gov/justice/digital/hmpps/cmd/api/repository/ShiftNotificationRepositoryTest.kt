@@ -36,7 +36,7 @@ class ShiftNotificationRepositoryTest(
             val notification = getValidShiftNotification(date, date)
             repository.save(notification)
 
-            val notifications = repository.findAllByQuantumIdAndLastModifiedIsBetween(
+            val notifications = repository.findAllByQuantumIdAndShiftModifiedIsBetween(
                     quantumId,
                     now.minusDays(1).atStartOfDay(),
                     now.plusDays(1).atStartOfDay())
@@ -52,7 +52,7 @@ class ShiftNotificationRepositoryTest(
             val notification = getValidShiftNotification(date, date)
             repository.save(notification)
 
-            val notifications = repository.findAllByQuantumIdAndLastModifiedIsBetween(
+            val notifications = repository.findAllByQuantumIdAndShiftModifiedIsBetween(
                     quantumId,
                     now.minusDays(1).atStartOfDay(),
                     now.plusDays(1).atStartOfDay())
@@ -66,7 +66,7 @@ class ShiftNotificationRepositoryTest(
             val notification = getValidShiftNotification(date, date)
             repository.save(notification)
 
-            val notifications = repository.findAllByQuantumIdAndLastModifiedIsBetween(
+            val notifications = repository.findAllByQuantumIdAndShiftModifiedIsBetween(
                     quantumId,
                     now.minusDays(1).atStartOfDay(),
                     now.plusDays(1).atStartOfDay())
@@ -90,7 +90,7 @@ class ShiftNotificationRepositoryTest(
             assertThat(notifications).hasSize(1)
 
             // Basic check that it's the unprocessed one
-            assertThat(notifications[0].lastModified).isEqualTo(firstDate)
+            assertThat(notifications[0].shiftModified).isEqualTo(firstDate)
         }
 
         @Test
@@ -109,7 +109,7 @@ class ShiftNotificationRepositoryTest(
             assertThat(notifications).hasSize(1)
 
             // Basic check that it's the unprocessed one
-            assertThat(notifications[0].lastModified).isEqualTo(firstDate)
+            assertThat(notifications[0].shiftModified).isEqualTo(firstDate)
         }
 
         @Test
@@ -127,18 +127,24 @@ class ShiftNotificationRepositoryTest(
     }
 
     companion object {
-        fun getValidShiftNotification(shiftDate: LocalDateTime, lastModified: LocalDateTime, processed: Boolean = false): ShiftNotification {
-
+        fun getValidShiftNotification(shiftDate: LocalDateTime, shiftModified: LocalDateTime, processed: Boolean = false): ShiftNotification {
             val quantumId = "XYZ"
-            val description = "Any Description,"
-            val notificationType = 0L
+            val taskStart = 123
+            val taskEnd = 456
+            val task = "Any Activity"
+            val shiftType = "SHIFT"
+            val actionType = "ADD"
 
             return ShiftNotification(
+                    1L,
                     quantumId,
-                    description,
                     shiftDate,
-                    lastModified,
-                    notificationType,
+                    shiftModified,
+                    taskStart,
+                    taskEnd,
+                    task,
+                    shiftType,
+                    actionType,
                     processed
             )
         }

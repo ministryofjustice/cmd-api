@@ -42,6 +42,9 @@ management:
       cache:
         time-to-live: 2000ms
 
-notifications:
+application:
   to:
     defaultMonths: 3
+
+  notify:
+    key: invalidKey

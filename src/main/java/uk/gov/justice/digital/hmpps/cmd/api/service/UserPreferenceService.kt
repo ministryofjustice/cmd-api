@@ -15,16 +15,20 @@ import java.time.LocalDate
 @Transactional
 class UserPreferenceService(@Autowired val repository: UserPreferenceRepository, @Autowired val clock: Clock, @Autowired val authenticationFacade: AuthenticationFacade) {
 
-    fun getUserPreference(): UserPreferenceDto {
-        val quantumId = authenticationFacade.currentUsername
-        val userPreferences = repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(quantumId, LocalDate.now(clock))
-        return if (userPreferences != null) {
-            log.debug("Found snooze preference for user ${userPreferences.quantumId} (${userPreferences.snoozeUntil})")
-            UserPreferenceDto.from(userPreferences)
+    fun getUserSnoozePreference(): UserPreferenceDto {
+        return UserPreferenceDto.from(getUserPreference())
+    }
+
+    fun getUserPreference(quantumId: String = authenticationFacade.currentUsername): UserPreference? {
+
+        val userPreferences = repository.findByQuantumId(quantumId)
+        if (userPreferences != null) {
+            log.debug("Found preference for user ${userPreferences.quantumId} (${userPreferences.snoozeUntil})")
+            log.debug(userPreferences.toString())
         } else {
-            log.debug("Found no snooze preference for user $quantumId")
-            UserPreferenceDto(null)
+            log.debug("Found no preference for user $quantumId")
         }
+        return userPreferences
     }
 
     fun createOrUpdateUserPreference(newDate: LocalDate) {

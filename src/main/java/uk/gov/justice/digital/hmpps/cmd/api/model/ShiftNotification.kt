@@ -6,26 +6,35 @@ import javax.persistence.*
 @Entity
 @Table(name = "shift_notification")
 data class ShiftNotification(
-        @Column(nullable = false)
-        var quantumId: String,
+        @Id
+        @Column(name = "ID")
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        val id: Long? = null,
 
         @Column(nullable = false)
-        var description: String,
+        var quantumId: String,
 
         @Column(nullable = false)
         var shiftDate: LocalDateTime,
 
         @Column(nullable = false)
-        var lastModified: LocalDateTime,
+        var shiftModified: LocalDateTime,
 
         @Column
-        var notificationType: Long,
+        var taskStart: Int?,
+
+        @Column
+        var taskEnd: Int?,
+
+        @Column
+        var task: String?,
 
         @Column(nullable = false)
-        var processed: Boolean,
+        var shiftType: String,
 
-        @Id
-        @Column(name = "ID")
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        val id: Long? = null
+        @Column(nullable = false)
+        var actionType: String,
+
+        @Column(nullable = false)
+        var processed: Boolean
 )

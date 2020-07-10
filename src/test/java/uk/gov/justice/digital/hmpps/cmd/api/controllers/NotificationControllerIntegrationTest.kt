@@ -45,11 +45,11 @@ class NotificationControllerIntegrationTest(
             val notificationList: List<NotificationDto> = objectMapper.readValue(body, object : TypeReference<List<NotificationDto>>() {})
             assertThat(notificationList).hasSize(4)
 
-            val notification = notificationList.findLast { it.description == "any description aa" }
+            val notification = notificationList.findLast { it.description == "Your shift on Sunday, April 5 has been added" }
             assertThat(notification).isNotNull
-            assertThat(notification?.description).isEqualTo("any description aa")
+            assertThat(notification?.description).isEqualTo("Your shift on Sunday, April 5 has been added")
             assertThat(notification?.processed).isFalse()
-            assertThat(notification?.lastModified).isEqualTo(LocalDate.now().atStartOfDay())
+            assertThat(notification?.shiftModified).isEqualTo(LocalDate.now().atStartOfDay())
         }
     }
 
