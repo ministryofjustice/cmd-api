@@ -22,7 +22,7 @@ class UserPreferenceController(val userPreferenceService: UserPreferenceService)
     ])
     @GetMapping("/preferences/notifications")
     fun getNotificationPreferences(): ResponseEntity<UserPreferenceDto> {
-        return ResponseEntity.ok(userPreferenceService.getUserSnoozePreference())
+        return ResponseEntity.ok(userPreferenceService.getUserPreference())
     }
 
     @ApiOperation(value = "Update the notification snooze until preference for a user")
@@ -31,7 +31,7 @@ class UserPreferenceController(val userPreferenceService: UserPreferenceService)
     ])
     @PutMapping("/preferences/notifications/snooze")
     fun updateSnoozeNotificationPreferences(@RequestBody untilRequest: UpdateSnoozeUntilRequest): ResponseEntity<Void> {
-        userPreferenceService.createOrUpdateUserPreference(untilRequest.snoozeUntil)
+        userPreferenceService.updateSnoozePreference(untilRequest.snoozeUntil)
         return ResponseEntity.ok().build()
     }
 }

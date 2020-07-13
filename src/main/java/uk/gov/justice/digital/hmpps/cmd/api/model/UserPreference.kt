@@ -10,13 +10,12 @@ import javax.persistence.Table
 @Entity
 @Table(name = "user_preference")
 data class UserPreference(
-
         @Id
         @Column(nullable = false)
         var quantumId: String,
 
         @Column
-        var snoozeUntil: LocalDate?,
+        var snoozeUntil: LocalDate? = null,
 
         @Column
         var email: String? = null,
@@ -25,5 +24,5 @@ data class UserPreference(
         var sms: String? = null,
 
         @Column
-        var commPref: String = CommunicationPreference.NONE.value
+        var commPref: String = CommunicationPreference.NONE.stringValue
 )

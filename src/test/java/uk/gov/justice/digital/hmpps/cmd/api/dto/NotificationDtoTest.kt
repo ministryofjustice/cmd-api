@@ -43,8 +43,8 @@ class NotificationDtoTest {
             val taskStart = 123
             val taskEnd = 456
             val task = "Any Activity"
-            val shiftType = "SHIFT"
-            val actionType = "ADD"
+            val shiftType = "shift"
+            val actionType = "add"
 
             val processed = false
 

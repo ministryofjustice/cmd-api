@@ -26,7 +26,7 @@ class ShiftNotificationRepositoryTest(
     }
 
     @Nested
-    @DisplayName("Get Shift Notification tests")
+    @DisplayName("Get shift notification tests")
     inner class GetShiftNotificationTests {
 
         @Test

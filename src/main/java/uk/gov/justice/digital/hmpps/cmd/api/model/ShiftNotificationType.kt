@@ -1,8 +1,19 @@
 package uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.model
 
-enum class ShiftNotificationType(val value: String) {
-    SHIFT("shift"),
-    OVERTIME("overtime"),
-    SHIFT_TASK("activity"),
-    OVERTIME_TASK("overtime activity")
+import java.util.*
+
+
+enum class ShiftNotificationType(val value: String, val prose: String) {
+    SHIFT("shift", "shift"),
+    OVERTIME("overtime", "overtime"),
+    SHIFT_TASK("shift_task", "activity"),
+    OVERTIME_TASK("overtime_task", "overtime activity");
+
+    companion object {
+        fun from(value: String): ShiftNotificationType {
+            return Arrays.stream(values())
+                    .filter { type -> type.value == value }
+                    .findFirst().orElseThrow { IllegalArgumentException() }
+        }
+    }
 }
