@@ -1,7 +1,10 @@
 spring:
+  profiles:
+    include: stdout
 
   flyway:
     locations: classpath:db/migration/postgres,classpath:db/migration/general,classpath:db/migration/docker
+    schemas: check-my-diary
 
   datasource:
     url: 'jdbc:postgresql://${DATABASE_ENDPOINT:localhost:5432}/${DATABASE_NAME:check-my-diary}'

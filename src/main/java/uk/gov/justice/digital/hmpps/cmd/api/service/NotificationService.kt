@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.model.ShiftActionType
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.model.ShiftNotificationType
 import uk.gov.service.notify.NotificationClientApi
+import uk.gov.service.notify.NotificationClientException
 import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -35,9 +36,13 @@ class NotificationService(val shiftNotificationRepository: ShiftNotificationRepo
         log.debug("Sending notifications, found: ${unprocessedNotifications.size}")
         unprocessedNotifications.groupBy { it.quantumId }
                 .forEach { group ->
-                    sendNotification(group.key, group.value)
-                    // Mark the notifications as processed even if we don't send them
-                    group.value.forEach { it.processed = true }
+                    try {
+                        sendNotification(group.key, group.value)
+                        group.value.forEach { it.processed = true }
+                    } catch (e: NotificationClientException) {
+                        log.warn("Sending notifications to user ${group.key} FAILED", e)
+                    }
+                    log.info("Sent notification (${group.value.size} lines) for ${group.key}")
                 }
         log.info("Finished sending notifications")
     }
@@ -95,35 +100,30 @@ class NotificationService(val shiftNotificationRepository: ShiftNotificationRepo
         if (userPreference.snoozeUntil == null || userPreference.snoozeUntil != null && userPreference.snoozeUntil!!.isBefore(LocalDate.now(clock))) {
             log.debug("Sending (${notificationGroup.size}) notifications to ${userPreference.quantumId}, preference set to ${userPreference.commPref}")
             notificationGroup.chunked(10).forEach { chunk ->
-                try {
-                    when (CommunicationPreference.from(userPreference.commPref)) {
-                        CommunicationPreference.EMAIL -> {
-                            notifyClient.sendEmail(NotificationType.EMAIL_SUMMARY.toString(), userPreference.email, generatePreferences(chunk), null)
-                        }
-                        CommunicationPreference.SMS -> {
-                            notifyClient.sendSms(NotificationType.SMS_SUMMARY.toString(), userPreference.sms, generatePreferences(chunk), null)
-                        }
-                        else -> {
-                            log.info("Skipping sending notifications for ${userPreference.quantumId}")
-                        }
+                when (CommunicationPreference.from(userPreference.commPref)) {
+                    CommunicationPreference.EMAIL -> {
+                        notifyClient.sendEmail(NotificationType.EMAIL_SUMMARY.toString(), userPreference.email, generateTemplateValues(chunk), null)
                     }
-                } catch (e: Exception) {
-                    log.warn("Sending ${userPreference.commPref} to user ${userPreference.quantumId} FAILED")
+                    CommunicationPreference.SMS -> {
+                        notifyClient.sendSms(NotificationType.SMS_SUMMARY.toString(), userPreference.sms, generateTemplateValues(chunk), null)
+                    }
+                    else -> {
+                        log.info("Skipping sending notifications for ${userPreference.quantumId}")
+                    }
                 }
-                log.info("Sent notification (${chunk.size} lines) for ${userPreference.quantumId}, preference set to ${userPreference.commPref}")
             }
         }
     }
 
-    private fun generatePreferences(chunk: List<ShiftNotification>): MutableMap<String, String?> {
+    private fun generateTemplateValues(chunk: List<ShiftNotification>): MutableMap<String, String?> {
         val personalisation = mutableMapOf<String, String?>()
         // Get the oldest modified date "notifications changed since..."
         personalisation["titleDate"] = dateFormat.format(chunk.minBy { it.shiftModified }?.shiftModified)
         // Map each notification onto an predefined key
         personalisation.putAll(
                 notificationKeys
-                        .mapIndexed { index, s ->
-                            s to chunk.getOrNull(index)?.let { getNotificationDescription(it) }
+                        .mapIndexed { index, templateKey ->
+                            templateKey to chunk.getOrNull(index)?.let { getNotificationDescription(it) }
                         }.toMap())
         return personalisation
     }
