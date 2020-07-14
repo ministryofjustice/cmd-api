@@ -5,7 +5,7 @@ import java.util.*
 
 enum class ShiftNotificationType(val value: String, val prose: String) {
     SHIFT("shift", "shift"),
-    OVERTIME("overtime", "overtime"),
+    OVERTIME("overtime", "overtime shift"),
     SHIFT_TASK("shift_task", "activity"),
     OVERTIME_TASK("overtime_task", "overtime activity");
 

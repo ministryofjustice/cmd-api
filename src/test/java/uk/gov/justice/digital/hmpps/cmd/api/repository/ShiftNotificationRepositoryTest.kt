@@ -129,8 +129,8 @@ class ShiftNotificationRepositoryTest(
     companion object {
         fun getValidShiftNotification(shiftDate: LocalDateTime, shiftModified: LocalDateTime, processed: Boolean = false): ShiftNotification {
             val quantumId = "XYZ"
-            val taskStart = 123
-            val taskEnd = 456
+            val taskStart = 123L
+            val taskEnd = 456L
             val task = "Any Activity"
             val shiftType = "SHIFT"
             val actionType = "ADD"

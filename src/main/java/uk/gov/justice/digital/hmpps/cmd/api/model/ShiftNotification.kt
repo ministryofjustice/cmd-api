@@ -21,10 +21,10 @@ data class ShiftNotification(
         var shiftModified: LocalDateTime,
 
         @Column
-        var taskStart: Int?,
+        var taskStart: Long?,
 
         @Column
-        var taskEnd: Int?,
+        var taskEnd: Long?,
 
         @Column
         var task: String?,

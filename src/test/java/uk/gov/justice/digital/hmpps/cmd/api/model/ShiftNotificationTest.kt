@@ -13,8 +13,8 @@ class ShiftNotificationTest {
         val quantumId = "XYZ"
         val shiftDate = date.plusDays(2)
         val shiftModified = date.plusDays(3)
-        val taskStart = 123
-        val taskEnd = 456
+        val taskStart = 123L
+        val taskEnd = 456L
         val task = "Any Activity"
         val shiftType = "SHIFT"
         val actionType = "ADD"
