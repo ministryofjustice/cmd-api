@@ -29,7 +29,10 @@ class NotificationControllerSendIntegrationTest(
         @Autowired val entityBuilder: EntityWithJwtAuthorisationBuilder
 ) {
 
-    /* These are fairly limited in use because the output is Notify not this response */
+    /*
+     * These are fairly limited in use because the output is Notify not this response
+     * Have a look at NotificationDescriptionTest for good output examples.
+     */
     @Test
     fun `It sends notifications`() {
         val response = getNotificationPreference(A_USER, "/notifications/send")

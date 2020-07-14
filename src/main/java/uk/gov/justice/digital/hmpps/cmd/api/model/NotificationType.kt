@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.model
 
 enum class NotificationType(val value: String) {
-    EMAIL_SUMMARY("11111111-1111-1111-1111-111111111111"),
-    SMS_SUMMARY("87031ece-ab80-46c2-a2c7-f3c5142eecbc")
+    EMAIL_SUMMARY("bef26932-5284-4c0b-8df9-54202b790a9e"),
+    SMS_SUMMARY("37f1724b-3843-4a57-b3ea-7120aa01d8f6")
 }

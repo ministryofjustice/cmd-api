@@ -100,7 +100,7 @@ class NotificationService(val shiftNotificationRepository: ShiftNotificationRepo
         val userPreference = userPreferenceService.getOrCreateUserPreference(quantumId)
         if (userPreference.snoozeUntil == null || userPreference.snoozeUntil != null && userPreference.snoozeUntil!!.isBefore(LocalDate.now(clock))) {
             log.debug("Sending (${notificationGroup.size}) notifications to ${userPreference.quantumId}, preference set to ${userPreference.commPref}")
-            notificationGroup.chunked(10).forEach { chunk ->
+            notificationGroup.sortedWith(compareBy { it.shiftDate }).chunked(10).forEach { chunk ->
                 when (val communicationPreference = CommunicationPreference.from(userPreference.commPref)) {
                     CommunicationPreference.EMAIL -> {
                         notifyClient.sendEmail(NotificationType.EMAIL_SUMMARY.value, userPreference.email, generateTemplateValues(chunk, communicationPreference), null)
