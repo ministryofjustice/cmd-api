@@ -125,13 +125,7 @@ class NotificationService(val shiftNotificationRepository: ShiftNotificationRepo
                 notificationKeys
                         .mapIndexed { index, templateKey ->
                             templateKey to (chunk.getOrNull(index)?.let {
-                                val shiftType = ShiftNotificationType.from(it.shiftType)
-                                val actionType = ShiftActionType.from(it.actionType)
-                                if (listOf(ShiftNotificationType.SHIFT_TASK, ShiftNotificationType.OVERTIME_TASK).contains(shiftType)) {
-                                    getNotificationDescription(shiftType, actionType, it.shiftDate, communicationPreference, clock, it.task, it.taskStart!!, it.taskEnd!!)
-                                } else {
-                                    getNotificationDescription(shiftType, actionType, it.shiftDate, communicationPreference, clock)
-                                }
+                                getNotificationDescription(ShiftNotificationType.from(it.shiftType), ShiftActionType.from(it.actionType), it.shiftDate, communicationPreference, clock, it.task, it.taskStart, it.taskEnd)
                             } ?: "")
                         }.toMap())
         return personalisation

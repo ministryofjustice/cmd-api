@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter
 class NotificationDescription {
 
     companion object {
-        fun getNotificationDescription(shiftNotificationType: ShiftNotificationType, shiftActionType: ShiftActionType, shiftDate: LocalDateTime, communicationPreference: CommunicationPreference, clock: Clock, task: String? = null, from: Long = 0L, to: Long = 0L): String {
+        fun getNotificationDescription(shiftNotificationType: ShiftNotificationType, shiftActionType: ShiftActionType, shiftDate: LocalDateTime, communicationPreference: CommunicationPreference, clock: Clock, task: String? = null, from: Long? = 0L, to: Long? = 0L): String {
             val isEmail = isEmail(communicationPreference)
             val date = getDateTimeFormattedForTemplate(shiftDate, clock)
             val taskString = getTaskString(task, from, to)
@@ -35,9 +35,9 @@ class NotificationDescription {
             return DateTimeFormatter.ofPattern("EEEE, d'$ordinal' MMMM$year").format(shiftDate)
         }
 
-        private fun getTaskString(task: String?, from: Long, to: Long): String {
-            val fromTime = LocalTime.ofSecondOfDay(from)
-            val toTime = LocalTime.ofSecondOfDay(to)
+        private fun getTaskString(task: String?, from: Long?, to: Long?): String {
+            val fromTime = LocalTime.ofSecondOfDay(from ?: 0L)
+            val toTime = LocalTime.ofSecondOfDay(to ?: 0L)
             return if (task != null) {
                 " ($task, $fromTime - $toTime)"
             } else {
