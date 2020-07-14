@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.ap
 
 import java.util.*
 
-enum class ShiftActionType(val value: String, val prose: String) {
+enum class ShiftActionType(val value: String, val description: String) {
     ADD("add", "been added"),
     EDIT("edit", "changed"),
     DELETE("delete", "been removed");

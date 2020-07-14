@@ -12,8 +12,6 @@ import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.NotificationDescription.Companion.getNotificationDescription
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.model.CommunicationPreference
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.model.NotificationType
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.model.ShiftActionType
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.model.ShiftNotificationType
 import uk.gov.service.notify.NotificationClientApi
 import uk.gov.service.notify.NotificationClientException
 import java.time.Clock
@@ -29,7 +27,7 @@ class NotificationService(val shiftNotificationRepository: ShiftNotificationRepo
     fun getNotifications(unprocessedOnlyParam: Optional<Boolean>, fromParam: Optional<LocalDate>, toParam: Optional<LocalDate>): Collection<NotificationDto> {
         val start = calculateStartDateTime(fromParam, toParam)
         val end = calculateEndDateTime(toParam, start)
-        return getShiftNotifications(start, end, unprocessedOnlyParam.orElse(false))
+        return getShiftNotificationDtos(start, end, unprocessedOnlyParam.orElse(false))
     }
 
     fun sendNotifications() {
@@ -81,11 +79,11 @@ class NotificationService(val shiftNotificationRepository: ShiftNotificationRepo
         return end.atTime(LocalTime.MAX)
     }
 
-    private fun getShiftNotifications(from: LocalDateTime, to: LocalDateTime, unprocessedOnly: Boolean, quantumId: String = authenticationFacade.currentUsername): List<NotificationDto> {
+    private fun getShiftNotificationDtos(from: LocalDateTime, to: LocalDateTime, unprocessedOnly: Boolean, quantumId: String = authenticationFacade.currentUsername): Collection<NotificationDto> {
         log.debug("Finding unprocessedOnly: $unprocessedOnly notifications between $from and $to for $quantumId")
         val notifications = shiftNotificationRepository.findAllByQuantumIdAndShiftModifiedIsBetween(quantumId, from, to).filter { !unprocessedOnly || (unprocessedOnly && !it.processed) }
         log.info("Found ${notifications.size} unprocessedOnly: $unprocessedOnly notifications between $from and $to for $quantumId")
-        val notificationDtos = notifications.map { NotificationDto.from(it, getNotificationDescription(ShiftNotificationType.from(it.shiftType), ShiftActionType.from(it.actionType), it.shiftDate, CommunicationPreference.NONE, clock)) }
+        val notificationDtos = NotificationDto.from(notifications, clock)
         notifications.forEach { it.processed = true }
         return notificationDtos
     }
@@ -125,7 +123,7 @@ class NotificationService(val shiftNotificationRepository: ShiftNotificationRepo
                 notificationKeys
                         .mapIndexed { index, templateKey ->
                             templateKey to (chunk.getOrNull(index)?.let {
-                                getNotificationDescription(ShiftNotificationType.from(it.shiftType), ShiftActionType.from(it.actionType), it.shiftDate, communicationPreference, clock, it.task, it.taskStart, it.taskEnd)
+                                getNotificationDescription(it, communicationPreference, clock)
                             } ?: "")
                         }.toMap())
         return personalisation

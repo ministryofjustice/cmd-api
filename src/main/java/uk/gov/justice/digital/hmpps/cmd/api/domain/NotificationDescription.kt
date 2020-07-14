@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain
 
+import uk.gov.justice.digital.hmpps.cmd.api.model.ShiftNotification
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.model.CommunicationPreference
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.model.ShiftActionType
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.model.ShiftNotificationType
@@ -12,11 +13,13 @@ import java.time.format.DateTimeFormatter
 class NotificationDescription {
 
     companion object {
-        fun getNotificationDescription(shiftNotificationType: ShiftNotificationType, shiftActionType: ShiftActionType, shiftDate: LocalDateTime, communicationPreference: CommunicationPreference, clock: Clock, task: String? = null, from: Long? = 0L, to: Long? = 0L): String {
-            val isEmail = isEmail(communicationPreference)
-            val date = getDateTimeFormattedForTemplate(shiftDate, clock)
-            val taskString = getTaskString(task, from, to)
-            return "${isEmail}Your ${shiftNotificationType.prose} on $date$taskString has ${shiftActionType.prose}."
+        fun getNotificationDescription(shiftNotification: ShiftNotification, communicationPreference: CommunicationPreference, clock: Clock): String {
+            val bulletPoint = getOptionalBulletPoint(communicationPreference)
+            val date = getDateTimeFormattedForTemplate(shiftNotification.shiftDate, clock)
+            val taskDescription = getOptionalTaskDescription(shiftNotification.task, shiftNotification.taskStart, shiftNotification.taskEnd)
+            val shiftNotificationType = ShiftNotificationType.from(shiftNotification.shiftType)
+            val shiftActionType = ShiftActionType.from(shiftNotification.actionType)
+            return "${bulletPoint}Your ${shiftNotificationType.description} on $date ${taskDescription}has ${shiftActionType.description}."
         }
 
         fun getDateTimeFormattedForTemplate(shiftDate: LocalDateTime, clock: Clock): String {
@@ -29,24 +32,23 @@ class NotificationDescription {
                 3 -> "rd"
                 else -> "th"
             }
-            val year = if (shiftDate.year > LocalDate.now(clock).year) {
+            val year = if (shiftDate.year != LocalDate.now(clock).year) {
                 ", yyyy"
             } else ""
+
             return DateTimeFormatter.ofPattern("EEEE, d'$ordinal' MMMM$year").format(shiftDate)
         }
 
-        private fun getTaskString(task: String?, from: Long?, to: Long?): String {
-            val fromTime = LocalTime.ofSecondOfDay(from ?: 0L)
-            val toTime = LocalTime.ofSecondOfDay(to ?: 0L)
-            return if (task != null) {
-                " ($task, $fromTime - $toTime)"
-            } else {
-                ""
-            }
-
+        private fun getOptionalTaskDescription(task: String?, from: Long?, to: Long?): String {
+            return if (task != null && !task.isEmpty() && from != null && to != null) {
+                val fromTime = LocalTime.ofSecondOfDay(from)
+                val toTime = LocalTime.ofSecondOfDay(to)
+                "($task, $fromTime - $toTime) "
+            } else ""
         }
 
-        private fun isEmail(communicationPreference: CommunicationPreference): String {
+        // Notify supports bullet points for Email but not Sms
+        private fun getOptionalBulletPoint(communicationPreference: CommunicationPreference): String {
             return if (communicationPreference == CommunicationPreference.EMAIL) {
                 "* "
             } else ""
