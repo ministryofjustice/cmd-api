@@ -9,13 +9,22 @@ import java.time.LocalDate
 
 @ApiModel(description = "User Preference")
 data class UserPreferenceDto @JsonCreator constructor(
-        @ApiModelProperty(required = true, value = "Date to snooze notifications until", position = 1, example = "2020-08-27")
+        @ApiModelProperty(required = false, value = "Date to snooze notifications until", position = 1, example = "2020-08-27")
         @JsonProperty("snoozeUntil")
-        val snoozeUntil: LocalDate?) {
+        val snoozeUntil: LocalDate?,
+        @ApiModelProperty(required = false, value = "User's Email Address", position = 1, example = "me@example.com")
+        @JsonProperty("email")
+        val email: String?,
+        @ApiModelProperty(required = false, value = "User's SMS number", position = 1, example = "0123567890")
+        @JsonProperty("sms")
+        val sms: String?,
+        @ApiModelProperty(required = false, value = "User's preferred method of communication", position = 1, example = "EMAIL")
+        @JsonProperty("preference")
+        val preference: String?) {
 
     companion object {
         fun from(userPreference: UserPreference?): UserPreferenceDto {
-            return UserPreferenceDto(userPreference?.snoozeUntil)
+            return UserPreferenceDto(userPreference?.snoozeUntil, userPreference?.email, userPreference?.sms, userPreference?.commPref)
         }
     }
 }

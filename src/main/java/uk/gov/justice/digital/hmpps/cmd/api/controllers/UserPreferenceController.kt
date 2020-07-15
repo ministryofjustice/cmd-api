@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.cmd.api.dto.UpdateSnoozeUntilRequest
 import uk.gov.justice.digital.hmpps.cmd.api.dto.UserPreferenceDto
 import uk.gov.justice.digital.hmpps.cmd.api.service.UserPreferenceService
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.dto.UpdateNotificationDetailsRequest
+import javax.validation.Valid
 
 @Api(tags = ["user-preferences"])
 @RestController
@@ -41,7 +42,7 @@ class UserPreferenceController(val userPreferenceService: UserPreferenceService)
         ApiResponse(code = 200, message = "OK")
     ])
     @PutMapping("/preferences/notifications/details")
-    fun updateNotificationDetails(@RequestBody detailsRequest: UpdateNotificationDetailsRequest): ResponseEntity<Void> {
+    fun updateNotificationDetails(@Valid @RequestBody detailsRequest: UpdateNotificationDetailsRequest): ResponseEntity<Void> {
         userPreferenceService.updateNotificationDetails(detailsRequest.email, detailsRequest.sms, detailsRequest.commPref)
         return ResponseEntity.ok().build()
     }

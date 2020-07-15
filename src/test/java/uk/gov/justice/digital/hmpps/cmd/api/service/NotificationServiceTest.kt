@@ -217,6 +217,86 @@ internal class NotificationServiceTest {
         }
 
         @Test
+        fun `Should not send a notification to one user if they have a blank Email and Email Preference`() {
+            val quantumId1 = "XYZ"
+            val shiftNotifications: List<ShiftNotification> = listOf(
+                    ShiftNotification(1, quantumId1, LocalDateTime.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
+            )
+
+            every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
+            every { userPreferenceService.getOrCreateUserPreference(quantumId1) } returns UserPreference(quantumId1, null, "", "sms", CommunicationPreference.EMAIL.value)
+            every { notifyClient.sendEmail(any(), "email", any(), any()) } returns null
+
+            service.sendNotifications()
+
+            verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
+            verify { userPreferenceService.getOrCreateUserPreference(quantumId1) }
+            confirmVerified(shiftNotificationRepository)
+            confirmVerified(userPreferenceService)
+            confirmVerified(notifyClient)
+        }
+
+        @Test
+        fun `Should not send a notification to one user if they have a null Email and Email Preference`() {
+            val quantumId1 = "XYZ"
+            val shiftNotifications: List<ShiftNotification> = listOf(
+                    ShiftNotification(1, quantumId1, LocalDateTime.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
+            )
+
+            every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
+            every { userPreferenceService.getOrCreateUserPreference(quantumId1) } returns UserPreference(quantumId1, null, null, "sms", CommunicationPreference.EMAIL.value)
+            every { notifyClient.sendEmail(any(), "email", any(), any()) } returns null
+
+            service.sendNotifications()
+
+            verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
+            verify { userPreferenceService.getOrCreateUserPreference(quantumId1) }
+            confirmVerified(shiftNotificationRepository)
+            confirmVerified(userPreferenceService)
+            confirmVerified(notifyClient)
+        }
+
+        @Test
+        fun `Should not send a notification to one user if they have a blank Sms and Sms Preference`() {
+            val quantumId1 = "XYZ"
+            val shiftNotifications: List<ShiftNotification> = listOf(
+                    ShiftNotification(1, quantumId1, LocalDateTime.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
+            )
+
+            every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
+            every { userPreferenceService.getOrCreateUserPreference(quantumId1) } returns UserPreference(quantumId1, null, "email", "", CommunicationPreference.SMS.value)
+            every { notifyClient.sendEmail(any(), "email", any(), any()) } returns null
+
+            service.sendNotifications()
+
+            verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
+            verify { userPreferenceService.getOrCreateUserPreference(quantumId1) }
+            confirmVerified(shiftNotificationRepository)
+            confirmVerified(userPreferenceService)
+            confirmVerified(notifyClient)
+        }
+
+        @Test
+        fun `Should not send a notification to one user if they have a null Sms and Sms Preference`() {
+            val quantumId1 = "XYZ"
+            val shiftNotifications: List<ShiftNotification> = listOf(
+                    ShiftNotification(1, quantumId1, LocalDateTime.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
+            )
+
+            every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
+            every { userPreferenceService.getOrCreateUserPreference(quantumId1) } returns UserPreference(quantumId1, null, "email", null, CommunicationPreference.SMS.value)
+            every { notifyClient.sendEmail(any(), "email", any(), any()) } returns null
+
+            service.sendNotifications()
+
+            verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
+            verify { userPreferenceService.getOrCreateUserPreference(quantumId1) }
+            confirmVerified(shiftNotificationRepository)
+            confirmVerified(userPreferenceService)
+            confirmVerified(notifyClient)
+        }
+
+        @Test
         fun `Should combine notifications to one user`() {
             val quantumId1 = "XYZ"
             val shiftNotifications: List<ShiftNotification> = listOf(

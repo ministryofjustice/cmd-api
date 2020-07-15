@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.cmd.api.dto.NotificationDto
 import uk.gov.justice.digital.hmpps.cmd.api.model.ShiftNotification
+import uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
 import uk.gov.justice.digital.hmpps.cmd.api.repository.ShiftNotificationRepository
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
@@ -96,7 +97,7 @@ class NotificationService(val shiftNotificationRepository: ShiftNotificationRepo
     */
     private fun sendNotification(quantumId: String, notificationGroup: List<ShiftNotification>) {
         val userPreference = userPreferenceService.getOrCreateUserPreference(quantumId)
-        if (userPreference.snoozeUntil == null || userPreference.snoozeUntil != null && userPreference.snoozeUntil!!.isBefore(LocalDate.now(clock))) {
+        if (shouldSend(userPreference)) {
             log.debug("Sending (${notificationGroup.size}) notifications to ${userPreference.quantumId}, preference set to ${userPreference.commPref}")
             notificationGroup.sortedWith(compareBy { it.shiftDate }).chunked(10).forEach { chunk ->
                 when (val communicationPreference = CommunicationPreference.from(userPreference.commPref)) {
@@ -112,6 +113,22 @@ class NotificationService(val shiftNotificationRepository: ShiftNotificationRepo
                 }
             }
         }
+    }
+
+    private fun shouldSend(userPreference: UserPreference): Boolean {
+        val isNotSnoozed = (userPreference.snoozeUntil == null || userPreference.snoozeUntil != null && userPreference.snoozeUntil!!.isBefore(LocalDate.now(clock)))
+        val isValidCommunicationMethod = when (userPreference.commPref) {
+            CommunicationPreference.EMAIL.value -> {
+                !userPreference.email.isNullOrBlank()
+            }
+            CommunicationPreference.SMS.value -> {
+                !userPreference.sms.isNullOrBlank()
+            }
+            else -> {
+                false
+            }
+        }
+        return isNotSnoozed && isValidCommunicationMethod
     }
 
     private fun generateTemplateValues(chunk: List<ShiftNotification>, communicationPreference: CommunicationPreference): MutableMap<String, String?> {

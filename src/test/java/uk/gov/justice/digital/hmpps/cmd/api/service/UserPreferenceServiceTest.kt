@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
 import uk.gov.justice.digital.hmpps.cmd.api.repository.UserPreferenceRepository
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import java.time.LocalDate
 
 @ExtendWith(MockKExtension::class)
@@ -27,13 +28,18 @@ internal class UserPreferenceServiceTest {
     }
 
     @Nested
-    @DisplayName("Get Snooze Preference tests")
+    @DisplayName("Get Preference tests")
     inner class GetPreferenceTests {
 
         @Test
         fun `Should get preference with future date`() {
             val quantumId = "XYZ"
-            val userPref = UserPreference(quantumId, now.plusDays(1))
+            val userPref = UserPreference(
+                    quantumId,
+                    now.plusDays(1),
+                    "Any Email",
+                    "Any Sms",
+                    CommunicationPreference.EMAIL.value)
             every { repository.findByQuantumId(any()) } returns userPref
             every { authenticationFacade.currentUsername } returns quantumId
 
@@ -44,6 +50,9 @@ internal class UserPreferenceServiceTest {
 
             assertThat(returnValue).isNotNull
             assertThat(returnValue.snoozeUntil).isEqualTo(userPref.snoozeUntil)
+            assertThat(returnValue.email).isEqualTo(userPref.email)
+            assertThat(returnValue.sms).isEqualTo(userPref.sms)
+            assertThat(returnValue.commPref).isEqualTo(userPref.commPref)
         }
 
         @Test
@@ -77,12 +86,16 @@ internal class UserPreferenceServiceTest {
 
             assertThat(returnValue).isNotNull
             assertThat(returnValue.snoozeUntil).isNull()
+            assertThat(returnValue.email).isNull()
+            assertThat(returnValue.sms).isNull()
+            assertThat(returnValue.commPref).isEqualTo(CommunicationPreference.NONE.value)
+
         }
     }
 
     @Nested
     @DisplayName("Update Snooze Preference tests")
-    inner class UpdatePreferenceTests {
+    inner class UpdateSnoozePreferenceTests {
 
         @Test
         fun `Should updates an existing preference`() {
@@ -145,8 +158,43 @@ internal class UserPreferenceServiceTest {
             verify { repository.save<UserPreference>(any()) }
             confirmVerified(repository)
         }
-
     }
 
+    @Nested
+    @DisplayName("Update Notification Preference tests")
+    inner class UpdateNotificationPreferenceTests {
 
+        @Test
+        fun `Should updates an existing preference`() {
+            val quantumId = "XYZ"
+            val userPref = UserPreference(
+                    quantumId,
+                    now.plusDays(1),
+                    "Any Email",
+                    "Any Sms",
+                    CommunicationPreference.EMAIL.value)
+
+            every { repository.findByQuantumId(any()) } returns userPref
+            every { authenticationFacade.currentUsername } returns quantumId
+
+            service.updateNotificationDetails("new Email", "new Sms", CommunicationPreference.EMAIL)
+
+            verify { repository.findByQuantumId(quantumId) }
+            confirmVerified(repository)
+        }
+
+        @Test
+        fun `Should create a new preference on update when one doesn't already exist`() {
+            val quantumId = "XYZ"
+            every { repository.findByQuantumId(any()) } returns null
+            every { repository.save<UserPreference>(any()) } returns UserPreference(quantumId)
+            every { authenticationFacade.currentUsername } returns quantumId
+
+            service.updateNotificationDetails("new Email", "new Sms", CommunicationPreference.EMAIL)
+
+            verify { repository.findByQuantumId(quantumId) }
+            verify { repository.save<UserPreference>(any()) }
+            confirmVerified(repository)
+        }
+    }
 }
