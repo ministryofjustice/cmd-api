@@ -3,9 +3,9 @@ package uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.ap
 import java.util.*
 
 
-enum class ShiftNotificationType(val value: String, val prose: String) {
+enum class ShiftNotificationType(val value: String, val description: String) {
     SHIFT("shift", "shift"),
-    OVERTIME("overtime", "overtime"),
+    OVERTIME("overtime", "overtime shift"),
     SHIFT_TASK("shift_task", "activity"),
     OVERTIME_TASK("overtime_task", "overtime activity");
 

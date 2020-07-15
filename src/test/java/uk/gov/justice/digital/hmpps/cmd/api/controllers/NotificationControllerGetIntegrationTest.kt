@@ -47,7 +47,7 @@ class NotificationControllerGetIntegrationTest(
     }
 
     @Test
-    fun `It returns notifications deep inspection`() {
+    fun `It returns notifications deep inspection Email`() {
         val response = getNotifications(A_USER, "/notifications")
         with(response) {
             assertThat(statusCode).isEqualTo(HttpStatus.OK)
@@ -55,9 +55,9 @@ class NotificationControllerGetIntegrationTest(
             val notificationList: List<NotificationDto> = objectMapper.readValue(body, object : TypeReference<List<NotificationDto>>() {})
             assertThat(notificationList).hasSize(4)
 
-            val notification = notificationList.findLast { it.description == "Your shift on Sunday, April 5 has been added" }
+            val notification = notificationList.findLast { it.description == "Your shift on Sunday, 5th April has been added." }
             assertThat(notification).isNotNull
-            assertThat(notification?.description).isEqualTo("Your shift on Sunday, April 5 has been added")
+            assertThat(notification?.description).isEqualTo("Your shift on Sunday, 5th April has been added.")
             assertThat(notification?.processed).isFalse()
             assertThat(notification?.shiftModified).isEqualTo(LocalDate.now().atStartOfDay())
         }
