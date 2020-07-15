@@ -33,7 +33,7 @@ class UserPreferenceRepositoryTest(
             val quantumId = "XYZ"
             repository.save(UserPreference(quantumId, now.plusDays(20)))
 
-            val pref = repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(quantumId, now)
+            val pref = repository.findByQuantumId(quantumId)
             assertThat(pref).isNotNull
 
             assertThat(pref?.quantumId).isEqualTo(quantumId)
@@ -45,7 +45,7 @@ class UserPreferenceRepositoryTest(
             val quantumId = "XYZ"
             repository.save(UserPreference(quantumId, now))
 
-            val pref = repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(quantumId, now)
+            val pref = repository.findByQuantumId(quantumId)
             assertThat(pref).isNotNull
 
             assertThat(pref?.quantumId).isEqualTo(quantumId)
@@ -53,12 +53,12 @@ class UserPreferenceRepositoryTest(
         }
 
         @Test
-        fun `Should not return a preference with a past date`() {
+        fun `Should return a preference with a past date`() {
             val quantumId = "XYZ"
             repository.save(UserPreference(quantumId, now.minusDays(10)))
 
-            val pref = repository.findByQuantumIdAndSnoozeUntilGreaterThanEqual(quantumId, now)
-            assertThat(pref).isNull()
+            val pref = repository.findByQuantumId(quantumId)
+            assertThat(pref).isNotNull
         }
 
     }

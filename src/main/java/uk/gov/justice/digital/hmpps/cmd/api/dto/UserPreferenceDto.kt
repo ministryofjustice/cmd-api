@@ -14,8 +14,8 @@ data class UserPreferenceDto @JsonCreator constructor(
         val snoozeUntil: LocalDate?) {
 
     companion object {
-        fun from(userPreference: UserPreference): UserPreferenceDto {
-            return UserPreferenceDto(userPreference.snoozeUntil)
+        fun from(userPreference: UserPreference?): UserPreferenceDto {
+            return UserPreferenceDto(userPreference?.snoozeUntil)
         }
     }
 }

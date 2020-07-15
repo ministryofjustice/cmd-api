@@ -26,7 +26,7 @@ class ShiftNotificationRepositoryTest(
     }
 
     @Nested
-    @DisplayName("Get Shift Notification tests")
+    @DisplayName("Get shift notification tests")
     inner class GetShiftNotificationTests {
 
         @Test
@@ -36,7 +36,7 @@ class ShiftNotificationRepositoryTest(
             val notification = getValidShiftNotification(date, date)
             repository.save(notification)
 
-            val notifications = repository.findAllByQuantumIdAndLastModifiedIsBetween(
+            val notifications = repository.findAllByQuantumIdAndShiftModifiedIsBetween(
                     quantumId,
                     now.minusDays(1).atStartOfDay(),
                     now.plusDays(1).atStartOfDay())
@@ -52,7 +52,7 @@ class ShiftNotificationRepositoryTest(
             val notification = getValidShiftNotification(date, date)
             repository.save(notification)
 
-            val notifications = repository.findAllByQuantumIdAndLastModifiedIsBetween(
+            val notifications = repository.findAllByQuantumIdAndShiftModifiedIsBetween(
                     quantumId,
                     now.minusDays(1).atStartOfDay(),
                     now.plusDays(1).atStartOfDay())
@@ -66,7 +66,7 @@ class ShiftNotificationRepositoryTest(
             val notification = getValidShiftNotification(date, date)
             repository.save(notification)
 
-            val notifications = repository.findAllByQuantumIdAndLastModifiedIsBetween(
+            val notifications = repository.findAllByQuantumIdAndShiftModifiedIsBetween(
                     quantumId,
                     now.minusDays(1).atStartOfDay(),
                     now.plusDays(1).atStartOfDay())
@@ -74,27 +74,77 @@ class ShiftNotificationRepositoryTest(
         }
     }
 
-    //@Nested
-    //@DisplayName("Get Unsent Notification tests")
-    //inner class GetUnsentNotificationTests {
-    //    @Test
+    @Nested
+    @DisplayName("Get Unprocessed Notification tests")
+    inner class GetUnsentNotificationTests {
 
-    //}
+        @Test
+        fun `Should only return unprocessed notifications`() {
+            val firstDate = now.plusDays(3).atStartOfDay()
+            val unProcessedNotification = getValidShiftNotification(firstDate, firstDate)
+            repository.save(unProcessedNotification)
+
+            val notifications = repository.findAllByProcessedIsFalse().toList()
+
+            // Only one gets returned
+            assertThat(notifications).hasSize(1)
+
+            // Basic check that it's the unprocessed one
+            assertThat(notifications[0].shiftModified).isEqualTo(firstDate)
+        }
+
+        @Test
+        fun `Should only return unprocessed notifications when there are processed ones too`() {
+            val firstDate = now.plusDays(3).atStartOfDay()
+            val unProcessedNotification = getValidShiftNotification(firstDate, firstDate)
+            repository.save(unProcessedNotification)
+
+            val secondDate = now.plusDays(5).atStartOfDay()
+            val processedNotification = getValidShiftNotification(secondDate, secondDate, true)
+            repository.save(processedNotification)
+
+            val notifications = repository.findAllByProcessedIsFalse().toList()
+
+            // Only one gets returned
+            assertThat(notifications).hasSize(1)
+
+            // Basic check that it's the unprocessed one
+            assertThat(notifications[0].shiftModified).isEqualTo(firstDate)
+        }
+
+        @Test
+        fun `Should not return any unprocessed notifications when there are none`() {
+            val firstDate = now.plusDays(3).atStartOfDay()
+            val processedNotification = getValidShiftNotification(firstDate, firstDate, true)
+            repository.save(processedNotification)
+
+            val notifications = repository.findAllByProcessedIsFalse().toList()
+
+            // none gets returned
+            assertThat(notifications).hasSize(0)
+
+        }
+    }
 
     companion object {
-        fun getValidShiftNotification(shiftDate: LocalDateTime, lastModified: LocalDateTime): ShiftNotification {
-
+        fun getValidShiftNotification(shiftDate: LocalDateTime, shiftModified: LocalDateTime, processed: Boolean = false): ShiftNotification {
             val quantumId = "XYZ"
-            val description = "Any Description,"
-            val notificationType = 0L
-            val processed = false
+            val taskStart = 123L
+            val taskEnd = 456L
+            val task = "Any Activity"
+            val shiftType = "SHIFT"
+            val actionType = "ADD"
 
             return ShiftNotification(
+                    1L,
                     quantumId,
-                    description,
                     shiftDate,
-                    lastModified,
-                    notificationType,
+                    shiftModified,
+                    taskStart,
+                    taskEnd,
+                    task,
+                    shiftType,
+                    actionType,
                     processed
             )
         }

@@ -29,7 +29,7 @@ import java.time.LocalDate
 )
 @ActiveProfiles(value = ["test"])
 @DisplayName("Integration Tests for Notification Controller")
-class NotificationControllerIntegrationTest(
+class NotificationControllerGetIntegrationTest(
         @Autowired val testRestTemplate: TestRestTemplate,
         @Autowired val entityBuilder: EntityWithJwtAuthorisationBuilder,
         @Autowired val objectMapper: ObjectMapper
@@ -38,24 +38,7 @@ class NotificationControllerIntegrationTest(
 
     @Test
     fun `It returns notifications`() {
-        val response = getNotificationPreference(A_USER, "/notifications")
-        with(response) {
-            assertThat(statusCode).isEqualTo(HttpStatus.OK)
-            // we use an insert of CURRENT_DATE in the test data. so there should be 4 returned
-            val notificationList: List<NotificationDto> = objectMapper.readValue(body, object : TypeReference<List<NotificationDto>>() {})
-            assertThat(notificationList).hasSize(4)
-
-            val notification = notificationList.findLast { it.description == "any description aa" }
-            assertThat(notification).isNotNull
-            assertThat(notification?.description).isEqualTo("any description aa")
-            assertThat(notification?.processed).isFalse()
-            assertThat(notification?.lastModified).isEqualTo(LocalDate.now().atStartOfDay())
-        }
-    }
-
-    @Test
-    fun `It returns notifications deep inspection`() {
-        val response = getNotificationPreference(A_USER, "/notifications")
+        val response = getNotifications(A_USER, "/notifications")
         with(response) {
             assertThat(statusCode).isEqualTo(HttpStatus.OK)
             // we use an insert of CURRENT_DATE in the test data. so there should be 4 returned
@@ -64,8 +47,25 @@ class NotificationControllerIntegrationTest(
     }
 
     @Test
+    fun `It returns notifications deep inspection Email`() {
+        val response = getNotifications(A_USER, "/notifications")
+        with(response) {
+            assertThat(statusCode).isEqualTo(HttpStatus.OK)
+            // we use an insert of CURRENT_DATE in the test data. so there should be 4 returned
+            val notificationList: List<NotificationDto> = objectMapper.readValue(body, object : TypeReference<List<NotificationDto>>() {})
+            assertThat(notificationList).hasSize(4)
+
+            val notification = notificationList.findLast { it.description == "Your shift on Sunday, 5th April has been added." }
+            assertThat(notification).isNotNull
+            assertThat(notification?.description).isEqualTo("Your shift on Sunday, 5th April has been added.")
+            assertThat(notification?.processed).isFalse()
+            assertThat(notification?.shiftModified).isEqualTo(LocalDate.now().atStartOfDay())
+        }
+    }
+
+    @Test
     fun `It returns notifications with an unread only preference of false`() {
-        val response = getNotificationPreference(A_USER, "/notifications?unprocessedOnly=false")
+        val response = getNotifications(A_USER, "/notifications?unprocessedOnly=false")
         with(response) {
             assertThat(statusCode).isEqualTo(HttpStatus.OK)
             // we have one read and one not for each type so there should be 4 returned
@@ -75,7 +75,7 @@ class NotificationControllerIntegrationTest(
 
     @Test
     fun `It returns notifications with an unread preference of true`() {
-        val response = getNotificationPreference(A_USER, "/notifications?unprocessedOnly=true")
+        val response = getNotifications(A_USER, "/notifications?unprocessedOnly=true")
         with(response) {
             assertThat(statusCode).isEqualTo(HttpStatus.OK)
             // we have one read and one not for each type so there should be 2 returned
@@ -85,7 +85,7 @@ class NotificationControllerIntegrationTest(
 
     @Test
     fun `It returns no notifications if there are none for a user`() {
-        val response = getNotificationPreference(A_USER_NO_DATA, "/notifications")
+        val response = getNotifications(A_USER_NO_DATA, "/notifications")
         with(response) {
             assertThat(statusCode).isEqualTo(HttpStatus.OK)
 
@@ -97,7 +97,7 @@ class NotificationControllerIntegrationTest(
     fun `It returns notifications between two dates with data for after the 'to'`() {
         val from = LocalDate.now()
         val to = LocalDate.now().plusDays(2)
-        val response = getNotificationPreference(A_USER, "/notifications?from=$from&to=$to")
+        val response = getNotifications(A_USER, "/notifications?from=$from&to=$to")
         with(response) {
             assertThat(statusCode).isEqualTo(HttpStatus.OK)
             // we use an insert of CURRENT_DATE+7 for 2/4 in the test data. so there should be 2 returned
@@ -109,7 +109,7 @@ class NotificationControllerIntegrationTest(
     fun `It returns notifications between two dates with data for before the 'from'`() {
         val from = LocalDate.now().plusDays(2)
         val to = LocalDate.now().plusDays(8)
-        val response = getNotificationPreference(A_USER, "/notifications?from=$from&to=$to")
+        val response = getNotifications(A_USER, "/notifications?from=$from&to=$to")
         with(response) {
             assertThat(statusCode).isEqualTo(HttpStatus.OK)
             // we use an insert of CURRENT_DATE+7 for 2/4 in the test data. so there should be 2 returned
@@ -121,7 +121,7 @@ class NotificationControllerIntegrationTest(
     fun `It returns empty when 'from' is after 'to'`() {
         val from = LocalDate.now().plusDays(2)
         val to = LocalDate.now().plusDays(8)
-        val response = getNotificationPreference(A_USER, "/notifications?from=$to&to=$from")
+        val response = getNotifications(A_USER, "/notifications?from=$to&to=$from")
         with(response) {
             assertThat(statusCode).isEqualTo(HttpStatus.OK)
             // we use an insert of CURRENT_DATE+7 for 2/4 in the test data. so there should be 2 returned
@@ -133,7 +133,7 @@ class NotificationControllerIntegrationTest(
     fun `It returns notifications applying both dates and unread filters`() {
         val from = LocalDate.now().plusDays(2)
         val to = LocalDate.now().plusDays(8)
-        val response = getNotificationPreference(A_USER, "/notifications?from=$from&to=$to&unprocessedOnly=true")
+        val response = getNotifications(A_USER, "/notifications?from=$from&to=$to&unprocessedOnly=true")
         with(response) {
             assertThat(statusCode).isEqualTo(HttpStatus.OK)
             // we use an insert of CURRENT_DATE+7 for 2/4 in the test data with one of those unread. so there should be 1 returned
@@ -143,14 +143,14 @@ class NotificationControllerIntegrationTest(
 
     @Test
     fun `It returns notifications and marks them as read`() {
-        val responseOne = getNotificationPreference(A_USER, "/notifications")
+        val responseOne = getNotifications(A_USER, "/notifications")
         with(responseOne) {
             assertThat(statusCode).isEqualTo(HttpStatus.OK)
             // there are two unread notifications
             assertThat(jsonTester.from(body)).extractingJsonPathValue("$").asList().hasSize(4)
         }
 
-        val responseTwo = getNotificationPreference(A_USER, "/notifications?unprocessedOnly=true")
+        val responseTwo = getNotifications(A_USER, "/notifications?unprocessedOnly=true")
         with(responseTwo) {
             assertThat(statusCode).isEqualTo(HttpStatus.OK)
             // there should now be 0 unread notifications
@@ -158,7 +158,7 @@ class NotificationControllerIntegrationTest(
         }
     }
 
-    fun getNotificationPreference(user: String, url: String): ResponseEntity<String> =
+    fun getNotifications(user: String, url: String): ResponseEntity<String> =
             testRestTemplate.exchange(
                     url,
                     HttpMethod.GET,

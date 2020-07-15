@@ -4,6 +4,10 @@ plugins {
     kotlin("plugin.jpa") version "1.3.72"
 }
 
+repositories {
+    maven("https://dl.bintray.com/gov-uk-notify/maven")
+}
+
 configurations {
     implementation { exclude(mapOf("module" to "tomcat-jdbc")) }
 }
@@ -30,6 +34,8 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.11.0")
     implementation("com.nimbusds:nimbus-jose-jwt:8.19")
     implementation("com.google.guava:guava:29.0-jre")
+    implementation("uk.gov.service.notify:notifications-java-client:3.15.1-RELEASE")
+
 
     testAnnotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
