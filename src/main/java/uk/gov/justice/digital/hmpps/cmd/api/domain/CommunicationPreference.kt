@@ -1,8 +1,8 @@
-package uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.model
+package uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain
 
 import java.util.*
 
-enum class CommunicationPreference(val stringValue: String) {
+enum class CommunicationPreference(val value: String) {
     EMAIL("EMAIL"),
     SMS("SMS"),
     NONE("NONE");
@@ -10,7 +10,7 @@ enum class CommunicationPreference(val stringValue: String) {
     companion object {
         fun from(value: String): CommunicationPreference {
             return Arrays.stream(values())
-                    .filter { type -> type.stringValue == value }
+                    .filter { type -> type.value == value }
                     .findFirst().orElseThrow { IllegalArgumentException() }
         }
     }

@@ -11,11 +11,16 @@ class UserPreferenceDtoTest {
     fun `Create User Preference Dto`() {
         val quantumId = "XYZ"
         val date = LocalDate.now()
-        val userPreference = UserPreference(quantumId, date)
+        val email = "email"
+        val sms = "sms"
+        val pref = "EMAIL"
+        val userPreference = UserPreference(quantumId, date, email, sms, pref)
 
         val userPreferenceDto = UserPreferenceDto.from(userPreference)
 
         Assertions.assertThat(userPreferenceDto.snoozeUntil).isEqualTo(date)
-
+        Assertions.assertThat(userPreferenceDto.email).isEqualTo(email)
+        Assertions.assertThat(userPreferenceDto.sms).isEqualTo(sms)
+        Assertions.assertThat(userPreferenceDto.preference).isEqualTo(pref)
     }
 }

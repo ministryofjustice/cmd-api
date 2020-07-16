@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*
 import uk.gov.justice.digital.hmpps.cmd.api.dto.UpdateSnoozeUntilRequest
 import uk.gov.justice.digital.hmpps.cmd.api.dto.UserPreferenceDto
 import uk.gov.justice.digital.hmpps.cmd.api.service.UserPreferenceService
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.dto.UpdateNotificationDetailsRequest
+import javax.validation.Valid
 
 @Api(tags = ["user-preferences"])
 @RestController
@@ -30,8 +32,18 @@ class UserPreferenceController(val userPreferenceService: UserPreferenceService)
         ApiResponse(code = 200, message = "OK")
     ])
     @PutMapping("/preferences/notifications/snooze")
-    fun updateSnoozeNotificationPreferences(@RequestBody untilRequest: UpdateSnoozeUntilRequest): ResponseEntity<Void> {
+    fun updateSnoozeNotification(@RequestBody untilRequest: UpdateSnoozeUntilRequest): ResponseEntity<Void> {
         userPreferenceService.updateSnoozePreference(untilRequest.snoozeUntil)
+        return ResponseEntity.ok().build()
+    }
+
+    @ApiOperation(value = "Update the notification details for a user")
+    @ApiResponses(value = [
+        ApiResponse(code = 200, message = "OK")
+    ])
+    @PutMapping("/preferences/notifications/details")
+    fun updateNotificationDetails(@Valid @RequestBody detailsRequest: UpdateNotificationDetailsRequest): ResponseEntity<Void> {
+        userPreferenceService.updateNotificationDetails(detailsRequest.email, detailsRequest.sms, detailsRequest.commPref)
         return ResponseEntity.ok().build()
     }
 }
