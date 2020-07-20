@@ -25,10 +25,10 @@ import java.util.*
 @Transactional
 class NotificationService(val shiftNotificationRepository: ShiftNotificationRepository, val userPreferenceService: UserPreferenceService, val clock: Clock, val authenticationFacade: AuthenticationFacade, @Value("\${application.to.defaultMonths}") val monthStep: Long, val notifyClient: NotificationClientApi) {
 
-    fun getNotifications(unprocessedOnlyParam: Optional<Boolean>, fromParam: Optional<LocalDate>, toParam: Optional<LocalDate>): Collection<NotificationDto> {
+    fun getNotifications(processOnReadParam: Optional<Boolean>, unprocessedOnlyParam: Optional<Boolean>, fromParam: Optional<LocalDate>, toParam: Optional<LocalDate>): Collection<NotificationDto> {
         val start = calculateStartDateTime(fromParam, toParam)
         val end = calculateEndDateTime(toParam, start)
-        return getShiftNotificationDtos(start, end, unprocessedOnlyParam.orElse(false))
+        return getShiftNotificationDtos(start, end, unprocessedOnlyParam.orElse(false), processOnReadParam.orElse(true))
     }
 
     fun sendNotifications() {
@@ -80,12 +80,14 @@ class NotificationService(val shiftNotificationRepository: ShiftNotificationRepo
         return end.atTime(LocalTime.MAX)
     }
 
-    private fun getShiftNotificationDtos(from: LocalDateTime, to: LocalDateTime, unprocessedOnly: Boolean, quantumId: String = authenticationFacade.currentUsername): Collection<NotificationDto> {
+    private fun getShiftNotificationDtos(from: LocalDateTime, to: LocalDateTime, unprocessedOnly: Boolean, processOnRead: Boolean, quantumId: String = authenticationFacade.currentUsername): Collection<NotificationDto> {
         log.debug("Finding unprocessedOnly: $unprocessedOnly notifications between $from and $to for $quantumId")
         val notifications = shiftNotificationRepository.findAllByQuantumIdAndShiftModifiedIsBetween(quantumId, from, to).filter { !unprocessedOnly || (unprocessedOnly && !it.processed) }
         log.info("Found ${notifications.size} unprocessedOnly: $unprocessedOnly notifications between $from and $to for $quantumId")
         val notificationDtos = NotificationDto.from(notifications, clock)
-        notifications.forEach { it.processed = true }
+        if (processOnRead) {
+            notifications.forEach { it.processed = true }
+        }
         return notificationDtos
     }
 

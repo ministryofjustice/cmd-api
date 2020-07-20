@@ -146,15 +146,32 @@ class NotificationControllerGetIntegrationTest(
         val responseOne = getNotifications(A_USER, "/notifications")
         with(responseOne) {
             assertThat(statusCode).isEqualTo(HttpStatus.OK)
-            // there are two unread notifications
+            // there are two unprocessed notifications and two processed
             assertThat(jsonTester.from(body)).extractingJsonPathValue("$").asList().hasSize(4)
         }
 
         val responseTwo = getNotifications(A_USER, "/notifications?unprocessedOnly=true")
         with(responseTwo) {
             assertThat(statusCode).isEqualTo(HttpStatus.OK)
-            // there should now be 0 unread notifications
+            // there should now be 0 unprocessed notifications
             assertThat(jsonTester.from(body)).extractingJsonPathValue("$").asList().hasSize(0)
+        }
+    }
+
+    @Test
+    fun `It returns notifications and doesn't mark them as read`() {
+        val responseOne = getNotifications(A_USER, "/notifications?processOnRead=false")
+        with(responseOne) {
+            assertThat(statusCode).isEqualTo(HttpStatus.OK)
+            // there are two unprocessed notifications and two processed
+            assertThat(jsonTester.from(body)).extractingJsonPathValue("$").asList().hasSize(4)
+        }
+
+        val responseTwo = getNotifications(A_USER, "/notifications")
+        with(responseTwo) {
+            assertThat(statusCode).isEqualTo(HttpStatus.OK)
+            // there should now be 0 unprocessed notifications
+            assertThat(jsonTester.from(body)).extractingJsonPathValue("$").asList().hasSize(4)
         }
     }
 
