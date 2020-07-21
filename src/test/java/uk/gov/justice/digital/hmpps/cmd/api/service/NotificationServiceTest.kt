@@ -46,12 +46,13 @@ internal class NotificationServiceTest {
             val from = Optional.of(LocalDate.now(clock).minusDays(1))
             val to = Optional.of(LocalDate.now(clock).plusDays(1))
             val unprocessedOnly = Optional.of(false)
+            val processOnRead = Optional.of(true)
 
             val shiftNotifications = listOf(getValidShiftNotification(clock))
             every { shiftNotificationRepository.findAllByQuantumIdAndShiftModifiedIsBetween(quantumId, from.get().atTime(LocalTime.MIN), to.get().atTime(LocalTime.MAX)) } returns shiftNotifications
             every { authenticationFacade.currentUsername } returns quantumId
 
-            val returnValue = service.getNotifications(unprocessedOnly, from, to)
+            val returnValue = service.getNotifications(processOnRead, unprocessedOnly, from, to)
 
             verify { shiftNotificationRepository.findAllByQuantumIdAndShiftModifiedIsBetween(quantumId, from.get().atTime(LocalTime.MIN), to.get().atTime(LocalTime.MAX)) }
             confirmVerified(shiftNotificationRepository)
@@ -65,12 +66,14 @@ internal class NotificationServiceTest {
             val from = Optional.of(LocalDate.now(clock).minusDays(1))
             val to = Optional.of(LocalDate.now(clock).plusDays(1))
             val unprocessedOnly = Optional.of(false)
+            val processOnRead = Optional.of(true)
+
 
             val shiftNotifications = listOf(getValidShiftNotification(clock))
             every { shiftNotificationRepository.findAllByQuantumIdAndShiftModifiedIsBetween(quantumId, from.get().atTime(LocalTime.MIN), to.get().atTime(LocalTime.MAX)) } returns shiftNotifications
             every { authenticationFacade.currentUsername } returns quantumId
 
-            val returnValue = service.getNotifications(unprocessedOnly, from, to)
+            val returnValue = service.getNotifications(processOnRead, unprocessedOnly, from, to)
 
             verify { shiftNotificationRepository.findAllByQuantumIdAndShiftModifiedIsBetween(quantumId, from.get().atTime(LocalTime.MIN), to.get().atTime(LocalTime.MAX)) }
             confirmVerified(shiftNotificationRepository)
@@ -84,11 +87,12 @@ internal class NotificationServiceTest {
             val from = Optional.of(LocalDate.now(clock).minusDays(1))
             val to = Optional.of(LocalDate.now(clock).plusDays(1))
             val unprocessedOnly = Optional.of(false)
+            val processOnRead = Optional.of(true)
 
             val shiftNotifications: List<ShiftNotification> = listOf()
             every { shiftNotificationRepository.findAllByQuantumIdAndShiftModifiedIsBetween(quantumId, from.get().atTime(LocalTime.MIN), to.get().atTime(LocalTime.MAX)) } returns shiftNotifications
             every { authenticationFacade.currentUsername } returns quantumId
-            val returnValue = service.getNotifications(unprocessedOnly, from, to)
+            val returnValue = service.getNotifications(processOnRead, unprocessedOnly, from, to)
 
             verify { shiftNotificationRepository.findAllByQuantumIdAndShiftModifiedIsBetween(quantumId, from.get().atTime(LocalTime.MIN), to.get().atTime(LocalTime.MAX)) }
             confirmVerified(shiftNotificationRepository)
@@ -102,12 +106,13 @@ internal class NotificationServiceTest {
             val from = Optional.of(LocalDate.now(clock).minusDays(1))
             val to = Optional.of(LocalDate.now(clock).plusDays(1))
             val unprocessedOnly = Optional.of(false)
+            val processOnRead = Optional.of(true)
 
             val shiftNotifications: List<ShiftNotification> = listOf()
             every { shiftNotificationRepository.findAllByQuantumIdAndShiftModifiedIsBetween(quantumId, from.get().atTime(LocalTime.MIN), to.get().atTime(LocalTime.MAX)) } returns shiftNotifications
             every { authenticationFacade.currentUsername } returns quantumId
 
-            service.getNotifications(unprocessedOnly, from, to)
+            service.getNotifications(processOnRead, unprocessedOnly, from, to)
 
             // Should use the from and to passed in.
             verify { shiftNotificationRepository.findAllByQuantumIdAndShiftModifiedIsBetween(quantumId, from.get().atTime(LocalTime.MIN), to.get().atTime(LocalTime.MAX)) }
@@ -120,6 +125,7 @@ internal class NotificationServiceTest {
             val from = Optional.empty<LocalDate>()
             val to = Optional.empty<LocalDate>()
             val unprocessedOnly = Optional.of(false)
+            val processOnRead = Optional.of(true)
 
             // Should use class defaults.
             val defaultFrom = LocalDate.now(clock).withDayOfMonth(1)
@@ -130,7 +136,7 @@ internal class NotificationServiceTest {
             every { shiftNotificationRepository.findAllByQuantumIdAndShiftModifiedIsBetween(quantumId, defaultFrom.atTime(LocalTime.MIN), defaultTo.atTime(LocalTime.MAX)) } returns shiftNotifications
             every { authenticationFacade.currentUsername } returns quantumId
 
-            service.getNotifications(unprocessedOnly, from, to)
+            service.getNotifications(processOnRead, unprocessedOnly, from, to)
 
             verify { shiftNotificationRepository.findAllByQuantumIdAndShiftModifiedIsBetween(quantumId, defaultFrom.atTime(LocalTime.MIN), defaultTo.atTime(LocalTime.MAX)) }
             confirmVerified(shiftNotificationRepository)
@@ -142,6 +148,7 @@ internal class NotificationServiceTest {
             val from = Optional.empty<LocalDate>()
             val to = Optional.of(LocalDate.now(clock))
             val unprocessedOnly = Optional.of(false)
+            val processOnRead = Optional.of(true)
 
             // Should count back 3 months to create the 'to'.
             val defaultFrom = to.get().minusMonths(3).withDayOfMonth(1)
@@ -150,7 +157,7 @@ internal class NotificationServiceTest {
             every { shiftNotificationRepository.findAllByQuantumIdAndShiftModifiedIsBetween(quantumId, defaultFrom.atTime(LocalTime.MIN), to.get().atTime(LocalTime.MAX)) } returns shiftNotifications
             every { authenticationFacade.currentUsername } returns quantumId
 
-            service.getNotifications(unprocessedOnly, from, to)
+            service.getNotifications(processOnRead, unprocessedOnly, from, to)
 
             verify { shiftNotificationRepository.findAllByQuantumIdAndShiftModifiedIsBetween(quantumId, defaultFrom.atTime(LocalTime.MIN), to.get().atTime(LocalTime.MAX)) }
             confirmVerified(shiftNotificationRepository)
@@ -162,6 +169,7 @@ internal class NotificationServiceTest {
             val from = Optional.of(LocalDate.now(clock))
             val to = Optional.empty<LocalDate>()
             val unprocessedOnly = Optional.of(false)
+            val processOnRead = Optional.of(true)
 
             // Should use class defaults.
             val toDate = from.get().plusMonths(3)
@@ -171,7 +179,7 @@ internal class NotificationServiceTest {
             every { shiftNotificationRepository.findAllByQuantumIdAndShiftModifiedIsBetween(quantumId, from.get().atTime(LocalTime.MIN), defaultTo.atTime(LocalTime.MAX)) } returns shiftNotifications
             every { authenticationFacade.currentUsername } returns quantumId
 
-            service.getNotifications(unprocessedOnly, from, to)
+            service.getNotifications(processOnRead, unprocessedOnly, from, to)
 
             verify { shiftNotificationRepository.findAllByQuantumIdAndShiftModifiedIsBetween(quantumId, from.get().atTime(LocalTime.MIN), defaultTo.atTime(LocalTime.MAX)) }
             confirmVerified(shiftNotificationRepository)

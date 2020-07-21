@@ -27,10 +27,11 @@ class NotificationController(val notificationService: NotificationService) {
     ])
     @GetMapping("/notifications")
     fun getNotifications(
+            @RequestParam processOnRead: Optional<Boolean>,
             @RequestParam unprocessedOnly: Optional<Boolean>,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) from: Optional<LocalDate>,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: Optional<LocalDate>): ResponseEntity<Collection<NotificationDto>> {
-        return ResponseEntity.ok(notificationService.getNotifications(unprocessedOnly, from, to))
+        return ResponseEntity.ok(notificationService.getNotifications(processOnRead, unprocessedOnly, from, to))
     }
 
     @GetMapping("/notifications/send")
