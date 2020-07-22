@@ -32,8 +32,8 @@ class PrisonRepositoryTest(
         @Test
         fun `Should return all prisons`() {
 
-            val prison1 = Prison(1, "Arkham Asylum", "High security", "arkham.goth.us")
-            val prison2 = Prison(2, "The Pit", "Low security", "pit.goth.us")
+            val prison1 = Prison("AKA", "Big plan", "Arkham Asylum", 5)
+            val prison2 = Prison("TPT", "Little plan", "The Pit", 3)
 
             val allPrisons1 = repository.findAll()
             assertThat(allPrisons1).isNullOrEmpty()

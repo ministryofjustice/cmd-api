@@ -6,21 +6,18 @@ import javax.persistence.Id
 import javax.persistence.Table
 
 @Entity
-@Table(name = "Prison")
+@Table(name = "prison")
 data class Prison(
         @Id
-        @Column(nullable = false, name = "id")
-        var id: Int,
+        @Column(nullable = false)
+        var prisonId: String,
 
-        @Column(name = "Name")
-        var name: String,
+        @Column(nullable = false)
+        var csrPlanUnit: String,
 
-        @Column(name = "Description")
-        var description: String? = null,
+        @Column(nullable = false)
+        var prisonName: String,
 
-        @Column(name = "ApiUrl")
-        var apiUrl: String,
-
-        @Column(name = "RegionId")
-        var regionId: Int? = null
+        @Column(nullable = false)
+        var region: Int
 )

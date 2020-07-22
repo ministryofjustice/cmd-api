@@ -9,24 +9,21 @@ class PrisonTest {
     @Test
     fun `Should return a valid prison`() {
 
-        val id = 1
-        val name = "Arkham Asylum"
-        val description = "High security"
-        val apiUrl = "arkham.goth.us"
-        val regionId = null
+        val prisonId = "AKA"
+        val csrPlanUnit = "We have a plan"
+        val prisonName = "Arkham Asylum"
+        val region = 5
 
         val prison = Prison(
-                id,
-                name,
-                description,
-                apiUrl,
-                regionId
+                prisonId,
+                csrPlanUnit,
+                prisonName,
+                region
         )
 
-        Assertions.assertThat(prison.id).isEqualTo(id)
-        Assertions.assertThat(prison.name).isEqualTo(name)
-        Assertions.assertThat(prison.description).isEqualTo(description)
-        Assertions.assertThat(prison.apiUrl).isEqualTo(apiUrl)
-        Assertions.assertThat(prison.regionId).isEqualTo(regionId)
+        Assertions.assertThat(prison.prisonId).isEqualTo(prisonId)
+        Assertions.assertThat(prison.csrPlanUnit).isEqualTo(csrPlanUnit)
+        Assertions.assertThat(prison.prisonName).isEqualTo(prisonName)
+        Assertions.assertThat(prison.region).isEqualTo(region)
     }
 }
