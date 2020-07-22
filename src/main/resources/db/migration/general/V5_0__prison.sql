@@ -2,11 +2,11 @@ CREATE TABLE IF NOT EXISTS prison
 (
     prison_id     VARCHAR PRIMARY KEY,
     csr_plan_unit VARCHAR NOT NULL,
-    prison        VARCHAR NOT NULL,
+    prison_name   VARCHAR NOT NULL,
     region        INT     NOT NULL
 );
 
-INSERT INTO prison (prison_id, region, csr_plan_unit, prison)
+INSERT INTO prison (prison_id, region, csr_plan_unit, prison_name)
 VALUES ('AGI', 2, 'Askham Grange', 'HMP Askham Grange'),
        ('AYI', 4, 'Aylesbury', 'HMP Aylesbury'),
        ('BFI', 5, 'Bedford', 'HMP Bedford'),
