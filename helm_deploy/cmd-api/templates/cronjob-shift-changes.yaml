@@ -23,6 +23,6 @@ spec:
               -H "Authorization: Bearer $(echo -n $TOKEN | grep -o -E '[-a-zA-Z0-9\._]{100,}')"); \
               if [[ $STATUS -eq 200 ]]; then exit 0; else exit 1; fi'
   {{- include "deployment.envs" $ | nindent 12 }}
-          restartPolicy: Never
-          activeDeadlineSeconds: 5400
+  restartPolicy: Never
+  activeDeadlineSeconds: 5400
   {{ end }}
