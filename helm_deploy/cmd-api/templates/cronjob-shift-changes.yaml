@@ -19,7 +19,7 @@ spec:
             - '- TOKEN=$(curl -s -X POST "https://sign-in-dev.hmpps.service.justice.gov.uk/auth/oauth/token?grant_type=client_credentials" \
             -H "Content-Type: application/json" -H "Content-Length: 0" \
             -H "Authorization: Basic $(echo -n {{ $.Values.env.API_CLIENT_ID }}:{{ $.Values.env.API_CLIENT_SECRET }} | base64)");
-            STATUS=$(curl -s -w "%{http_code}" "http://cmd-api.{{ $.Values.image.namespace }}.svc.cluster.local/notifications/send" \
+            STATUS=$(curl -s -w "%{http_code}" "http://cmd-api.{{ $.Values.cron.namespace }}.svc.cluster.local/notifications/send" \
             -H "Authorization: Bearer $(echo -n $TOKEN | grep -o -E `[-a-zA-Z0-9\._]{100,}`)"); \
             if [[ $STATUS -eq 200 ]]; then exit 0; else exit 1; fi'
 {{- include "deployment.envs" $ | nindent 12 }}
