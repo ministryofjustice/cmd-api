@@ -12,3 +12,6 @@ env:
   JAVA_OPTS: "-Xmx512m"
   SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "https://gateway.preprod.nomis-api.service.hmpps.dsd.io/auth/.well-known/jwks.json"
   OAUTH_ROOT_URL: "https://gateway.preprod.nomis-api.service.hmpps.dsd.io/auth"
+
+cron:
+  namespace: check-my-diary-preprod
