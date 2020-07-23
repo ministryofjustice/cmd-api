@@ -15,3 +15,5 @@ env:
 
 cron:
   namespace: check-my-diary-prod
+  regex:
+    '[-a-zA-Z0-9\._]{100,}'
