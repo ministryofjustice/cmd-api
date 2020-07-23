@@ -14,9 +14,10 @@ spec:
         spec:
           containers:
           - name: "refresh-shift-changes"
-            image: openjdk:11-slim
             securityContext:
               runAsNonRoot: true
+              runAsUser: 1000
+            image: openjdk:11-slim
             args:
             - ' -\
             JWT=$(curl -X POST https://sign-in-dev.hmpps.service.justice.gov.uk/auth/oauth/token?grant_type=client_credentials \
