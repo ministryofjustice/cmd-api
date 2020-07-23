@@ -16,7 +16,7 @@ spec:
           - name: "refresh-shift-changes"
             image: openjdk:11-slim
             args:
-              - '- TOKEN=$(curl -s -X POST "https://sign-in-dev.hmpps.service.justice.gov.uk/auth/oauth/token?grant_type=client_credentials" \
+            - '- TOKEN=$(curl -s -X POST "https://sign-in-dev.hmpps.service.justice.gov.uk/auth/oauth/token?grant_type=client_credentials" \
             -H "Content-Type: application/json" -H "Content-Length: 0" \
             -H "Authorization: Basic $(echo -n {{ .Values.env.API_CLIENT_ID }}:{{ .Values.env.API_CLIENT_SECRET }} | base64)");
             STATUS=$(curl -s -w "%{http_code}" "http://cmd-api.{{ .Values.image.namespace }}.svc.cluster.local/notifications/send" \
