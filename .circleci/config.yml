@@ -63,7 +63,7 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_preprod
           env: "preprod"
-          context: cmd-api-preprod
+          context: check-my-diary-preprod # we only need the kube override settings, the purpose of a context is to share across projects.
           requires:
             - request-preprod-approval
       - request-prod-approval:
@@ -74,7 +74,7 @@ workflows:
           name: deploy_prod
           env: "prod"
           slack_notification: true
-          context: cmd-api-prod
+          context: check-my-diary-prod # we only need the kube override settings, the purpose of a context is to share across projects.
           requires:
             - request-prod-approval
 
