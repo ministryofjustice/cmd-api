@@ -1,0 +1,25 @@
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: "refresh-shift-changes"
+spec:
+  schedule: "0 19 * * *"
+  concurrencyPolicy: Allow
+  jobTemplate:
+    spec:
+      activeDeadlineSeconds: 5400
+      backoffLimit: 0
+      template:
+        spec:
+          containers:
+          - name: "refresh-shift-changes"
+            securityContext:
+              runAsNonRoot: true
+              runAsUser: 1000
+            image: quay.io/ukhomeofficedigital/openjdk11
+            command: ["/bin/sh", "-c"]
+            args:
+              - 'JWT=$(curl -X POST {{ .Values.env.OAUTH_ROOT_URL }}/oauth/token?grant_type=client_credentials -H "Content-Type: application/json" -H "Content-Length: 0" -H "Authorization: Basic $(echo -n {{ .Values.secrets.API_CLIENT_ID }}:{{ .Values.secrets.API_CLIENT_SECRET }} | base64)"); TOKEN=$(echo -n $JWT | grep -o -E ''[-a-zA-Z0-9\._]{100,}''); curl http://cmd-api.{{ .Values.cron.namespace }}.svc.cluster.local/notifications/send -H "Authorization: Bearer $(echo -n $TOKEN)";'
+          restartPolicy: Never
+          activeDeadlineSeconds: 5400
