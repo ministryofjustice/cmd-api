@@ -9,10 +9,12 @@ import uk.gov.justice.digital.hmpps.cmd.api.model.ShiftNotification
 import uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
 import uk.gov.justice.digital.hmpps.cmd.api.repository.ShiftNotificationRepository
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.client.CsrClient
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.NotificationDescription.Companion.getDateTimeFormattedForTemplate
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.NotificationDescription.Companion.getNotificationDescription
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.NotificationType
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.service.PrisonService
 import uk.gov.service.notify.NotificationClientApi
 import uk.gov.service.notify.NotificationClientException
 import java.time.Clock
@@ -23,7 +25,16 @@ import java.util.*
 
 @Service
 @Transactional
-class NotificationService(val shiftNotificationRepository: ShiftNotificationRepository, val userPreferenceService: UserPreferenceService, val clock: Clock, val authenticationFacade: AuthenticationFacade, @Value("\${application.to.defaultMonths}") val monthStep: Long, val notifyClient: NotificationClientApi) {
+class NotificationService(
+        val shiftNotificationRepository: ShiftNotificationRepository,
+        val userPreferenceService: UserPreferenceService,
+        val clock: Clock,
+        val authenticationFacade: AuthenticationFacade,
+        @Value("\${application.to.defaultMonths}") val monthStep: Long,
+        val notifyClient: NotificationClientApi,
+        val prisonService: PrisonService,
+        val csrClient: CsrClient
+) {
 
     fun getNotifications(processOnReadParam: Optional<Boolean>, unprocessedOnlyParam: Optional<Boolean>, fromParam: Optional<LocalDate>, toParam: Optional<LocalDate>): Collection<NotificationDto> {
         val start = calculateStartDateTime(fromParam, toParam)
@@ -45,6 +56,13 @@ class NotificationService(val shiftNotificationRepository: ShiftNotificationRepo
                     log.info("Sent notification (${group.value.size} lines) for ${group.key}")
                 }
         log.info("Finished sending notifications")
+    }
+
+    fun generateNotifications() {
+        val allPrisons = prisonService.getAllPrisons();
+        allPrisons
+                .map { prison -> csrClient.getShiftNotifications(prison.csrPlanUnit, prison.region)
+                }.groupBy { it. }
     }
 
     private fun calculateStartDateTime(fromParam: Optional<LocalDate>, toParam: Optional<LocalDate>): LocalDateTime {

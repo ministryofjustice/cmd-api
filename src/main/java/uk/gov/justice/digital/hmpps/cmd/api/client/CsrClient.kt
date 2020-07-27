@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api
 @Component
 class CsrClient {
 
-    fun getShiftNotifications(): Collection<ShiftNotificationDto> {
+    fun getShiftNotifications(planUnit: String, region: Int): Collection<ShiftNotificationDto> {
         return listOf()
     }
 
