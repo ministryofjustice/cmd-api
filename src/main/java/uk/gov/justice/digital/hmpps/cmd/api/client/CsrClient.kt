@@ -11,7 +11,7 @@ class CsrClient {
         return listOf()
     }
 
-    fun getShiftTaskNotifications(): Collection<ShiftNotificationDto> {
+    fun getShiftTaskNotifications(planUnit: String, region: Int): Collection<ShiftNotificationDto> {
         return listOf()
     }
 }

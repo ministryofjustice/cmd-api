@@ -74,7 +74,9 @@ class NotificationService(
                     it
                 }.filter { it.actionType == "ADD" }
 
-        val newShiftNotifications = csrClient.getShiftTaskNotifications()
+        val newShiftNotifications = allPrisons.flatMap { prison ->
+            csrClient.getShiftTaskNotifications(prison.csrPlanUnit, prison.region)
+        }
         val allNotifications = newNotifications.plus(newShiftNotifications)
         val notificationsToCreate = ShiftNotification.fromDto(allNotifications)
         shiftNotificationRepository.saveAll(notificationsToCreate)
