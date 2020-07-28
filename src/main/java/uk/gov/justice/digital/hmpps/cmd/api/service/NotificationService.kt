@@ -15,7 +15,6 @@ import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.NotificationDescription.Companion.getNotificationDescription
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.NotificationType
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftActionType
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftNotificationType
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.service.PrisonService
 import uk.gov.service.notify.NotificationClientApi
 import uk.gov.service.notify.NotificationClientException
@@ -61,18 +60,24 @@ class NotificationService(
     }
 
 
-    fun generateNotifications() {
-        val allPrisons = prisonService.getAllPrisons();
-        allPrisons
+    fun generateAndSaveNotifications() {
+        val allPrisons = prisonService.getAllPrisons()
+        val newNotifications = allPrisons
                 .flatMap { prison -> csrClient.getShiftNotifications(prison.csrPlanUnit, prison.region) }
                 .map {
                     if (ShiftActionType.EDIT.equals(it.actionType)) {
-                         val exists = checkIfNotificationsExist(it.quantumId, it.shiftDate, it.shiftType)
-                        if (exists) { it.actionType = "ADD" }
+                        val exists = checkIfNotificationsExist(it.quantumId, it.shiftDate, it.shiftType)
+                        if (exists) {
+                            it.actionType = "ADD"
+                        }
                     }
-                        it
-                }.filter { it.actionType == "ADD"}
+                    it
+                }.filter { it.actionType == "ADD" }
 
+        val newShiftNotifications = csrClient.getShiftTaskNotifications()
+        val allNotifications = newNotifications.plus(newShiftNotifications)
+        val notificationsToCreate = ShiftNotification.fromDto(allNotifications)
+        shiftNotificationRepository.saveAll(notificationsToCreate)
     }
 
     private fun checkIfNotificationsExist(quantumId: String, shiftDate: LocalDateTime, shiftNotificationType: String): Boolean{
