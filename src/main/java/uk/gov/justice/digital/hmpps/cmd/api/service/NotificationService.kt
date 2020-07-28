@@ -44,6 +44,8 @@ class NotificationService(
     }
 
     fun sendNotifications() {
+        generateAndSaveNotifications()
+
         val unprocessedNotifications = shiftNotificationRepository.findAllByProcessedIsFalse()
         log.debug("Sending notifications, found: ${unprocessedNotifications.size}")
         unprocessedNotifications.groupBy { it.quantumId }

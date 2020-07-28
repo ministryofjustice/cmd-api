@@ -36,7 +36,6 @@ class NotificationController(val notificationService: NotificationService) {
 
     @GetMapping("/notifications/send")
     fun sendNotifications(): ResponseEntity<Collection<NotificationDto>> {
-        //TODO:get changes
         notificationService.sendNotifications()
         return ResponseEntity.ok().build()
     }
