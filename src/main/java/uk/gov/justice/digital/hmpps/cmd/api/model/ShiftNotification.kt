@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.cmd.api.model
 
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.client.dto.ShiftNotificationDto
 import java.time.LocalDateTime
 import javax.persistence.*
 
@@ -37,4 +38,26 @@ data class ShiftNotification(
 
         @Column(nullable = false)
         var processed: Boolean
-)
+) {
+        companion object {
+
+                fun fromDto(dtos: Collection<ShiftNotificationDto>): Collection<ShiftNotification> {
+                        return dtos.map { fromDto(it) }
+                }
+
+                fun fromDto(dto: ShiftNotificationDto): ShiftNotification {
+                        return ShiftNotification(
+                                dto.id,
+                                dto.quantumId,
+                                dto.shiftDate,
+                                dto.shiftModified,
+                                dto.taskStart,
+                                dto.taskEnd,
+                                dto.task,
+                                dto.shiftType,
+                                dto.actionType,
+                                false
+                        )
+                }
+        }
+}
