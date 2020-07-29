@@ -44,11 +44,11 @@ class NotificationService(
     }
 
     fun refreshNotifications() {
-        generateNotifications()
+        generateAndSaveNotifications()
         sendNotifications()
     }
 
-    private fun generateNotifications() {
+    private fun generateAndSaveNotifications() {
         val allPrisons = prisonService.getAllPrisons().distinctBy { it.csrPlanUnit }
         val newShiftNotifications = allPrisons
                 .flatMap { prison ->
