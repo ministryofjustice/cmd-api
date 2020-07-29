@@ -64,10 +64,10 @@ env:
         name: {{ template "app.name" . }}
         key: APPINSIGHTS_INSTRUMENTATIONKEY
 
-    - name: JWT_SECRET_KEY
-      valueFrom:
-        secretKeyRef:
-          name: {{ template "app.name" . }}
-          key: JWT_SECRET_KEY
+  - name: JWT_SECRET_KEY
+    valueFrom:
+      secretKeyRef:
+         name: {{ template "app.name" . }}
+         key: JWT_SECRET_KEY
 
 {{- end -}}
