@@ -7,6 +7,7 @@ import io.netty.channel.ChannelOption
 import io.netty.handler.timeout.ReadTimeoutHandler
 import io.netty.handler.timeout.WriteTimeoutHandler
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.stereotype.Component
@@ -23,7 +24,7 @@ import java.util.*
 import javax.crypto.spec.SecretKeySpec
 
 @Component
-class CsrClient(val regionData: Regions) {
+class CsrClient(val regionData: Regions, @Value("\${jwt.secret}") val secret: String) {
 
     fun getShiftNotifications(planUnit: String, region: Int): Collection<ShiftNotificationDto> {
         val notifications : ShiftNotificationsDto
@@ -95,7 +96,6 @@ class CsrClient(val regionData: Regions) {
     * until we move over to the proper service.
     */
     private fun generateSelfSignedJwt() : String {
-        val secret = "secret"
         val signingKey: Key = SecretKeySpec(secret.toByteArray(Charset.defaultCharset()),SignatureAlgorithm.HS256.jcaName)
         val builder: JwtBuilder = Jwts.builder().setId(UUID.randomUUID().toString())
                 .setIssuedAt(Date(System.currentTimeMillis()))

@@ -49,6 +49,7 @@ application:
   notify:
     key: aaaaaaaaaa-11111111-1111-1111-1111-111111111111-11111111-1111-1111-aaaa-aaaaaaaaaaaa
 
+
 #💩💩💩
 csr:
   regions:
@@ -64,3 +65,7 @@ csr:
       url: ${csr.region5.url}
     - name: 6
       url: ${csr.region6.url}
+
+#💩💩💩
+jwt:
+  secret: ${jwt.secret.key:invalidValue}

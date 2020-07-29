@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Bean
-import org.springframework.web.client.RestTemplate
 import uk.gov.service.notify.NotificationClient
 import uk.gov.service.notify.NotificationClientApi
 import java.time.Clock
@@ -27,10 +26,5 @@ class CmdApiApplication {
     @Bean
     fun notificationClient(@Value("\${application.notify.key}") key: String?): NotificationClientApi? {
         return NotificationClient(key)
-    }
-
-    @Bean
-    fun createRestTemplate(): RestTemplate {
-        return RestTemplate()
     }
 }
