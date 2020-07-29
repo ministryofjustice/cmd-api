@@ -35,7 +35,7 @@ class NotificationControllerSendIntegrationTest(
      */
     @Test
     fun `It sends notifications`() {
-        val response = getNotificationPreference(A_USER, "/notifications/send")
+        val response = getNotificationPreference(A_USER, "/notifications/refresh")
         with(response) {
             assertThat(statusCode).isEqualTo(HttpStatus.OK)
         }
