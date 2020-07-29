@@ -48,6 +48,22 @@ class NotificationService(
         sendNotifications()
     }
 
+    private fun sendNotifications() {
+        val unprocessedNotifications = shiftNotificationRepository.findAllByProcessedIsFalse()
+        log.debug("Sending notifications, found: ${unprocessedNotifications.size}")
+        unprocessedNotifications.groupBy { it.quantumId }
+                .forEach { group ->
+                    try {
+                        sendNotification(group.key, group.value)
+                        group.value.forEach { it.processed = true }
+                    } catch (e: NotificationClientException) {
+                        log.warn("Sending notifications to user ${group.key} FAILED", e)
+                    }
+                    log.info("Sent notification (${group.value.size} lines) for ${group.key}")
+                }
+        log.info("Finished sending notifications")
+    }
+
     private fun generateAndSaveNotifications() {
         val allPrisons = prisonService.getAllPrisons().distinctBy { it.csrPlanUnit }
         val newShiftNotifications = allPrisons
@@ -68,22 +84,6 @@ class NotificationService(
 
         val allNotifications = newShiftNotifications.plus(newTaskNotifications)
         shiftNotificationRepository.saveAll(ShiftNotification.fromDto(allNotifications))
-    }
-
-    private fun sendNotifications() {
-        val unprocessedNotifications = shiftNotificationRepository.findAllByProcessedIsFalse()
-        log.debug("Sending notifications, found: ${unprocessedNotifications.size}")
-        unprocessedNotifications.groupBy { it.quantumId }
-                .forEach { group ->
-                    try {
-                        sendNotification(group.key, group.value)
-                        group.value.forEach { it.processed = true }
-                    } catch (e: NotificationClientException) {
-                        log.warn("Sending notifications to user ${group.key} FAILED", e)
-                    }
-                    log.info("Sent notification (${group.value.size} lines) for ${group.key}")
-                }
-        log.info("Finished sending notifications")
     }
 
     private fun checkIfNotificationsExist(quantumId: String, shiftDate: LocalDateTime, shiftNotificationType: String): Boolean{
