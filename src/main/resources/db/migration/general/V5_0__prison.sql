@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS prison
 (
     prison_id     VARCHAR PRIMARY KEY,
     csr_plan_unit VARCHAR NOT NULL,
-    prison        VARCHAR NOT NULL,
+    prison   VARCHAR NOT NULL,
     region        INT     NOT NULL
 );
 

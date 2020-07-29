@@ -9,10 +9,13 @@ import uk.gov.justice.digital.hmpps.cmd.api.model.ShiftNotification
 import uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
 import uk.gov.justice.digital.hmpps.cmd.api.repository.ShiftNotificationRepository
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.client.CsrClient
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.NotificationDescription.Companion.getDateTimeFormattedForTemplate
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.NotificationDescription.Companion.getNotificationDescription
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.NotificationType
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftActionType
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.service.PrisonService
 import uk.gov.service.notify.NotificationClientApi
 import uk.gov.service.notify.NotificationClientException
 import java.time.Clock
@@ -23,7 +26,16 @@ import java.util.*
 
 @Service
 @Transactional
-class NotificationService(val shiftNotificationRepository: ShiftNotificationRepository, val userPreferenceService: UserPreferenceService, val clock: Clock, val authenticationFacade: AuthenticationFacade, @Value("\${application.to.defaultMonths}") val monthStep: Long, val notifyClient: NotificationClientApi) {
+class NotificationService(
+        val shiftNotificationRepository: ShiftNotificationRepository,
+        val userPreferenceService: UserPreferenceService,
+        val clock: Clock,
+        val authenticationFacade: AuthenticationFacade,
+        @Value("\${application.to.defaultMonths}") val monthStep: Long,
+        val notifyClient: NotificationClientApi,
+        val prisonService: PrisonService,
+        val csrClient: CsrClient
+) {
 
     fun getNotifications(processOnReadParam: Optional<Boolean>, unprocessedOnlyParam: Optional<Boolean>, fromParam: Optional<LocalDate>, toParam: Optional<LocalDate>): Collection<NotificationDto> {
         val start = calculateStartDateTime(fromParam, toParam)
@@ -31,7 +43,12 @@ class NotificationService(val shiftNotificationRepository: ShiftNotificationRepo
         return getShiftNotificationDtos(start, end, unprocessedOnlyParam.orElse(false), processOnReadParam.orElse(true))
     }
 
-    fun sendNotifications() {
+    fun refreshNotifications() {
+        generateAndSaveNotifications()
+        sendNotifications()
+    }
+
+    private fun sendNotifications() {
         val unprocessedNotifications = shiftNotificationRepository.findAllByProcessedIsFalse()
         log.debug("Sending notifications, found: ${unprocessedNotifications.size}")
         unprocessedNotifications.groupBy { it.quantumId }
@@ -45,6 +62,36 @@ class NotificationService(val shiftNotificationRepository: ShiftNotificationRepo
                     log.info("Sent notification (${group.value.size} lines) for ${group.key}")
                 }
         log.info("Finished sending notifications")
+    }
+
+    private fun generateAndSaveNotifications() {
+        val allPrisons = prisonService.getAllPrisons().distinctBy { it.csrPlanUnit }
+        val newShiftNotifications = allPrisons
+                .flatMap { prison ->
+                    csrClient.getShiftNotifications(prison.csrPlanUnit, prison.region)
+                            .map {
+                                if (it.actionType == ShiftActionType.EDIT.value && checkIfNotificationsExist(it.quantumId, it.shiftDate, it.shiftType)) {
+                                    it.actionType = ShiftActionType.ADD.value }
+                                it
+                            }
+                }
+                .filter { it.actionType == ShiftActionType.ADD.value}
+
+        val newTaskNotifications = allPrisons
+                .flatMap { prison ->
+                    csrClient.getShiftTaskNotifications(prison.csrPlanUnit, prison.region)
+                }
+
+        val allNotifications = newShiftNotifications.plus(newTaskNotifications)
+        shiftNotificationRepository.saveAll(ShiftNotification.fromDto(allNotifications))
+    }
+
+    private fun checkIfNotificationsExist(quantumId: String, shiftDate: LocalDateTime, shiftNotificationType: String): Boolean{
+        return shiftNotificationRepository.countAllByQuantumIdAndShiftDateAndShiftType(
+                quantumId,
+                shiftDate,
+                shiftNotificationType
+        ) > 0
     }
 
     private fun calculateStartDateTime(fromParam: Optional<LocalDate>, toParam: Optional<LocalDate>): LocalDateTime {
@@ -135,7 +182,7 @@ class NotificationService(val shiftNotificationRepository: ShiftNotificationRepo
 
     private fun generateTemplateValues(chunk: List<ShiftNotification>, communicationPreference: CommunicationPreference): MutableMap<String, String?> {
         val personalisation = mutableMapOf<String, String?>()
-        // Get the oldest modified date "Changes since
+        // Get the oldest modified date "Changes since"
         personalisation["title"] = chunk.minBy { it.shiftModified }?.shiftModified?.let { "Changes since ${getDateTimeFormattedForTemplate(it, clock)}" }
         // Map each notification onto an predefined key
         personalisation.putAll(
