@@ -10,11 +10,14 @@ image:
 
 env:
   JAVA_OPTS: "-Xmx512m"
-  SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "https://gateway.preprod.nomis-api.service.hmpps.dsd.io/auth/.well-known/jwks.json"
-  OAUTH_ROOT_URL: "https://gateway.preprod.nomis-api.service.hmpps.dsd.io/auth"
+  SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "https://sign-in-preprod.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json"
+  OAUTH_ROOT_URL: "https://sign-in-preprod.hmpps.service.justice.gov.uk/auth"
   CSR_REGION1_URL: "https://api.check-my-diary-preprod.hmpps.dsd.io/api"
   CSR_REGION2_URL: "https://api.check-my-diary-preprod.hmpps.dsd.io/api"
   CSR_REGION3_URL: "https://api.check-my-diary-preprod.hmpps.dsd.io/api"
   CSR_REGION4_URL: "https://api.check-my-diary-preprod.hmpps.dsd.io/api"
   CSR_REGION5_URL: "https://api.check-my-diary-preprod.hmpps.dsd.io/api"
   CSR_REGION6_URL: "https://api.check-my-diary-preprod.hmpps.dsd.io/api"
+  
+cron:
+  namespace: check-my-diary-preprod
