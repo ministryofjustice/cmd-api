@@ -28,11 +28,9 @@ data class ShiftNotificationDto @JsonCreator constructor(
         var task: String?,
 
 
-        var shiftType: String, //TODO:overtime
+        var shiftType: String,
 
 
-        var actionType: String //TODO:add, edit, delete
+        var actionType: String
 
-
-//        var processed: Boolean
 )
