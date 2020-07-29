@@ -43,7 +43,34 @@ class NotificationService(
         return getShiftNotificationDtos(start, end, unprocessedOnlyParam.orElse(false), processOnReadParam.orElse(true))
     }
 
-    fun sendNotifications() {
+    fun refreshNotifications() {
+        generateNotifications()
+        sendNotifications()
+    }
+
+    private fun generateNotifications() {
+        val allPrisons = prisonService.getAllPrisons().distinctBy { it.csrPlanUnit }
+        val newShiftNotifications = allPrisons
+                .flatMap { prison ->
+                    csrClient.getShiftNotifications(prison.csrPlanUnit, prison.region)
+                            .map {
+                                if (it.actionType == ShiftActionType.EDIT.value && checkIfNotificationsExist(it.quantumId, it.shiftDate, it.shiftType)) {
+                                    it.actionType = ShiftActionType.ADD.value }
+                                it
+                            }
+                }
+                .filter { it.actionType == ShiftActionType.ADD.value}
+
+        val newTaskNotifications = allPrisons
+                .flatMap { prison ->
+                    csrClient.getShiftTaskNotifications(prison.csrPlanUnit, prison.region)
+                }
+
+        val allNotifications = newShiftNotifications.plus(newTaskNotifications)
+        shiftNotificationRepository.saveAll(ShiftNotification.fromDto(allNotifications))
+    }
+
+    private fun sendNotifications() {
         val unprocessedNotifications = shiftNotificationRepository.findAllByProcessedIsFalse()
         log.debug("Sending notifications, found: ${unprocessedNotifications.size}")
         unprocessedNotifications.groupBy { it.quantumId }
@@ -57,27 +84,6 @@ class NotificationService(
                     log.info("Sent notification (${group.value.size} lines) for ${group.key}")
                 }
         log.info("Finished sending notifications")
-    }
-
-
-    fun generateAndSaveNotifications() {
-        val allPrisons = prisonService.getAllPrisons()
-        val newNotifications = allPrisons
-                .flatMap { prison -> csrClient.getShiftNotifications(prison.csrPlanUnit, prison.region) }
-                .map {
-                    if (ShiftActionType.EDIT.equals(it.actionType)) {
-                        val exists = checkIfNotificationsExist(it.quantumId, it.shiftDate, it.shiftType)
-                        if (exists) {
-                            it.actionType = "ADD"
-                        }
-                    }
-                    it
-                }.filter { it.actionType == "ADD" }
-
-        val newShiftNotifications = csrClient.getShiftTaskNotifications()
-        val allNotifications = newNotifications.plus(newShiftNotifications)
-        val notificationsToCreate = ShiftNotification.fromDto(allNotifications)
-        shiftNotificationRepository.saveAll(notificationsToCreate)
     }
 
     private fun checkIfNotificationsExist(quantumId: String, shiftDate: LocalDateTime, shiftNotificationType: String): Boolean{
@@ -176,7 +182,7 @@ class NotificationService(
 
     private fun generateTemplateValues(chunk: List<ShiftNotification>, communicationPreference: CommunicationPreference): MutableMap<String, String?> {
         val personalisation = mutableMapOf<String, String?>()
-        // Get the oldest modified date "Changes since
+        // Get the oldest modified date "Changes since"
         personalisation["title"] = chunk.minBy { it.shiftModified }?.shiftModified?.let { "Changes since ${getDateTimeFormattedForTemplate(it, clock)}" }
         // Map each notification onto an predefined key
         personalisation.putAll(

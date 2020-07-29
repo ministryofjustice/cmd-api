@@ -13,6 +13,24 @@ env:
   - name: JAVA_OPTS
     value: "{{ .Values.env.JAVA_OPTS }}"
 
+  - name: CSR_REGION1_URL
+    value: "{{ .Values.env.CSR_REGION1_URL }}"
+
+  - name: CSR_REGION2_URL
+    value: "{{ .Values.env.CSR_REGION2_URL }}"
+
+  - name: CSR_REGION3_URL
+    value: "{{ .Values.env.CSR_REGION3_URL }}"
+
+  - name: CSR_REGION4_URL
+    value: "{{ .Values.env.CSR_REGION4_URL }}"
+
+  - name: CSR_REGION5_URL
+    value: "{{ .Values.env.CSR_REGION5_URL }}"
+
+  - name: CSR_REGION6_URL
+    value: "{{ .Values.env.CSR_REGION6_URL }}"
+
   - name: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI
     value: "{{ .Values.env.SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI }}"
 

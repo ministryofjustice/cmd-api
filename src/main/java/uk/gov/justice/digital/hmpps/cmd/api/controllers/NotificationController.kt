@@ -34,10 +34,9 @@ class NotificationController(val notificationService: NotificationService) {
         return ResponseEntity.ok(notificationService.getNotifications(processOnRead, unprocessedOnly, from, to))
     }
 
-    @GetMapping("/notifications/send")
+    @GetMapping("/notifications/refresh")
     fun sendNotifications(): ResponseEntity<Collection<NotificationDto>> {
-        //TODO:get changes
-        notificationService.sendNotifications()
+        notificationService.refreshNotifications()
         return ResponseEntity.ok().build()
     }
 }

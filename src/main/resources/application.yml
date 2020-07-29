@@ -48,3 +48,19 @@ application:
 
   notify:
     key: aaaaaaaaaa-11111111-1111-1111-1111-111111111111-11111111-1111-1111-aaaa-aaaaaaaaaaaa
+
+#💩💩💩
+csr:
+  regions:
+    - name: 1
+      url: ${csr.region1.url}
+    - name: 2
+      url: ${csr.region2.url}
+    - name: 3
+      url: ${csr.region3.url}
+    - name: 4
+      url: ${csr.region4.url}
+    - name: 5
+      url: ${csr.region5.url}
+    - name: 6
+      url: ${csr.region6.url}
