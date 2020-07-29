@@ -53,6 +53,12 @@ internal class NotificationServiceTest {
     @DisplayName("Get Notification tests")
     inner class GetNotificationTests {
 
+        @BeforeEach
+        // We don't care about this first part for these tests
+        fun `set up notification fetching`(){
+            every { prisonService.getAllPrisons() } returns listOf()
+        }
+
         @Test
         fun `Should get Notifications`() {
             val quantumId = "XYZ"
