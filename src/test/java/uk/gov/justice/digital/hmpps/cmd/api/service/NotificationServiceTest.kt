@@ -3,10 +3,7 @@ package uk.gov.justice.digital.hmpps.cmd.api.service
 import io.mockk.*
 import io.mockk.junit5.MockKExtension
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
 import uk.gov.justice.digital.hmpps.cmd.api.model.ShiftNotification
 import uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
@@ -203,18 +200,30 @@ internal class NotificationServiceTest {
     @DisplayName("Send Notification tests")
     inner class SendNotificationTests {
 
+        @BeforeEach
+        // We don't care about this first part for these tests
+        fun `set up notification fetching`(){
+            every { prisonService.getAllPrisons() } returns listOf()
+            every { shiftNotificationRepository.saveAll<ShiftNotification>(any()) } returns listOf()
+        }
+
+        @AfterEach
+        fun `verify nothing else happsns`() {
+            verify(exactly = 1) { shiftNotificationRepository.saveAll<ShiftNotification>(any()) }
+            confirmVerified(shiftNotificationRepository)
+            confirmVerified(userPreferenceService)
+            confirmVerified(notifyClient)
+        }
+
         @Test
         fun `Should do nothing if there are no notifications`() {
             val shiftNotifications: List<ShiftNotification> = listOf()
 
             every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
 
-            service.sendNotifications()
+            service.refreshNotifications()
 
             verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
-            confirmVerified(shiftNotificationRepository)
-            confirmVerified(userPreferenceService)
-            confirmVerified(notifyClient)
         }
 
         @Test
@@ -228,13 +237,11 @@ internal class NotificationServiceTest {
             every { userPreferenceService.getOrCreateUserPreference(quantumId1) } returns UserPreference(quantumId1, null, "email", "sms", CommunicationPreference.EMAIL.value)
             every { notifyClient.sendEmail(any(), "email", any(), any()) } returns null
 
-            service.sendNotifications()
+            service.refreshNotifications()
 
             verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
             verify { userPreferenceService.getOrCreateUserPreference(quantumId1) }
             verify(exactly = 1) { notifyClient.sendEmail(any(), "email", any(), null) }
-            confirmVerified(shiftNotificationRepository)
-            confirmVerified(userPreferenceService)
         }
 
         @Test
@@ -248,13 +255,10 @@ internal class NotificationServiceTest {
             every { userPreferenceService.getOrCreateUserPreference(quantumId1) } returns UserPreference(quantumId1, null, "", "sms", CommunicationPreference.EMAIL.value)
             every { notifyClient.sendEmail(any(), "email", any(), any()) } returns null
 
-            service.sendNotifications()
+            service.refreshNotifications()
 
             verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
             verify { userPreferenceService.getOrCreateUserPreference(quantumId1) }
-            confirmVerified(shiftNotificationRepository)
-            confirmVerified(userPreferenceService)
-            confirmVerified(notifyClient)
         }
 
         @Test
@@ -268,13 +272,10 @@ internal class NotificationServiceTest {
             every { userPreferenceService.getOrCreateUserPreference(quantumId1) } returns UserPreference(quantumId1, null, null, "sms", CommunicationPreference.EMAIL.value)
             every { notifyClient.sendEmail(any(), "email", any(), any()) } returns null
 
-            service.sendNotifications()
+            service.refreshNotifications()
 
             verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
             verify { userPreferenceService.getOrCreateUserPreference(quantumId1) }
-            confirmVerified(shiftNotificationRepository)
-            confirmVerified(userPreferenceService)
-            confirmVerified(notifyClient)
         }
 
         @Test
@@ -288,13 +289,10 @@ internal class NotificationServiceTest {
             every { userPreferenceService.getOrCreateUserPreference(quantumId1) } returns UserPreference(quantumId1, null, "email", "", CommunicationPreference.SMS.value)
             every { notifyClient.sendEmail(any(), "email", any(), any()) } returns null
 
-            service.sendNotifications()
+            service.refreshNotifications()
 
             verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
             verify { userPreferenceService.getOrCreateUserPreference(quantumId1) }
-            confirmVerified(shiftNotificationRepository)
-            confirmVerified(userPreferenceService)
-            confirmVerified(notifyClient)
         }
 
         @Test
@@ -308,13 +306,10 @@ internal class NotificationServiceTest {
             every { userPreferenceService.getOrCreateUserPreference(quantumId1) } returns UserPreference(quantumId1, null, "email", null, CommunicationPreference.SMS.value)
             every { notifyClient.sendEmail(any(), "email", any(), any()) } returns null
 
-            service.sendNotifications()
+            service.refreshNotifications()
 
             verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
             verify { userPreferenceService.getOrCreateUserPreference(quantumId1) }
-            confirmVerified(shiftNotificationRepository)
-            confirmVerified(userPreferenceService)
-            confirmVerified(notifyClient)
         }
 
         @Test
@@ -329,13 +324,11 @@ internal class NotificationServiceTest {
             every { userPreferenceService.getOrCreateUserPreference(quantumId1) } returns UserPreference(quantumId1, null, "email", "sms", CommunicationPreference.EMAIL.value)
             every { notifyClient.sendEmail(any(), "email", any(), any()) } returns null
 
-            service.sendNotifications()
+            service.refreshNotifications()
 
             verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
             verify { userPreferenceService.getOrCreateUserPreference(quantumId1) }
             verify(exactly = 1) { notifyClient.sendEmail(any(), "email", any(), any()) }
-            confirmVerified(shiftNotificationRepository)
-            confirmVerified(userPreferenceService)
         }
 
         @Test
@@ -349,13 +342,11 @@ internal class NotificationServiceTest {
             every { userPreferenceService.getOrCreateUserPreference(quantumId1) } returns UserPreference(quantumId1, null, "email", "sms", CommunicationPreference.EMAIL.value)
             every { notifyClient.sendEmail(any(), "email", any(), any()) } returns null
 
-            service.sendNotifications()
+            service.refreshNotifications()
 
             verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
             verify { userPreferenceService.getOrCreateUserPreference(quantumId1) }
             verify(exactly = 1) { notifyClient.sendEmail(any(), "email", any(), any()) }
-            confirmVerified(shiftNotificationRepository)
-            confirmVerified(userPreferenceService)
         }
 
         @Test
@@ -369,13 +360,11 @@ internal class NotificationServiceTest {
             every { userPreferenceService.getOrCreateUserPreference(quantumId1) } returns UserPreference(quantumId1, null, "email", "sms", CommunicationPreference.SMS.value)
             every { notifyClient.sendSms(any(), "sms", any(), any()) } returns null
 
-            service.sendNotifications()
+            service.refreshNotifications()
 
             verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
             verify { userPreferenceService.getOrCreateUserPreference(quantumId1) }
             verify(exactly = 1) { notifyClient.sendSms(any(), "sms", any(), null) }
-            confirmVerified(shiftNotificationRepository)
-            confirmVerified(userPreferenceService)
         }
 
         @Test
@@ -388,13 +377,10 @@ internal class NotificationServiceTest {
             every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
             every { userPreferenceService.getOrCreateUserPreference(quantumId1) } returns UserPreference(quantumId1, null, "email", "sms", CommunicationPreference.NONE.value)
 
-            service.sendNotifications()
+            service.refreshNotifications()
 
             verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
             verify { userPreferenceService.getOrCreateUserPreference(quantumId1) }
-            confirmVerified(shiftNotificationRepository)
-            confirmVerified(userPreferenceService)
-            confirmVerified(notifyClient)
         }
 
         @Test
@@ -411,14 +397,12 @@ internal class NotificationServiceTest {
             every { userPreferenceService.getOrCreateUserPreference(quantumId2) } returns UserPreference(quantumId1, null, "email", "sms", CommunicationPreference.EMAIL.value)
             every { notifyClient.sendEmail(any(), "email", any(), any()) } returns null
 
-            service.sendNotifications()
+            service.refreshNotifications()
 
             verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
             verify { userPreferenceService.getOrCreateUserPreference(quantumId1) }
             verify { userPreferenceService.getOrCreateUserPreference(quantumId2) }
             verify(exactly = 2) { notifyClient.sendEmail(any(), "email", any(), null) }
-            confirmVerified(shiftNotificationRepository)
-            confirmVerified(userPreferenceService)
         }
 
         @Test
@@ -436,15 +420,13 @@ internal class NotificationServiceTest {
             every { notifyClient.sendEmail(any(), "email", any(), any()) } returns null
             every { notifyClient.sendSms(any(), "sms", any(), any()) } returns null
 
-            service.sendNotifications()
+            service.refreshNotifications()
 
             verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
             verify { userPreferenceService.getOrCreateUserPreference(quantumId1) }
             verify { userPreferenceService.getOrCreateUserPreference(quantumId2) }
             verify(exactly = 1) { notifyClient.sendEmail(any(), "email", any(), null) }
             verify(exactly = 1) { notifyClient.sendSms(any(), "sms", any(), null) }
-            confirmVerified(shiftNotificationRepository)
-            confirmVerified(userPreferenceService)
         }
 
         @Test
@@ -467,7 +449,7 @@ internal class NotificationServiceTest {
             every { notifyClient.sendSms(any(), "sms", any(), any()) } returns null
 
 
-            service.sendNotifications()
+            service.refreshNotifications()
 
             verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
             verify { userPreferenceService.getOrCreateUserPreference(quantumId1) }
@@ -475,8 +457,6 @@ internal class NotificationServiceTest {
             verify { userPreferenceService.getOrCreateUserPreference(quantumId3) }
             verify(exactly = 1) { notifyClient.sendEmail(any(), "email", any(), null) }
             verify(exactly = 1) { notifyClient.sendSms(any(), "sms", any(), null) }
-            confirmVerified(shiftNotificationRepository)
-            confirmVerified(userPreferenceService)
         }
 
     }
@@ -484,6 +464,21 @@ internal class NotificationServiceTest {
     @Nested
     @DisplayName("Snooze data specific notify tests")
     inner class SendNotificationWithSnoozeTests {
+
+        @BeforeEach
+        // We don't care about this first part for these tests
+        fun `set up notification fetching`(){
+            every { prisonService.getAllPrisons() } returns listOf()
+            every { shiftNotificationRepository.saveAll<ShiftNotification>(any()) } returns listOf()
+        }
+
+        @AfterEach
+        fun `verify nothing else happsns`() {
+            verify(exactly = 1) { shiftNotificationRepository.saveAll<ShiftNotification>(any()) }
+            confirmVerified(shiftNotificationRepository)
+            confirmVerified(userPreferenceService)
+            confirmVerified(notifyClient)
+        }
 
         @Test
         fun `Should not send a notification if the user has a snooze preference set to future date`() {
@@ -497,13 +492,10 @@ internal class NotificationServiceTest {
             every { userPreferenceService.getOrCreateUserPreference(quantumId1) } returns UserPreference(quantumId1, snoozePref, "email", "sms", CommunicationPreference.EMAIL.value)
             every { notifyClient.sendEmail(any(), "email", any(), any()) } returns null
 
-            service.sendNotifications()
+            service.refreshNotifications()
 
             verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
             verify { userPreferenceService.getOrCreateUserPreference(quantumId1) }
-            confirmVerified(shiftNotificationRepository)
-            confirmVerified(userPreferenceService)
-            confirmVerified(notifyClient)
         }
 
         @Test
@@ -518,13 +510,11 @@ internal class NotificationServiceTest {
             every { userPreferenceService.getOrCreateUserPreference(quantumId1) } returns UserPreference(quantumId1, snoozePref, "email", "sms", CommunicationPreference.EMAIL.value)
             every { notifyClient.sendEmail(any(), "email", any(), any()) } returns null
 
-            service.sendNotifications()
+            service.refreshNotifications()
 
             verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
             verify { userPreferenceService.getOrCreateUserPreference(quantumId1) }
-            confirmVerified(shiftNotificationRepository)
-            confirmVerified(userPreferenceService)
-            confirmVerified(notifyClient)
+
         }
 
         @Test
@@ -539,13 +529,12 @@ internal class NotificationServiceTest {
             every { userPreferenceService.getOrCreateUserPreference(quantumId1) } returns UserPreference(quantumId1, snoozePref, "email", "sms", CommunicationPreference.EMAIL.value)
             every { notifyClient.sendEmail(any(), "email", any(), any()) } returns null
 
-            service.sendNotifications()
+            service.refreshNotifications()
 
             verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
             verify { userPreferenceService.getOrCreateUserPreference(quantumId1) }
             verify(exactly = 1) { notifyClient.sendEmail(any(), "email", any(), null) }
-            confirmVerified(shiftNotificationRepository)
-            confirmVerified(userPreferenceService)
+
         }
     }
 

@@ -62,7 +62,6 @@ class ShiftNotificationTest {
         val processed = false
 
         val shiftNotificationDto = ShiftNotificationDto(
-                1L,
                 quantumId,
                 shiftDate,
                 shiftModified,
