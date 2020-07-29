@@ -12,9 +12,11 @@ import uk.gov.justice.digital.hmpps.cmd.api.model.ShiftNotification
 import uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
 import uk.gov.justice.digital.hmpps.cmd.api.repository.ShiftNotificationRepository
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.client.CsrClient
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftActionType
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftNotificationType
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.service.PrisonService
 import uk.gov.service.notify.NotificationClient
 import java.time.*
 import java.util.*
@@ -24,10 +26,21 @@ import java.util.*
 internal class NotificationServiceTest {
     private val shiftNotificationRepository: ShiftNotificationRepository = mockk(relaxUnitFun = true)
     private val userPreferenceService: UserPreferenceService = mockk(relaxUnitFun = true)
+    private val prisonService: PrisonService = mockk(relaxUnitFun = true)
     private val authenticationFacade: AuthenticationFacade = mockk(relaxUnitFun = true)
     private val notifyClient: NotificationClient = mockk(relaxUnitFun = true)
+    private val csrClient: CsrClient = mockk(relaxUnitFun = true)
     private val clock = Clock.fixed(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
-    private val service = NotificationService(shiftNotificationRepository, userPreferenceService, clock, authenticationFacade, 3, notifyClient)
+    private val service = NotificationService(
+            shiftNotificationRepository,
+            userPreferenceService,
+            clock,
+            authenticationFacade,
+            3,
+            notifyClient,
+            prisonService,
+            csrClient
+    )
 
     @BeforeEach
     fun resetAllMocks() {
