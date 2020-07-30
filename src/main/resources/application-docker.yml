@@ -14,4 +14,4 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: https://gateway.t3.nomis-api.hmpps.dsd.io/auth/.well-known/jwks.json
+          jwk-set-uri: https://sign-in-dev.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json
