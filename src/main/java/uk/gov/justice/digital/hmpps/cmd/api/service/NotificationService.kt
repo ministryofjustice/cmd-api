@@ -43,12 +43,7 @@ class NotificationService(
         return getShiftNotificationDtos(start, end, unprocessedOnlyParam.orElse(false), processOnReadParam.orElse(true))
     }
 
-    fun refreshNotifications() {
-        generateAndSaveNotifications()
-        sendNotifications()
-    }
-
-    private fun sendNotifications() {
+    fun sendNotifications() {
         val unprocessedNotifications = shiftNotificationRepository.findAllByProcessedIsFalse()
         log.debug("Sending notifications, found: ${unprocessedNotifications.size}")
         unprocessedNotifications.groupBy { it.quantumId }
@@ -64,14 +59,15 @@ class NotificationService(
         log.info("Finished sending notifications")
     }
 
-    private fun generateAndSaveNotifications() {
+    fun generateAndSaveNotifications() {
         val allPrisons = prisonService.getAllPrisons().distinctBy { it.csrPlanUnit }
         val newShiftNotifications = allPrisons
                 .flatMap { prison ->
                     csrClient.getShiftNotifications(prison.csrPlanUnit, prison.region)
                             .map {
                                 if (it.actionType == ShiftActionType.EDIT.value && checkIfNotificationsExist(it.quantumId, it.shiftDate, it.shiftType)) {
-                                    it.actionType = ShiftActionType.ADD.value }
+                                    it.actionType = ShiftActionType.ADD.value
+                                }
                                 it
                             }
                 }
