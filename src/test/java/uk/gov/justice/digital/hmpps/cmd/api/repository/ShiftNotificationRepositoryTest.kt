@@ -72,6 +72,19 @@ class ShiftNotificationRepositoryTest(
                     now.plusDays(1).atStartOfDay())
             assertThat(notifications).isEmpty()
         }
+
+        @Test
+        fun `Should return count of matching`() {
+            val date = now.plusDays(3).atStartOfDay()
+            val notification = getValidShiftNotification(date, date)
+            repository.save(notification)
+
+            val notifications = repository.countAllByQuantumIdAndShiftDateAndShiftType(
+                    "XYZ",
+                    date,
+                    "SHIFT")
+            assertThat(notifications).isEqualTo(1)
+        }
     }
 
     @Nested
