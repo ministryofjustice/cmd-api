@@ -35,7 +35,7 @@ env:
     value: "{{ .Values.env.SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI }}"
 
   - name: ELITE2API_ENDPOINT_URL
-      value: "{{ .Values.env.ELITE2API_ENDPOINT_URL }}"
+     value: "{{ .Values.env.ELITE2API_ENDPOINT_URL }}"
 
   - name: DATABASE_USERNAME
     valueFrom:
