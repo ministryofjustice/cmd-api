@@ -9,7 +9,7 @@ import uk.gov.justice.digital.hmpps.cmd.api.model.ShiftNotification
 import uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
 import uk.gov.justice.digital.hmpps.cmd.api.repository.ShiftNotificationRepository
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.client.CsrClient
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.client.PrisonDiaryClient
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.NotificationDescription.Companion.getDateTimeFormattedForTemplate
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.NotificationDescription.Companion.getNotificationDescription
@@ -34,7 +34,7 @@ class NotificationService(
         @Value("\${application.to.defaultMonths}") val monthStep: Long,
         val notifyClient: NotificationClientApi,
         val prisonService: PrisonService,
-        val csrClient: CsrClient
+        val prisonDiaryClient: PrisonDiaryClient
 ) {
 
     fun getNotifications(processOnReadParam: Optional<Boolean>, unprocessedOnlyParam: Optional<Boolean>, fromParam: Optional<LocalDate>, toParam: Optional<LocalDate>): Collection<NotificationDto> {
@@ -68,7 +68,7 @@ class NotificationService(
         val allPrisons = prisonService.getAllPrisons().distinctBy { it.csrPlanUnit }
         val newShiftNotifications = allPrisons
                 .flatMap { prison ->
-                    csrClient.getShiftNotifications(prison.csrPlanUnit, prison.region)
+                    prisonDiaryClient.getShiftNotifications(prison.csrPlanUnit, prison.region)
                             .map {
                                 if (it.actionType == ShiftActionType.EDIT.value && checkIfNotificationsExist(it.quantumId, it.shiftDate, it.shiftType)) {
                                     it.actionType = ShiftActionType.ADD.value }
@@ -79,7 +79,7 @@ class NotificationService(
 
         val newTaskNotifications = allPrisons
                 .flatMap { prison ->
-                    csrClient.getShiftTaskNotifications(prison.csrPlanUnit, prison.region)
+                    prisonDiaryClient.getShiftTaskNotifications(prison.csrPlanUnit, prison.region)
                 }
 
         val allNotifications = newShiftNotifications.plus(newTaskNotifications)

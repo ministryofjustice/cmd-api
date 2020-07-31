@@ -18,6 +18,7 @@ env:
   CSR_REGION4_URL: "https://region4-api.check-my-diary-prod.hmpps.dsd.io/api"
   CSR_REGION5_URL: "https://region5-api.check-my-diary-prod.hmpps.dsd.io/api"
   CSR_REGION6_URL: "https://region6-api.check-my-diary-prod.hmpps.dsd.io/api"
+  ELITE2API_ENDPOINT_URL: "https://api.prison.service.justice.gov.uk"
 
 cron:
   namespace: check-my-diary-prod

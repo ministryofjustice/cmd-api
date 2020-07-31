@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.cmd.api.utils
 
 import org.springframework.core.annotation.Order
 import org.springframework.http.HttpHeaders
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import java.io.IOException
 import javax.servlet.*
@@ -14,7 +15,10 @@ class UserContextFilter : Filter {
     override fun doFilter(servletRequest: ServletRequest, servletResponse: ServletResponse, filterChain: FilterChain) {
         val httpServletRequest = servletRequest as HttpServletRequest
         val authToken: String? = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION)
+        val authentication = SecurityContextHolder.getContext().authentication
+
         UserContext.setAuthToken(authToken)
+        UserContext.setAuthentication(authentication)
         filterChain.doFilter(httpServletRequest, servletResponse)
     }
 
