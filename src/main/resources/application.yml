@@ -81,6 +81,7 @@ csr:
       url: ${csr.region5.url}
     - name: 6
       url: ${csr.region6.url}
+  endpoint.url: localhost:8081
 
 #💩💩💩
 jwt:
