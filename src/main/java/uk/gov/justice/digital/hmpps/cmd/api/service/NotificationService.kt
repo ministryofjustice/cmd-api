@@ -44,9 +44,9 @@ class NotificationService(
     }
 
     fun sendNotifications() {
-        //TODO only send most recent of duplicates
         val unprocessedNotifications = shiftNotificationRepository.findAllByProcessedIsFalse()
         log.debug("Sending notifications, found: ${unprocessedNotifications.size}")
+
         unprocessedNotifications.groupBy { it.quantumId }
                 .forEach { group ->
                     try {
@@ -141,9 +141,18 @@ class NotificationService(
     */
     private fun sendNotification(quantumId: String, notificationGroup: List<ShiftNotification>) {
         val userPreference = userPreferenceService.getOrCreateUserPreference(quantumId)
+
+        data class Key(val shiftDate: LocalDateTime, val shiftType: String)
+
+        fun ShiftNotification.toKeyDuplicates() = Key(this.shiftDate, this.shiftType)
+
+        val mostRecentNotifications = notificationGroup
+                .groupBy { it.toKeyDuplicates() }
+                .map { (key, value) -> value.sortedByDescending { it.shiftModified }.elementAt(0) }
+
         if (shouldSend(userPreference)) {
-            log.debug("Sending (${notificationGroup.size}) notifications to ${userPreference.quantumId}, preference set to ${userPreference.commPref}")
-            notificationGroup.sortedWith(compareBy { it.shiftDate }).chunked(10).forEach { chunk ->
+            log.debug("Sending (${mostRecentNotifications.size}) notifications to ${userPreference.quantumId}, preference set to ${userPreference.commPref}")
+            mostRecentNotifications.sortedWith(compareBy { it.shiftDate }).chunked(10).forEach { chunk ->
                 when (val communicationPreference = CommunicationPreference.from(userPreference.commPref)) {
                     CommunicationPreference.EMAIL -> {
                         notifyClient.sendEmail(NotificationType.EMAIL_SUMMARY.value, userPreference.email, generateTemplateValues(chunk, communicationPreference), null)
