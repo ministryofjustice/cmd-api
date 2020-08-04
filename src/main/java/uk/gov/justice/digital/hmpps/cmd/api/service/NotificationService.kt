@@ -44,6 +44,7 @@ class NotificationService(
     }
 
     fun sendNotifications() {
+        //TODO only send most recent of duplicates
         val unprocessedNotifications = shiftNotificationRepository.findAllByProcessedIsFalse()
         log.debug("Sending notifications, found: ${unprocessedNotifications.size}")
         unprocessedNotifications.groupBy { it.quantumId }
@@ -64,14 +65,12 @@ class NotificationService(
         val newShiftNotifications = allPrisons
                 .flatMap { prison ->
                     csrClient.getShiftNotifications(prison.csrPlanUnit, prison.region)
+                            .filter { !checkIfNotificationsExist(it.quantumId, it.shiftDate, it.shiftType) }
                             .map {
-                                if (it.actionType == ShiftActionType.EDIT.value && checkIfNotificationsExist(it.quantumId, it.shiftDate, it.shiftType)) {
-                                    it.actionType = ShiftActionType.ADD.value
-                                }
+                                it.actionType = ShiftActionType.ADD.value
                                 it
                             }
                 }
-                .filter { it.actionType == ShiftActionType.ADD.value}
 
         val newTaskNotifications = allPrisons
                 .flatMap { prison ->
