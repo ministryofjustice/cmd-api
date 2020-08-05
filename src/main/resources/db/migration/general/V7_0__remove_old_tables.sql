@@ -1,7 +1,15 @@
-drop table "UserNotificationSetting" cascade;
+DROP TABLE "UserNotificationSetting" CASCADE;
 
-drop table "ShiftNotification" cascade;
+DROP TABLE "ShiftNotification" CASCADE;
 
-drop table "ShiftTaskNotification" cascade;
+DROP TABLE "ShiftTaskNotification" CASCADE;
 
-drop table "Prison" cascade;
+DROP TABLE "Prison" CASCADE;
+
+DROP TABLE "NotificationConfiguration" CASCADE;
+
+UPDATE shift_notification SET shift_type = 'shift' WHERE shift_type = 'SHIFT';
+
+UPDATE shift_notification SET shift_type = 'task' WHERE shift_type = 'TASK';
+
+UPDATE shift_notification SET action_type = 'edit' WHERE action_type = 'EDIT';
