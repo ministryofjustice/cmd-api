@@ -4,11 +4,11 @@ kind: CronJob
 metadata:
   name: "refresh-shift-changes"
 spec:
-  schedule: "0 6-18 * * *"
+  schedule: "0 6,12,18 * * *"
   concurrencyPolicy: Allow
   jobTemplate:
     spec:
-      activeDeadlineSeconds: 5400
+      activeDeadlineSeconds: 9000
       backoffLimit: 0
       template:
         spec:
@@ -22,4 +22,4 @@ spec:
             args:
               - 'JWT=$(curl -X POST {{ .Values.env.OAUTH_ROOT_URL }}/oauth/token?grant_type=client_credentials -H "Content-Type: application/json" -H "Content-Length: 0" -H "Authorization: Basic $(echo -n ''{{ .Values.secrets.API_CLIENT_ID }}:{{ .Values.secrets.API_CLIENT_SECRET }}'' | base64 -w 0)"); TOKEN=$(echo -n $JWT | grep -o -E ''[-a-zA-Z0-9\._]{100,}''); curl http://cmd-api.{{ .Values.cron.namespace }}.svc.cluster.local/notifications/refresh -H "Authorization: Bearer $(echo -n $TOKEN)";'
           restartPolicy: Never
-          activeDeadlineSeconds: 5400
+          activeDeadlineSeconds: 9000
