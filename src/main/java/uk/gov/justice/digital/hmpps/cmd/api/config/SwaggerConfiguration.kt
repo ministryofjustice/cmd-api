@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.cmd.api.controllers
+package uk.gov.justice.digital.hmpps.cmd.api.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature

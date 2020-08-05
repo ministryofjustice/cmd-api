@@ -23,7 +23,7 @@ class NotificationController(val notificationService: NotificationService) {
 
     @ApiOperation(value = "Retrieve all notifications for a user between two dates")
     @ApiResponses(value = [
-        ApiResponse(code = 200, message = "OK", response = NotificationDto::class)
+        ApiResponse(code = 200, message = "OK")
     ])
     @GetMapping("/notifications")
     fun getNotifications(

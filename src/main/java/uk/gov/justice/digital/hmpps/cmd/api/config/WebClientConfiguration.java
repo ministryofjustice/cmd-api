@@ -41,7 +41,7 @@ public class WebClientConfiguration {
 
     @Bean
     @RequestScope
-    public WebClient csrWebClient(final ClientRegistrationRepository clientRegistrationRepository,
+    public WebClient csrApiWebClient(final ClientRegistrationRepository clientRegistrationRepository,
                                        final OAuth2AuthorizedClientRepository authorizedClientRepository,
                                        final WebClient.Builder builder) {
 
@@ -65,7 +65,7 @@ public class WebClientConfiguration {
     }
 
     @Bean
-    public WebClient caseNoteWebClientAppScope(@Qualifier(value = "authorizedClientManagerAppScope") final OAuth2AuthorizedClientManager authorizedClientManager, final WebClient.Builder builder) {
+    public WebClient csrAPIWebClientAppScope(@Qualifier(value = "authorizedClientManagerAppScope") final OAuth2AuthorizedClientManager authorizedClientManager, final WebClient.Builder builder) {
         return getOAuthWebClient(authorizedClientManager, builder, csrRootUri);
     }
 
