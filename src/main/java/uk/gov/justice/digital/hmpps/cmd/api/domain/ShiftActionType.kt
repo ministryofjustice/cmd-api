@@ -10,7 +10,7 @@ enum class ShiftActionType(val value: String, val description: String) {
     companion object {
         fun from(value: String): ShiftActionType {
             return Arrays.stream(values())
-                    .filter { type -> type.value == value }
+                    .filter { type -> type.value.equals(value,true) }
                     .findFirst().orElseThrow { IllegalArgumentException() }
         }
     }

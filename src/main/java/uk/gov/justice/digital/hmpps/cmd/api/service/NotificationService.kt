@@ -45,7 +45,7 @@ class NotificationService(
 
     fun sendNotifications() {
         val unprocessedNotifications = shiftNotificationRepository.findAllByProcessedIsFalse()
-        log.debug("Sending notifications, found: ${unprocessedNotifications.size}")
+        log.info("Sending notifications, found: ${unprocessedNotifications.size}")
 
         unprocessedNotifications.groupBy { it.quantumId }
                 .forEach { group ->
@@ -85,8 +85,7 @@ class NotificationService(
         return shiftNotificationRepository.countAllByQuantumIdAndShiftDateAndShiftType(
                 quantumId,
                 shiftDate,
-                shiftNotificationType
-        ) > 0
+                shiftNotificationType) > 0
     }
 
     private fun calculateStartDateTime(fromParam: Optional<LocalDate>, toParam: Optional<LocalDate>): LocalDateTime {

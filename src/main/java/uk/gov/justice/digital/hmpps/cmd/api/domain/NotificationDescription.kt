@@ -37,7 +37,7 @@ class NotificationDescription {
         }
 
         private fun getOptionalTaskDescription(task: String?, from: Long?, to: Long?): String {
-            return if (task != null && !task.isEmpty() && from != null && to != null) {
+            return if (task != null && task.isNotEmpty() && from != null && to != null) {
                 val fromTime = LocalTime.ofSecondOfDay(from)
                 val toTime = LocalTime.ofSecondOfDay(to)
                 "($task, $fromTime - $toTime) "
