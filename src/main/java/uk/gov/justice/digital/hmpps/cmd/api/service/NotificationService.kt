@@ -151,7 +151,6 @@ class NotificationService(
                 .map { (key, value) -> value.maxBy { it.shiftModified } }
                 .filterNotNull()
 
-
         if (shouldSend(userPreference)) {
             log.debug("Sending (${mostRecentNotifications.size}) notifications to ${userPreference.quantumId}, preference set to ${userPreference.commPref}")
             mostRecentNotifications.sortedWith(compareBy { it.shiftDate }).chunked(10).forEach { chunk ->
