@@ -15,7 +15,7 @@ class NotificationDescription {
             val date = getDateTimeFormattedForTemplate(shiftNotification.shiftDate, clock)
             val taskDescription = getOptionalTaskDescription(shiftNotification.task, shiftNotification.taskStart, shiftNotification.taskEnd)
             val shiftNotificationType = ShiftNotificationType.from(shiftNotification.shiftType)
-            val shiftActionType = ShiftActionType.from(shiftNotification.actionType)
+            val shiftActionType = ShiftNotificaitonActionType.from(shiftNotification.actionType)
             return "${bulletPoint}Your ${shiftNotificationType.description} on $date ${taskDescription}has ${shiftActionType.description}."
         }
 

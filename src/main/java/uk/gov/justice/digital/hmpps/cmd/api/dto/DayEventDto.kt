@@ -17,13 +17,18 @@ data class DayEventDto @JsonCreator constructor(
         @JsonProperty("label")
         val label : String,
 
-        @ApiModelProperty(value = "The type of task", position = 3, example = "FINISH")
+        @ApiModelProperty(value = "The type of task", position = 3, example = "Shift")
         @JsonProperty("taskType")
         val taskType : String,
 
         @ApiModelProperty(value = "The start of the shift", position = 4, example = "2020-04-20T17:00:00")
         @JsonProperty("startDateTime")
-        val time : LocalDateTime
+        val time : LocalDateTime,
+
+        @ApiModelProperty(value = "Hint for the UI on how to display this entity", position = 5, example = "NIGHT_FINISH")
+        @JsonProperty("displayType")
+        val displayType : String
+
 )
 
 

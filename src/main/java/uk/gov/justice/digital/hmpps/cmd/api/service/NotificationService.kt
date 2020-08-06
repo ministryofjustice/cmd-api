@@ -14,7 +14,7 @@ import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.NotificationDescription.Companion.getDateTimeFormattedForTemplate
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.NotificationDescription.Companion.getNotificationDescription
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.NotificationType
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftActionType
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftNotificaitonActionType
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.service.PrisonService
 import uk.gov.service.notify.NotificationClientApi
 import uk.gov.service.notify.NotificationClientException
@@ -70,12 +70,12 @@ class NotificationService(
                 .flatMap { prison ->
                     prisonDiaryClient.getShiftNotifications(prison.csrPlanUnit, prison.region)
                             .map {
-                                if (it.actionType == ShiftActionType.EDIT.value && checkIfNotificationsExist(it.quantumId, it.shiftDate, it.shiftType)) {
-                                    it.actionType = ShiftActionType.ADD.value }
+                                if (it.actionType == ShiftNotificaitonActionType.EDIT.value && checkIfNotificationsExist(it.quantumId, it.shiftDate, it.shiftType)) {
+                                    it.actionType = ShiftNotificaitonActionType.ADD.value }
                                 it
                             }
                 }
-                .filter { it.actionType == ShiftActionType.ADD.value}
+                .filter { it.actionType == ShiftNotificaitonActionType.ADD.value}
 
         val newTaskNotifications = allPrisons
                 .flatMap { prison ->

@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.netty.http.client.HttpClient
 import reactor.netty.tcp.TcpClient
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftActionType
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftNotificaitonActionType
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.utils.region.Regions
 import java.nio.charset.Charset
 import java.security.Key
@@ -151,5 +151,5 @@ data class ShiftNotificationDto @JsonCreator constructor(
         var shiftType: String,
 
         @JsonProperty("actionType")
-        var actionType: String = ShiftActionType.ADD.value
+        var actionType: String = ShiftNotificaitonActionType.ADD.value
 )
