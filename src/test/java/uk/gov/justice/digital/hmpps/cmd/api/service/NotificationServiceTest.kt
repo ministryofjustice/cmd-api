@@ -248,6 +248,7 @@ internal class NotificationServiceTest {
             assertThat(slot.captured).isEqualTo(listOf<ShiftNotification>())
         }
 
+        @Test
         fun `Should add multiple new notifications for one user`() {
             val today = LocalDateTime.now(clock)
             val quantumId = "CSTRIFE_GEN"
@@ -297,9 +298,9 @@ internal class NotificationServiceTest {
             every { shiftNotificationRepository.saveAll(capture(slot)) } returns null
 
             service.generateAndSaveNotifications()
-            val notification1 = ShiftNotification(null, quantumId, today.plusDays(1), today, start, end, task, shiftType, ShiftActionType.ADD.value, false)
-            val notification2 = ShiftNotification(null, quantumId, today.plusDays(2), today, start, end, task, shiftType, ShiftActionType.ADD.value, false)
-            val notification3 = ShiftNotification(null, quantumId, today.plusDays(3), today, start, end, task, shiftType, ShiftActionType.ADD.value, false)
+            val notification1 = ShiftNotification(null, quantumId, today.plusDays(1), today, start, end, task, shiftType, ShiftActionType.EDIT.value, false)
+            val notification2 = ShiftNotification(null, quantumId, today.plusDays(2), today, start, end, task, shiftType, ShiftActionType.EDIT.value, false)
+            val notification3 = ShiftNotification(null, quantumId, today.plusDays(3), today, start, end, task, shiftType, ShiftActionType.EDIT.value, false)
             assertThat(slot.captured).isEqualTo(listOf<ShiftNotification>(notification1, notification2, notification3))
         }
 
@@ -333,7 +334,7 @@ internal class NotificationServiceTest {
 
             service.generateAndSaveNotifications()
 
-            val expected = ShiftNotification(null, quantumId, shiftDate, today, start, end, task, shiftType, ShiftActionType.ADD.value, false)
+            val expected = ShiftNotification(null, quantumId, shiftDate, today, start, end, task, shiftType, ShiftActionType.EDIT.value, false)
             assertThat(slot.captured).isEqualTo(listOf<ShiftNotification>(expected))
         }
 

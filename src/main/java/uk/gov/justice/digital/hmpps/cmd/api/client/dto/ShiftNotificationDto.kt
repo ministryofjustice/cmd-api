@@ -30,5 +30,5 @@ data class ShiftNotificationDto @JsonCreator constructor(
         var shiftType: String,
 
         @JsonProperty("actionType")
-        var actionType: String = ShiftActionType.ADD.value
+        var actionType: String = ShiftActionType.EDIT.value
 )

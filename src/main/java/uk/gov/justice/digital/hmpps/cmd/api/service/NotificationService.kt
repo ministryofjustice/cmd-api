@@ -66,15 +66,13 @@ class NotificationService(
                 .flatMap { prison ->
                     csrClient.getShiftNotifications(prison.csrPlanUnit, prison.region)
                             .filter { !checkIfNotificationsExist(it.quantumId, it.shiftDate, it.shiftType) }
-                            .map {
-                                it.actionType = ShiftActionType.ADD.value
-                                it
-                            }
+
                 }
 
         val newTaskNotifications = allPrisons
                 .flatMap { prison ->
-                    csrClient.getShiftTaskNotifications(prison.csrPlanUnit, prison.region)
+                  csrClient.getShiftTaskNotifications(prison.csrPlanUnit, prison.region)
+                           .filter { !checkIfNotificationsExist(it.quantumId, it.shiftDate, it.shiftType) }
                 }
 
         val allNotifications = newShiftNotifications.plus(newTaskNotifications)
@@ -133,10 +131,10 @@ class NotificationService(
     }
 
     /*
-    Group the notifications into 10s -
-    Notify doesn't support vertical lists
-    so we have to have a fixed size template with 'slots'
-    10 means we can cover 99.9% of scenarios in one email.
+    * Chunk the notifications into 10s -
+    * Notify doesn't support vertical lists
+    * so we have to have a fixed size template with 'slots'
+    * 10 means we can cover 99.9% of scenarios in one email.
     */
     private fun sendNotification(quantumId: String, notificationGroup: List<ShiftNotification>) {
         val userPreference = userPreferenceService.getOrCreateUserPreference(quantumId)
@@ -145,6 +143,7 @@ class NotificationService(
 
         fun ShiftNotification.toKeyDuplicates() = Key(this.shiftDate, this.shiftType, this.quantumId)
 
+        // Only send the latest notification for a shift if there are multiple
         val mostRecentNotifications = notificationGroup
                 .groupBy { it.toKeyDuplicates() }
                 .map { (key, value) -> value.maxBy { it.shiftModified } }

@@ -5,7 +5,8 @@ import java.util.*
 enum class ShiftActionType(val value: String, val description: String) {
     ADD("add", "been added"),
     EDIT("edit", "changed"),
-    DELETE("delete", "been removed");
+    DELETE("delete", "been removed"),
+    UNCHANGED("unchanged", "not changed");
 
     companion object {
         fun from(value: String): ShiftActionType {
