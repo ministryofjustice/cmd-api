@@ -35,8 +35,14 @@ class NotificationController(val notificationService: NotificationService) {
     }
 
     @GetMapping("/notifications/refresh")
-    fun sendNotifications(): ResponseEntity<Collection<NotificationDto>> {
-        notificationService.refreshNotifications()
+    fun refreshNotifications(): ResponseEntity<Unit> {
+        notificationService.generateAndSaveNotifications()
+        return ResponseEntity.ok().build()
+    }
+
+    @GetMapping("/notifications/send")
+    fun sendNotifications(): ResponseEntity<Unit> {
+        notificationService.sendNotifications()
         return ResponseEntity.ok().build()
     }
 }
