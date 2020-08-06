@@ -43,14 +43,10 @@ class NotificationService(
         return getShiftNotificationDtos(start, end, unprocessedOnlyParam.orElse(false), processOnReadParam.orElse(true))
     }
 
-    fun refreshNotifications() {
-        generateAndSaveNotifications()
-        sendNotifications()
-    }
-
-    private fun sendNotifications() {
+    fun sendNotifications() {
         val unprocessedNotifications = shiftNotificationRepository.findAllByProcessedIsFalse()
         log.debug("Sending notifications, found: ${unprocessedNotifications.size}")
+
         unprocessedNotifications.groupBy { it.quantumId }
                 .forEach { group ->
                     try {
@@ -64,18 +60,17 @@ class NotificationService(
         log.info("Finished sending notifications")
     }
 
-    private fun generateAndSaveNotifications() {
+    fun generateAndSaveNotifications() {
         val allPrisons = prisonService.getAllPrisons().distinctBy { it.csrPlanUnit }
         val newShiftNotifications = allPrisons
                 .flatMap { prison ->
                     csrClient.getShiftNotifications(prison.csrPlanUnit, prison.region)
+                            .filter { !checkIfNotificationsExist(it.quantumId, it.shiftDate, it.shiftType) }
                             .map {
-                                if (it.actionType == ShiftActionType.EDIT.value && checkIfNotificationsExist(it.quantumId, it.shiftDate, it.shiftType)) {
-                                    it.actionType = ShiftActionType.ADD.value }
+                                it.actionType = ShiftActionType.ADD.value
                                 it
                             }
                 }
-                .filter { it.actionType == ShiftActionType.ADD.value}
 
         val newTaskNotifications = allPrisons
                 .flatMap { prison ->
@@ -146,9 +141,20 @@ class NotificationService(
     */
     private fun sendNotification(quantumId: String, notificationGroup: List<ShiftNotification>) {
         val userPreference = userPreferenceService.getOrCreateUserPreference(quantumId)
+
+        data class Key(val shiftDate: LocalDateTime, val shiftType: String, val quantumId: String)
+
+        fun ShiftNotification.toKeyDuplicates() = Key(this.shiftDate, this.shiftType, this.quantumId)
+
+        val mostRecentNotifications = notificationGroup
+                .groupBy { it.toKeyDuplicates() }
+                .map { (key, value) -> value.maxBy { it.shiftModified } }
+                .filterNotNull()
+
+
         if (shouldSend(userPreference)) {
-            log.debug("Sending (${notificationGroup.size}) notifications to ${userPreference.quantumId}, preference set to ${userPreference.commPref}")
-            notificationGroup.sortedWith(compareBy { it.shiftDate }).chunked(10).forEach { chunk ->
+            log.debug("Sending (${mostRecentNotifications.size}) notifications to ${userPreference.quantumId}, preference set to ${userPreference.commPref}")
+            mostRecentNotifications.sortedWith(compareBy { it.shiftDate }).chunked(10).forEach { chunk ->
                 when (val communicationPreference = CommunicationPreference.from(userPreference.commPref)) {
                     CommunicationPreference.EMAIL -> {
                         notifyClient.sendEmail(NotificationType.EMAIL_SUMMARY.value, userPreference.email, generateTemplateValues(chunk, communicationPreference), null)
