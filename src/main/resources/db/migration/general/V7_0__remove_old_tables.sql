@@ -1,0 +1,9 @@
+DROP TABLE IF EXISTS "UserNotificationSetting" CASCADE;
+
+DROP TABLE IF EXISTS "ShiftNotification" CASCADE;
+
+DROP TABLE IF EXISTS "ShiftTaskNotification" CASCADE;
+
+DROP TABLE IF EXISTS "Prison" CASCADE;
+
+DROP TABLE IF EXISTS "NotificationConfiguration" CASCADE;
