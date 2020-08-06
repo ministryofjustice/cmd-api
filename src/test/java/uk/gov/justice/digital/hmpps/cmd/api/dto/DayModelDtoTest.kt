@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.cmd.api.dto
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.dto.DayModelDto
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.dto.TaskModelDto
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.dto.DayEventDto
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -19,7 +19,7 @@ class DayModelDtoTest {
         val startDateTime = LocalDateTime.of(12,3,4,6,6,3)
         val endDateTime = LocalDateTime.of(12,3,4,7,6,4)
         val durationInSeconds = 5L
-        val tasks : Collection<TaskModelDto> = listOf()
+        val tasks : Collection<DayEventDto> = listOf()
 
         val day = DayModelDto(
             date,
