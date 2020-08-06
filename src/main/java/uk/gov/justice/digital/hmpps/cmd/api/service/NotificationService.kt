@@ -148,7 +148,9 @@ class NotificationService(
 
         val mostRecentNotifications = notificationGroup
                 .groupBy { it.toKeyDuplicates() }
-                .map { (key, value) -> value.sortedByDescending { it.shiftModified }.elementAt(0) }
+                .map { (key, value) -> value.maxBy { it.shiftModified } }
+                .filterNotNull()
+
 
         if (shouldSend(userPreference)) {
             log.debug("Sending (${mostRecentNotifications.size}) notifications to ${userPreference.quantumId}, preference set to ${userPreference.commPref}")
