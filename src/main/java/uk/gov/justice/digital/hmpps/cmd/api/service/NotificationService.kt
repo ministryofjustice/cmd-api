@@ -142,9 +142,9 @@ class NotificationService(
     private fun sendNotification(quantumId: String, notificationGroup: List<ShiftNotification>) {
         val userPreference = userPreferenceService.getOrCreateUserPreference(quantumId)
 
-        data class Key(val shiftDate: LocalDateTime, val shiftType: String)
+        data class Key(val shiftDate: LocalDateTime, val shiftType: String, val quantumId: String)
 
-        fun ShiftNotification.toKeyDuplicates() = Key(this.shiftDate, this.shiftType)
+        fun ShiftNotification.toKeyDuplicates() = Key(this.shiftDate, this.shiftType, this.quantumId)
 
         val mostRecentNotifications = notificationGroup
                 .groupBy { it.toKeyDuplicates() }
