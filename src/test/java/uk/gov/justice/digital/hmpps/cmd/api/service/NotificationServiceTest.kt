@@ -412,8 +412,10 @@ internal class NotificationServiceTest {
             every { shiftNotificationRepository.saveAll(capture(slot)) } returns  listOf()
 
             service.generateAndSaveNotifications()
-            val notification1 = ShiftNotification(null, quantumId, today.plusDays(1).toLocalDate(), today, start, end, task, shiftType, ShiftActionType.EDIT.value, false)
-            assertThat(slot.captured).isEqualTo(listOf(notification1))
+            val notification1 = ShiftNotification(null, quantumId, today.toLocalDate(), today, start, end, task, shiftType, ShiftActionType.EDIT.value, false)
+            val notification2 = ShiftNotification(null, quantumId, today.toLocalDate(), today.plusSeconds(5), start, end, task, shiftType, ShiftActionType.EDIT.value, false)
+            val notification3 = ShiftNotification(null, quantumId, today.toLocalDate(), today.plusSeconds(10), start, end, task, shiftType, ShiftActionType.EDIT.value, false)
+            assertThat(slot.captured).isEqualTo(listOf(notification1,notification2,notification3))
         }
 
         @Test
