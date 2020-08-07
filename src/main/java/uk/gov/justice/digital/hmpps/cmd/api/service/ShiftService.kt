@@ -40,7 +40,7 @@ class ShiftService(val csrClient: CsrApiClient, val clock: Clock) {
         val dayStartTasks = tasks.groupBy { it.start.toLocalDate() }
         val dayEndTasks = tasks.groupBy { it.end.toLocalDate() }
         val taskListGroups: Map<LocalDate, List<ShiftTaskDto>> = (dayStartTasks.keys + dayEndTasks.keys).associateWith {
-            ((dayStartTasks[it]?.toList() ?: listOf()) + (dayEndTasks[it]?.toList() ?: listOf()))
+            ((dayStartTasks[it]?.toList() ?: listOf()) + (dayEndTasks[it]?.toList() ?: listOf())).distinct()
         }
 
         /*
@@ -51,16 +51,30 @@ class ShiftService(val csrClient: CsrApiClient, val clock: Clock) {
         * 2) the latest start date, if the end date is on a different day we have a night shift start.
         * 3) the earliest start date with a finish date on the same day, this is a day shift start
         * 4) the latest finish date with a start date on the same day, this is a day shift end
+        *  Then to calculate the duration line we look for finish types, and add up everything in that shift
         */
         val taskMap = taskListGroups.mapValues { taskEntry ->
             val shiftTypes = taskEntry.value.partition{ it.start.toLocalDate() == it.end.toLocalDate() }
-            val nightShiftEnd = shiftTypes.second.minBy { it.end }?.let{ DayEventDto (it.date, it.activity, it.type, it.end, TaskDisplayType.NIGHT_FINISH.value)}
-            val nightShiftStart = shiftTypes.second.maxBy { it.start }?.let{ DayEventDto (it.date, it.activity, it.type, it.end, TaskDisplayType.NIGHT_START.value)}
-            val shiftStart = shiftTypes.first.minBy{ it.start }?.let{ DayEventDto (it.date, it.activity, it.type, it.end, TaskDisplayType.DAY_START.value)}
-            val shiftEnd = shiftTypes.first.maxBy { it.end }?.let{ DayEventDto (it.date, it.activity, it.type, it.end, TaskDisplayType.DAY_FINISH.value)}
+
+            val nightShiftEnd = shiftTypes.second.filter { it.end.toLocalDate() == taskEntry.key }.minBy { it.end }?.let{
+                DayEventDto (it.date, it.activity, it.type, it.end, TaskDisplayType.NIGHT_FINISH.value,
+                        calculateShiftDuration(shiftTypes.second.filter {s -> s.start.isBefore(it.end) }))
+            }
+            val nightShiftStart = shiftTypes.second.filter { it.start.toLocalDate() == taskEntry.key }.maxBy { it.start }?.let{
+                DayEventDto (it.date, it.activity, it.type, it.start, TaskDisplayType.NIGHT_START.value)
+            }
+            val shiftStart = shiftTypes.first.minBy{ it.start }?.let{
+                DayEventDto (it.date, it.activity, it.type, it.start, TaskDisplayType.DAY_START.value)
+            }
+            val shiftEnd = shiftTypes.first.maxBy { it.end }?.let{
+                DayEventDto (it.date, it.activity, it.type, it.end, TaskDisplayType.DAY_FINISH.value,
+                        calculateShiftDuration(shiftTypes.first))
+            }
+
+
+
             listOfNotNull(nightShiftEnd, shiftStart, shiftEnd, nightShiftStart)
         }
-
 
         return taskMap.map { tasks ->
             //val fullDayShift = getFullDayShift(task.value)
@@ -68,7 +82,6 @@ class ShiftService(val csrClient: CsrApiClient, val clock: Clock) {
                     date = tasks.key,
                     fullDayType = "",//fullDayType = fullDayShift?.type ?: TaskType.SHIFT.value,
                     fullDayDescription = "",//fullDayDescription = fullDayShift?.activity ?: TaskType.SHIFT.description,
-                    duration = "",//duration = calculateShiftDuration(shift.value),
                     tasks = tasks.value
             )
         }
@@ -86,7 +99,7 @@ class ShiftService(val csrClient: CsrApiClient, val clock: Clock) {
     private fun calculateShiftDuration(tasks: Collection<ShiftTaskDto>) : String {
         // We have to exclude unpaid breaks
         val sum = tasks.filter { task -> task.type.toLowerCase() != TaskType.BREAK.description.toLowerCase() }.map { task -> Duration.between(task.start, task.end).seconds }.sum()
-        return String.format("%d:%02d", sum / 3600, (sum % 3600) / 60)
+        return String.format("%dh:%02dm", sum / 3600, (sum % 3600) / 60)
     }
 
 

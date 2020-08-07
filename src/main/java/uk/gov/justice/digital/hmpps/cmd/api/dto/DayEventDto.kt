@@ -27,7 +27,11 @@ data class DayEventDto @JsonCreator constructor(
 
         @ApiModelProperty(value = "Hint for the UI on how to display this entity", position = 5, example = "NIGHT_FINISH")
         @JsonProperty("displayType")
-        val displayType : String
+        val displayType : String,
+
+        @ApiModelProperty(value = "If the type is a 'finish' we include put the shift duration.", position = 6, example = "3h 24m")
+        @JsonProperty("finishDuration")
+        var finishDuration : String? = null
 
 )
 

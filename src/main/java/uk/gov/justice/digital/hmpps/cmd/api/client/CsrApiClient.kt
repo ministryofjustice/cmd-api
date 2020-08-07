@@ -32,7 +32,8 @@ class CsrApiClient(@Qualifier("csrApiWebClient") private val webClient: WebClien
 
                 ShiftTaskDto(day2, "Absence", day2.atTime(0,0), day2.atTime(23,59,59), "Rest Day"),
 
-                ShiftTaskDto(day3, "Shift", day3.atTime(20,45), day4.atTime(7,45), "Night OSG"),
+                ShiftTaskDto(day3, "Shift", day3.atTime(19,45), day4.atTime(6,45), "Night OSG"),
+
                 ShiftTaskDto(day4, "Shift", day4.atTime(20,45), day5.atTime(7,45), "Night OSG"),
 
                 ShiftTaskDto(day5, "Absence", day5.atTime(0,0), day5.atTime(23,59,59), "Rest Day")

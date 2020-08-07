@@ -21,11 +21,7 @@ data class DayModelDto @JsonCreator constructor(
         @JsonProperty("fullDayDescription")
         val fullDayDescription : String,
 
-        @ApiModelProperty(value = "The duration of the shiftexcluding breaks", position = 4, example = "1234567")
-        @JsonProperty("duration")
-        val duration : String,
-
-        @ApiModelProperty(value = "A collection of tasks that make up the shift", position = 5)
+        @ApiModelProperty(value = "A collection of tasks that make up the shift", position = 4)
         @JsonProperty("tasks")
         val tasks : Collection<DayEventDto>
 )
