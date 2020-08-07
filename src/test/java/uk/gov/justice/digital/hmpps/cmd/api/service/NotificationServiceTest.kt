@@ -218,8 +218,8 @@ internal class NotificationServiceTest {
         fun `Should combine notifications to one user`() {
             val quantumId1 = "XYZ"
             val shiftNotifications: List<ShiftNotification> = listOf(
-                    ShiftNotification(1, quantumId1, LocalDateTime.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false),
-                    ShiftNotification(2, quantumId1, LocalDateTime.now(clock).plusDays(5), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
+                    ShiftNotification(1, quantumId1, LocalDate.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false),
+                    ShiftNotification(2, quantumId1, LocalDate.now(clock).plusDays(5), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
             )
 
             every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
