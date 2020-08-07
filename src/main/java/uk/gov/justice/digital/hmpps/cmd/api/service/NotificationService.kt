@@ -75,7 +75,7 @@ class NotificationService(
                 }
 
         val allNotifications = newShiftNotifications.plus(newTaskNotifications)
-                .filter { it.actionType == ShiftActionType.UNCHANGED.value }
+                .filter { it.actionType != ShiftActionType.UNCHANGED.value }
                 .filter { !checkIfNotificationsExist(it.quantumId, it.shiftDate, it.shiftType, it.shiftModified) }
         shiftNotificationRepository.saveAll(ShiftNotification.fromDto(allNotifications))
     }

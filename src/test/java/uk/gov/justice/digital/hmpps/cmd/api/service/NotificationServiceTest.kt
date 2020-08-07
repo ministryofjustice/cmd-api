@@ -217,7 +217,7 @@ internal class NotificationServiceTest {
         fun `Should disregard edit types if it exists in our db`() {
             val today = LocalDateTime.now(clock)
             val quantumId = "CSTRIFE_GEN"
-            val shiftDate = today.plusDays(2)
+            val shiftDate = today.plusDays(2).toLocalDate()
             val start = 123L
             val end = 456L
             val task = "Guard Duty"
@@ -241,7 +241,7 @@ internal class NotificationServiceTest {
             every { shiftNotificationRepository.countAllByQuantumIdAndShiftDateAndShiftTypeAndShiftModified(quantumId, shiftDate, shiftType, today) } returns 1
 
             val slot = slot<Collection<ShiftNotification>>()
-            every { shiftNotificationRepository.saveAll(capture(slot)) } returns null
+            every { shiftNotificationRepository.saveAll(capture(slot)) } returns listOf()
 
             service.generateAndSaveNotifications()
 
@@ -249,7 +249,7 @@ internal class NotificationServiceTest {
         }
 
         @Test
-        fun `Should add multiple new notifications for one user`() {
+        fun `Should add multiple notifications for one user`() {
             val today = LocalDateTime.now(clock)
             val quantumId = "CSTRIFE_GEN"
             val start = 123L
@@ -258,7 +258,7 @@ internal class NotificationServiceTest {
             val shiftType = "Shift"
             val dto1 = ShiftNotificationDto(
                     quantumId,
-                    today.plusDays(1),
+                    today.plusDays(1).toLocalDate(),
                     today,
                     start,
                     end,
@@ -269,7 +269,7 @@ internal class NotificationServiceTest {
 
             val dto2 = ShiftNotificationDto(
                     quantumId,
-                    today.plusDays(2),
+                    today.plusDays(2).toLocalDate(),
                     today,
                     start,
                     end,
@@ -280,7 +280,7 @@ internal class NotificationServiceTest {
 
             val dto3 = ShiftNotificationDto(
                     quantumId,
-                    today.plusDays(3),
+                    today.plusDays(3).toLocalDate(),
                     today,
                     start,
                     end,
@@ -295,20 +295,132 @@ internal class NotificationServiceTest {
             every { shiftNotificationRepository.countAllByQuantumIdAndShiftDateAndShiftTypeAndShiftModified(quantumId, any(), shiftType, today) } returns 0
 
             val slot = slot<Collection<ShiftNotification>>()
-            every { shiftNotificationRepository.saveAll(capture(slot)) } returns null
+            every { shiftNotificationRepository.saveAll(capture(slot)) } returns  listOf()
 
             service.generateAndSaveNotifications()
-            val notification1 = ShiftNotification(null, quantumId, today.plusDays(1), today, start, end, task, shiftType, ShiftActionType.EDIT.value, false)
-            val notification2 = ShiftNotification(null, quantumId, today.plusDays(2), today, start, end, task, shiftType, ShiftActionType.EDIT.value, false)
-            val notification3 = ShiftNotification(null, quantumId, today.plusDays(3), today, start, end, task, shiftType, ShiftActionType.EDIT.value, false)
-            assertThat(slot.captured).isEqualTo(listOf<ShiftNotification>(notification1, notification2, notification3))
+            val notification1 = ShiftNotification(null, quantumId, today.plusDays(1).toLocalDate(), today, start, end, task, shiftType, ShiftActionType.EDIT.value, false)
+            val notification2 = ShiftNotification(null, quantumId, today.plusDays(2).toLocalDate(), today, start, end, task, shiftType, ShiftActionType.EDIT.value, false)
+            val notification3 = ShiftNotification(null, quantumId, today.plusDays(3).toLocalDate(), today, start, end, task, shiftType, ShiftActionType.EDIT.value, false)
+            assertThat(slot.captured).isEqualTo(listOf(notification1, notification2, notification3))
+        }
+
+        @Test
+        fun `Should not add multiple duplicate notifications for one user`() {
+            val today = LocalDateTime.now(clock)
+            val quantumId = "CSTRIFE_GEN"
+            val start = 123L
+            val end = 456L
+            val task = "Guard Duty"
+            val shiftType = "Shift"
+            val dto1 = ShiftNotificationDto(
+                    quantumId,
+                    today.toLocalDate(),
+                    today,
+                    start,
+                    end,
+                    task,
+                    shiftType,
+                    ShiftActionType.EDIT.value
+            )
+
+            val dto2 = ShiftNotificationDto(
+                    quantumId,
+                    today.toLocalDate(),
+                    today,
+                    start,
+                    end,
+                    task,
+                    shiftType,
+                    ShiftActionType.EDIT.value
+            )
+
+            val dto3 = ShiftNotificationDto(
+                    quantumId,
+                    today.toLocalDate(),
+                    today,
+                    start,
+                    end,
+                    task,
+                    shiftType,
+                    ShiftActionType.EDIT.value
+            )
+
+            every { csrClient.getShiftNotifications(any(), any()) } returns listOf(dto1, dto2, dto3)
+
+            every { csrClient.getShiftTaskNotifications(any(), any()) } returns listOf()
+            every { shiftNotificationRepository.countAllByQuantumIdAndShiftDateAndShiftTypeAndShiftModified(quantumId, any(), shiftType, today) } returns 0
+
+            val slot = slot<Collection<ShiftNotification>>()
+            every { shiftNotificationRepository.saveAll(capture(slot)) } returns  listOf()
+
+            service.generateAndSaveNotifications()
+            val notification1 = ShiftNotification(null, quantumId, today.toLocalDate(), today, start, end, task, shiftType, ShiftActionType.EDIT.value, false)
+            val notification2 = ShiftNotification(null, quantumId, today.toLocalDate(), today, start, end, task, shiftType, ShiftActionType.EDIT.value, false)
+            val notification3 = ShiftNotification(null, quantumId, today.toLocalDate(), today, start, end, task, shiftType, ShiftActionType.EDIT.value, false)
+            assertThat(slot.captured).isEqualTo(listOf(notification1, notification2, notification3))
+        }
+
+        @Test
+        fun `Should add multiple notifications for same shift with different modified times for one user`() {
+            val today = LocalDateTime.now(clock)
+            val quantumId = "CSTRIFE_GEN"
+            val start = 123L
+            val end = 456L
+            val task = "Guard Duty"
+            val shiftType = "Shift"
+            val dto1 = ShiftNotificationDto(
+                    quantumId,
+                    today.toLocalDate(),
+                    today,
+                    start,
+                    end,
+                    task,
+                    shiftType,
+                    ShiftActionType.EDIT.value
+            )
+
+            val dto2 = ShiftNotificationDto(
+                    quantumId,
+                    today.toLocalDate(),
+                    today.plusSeconds(5),
+                    start,
+                    end,
+                    task,
+                    shiftType,
+                    ShiftActionType.EDIT.value
+            )
+
+            val dto3 = ShiftNotificationDto(
+                    quantumId,
+                    today.toLocalDate(),
+                    today.plusSeconds(10),
+                    start,
+                    end,
+                    task,
+                    shiftType,
+                    ShiftActionType.EDIT.value
+            )
+
+            every { csrClient.getShiftNotifications(any(), any()) } returns listOf(dto1, dto2, dto3)
+
+            every { csrClient.getShiftTaskNotifications(any(), any()) } returns listOf()
+            every { shiftNotificationRepository.countAllByQuantumIdAndShiftDateAndShiftTypeAndShiftModified(quantumId, any(), shiftType, today) } returns 0
+            every { shiftNotificationRepository.countAllByQuantumIdAndShiftDateAndShiftTypeAndShiftModified(quantumId, any(), shiftType, today.plusSeconds(5)) } returns 0
+            every { shiftNotificationRepository.countAllByQuantumIdAndShiftDateAndShiftTypeAndShiftModified(quantumId, any(), shiftType, today.plusSeconds(10)) } returns 0
+
+            val slot = slot<Collection<ShiftNotification>>()
+            every { shiftNotificationRepository.saveAll(capture(slot)) } returns  listOf()
+
+            service.generateAndSaveNotifications()
+            val notification1 = ShiftNotification(null, quantumId, today.plusDays(1).toLocalDate(), today, start, end, task, shiftType, ShiftActionType.EDIT.value, false)
+            assertThat(slot.captured).isEqualTo(listOf(notification1))
         }
 
         @Test
         fun `Should add edit types if it doesn't exist in our db`() {
             val today = LocalDateTime.now(clock)
             val quantumId = "CSTRIFE_GEN"
-            val shiftDate = today.plusDays(2)
+            val shiftDate = today.plusDays(2).toLocalDate()
             val start = 123L
             val end = 456L
             val task = "Guard Duty"
@@ -330,19 +442,19 @@ internal class NotificationServiceTest {
             every { shiftNotificationRepository.countAllByQuantumIdAndShiftDateAndShiftTypeAndShiftModified(quantumId, shiftDate, shiftType, today) } returns 0
 
             val slot = slot<Collection<ShiftNotification>>()
-            every { shiftNotificationRepository.saveAll(capture(slot)) } returns null
+            every { shiftNotificationRepository.saveAll(capture(slot)) } returns listOf()
 
             service.generateAndSaveNotifications()
 
             val expected = ShiftNotification(null, quantumId, shiftDate, today, start, end, task, shiftType, ShiftActionType.EDIT.value, false)
-            assertThat(slot.captured).isEqualTo(listOf<ShiftNotification>(expected))
+            assertThat(slot.captured).isEqualTo(listOf(expected))
         }
 
         @Test
         fun `Should disregard unprocessed duplicates`() {
             val today = LocalDateTime.now(clock)
             val quantumId = "CSTRIFE_GEN"
-            val shiftDate = today.plusDays(2)
+            val shiftDate = today.plusDays(2).toLocalDate()
             val start = 123L
             val end = 456L
             val task = "Guard Duty"
@@ -364,7 +476,7 @@ internal class NotificationServiceTest {
             every { shiftNotificationRepository.countAllByQuantumIdAndShiftDateAndShiftTypeAndShiftModified(quantumId, shiftDate, shiftType, today) } returns 1
 
             val slot = slot<Collection<ShiftNotification>>()
-            every { shiftNotificationRepository.saveAll(capture(slot)) } returns null
+            every { shiftNotificationRepository.saveAll(capture(slot)) } returns listOf()
 
             service.generateAndSaveNotifications()
 
@@ -376,7 +488,7 @@ internal class NotificationServiceTest {
             every { csrClient.getShiftNotifications(any(), any()) } returns listOf()
 
             val slot = slot<Collection<ShiftNotification>>()
-            every { shiftNotificationRepository.saveAll(capture(slot)) } returns null
+            every { shiftNotificationRepository.saveAll(capture(slot)) } returns listOf()
 
             service.generateAndSaveNotifications()
 
@@ -405,8 +517,8 @@ internal class NotificationServiceTest {
         fun `Should combine notifications to one user`() {
             val quantumId1 = "XYZ"
             val shiftNotifications: List<ShiftNotification> = listOf(
-                    ShiftNotification(1, quantumId1, LocalDateTime.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false),
-                    ShiftNotification(2, quantumId1, LocalDateTime.now(clock).plusDays(5), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
+                    ShiftNotification(1, quantumId1, LocalDate.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false),
+                    ShiftNotification(2, quantumId1, LocalDate.now(clock).plusDays(5), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
             )
 
             every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
@@ -424,7 +536,7 @@ internal class NotificationServiceTest {
         fun `Should send a notification to one user`() {
             val quantumId1 = "XYZ"
             val shiftNotifications: List<ShiftNotification> = listOf(
-                    ShiftNotification(1, quantumId1, LocalDateTime.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
+                    ShiftNotification(1, quantumId1, LocalDate.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
             )
 
             every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
@@ -442,7 +554,7 @@ internal class NotificationServiceTest {
         fun `Should not send a notification to one user if they have a blank Email and Email Preference`() {
             val quantumId1 = "XYZ"
             val shiftNotifications: List<ShiftNotification> = listOf(
-                    ShiftNotification(1, quantumId1, LocalDateTime.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
+                    ShiftNotification(1, quantumId1, LocalDate.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
             )
 
             every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
@@ -459,7 +571,7 @@ internal class NotificationServiceTest {
         fun `Should not send a notification to one user if they have a null Email and Email Preference`() {
             val quantumId1 = "XYZ"
             val shiftNotifications: List<ShiftNotification> = listOf(
-                    ShiftNotification(1, quantumId1, LocalDateTime.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
+                    ShiftNotification(1, quantumId1, LocalDate.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
             )
 
             every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
@@ -476,7 +588,7 @@ internal class NotificationServiceTest {
         fun `Should not send a notification to one user if they have a blank Sms and Sms Preference`() {
             val quantumId1 = "XYZ"
             val shiftNotifications: List<ShiftNotification> = listOf(
-                    ShiftNotification(1, quantumId1, LocalDateTime.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
+                    ShiftNotification(1, quantumId1, LocalDate.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
             )
 
             every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
@@ -493,7 +605,7 @@ internal class NotificationServiceTest {
         fun `Should not send a notification to one user if they have a null Sms and Sms Preference`() {
             val quantumId1 = "XYZ"
             val shiftNotifications: List<ShiftNotification> = listOf(
-                    ShiftNotification(1, quantumId1, LocalDateTime.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
+                    ShiftNotification(1, quantumId1, LocalDate.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
             )
 
             every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
@@ -511,7 +623,7 @@ internal class NotificationServiceTest {
         fun `Should respect communication preferences Email`() {
             val quantumId1 = "XYZ"
             val shiftNotifications: List<ShiftNotification> = listOf(
-                    ShiftNotification(1, quantumId1, LocalDateTime.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
+                    ShiftNotification(1, quantumId1, LocalDate.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
             )
 
             every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
@@ -529,7 +641,7 @@ internal class NotificationServiceTest {
         fun `Should respect communication preferences Sms`() {
             val quantumId1 = "XYZ"
             val shiftNotifications: List<ShiftNotification> = listOf(
-                    ShiftNotification(1, quantumId1, LocalDateTime.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
+                    ShiftNotification(1, quantumId1, LocalDate.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
             )
 
             every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
@@ -547,7 +659,7 @@ internal class NotificationServiceTest {
         fun `Should respect communication preferences None`() {
             val quantumId1 = "XYZ"
             val shiftNotifications: List<ShiftNotification> = listOf(
-                    ShiftNotification(1, quantumId1, LocalDateTime.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
+                    ShiftNotification(1, quantumId1, LocalDate.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
             )
 
             every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
@@ -564,8 +676,8 @@ internal class NotificationServiceTest {
             val quantumId1 = "XYZ"
             val quantumId2 = "ABC"
             val shiftNotifications: List<ShiftNotification> = listOf(
-                    ShiftNotification(1, quantumId1, LocalDateTime.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false),
-                    ShiftNotification(2, quantumId2, LocalDateTime.now(clock).plusDays(5), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
+                    ShiftNotification(1, quantumId1, LocalDate.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false),
+                    ShiftNotification(2, quantumId2, LocalDate.now(clock).plusDays(5), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
             )
 
             every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
@@ -586,8 +698,8 @@ internal class NotificationServiceTest {
             val quantumId1 = "XYZ"
             val quantumId2 = "ABC"
             val shiftNotifications: List<ShiftNotification> = listOf(
-                    ShiftNotification(1, quantumId1, LocalDateTime.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false),
-                    ShiftNotification(2, quantumId2, LocalDateTime.now(clock).plusDays(5), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
+                    ShiftNotification(1, quantumId1, LocalDate.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false),
+                    ShiftNotification(2, quantumId2, LocalDate.now(clock).plusDays(5), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
             )
 
             every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
@@ -612,9 +724,9 @@ internal class NotificationServiceTest {
             val quantumId3 = "123"
 
             val shiftNotifications: List<ShiftNotification> = listOf(
-                    ShiftNotification(1, quantumId1, LocalDateTime.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false),
-                    ShiftNotification(2, quantumId2, LocalDateTime.now(clock).plusDays(5), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false),
-                    ShiftNotification(3, quantumId3, LocalDateTime.now(clock).plusDays(5), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
+                    ShiftNotification(1, quantumId1, LocalDate.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false),
+                    ShiftNotification(2, quantumId2, LocalDate.now(clock).plusDays(5), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false),
+                    ShiftNotification(3, quantumId3, LocalDate.now(clock).plusDays(5), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
             )
 
             every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
@@ -639,7 +751,7 @@ internal class NotificationServiceTest {
         fun `Should only send most recent notification for duplicates'`() {
             val frozenClock = Clock.fixed(LocalDate.of(2010, 10, 29).atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
             val quantumId = "CSTRIFE_GEN"
-            val shiftDate = LocalDateTime.now(frozenClock).plusDays(4)
+            val shiftDate = LocalDate.now(frozenClock).plusDays(4)
             val modified1 = LocalDateTime.now(frozenClock).plusHours(1)
             val modified2 = LocalDateTime.now(frozenClock).plusHours(2)
             val modified3 = LocalDateTime.now(frozenClock).plusHours(3)
@@ -681,7 +793,7 @@ internal class NotificationServiceTest {
         fun `Should not send a notification if the user has a snooze preference set to future date`() {
             val quantumId1 = "XYZ"
             val shiftNotifications: List<ShiftNotification> = listOf(
-                    ShiftNotification(1, quantumId1, LocalDateTime.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
+                    ShiftNotification(1, quantumId1, LocalDate.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
             )
 
             val snoozePref = LocalDate.now(clock).plusDays(20)
@@ -699,7 +811,7 @@ internal class NotificationServiceTest {
         fun `Should not send a notification if the user has a snooze preference set to today's date`() {
             val quantumId1 = "XYZ"
             val shiftNotifications: List<ShiftNotification> = listOf(
-                    ShiftNotification(1, quantumId1, LocalDateTime.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
+                    ShiftNotification(1, quantumId1, LocalDate.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
             )
 
             val snoozePref = LocalDate.now(clock)
@@ -718,7 +830,7 @@ internal class NotificationServiceTest {
         fun `Should send a notification if the user has a snooze preference set to yesterday's date`() {
             val quantumId1 = "XYZ"
             val shiftNotifications: List<ShiftNotification> = listOf(
-                    ShiftNotification(1, quantumId1, LocalDateTime.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
+                    ShiftNotification(1, quantumId1, LocalDate.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
             )
 
             val snoozePref = LocalDate.now(clock).minusDays(1)
@@ -741,7 +853,7 @@ internal class NotificationServiceTest {
             val date = LocalDateTime.now(clock)
 
             val quantumId = "XYZ"
-            val shiftDate = date.plusDays(2)
+            val shiftDate = date.plusDays(2).toLocalDate()
             val shiftModified = date.plusDays(3)
             val taskStart = 123L
             val taskEnd = 456L
