@@ -16,8 +16,6 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.netty.http.client.HttpClient
 import reactor.netty.tcp.TcpClient
-import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftNotificaitonActionType
-import uk.gov.justice.digital.hmpps.cmd.api.utils.region.Regions
 import java.nio.charset.Charset
 import java.security.Key
 import java.time.LocalDateTime
@@ -29,6 +27,7 @@ class PrisonDiaryClient(val regionData: Regions, @Value("\${jwt.secret}") val se
 
     fun getShiftNotifications(planUnit: String, region: Int): Collection<ShiftNotificationDto> {
         val notifications : ShiftNotificationsDto
+        log.info("Finding shift notifications, PlanUnit $planUnit, Region $region")
         try {
              notifications = getAuthorisedWebClient(region)
                     .get()
@@ -48,6 +47,7 @@ class PrisonDiaryClient(val regionData: Regions, @Value("\${jwt.secret}") val se
 
     fun getShiftTaskNotifications(planUnit: String, region: Int): Collection<ShiftNotificationDto> {
         val notifications : ShiftTaskNotificationsDto
+        log.info("Finding shift task notifications, PlanUnit $planUnit, Region $region")
         try {
             notifications = getAuthorisedWebClient(region)
                     .get()
@@ -59,9 +59,11 @@ class PrisonDiaryClient(val regionData: Regions, @Value("\${jwt.secret}") val se
 
         } catch (e : Exception) {
             // 💩💩💩 The Legacy API returns 404 when there are no results.
-            log.info("Found 0 shift notifications, PlanUnit $planUnit, Region $region")
+            log.info("Found 0 shift task notifications, PlanUnit $planUnit, Region $region")
             return listOf()
         }
+        notifications.shiftTaskNotifications.forEach { notification -> notification.shiftType = if(notification.shiftType.equals(ShiftNotificationType.SHIFT.value, true)) { ShiftNotificationType.SHIFT_TASK.value } else { ShiftNotificationType.OVERTIME_TASK.value } }
+
         return notifications.shiftTaskNotifications
     }
 

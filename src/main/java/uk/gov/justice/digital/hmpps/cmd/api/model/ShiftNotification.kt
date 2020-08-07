@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.cmd.api.model
 
 import uk.gov.justice.digital.hmpps.cmd.api.client.ShiftNotificationDto
+import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.persistence.*
 
@@ -16,7 +17,7 @@ data class ShiftNotification(
         var quantumId: String,
 
         @Column(nullable = false)
-        var shiftDate: LocalDateTime,
+        var shiftDate: LocalDate,
 
         @Column(nullable = false)
         var shiftModified: LocalDateTime,

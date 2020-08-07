@@ -12,7 +12,7 @@ class ShiftNotificationTest {
         val date = LocalDateTime.now()
 
         val quantumId = "XYZ"
-        val shiftDate = date.plusDays(2)
+        val shiftDate = date.plusDays(2).toLocalDate()
         val shiftModified = date.plusDays(3)
         val taskStart = 123L
         val taskEnd = 456L
@@ -51,7 +51,7 @@ class ShiftNotificationTest {
         val date = LocalDateTime.now()
 
         val quantumId = "XYZ"
-        val shiftDate = date.plusDays(2)
+        val shiftDate = date.plusDays(2).toLocalDate()
         val shiftModified = date.plusDays(3)
         val taskStart = 123L
         val taskEnd = 456L
@@ -90,7 +90,7 @@ class ShiftNotificationTest {
         val date = LocalDateTime.now()
 
         val quantumId = "ABC"
-        val shiftDate = date.plusDays(4)
+        val shiftDate = date.plusDays(4).toLocalDate()
         val shiftModified = date.minusDays(7)
         val taskStart = 223L
         val taskEnd = 466L

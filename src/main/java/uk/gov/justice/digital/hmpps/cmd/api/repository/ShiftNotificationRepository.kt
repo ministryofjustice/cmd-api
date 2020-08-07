@@ -12,6 +12,6 @@ interface ShiftNotificationRepository : CrudRepository<ShiftNotification, Long> 
 
     fun findAllByProcessedIsFalse(): Collection<ShiftNotification>
 
-    fun countAllByQuantumIdAndShiftDateAndShiftType(quantumId: String, shiftDateTime: LocalDateTime, shiftNotificationType: String): Int
+    fun countAllByQuantumIdAndShiftDateAndShiftTypeAndShiftModified(quantumId: String, shiftDate: LocalDate, shiftNotificationType: String, shiftModified: LocalDateTime): Int
 
 }

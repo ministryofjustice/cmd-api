@@ -15,7 +15,7 @@ import java.time.ZoneId
 class NotificationDescriptionTest {
 
     private val clock = Clock.fixed(LocalDate.of(2020, 5, 3).atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
-    private val now = LocalDateTime.now(clock)
+    private val now = LocalDate.now(clock)
 
     @Nested
     @DisplayName("Shift, Edit, This year tests")
