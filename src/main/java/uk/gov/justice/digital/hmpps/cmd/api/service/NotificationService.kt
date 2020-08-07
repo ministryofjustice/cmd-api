@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
 import uk.gov.justice.digital.hmpps.cmd.api.repository.ShiftNotificationRepository
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.client.CsrClient
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.client.dto.ShiftNotificationDto
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.NotificationDescription.Companion.getDateTimeFormattedForTemplate
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.NotificationDescription.Companion.getNotificationDescription
@@ -23,6 +24,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*
+import java.util.stream.Collectors
 
 @Service
 @Transactional
@@ -45,7 +47,7 @@ class NotificationService(
 
     fun sendNotifications() {
         val unprocessedNotifications = shiftNotificationRepository.findAllByProcessedIsFalse()
-        log.debug("Sending notifications, found: ${unprocessedNotifications.size}")
+        log.info("Sending notifications, found: ${unprocessedNotifications.size}")
 
         unprocessedNotifications.groupBy { it.quantumId }
                 .forEach { group ->
@@ -65,28 +67,25 @@ class NotificationService(
         val newShiftNotifications = allPrisons
                 .flatMap { prison ->
                     csrClient.getShiftNotifications(prison.csrPlanUnit, prison.region)
-                            .filter { !checkIfNotificationsExist(it.quantumId, it.shiftDate, it.shiftType) }
-                            .map {
-                                it.actionType = ShiftActionType.ADD.value
-                                it
-                            }
                 }
 
         val newTaskNotifications = allPrisons
                 .flatMap { prison ->
-                    csrClient.getShiftTaskNotifications(prison.csrPlanUnit, prison.region)
+                  csrClient.getShiftTaskNotifications(prison.csrPlanUnit, prison.region)
                 }
 
         val allNotifications = newShiftNotifications.plus(newTaskNotifications)
+                .filter { it.actionType != ShiftActionType.UNCHANGED.value }
+                .filter { !checkIfNotificationsExist(it.quantumId, it.shiftDate, it.shiftType, it.shiftModified) }
         shiftNotificationRepository.saveAll(ShiftNotification.fromDto(allNotifications))
     }
 
-    private fun checkIfNotificationsExist(quantumId: String, shiftDate: LocalDateTime, shiftNotificationType: String): Boolean{
-        return shiftNotificationRepository.countAllByQuantumIdAndShiftDateAndShiftType(
+    private fun checkIfNotificationsExist(quantumId: String, shiftDate: LocalDate, shiftNotificationType: String, shiftModified : LocalDateTime): Boolean{
+        return shiftNotificationRepository.countAllByQuantumIdAndShiftDateAndShiftTypeAndShiftModified(
                 quantumId,
                 shiftDate,
-                shiftNotificationType
-        ) > 0
+                shiftNotificationType,
+                shiftModified) > 0
     }
 
     private fun calculateStartDateTime(fromParam: Optional<LocalDate>, toParam: Optional<LocalDate>): LocalDateTime {
@@ -134,18 +133,19 @@ class NotificationService(
     }
 
     /*
-    Group the notifications into 10s -
-    Notify doesn't support vertical lists
-    so we have to have a fixed size template with 'slots'
-    10 means we can cover 99.9% of scenarios in one email.
+    * Chunk the notifications into 10s -
+    * Notify doesn't support vertical lists
+    * so we have to have a fixed size template with 'slots'
+    * 10 means we can cover 99.9% of scenarios in one email.
     */
     private fun sendNotification(quantumId: String, notificationGroup: List<ShiftNotification>) {
         val userPreference = userPreferenceService.getOrCreateUserPreference(quantumId)
 
-        data class Key(val shiftDate: LocalDateTime, val shiftType: String, val quantumId: String)
+        data class Key(val shiftDate: LocalDate, val shiftType: String, val quantumId: String)
 
         fun ShiftNotification.toKeyDuplicates() = Key(this.shiftDate, this.shiftType, this.quantumId)
 
+        // Only send the latest notification for a shift if there are multiple
         val mostRecentNotifications = notificationGroup
                 .groupBy { it.toKeyDuplicates() }
                 .map { (key, value) -> value.maxBy { it.shiftModified } }
@@ -188,7 +188,7 @@ class NotificationService(
     private fun generateTemplateValues(chunk: List<ShiftNotification>, communicationPreference: CommunicationPreference): MutableMap<String, String?> {
         val personalisation = mutableMapOf<String, String?>()
         // Get the oldest modified date "Changes since"
-        personalisation["title"] = chunk.minBy { it.shiftModified }?.shiftModified?.let { "Changes since ${getDateTimeFormattedForTemplate(it, clock)}" }
+        personalisation["title"] = chunk.minBy { it.shiftModified }?.shiftModified?.let { "Changes since ${getDateTimeFormattedForTemplate(it.toLocalDate(), clock)}" }
         // Map each notification onto an predefined key
         personalisation.putAll(
                 notificationKeys

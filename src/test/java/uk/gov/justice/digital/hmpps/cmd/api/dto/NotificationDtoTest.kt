@@ -64,7 +64,7 @@ class NotificationDtoTest {
             return ShiftNotification(
                     1L,
                     quantumId,
-                    shiftDate,
+                    shiftDate.toLocalDate(),
                     shiftModified,
                     taskStart,
                     taskEnd,
@@ -91,7 +91,7 @@ class NotificationDtoTest {
             return ShiftNotification(
                     1L,
                     quantumId,
-                    shiftDate,
+                    shiftDate.toLocalDate(),
                     shiftModified,
                     taskStart,
                     taskEnd,

@@ -12,7 +12,7 @@ enum class ShiftNotificationType(val value: String, val description: String) {
     companion object {
         fun from(value: String): ShiftNotificationType {
             return Arrays.stream(values())
-                    .filter { type -> type.value == value }
+                    .filter { type -> type.value.equals(value,true) }
                     .findFirst().orElseThrow { IllegalArgumentException() }
         }
     }

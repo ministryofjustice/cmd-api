@@ -9,7 +9,7 @@ image:
   port: 8080
 
 env:
-  JAVA_OPTS: "-Xmx1024m"
+  JAVA_OPTS: "-Xmx1536m"
   SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json"
   OAUTH_ROOT_URL: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth"
   CSR_REGION1_URL: "https://api.check-my-diary-dev.hmpps.dsd.io/api"
