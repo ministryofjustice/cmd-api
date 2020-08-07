@@ -238,7 +238,7 @@ internal class NotificationServiceTest {
             )
 
             every { csrClient.getShiftTaskNotifications(any(), any()) } returns listOf()
-            every { shiftNotificationRepository.countAllByQuantumIdAndShiftDateAndShiftType(quantumId, shiftDate, shiftType) } returns 1
+            every { shiftNotificationRepository.countAllByQuantumIdAndShiftDateAndShiftTypeAndShiftModified(quantumId, shiftDate, shiftType, today) } returns 1
 
             val slot = slot<Collection<ShiftNotification>>()
             every { shiftNotificationRepository.saveAll(capture(slot)) } returns null
@@ -292,7 +292,7 @@ internal class NotificationServiceTest {
             every { csrClient.getShiftNotifications(any(), any()) } returns listOf(dto1, dto2, dto3)
 
             every { csrClient.getShiftTaskNotifications(any(), any()) } returns listOf()
-            every { shiftNotificationRepository.countAllByQuantumIdAndShiftDateAndShiftType(quantumId, any(), shiftType) } returns 0
+            every { shiftNotificationRepository.countAllByQuantumIdAndShiftDateAndShiftTypeAndShiftModified(quantumId, any(), shiftType, today) } returns 0
 
             val slot = slot<Collection<ShiftNotification>>()
             every { shiftNotificationRepository.saveAll(capture(slot)) } returns null
@@ -327,7 +327,7 @@ internal class NotificationServiceTest {
             every { csrClient.getShiftNotifications(any(), any()) } returnsMany listOf(
                     listOf(dto1)
             )
-            every { shiftNotificationRepository.countAllByQuantumIdAndShiftDateAndShiftType(quantumId, shiftDate, shiftType) } returns 0
+            every { shiftNotificationRepository.countAllByQuantumIdAndShiftDateAndShiftTypeAndShiftModified(quantumId, shiftDate, shiftType, today) } returns 0
 
             val slot = slot<Collection<ShiftNotification>>()
             every { shiftNotificationRepository.saveAll(capture(slot)) } returns null
@@ -361,7 +361,7 @@ internal class NotificationServiceTest {
             every { csrClient.getShiftNotifications(any(), any()) } returnsMany listOf(
                     listOf(dto1)
             )
-            every { shiftNotificationRepository.countAllByQuantumIdAndShiftDateAndShiftType(quantumId, shiftDate, shiftType) } returns 1
+            every { shiftNotificationRepository.countAllByQuantumIdAndShiftDateAndShiftTypeAndShiftModified(quantumId, shiftDate, shiftType, today) } returns 1
 
             val slot = slot<Collection<ShiftNotification>>()
             every { shiftNotificationRepository.saveAll(capture(slot)) } returns null
