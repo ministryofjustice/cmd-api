@@ -25,7 +25,7 @@ class ShiftNotificationTest {
         val shiftNotification = ShiftNotification(
                 1L,
                 quantumId,
-                shiftDate,
+                shiftDate.toLocalDate(),
                 shiftModified,
                 taskStart,
                 taskEnd,
@@ -63,7 +63,7 @@ class ShiftNotificationTest {
 
         val shiftNotificationDto = ShiftNotificationDto(
                 quantumId,
-                shiftDate,
+                shiftDate.toLocalDate(),
                 shiftModified,
                 taskStart,
                 taskEnd,
@@ -102,7 +102,7 @@ class ShiftNotificationTest {
 
         val shiftNotificationDto = ShiftNotificationDto(
                 quantumId,
-                shiftDate,
+                shiftDate.toLocalDate(),
                 shiftModified,
                 taskStart,
                 taskEnd,

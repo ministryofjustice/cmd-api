@@ -507,7 +507,6 @@ internal class NotificationServiceTest {
         }
 
 
-
         @Test
         fun `Should respect communication preferences Email`() {
             val quantumId1 = "XYZ"

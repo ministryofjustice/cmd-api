@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.ap
 import uk.gov.justice.digital.hmpps.cmd.api.model.ShiftNotification
 import java.time.Clock
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
@@ -19,7 +18,7 @@ class NotificationDescription {
             return "${bulletPoint}Your ${shiftNotificationType.description} on $date ${taskDescription}has ${shiftActionType.description}."
         }
 
-        fun getDateTimeFormattedForTemplate(shiftDate: LocalDateTime, clock: Clock): String {
+        fun getDateTimeFormattedForTemplate(shiftDate: LocalDate, clock: Clock): String {
             val day = shiftDate.dayOfMonth
             val ordinal = if (day in 11..13) {
                 "th"

@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
 import uk.gov.justice.digital.hmpps.cmd.api.repository.ShiftNotificationRepository
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.client.CsrClient
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.client.dto.ShiftNotificationDto
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.NotificationDescription.Companion.getDateTimeFormattedForTemplate
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.NotificationDescription.Companion.getNotificationDescription
@@ -23,6 +24,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*
+import java.util.stream.Collectors
 
 @Service
 @Transactional
@@ -65,21 +67,20 @@ class NotificationService(
         val newShiftNotifications = allPrisons
                 .flatMap { prison ->
                     csrClient.getShiftNotifications(prison.csrPlanUnit, prison.region)
-                            .filter { !checkIfNotificationsExist(it.quantumId, it.shiftDate, it.shiftType, it.shiftModified) }
-
                 }
 
         val newTaskNotifications = allPrisons
                 .flatMap { prison ->
                   csrClient.getShiftTaskNotifications(prison.csrPlanUnit, prison.region)
-                           .filter { !checkIfNotificationsExist(it.quantumId, it.shiftDate, it.shiftType, it.shiftModified) }
                 }
 
         val allNotifications = newShiftNotifications.plus(newTaskNotifications)
+                .filter { it.actionType == ShiftActionType.UNCHANGED.value }
+                .filter { !checkIfNotificationsExist(it.quantumId, it.shiftDate, it.shiftType, it.shiftModified) }
         shiftNotificationRepository.saveAll(ShiftNotification.fromDto(allNotifications))
     }
 
-    private fun checkIfNotificationsExist(quantumId: String, shiftDate: LocalDateTime, shiftNotificationType: String, shiftModified : LocalDateTime): Boolean{
+    private fun checkIfNotificationsExist(quantumId: String, shiftDate: LocalDate, shiftNotificationType: String, shiftModified : LocalDateTime): Boolean{
         return shiftNotificationRepository.countAllByQuantumIdAndShiftDateAndShiftTypeAndShiftModified(
                 quantumId,
                 shiftDate,
@@ -140,7 +141,7 @@ class NotificationService(
     private fun sendNotification(quantumId: String, notificationGroup: List<ShiftNotification>) {
         val userPreference = userPreferenceService.getOrCreateUserPreference(quantumId)
 
-        data class Key(val shiftDate: LocalDateTime, val shiftType: String, val quantumId: String)
+        data class Key(val shiftDate: LocalDate, val shiftType: String, val quantumId: String)
 
         fun ShiftNotification.toKeyDuplicates() = Key(this.shiftDate, this.shiftType, this.quantumId)
 
@@ -187,7 +188,7 @@ class NotificationService(
     private fun generateTemplateValues(chunk: List<ShiftNotification>, communicationPreference: CommunicationPreference): MutableMap<String, String?> {
         val personalisation = mutableMapOf<String, String?>()
         // Get the oldest modified date "Changes since"
-        personalisation["title"] = chunk.minBy { it.shiftModified }?.shiftModified?.let { "Changes since ${getDateTimeFormattedForTemplate(it, clock)}" }
+        personalisation["title"] = chunk.minBy { it.shiftModified }?.shiftModified?.let { "Changes since ${getDateTimeFormattedForTemplate(it.toLocalDate(), clock)}" }
         // Map each notification onto an predefined key
         personalisation.putAll(
                 notificationKeys

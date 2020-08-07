@@ -29,6 +29,7 @@ class CsrClient(val regionData: Regions, @Value("\${jwt.secret}") val secret: St
 
     fun getShiftNotifications(planUnit: String, region: Int): Collection<ShiftNotificationDto> {
         val notifications : ShiftNotificationsDto
+        log.info("Finding shift notifications, PlanUnit $planUnit, Region $region")
         try {
              notifications = getAuthorisedWebClient(region)
                     .get()
@@ -48,6 +49,7 @@ class CsrClient(val regionData: Regions, @Value("\${jwt.secret}") val secret: St
 
     fun getShiftTaskNotifications(planUnit: String, region: Int): Collection<ShiftNotificationDto> {
         val notifications : ShiftTaskNotificationsDto
+        log.info("Finding shift task notifications, PlanUnit $planUnit, Region $region")
         try {
             notifications = getAuthorisedWebClient(region)
                     .get()
@@ -59,7 +61,7 @@ class CsrClient(val regionData: Regions, @Value("\${jwt.secret}") val secret: St
 
         } catch (e : Exception) {
             // 💩💩💩 The Legacy API returns 404 when there are no results.
-            log.info("Found 0 shift notifications, PlanUnit $planUnit, Region $region")
+            log.info("Found 0 shift task notifications, PlanUnit $planUnit, Region $region")
             return listOf()
         }
         notifications.shiftTaskNotifications.forEach { notification -> notification.shiftType = if(notification.shiftType.equals(ShiftNotificationType.SHIFT.value, true)) { ShiftNotificationType.SHIFT_TASK.value } else { ShiftNotificationType.OVERTIME_TASK.value } }

@@ -79,7 +79,7 @@ class ShiftNotificationRepositoryTest(
 
             val notifications = repository.countAllByQuantumIdAndShiftDateAndShiftTypeAndShiftModified(
                     "XYZ",
-                    date,
+                    date.toLocalDate(),
                     "SHIFT",
                     date)
             assertThat(notifications).isEqualTo(0)
@@ -93,7 +93,7 @@ class ShiftNotificationRepositoryTest(
 
             val notifications = repository.countAllByQuantumIdAndShiftDateAndShiftTypeAndShiftModified(
                     "XYZ",
-                    date,
+                    date.toLocalDate(),
                     "SHIFT",
                     date)
             assertThat(notifications).isEqualTo(1)
@@ -108,7 +108,7 @@ class ShiftNotificationRepositoryTest(
 
             val notifications = repository.countAllByQuantumIdAndShiftDateAndShiftTypeAndShiftModified(
                     "XYZ",
-                    date,
+                    date.toLocalDate(),
                     "SHIFT",
                     date)
             assertThat(notifications).isEqualTo(2)
@@ -179,7 +179,7 @@ class ShiftNotificationRepositoryTest(
             return ShiftNotification(
                     1L,
                     quantumId,
-                    shiftDate,
+                    shiftDate.toLocalDate(),
                     shiftModified,
                     taskStart,
                     taskEnd,
