@@ -396,34 +396,4 @@ internal class NotificationServiceTest_Generate_Shift_Task {
         }
 
     }
-
-    companion object {
-        fun getValidShiftNotification(clock: Clock): ShiftNotification {
-            val date = LocalDateTime.now(clock)
-
-            val quantumId = "XYZ"
-            val shiftDate = date.plusDays(2).toLocalDate()
-            val shiftModified = date.plusDays(3)
-            val taskStart = 123L
-            val taskEnd = 456L
-            val task = "Any Activity"
-            val shiftType = "shift"
-            val actionType = "add"
-
-            val processed = false
-
-            return ShiftNotification(
-                    1L,
-                    quantumId,
-                    shiftDate,
-                    shiftModified,
-                    taskStart,
-                    taskEnd,
-                    task,
-                    shiftType,
-                    actionType,
-                    processed
-            )
-        }
-    }
 }

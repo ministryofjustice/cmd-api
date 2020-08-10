@@ -67,7 +67,14 @@ class NotificationService(
         val newShiftNotifications = allPrisons
                 .flatMap { prison ->
                     csrClient.getShiftNotifications(prison.csrPlanUnit, prison.region)
-                }.distinct().filter { it.actionType != ShiftActionType.EDIT.value }
+                }.distinct()
+                .map{
+                    if(it.actionType == ShiftActionType.EDIT.value && !checkIfNotificationsExist(it.quantumId, it.shiftDate, it.shiftType, it.shiftModified)) {
+                        it.actionType = ShiftActionType.ADD.value
+                    }
+                    it
+                }
+                .filter { it.actionType != ShiftActionType.EDIT.value }
 
         val newTaskNotifications = allPrisons
                 .flatMap { prison ->

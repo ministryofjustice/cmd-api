@@ -410,35 +410,40 @@ internal class NotificationServiceTest_Generate_Shift {
             assertThat(slot.captured).isEqualTo(listOf<ShiftNotification>())
         }
 
-    }
-
-    companion object {
-        fun getValidShiftNotification(clock: Clock): ShiftNotification {
-            val date = LocalDateTime.now(clock)
-
-            val quantumId = "XYZ"
-            val shiftDate = date.plusDays(2).toLocalDate()
-            val shiftModified = date.plusDays(3)
-            val taskStart = 123L
-            val taskEnd = 456L
-            val task = "Any Activity"
-            val shiftType = "shift"
-            val actionType = "add"
-
-            val processed = false
-
-            return ShiftNotification(
-                    1L,
+        @Test
+        fun `Should Change an Edit with no existing Add in the database to an Edit`() {
+            val today = LocalDateTime.now(clock)
+            val quantumId = "CSTRIFE_GEN"
+            val shiftDate = today.plusDays(2).toLocalDate()
+            val start = 123L
+            val end = 456L
+            val task = "Guard Duty"
+            val shiftType = "Shift"
+            val dto1 = ShiftNotificationDto(
                     quantumId,
                     shiftDate,
-                    shiftModified,
-                    taskStart,
-                    taskEnd,
+                    today,
+                    start,
+                    end,
                     task,
                     shiftType,
-                    actionType,
-                    processed
+                    ShiftActionType.EDIT.value
             )
+
+            every { csrClient.getShiftNotifications(any(), any()) } returns listOf(dto1)
+            every { csrClient.getShiftTaskNotifications(any(), any()) } returns listOf()
+
+            every { shiftNotificationRepository.countAllByQuantumIdAndShiftDateAndShiftTypeAndShiftModified(quantumId, shiftDate, shiftType, today) } returns 0
+
+            val slot = slot<Collection<ShiftNotification>>()
+            every { shiftNotificationRepository.saveAll(capture(slot)) } returns listOf()
+
+            service.generateAndSaveNotifications()
+
+            val expected = ShiftNotification(null, quantumId, shiftDate, today, start, end, task, shiftType, ShiftActionType.ADD.value, false)
+            assertThat(slot.captured).isEqualTo(listOf(expected))
         }
+
     }
+
 }
