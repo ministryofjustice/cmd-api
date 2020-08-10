@@ -16,6 +16,10 @@ enum class TaskType(val value: String, val description: String) {
     TRAINING_EXTERNAL("training_external", "Training - External"),
     TRAINING_INTERNAL("training_internal", "Training - Internal");
 
+    fun descriptionEquals(value: String) : Boolean {
+        return value.toLowerCase() == this.description.toLowerCase()
+    }
+
     companion object {
         fun from(value: String): TaskType {
             return Arrays.stream(values())

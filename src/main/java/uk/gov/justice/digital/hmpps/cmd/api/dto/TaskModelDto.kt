@@ -8,7 +8,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 @ApiModel(description = "Day model")
-data class DayModelDto @JsonCreator constructor(
+data class TaskModelDto @JsonCreator constructor(
         @ApiModelProperty(value = "The date of the shift", position = 1, example = "2020-04-20")
         @JsonProperty("date")
         val date : LocalDate,
@@ -19,7 +19,7 @@ data class DayModelDto @JsonCreator constructor(
 
         @ApiModelProperty(value = "A collection of tasks that make up the shift", position = 3)
         @JsonProperty("tasks")
-        val tasks : Collection<DayEventDto>
+        val tasks : Collection<TaskEventDto>
 )
 
 

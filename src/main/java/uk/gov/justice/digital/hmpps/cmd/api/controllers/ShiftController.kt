@@ -42,17 +42,6 @@ class ShiftController(val shiftService: ShiftService) {
         return ResponseEntity.ok(result)
     }
 
-    @ApiOperation(value = "Retrieve all overtime for a user between two dates")
-    @ApiResponses(value = [
-        ApiResponse(code = 200, message = "OK")
-    ])
-    @GetMapping("/shifts/overtime")
-    fun getOvertimeShifts(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) from: Optional<LocalDate>,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: Optional<LocalDate>): ResponseEntity<Collection<DayModelDto>> {
-        return ResponseEntity.ok(listOf())//shiftService.getOvertimeShiftsBetween(from, to))
-    }
-
     @ApiOperation(value = "Retrieve a shift for a user for a specific")
     @ApiResponses(value = [
         ApiResponse(code = 200, message = "OK")
