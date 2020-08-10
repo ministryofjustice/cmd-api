@@ -286,6 +286,7 @@ internal class NotificationServiceTest_Generate_Shift {
             every { csrClient.getShiftNotifications(any(), any()) } returns listOf(dto1)
             every { csrClient.getShiftTaskNotifications(any(), any()) } returns listOf()
 
+            every { shiftNotificationRepository.countAllByQuantumIdAndShiftDateAndShiftTypeAndShiftModifiedAndActionType(quantumId, shiftDate, shiftType, today, ShiftActionType.ADD.value) } returns 1
             every { shiftNotificationRepository.countAllByQuantumIdAndShiftDateAndShiftTypeAndShiftModified(quantumId, shiftDate, shiftType, today) } returns 0
 
             val slot = slot<Collection<ShiftNotification>>()
@@ -433,6 +434,7 @@ internal class NotificationServiceTest_Generate_Shift {
             every { csrClient.getShiftNotifications(any(), any()) } returns listOf(dto1)
             every { csrClient.getShiftTaskNotifications(any(), any()) } returns listOf()
 
+            every { shiftNotificationRepository.countAllByQuantumIdAndShiftDateAndShiftTypeAndShiftModifiedAndActionType(quantumId, shiftDate, shiftType, today, ShiftActionType.ADD.value) } returns 0
             every { shiftNotificationRepository.countAllByQuantumIdAndShiftDateAndShiftTypeAndShiftModified(quantumId, shiftDate, shiftType, today) } returns 0
 
             val slot = slot<Collection<ShiftNotification>>()

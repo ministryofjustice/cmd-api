@@ -69,7 +69,7 @@ class NotificationService(
                     csrClient.getShiftNotifications(prison.csrPlanUnit, prison.region)
                 }.distinct()
                 .map{
-                    if(it.actionType == ShiftActionType.EDIT.value && !checkIfNotificationsExist(it.quantumId, it.shiftDate, it.shiftType, it.shiftModified)) {
+                    if(it.actionType == ShiftActionType.EDIT.value && !checkIfEditNotificationsHasCorrespondingAdd(it.quantumId, it.shiftDate, it.shiftType, it.shiftModified)) {
                         it.actionType = ShiftActionType.ADD.value
                     }
                     it
@@ -93,6 +93,15 @@ class NotificationService(
                 shiftDate,
                 shiftNotificationType,
                 shiftModified) > 0
+    }
+
+    private fun checkIfEditNotificationsHasCorrespondingAdd(quantumId: String, shiftDate: LocalDate, shiftNotificationType: String, shiftModified : LocalDateTime): Boolean{
+        return shiftNotificationRepository.countAllByQuantumIdAndShiftDateAndShiftTypeAndShiftModifiedAndActionType(
+                quantumId,
+                shiftDate,
+                shiftNotificationType,
+                shiftModified,
+                ShiftActionType.ADD.value) > 0
     }
 
     private fun calculateStartDateTime(fromParam: Optional<LocalDate>, toParam: Optional<LocalDate>): LocalDateTime {
