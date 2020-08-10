@@ -31,7 +31,7 @@ class NotificationDtoTest {
         Assertions.assertThat(notificationDtos).hasSize(1)
 
         val first = notificationDtos[0]
-        Assertions.assertThat(first.description).isEqualTo("Your shift on Sunday, 3rd May (Any Activity, 00:02:03 - 00:07:36) has been added.")
+        Assertions.assertThat(first.description).isEqualTo("Your shift on Sunday, 3rd May (00:02:03 - 00:07:36) has been added as Any Activity.")
         Assertions.assertThat(first.shiftModified).isEqualTo(shifts[0].shiftModified)
         Assertions.assertThat(first.processed).isEqualTo(shifts[0].processed)
     }
