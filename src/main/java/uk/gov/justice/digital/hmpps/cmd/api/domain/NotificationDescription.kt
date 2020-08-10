@@ -10,12 +10,15 @@ class NotificationDescription {
 
     companion object {
         fun getNotificationDescription(shiftNotification: ShiftNotification, communicationPreference: CommunicationPreference, clock: Clock): String {
+
             val bulletPoint = getOptionalBulletPoint(communicationPreference)
             val date = getDateTimeFormattedForTemplate(shiftNotification.shiftDate, clock)
-            val taskDescription = getOptionalTaskDescription(shiftNotification.task, shiftNotification.taskStart, shiftNotification.taskEnd)
-            val shiftNotificationType = ShiftNotificationType.from(shiftNotification.shiftType)
+            val taskTime = getOptionalTaskDescription(shiftNotification.taskStart, shiftNotification.taskEnd)
             val shiftActionType = ShiftActionType.from(shiftNotification.actionType)
-            return "${bulletPoint}Your ${shiftNotificationType.description} on $date ${taskDescription}has ${shiftActionType.description}."
+            val taskTo = getOptionalTaskTo(shiftNotification.task, communicationPreference, shiftActionType)
+            val shiftNotificationType = ShiftNotificationType.from(shiftNotification.shiftType)
+
+            return "${bulletPoint}Your ${shiftNotificationType.description} on $date ${taskTime}has ${shiftActionType.description}${taskTo}."
         }
 
         fun getDateTimeFormattedForTemplate(shiftDate: LocalDate, clock: Clock): String {
@@ -35,11 +38,31 @@ class NotificationDescription {
             return DateTimeFormatter.ofPattern("EEEE, d'$ordinal' MMMM$year").format(shiftDate)
         }
 
-        private fun getOptionalTaskDescription(task: String?, from: Long?, to: Long?): String {
-            return if (task != null && task.isNotEmpty() && from != null && to != null) {
+        private fun getOptionalTaskDescription(from: Long?, to: Long?): String {
+            return if (from != null && from != 0L && to != null && to != 0L) {
                 val fromTime = LocalTime.ofSecondOfDay(from)
                 val toTime = LocalTime.ofSecondOfDay(to)
-                "($task, $fromTime - $toTime) "
+                "($fromTime - $toTime) "
+            } else ""
+        }
+
+        private fun getOptionalTaskTo(task: String?, communicationPreference: CommunicationPreference, shiftActionType: ShiftActionType): String {
+            return if (communicationPreference == CommunicationPreference.NONE && task != null && task.isNotEmpty()) {
+                when(shiftActionType) {
+                    ShiftActionType.ADD -> {
+                        " as $task"
+                    }
+                    ShiftActionType.EDIT -> {
+                        " to $task"
+                    }
+                    ShiftActionType.DELETE -> {
+                        " (was $task)"
+                    }
+                    else -> {
+                        ""
+                    }
+                }
+
             } else ""
         }
 
