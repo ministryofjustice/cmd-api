@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.test.context.ActiveProfiles
 import uk.gov.justice.digital.hmpps.cmd.api.model.ShiftNotification
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftActionType
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftNotificationType
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -80,7 +82,7 @@ class ShiftNotificationRepositoryTest(
             val notifications = repository.countAllByQuantumIdAndShiftDateAndShiftTypeAndShiftModified(
                     "XYZ",
                     date.toLocalDate(),
-                    "SHIFT",
+                    ShiftNotificationType.SHIFT.value,
                     date)
             assertThat(notifications).isEqualTo(0)
         }
@@ -94,7 +96,7 @@ class ShiftNotificationRepositoryTest(
             val notifications = repository.countAllByQuantumIdAndShiftDateAndShiftTypeAndShiftModified(
                     "XYZ",
                     date.toLocalDate(),
-                    "SHIFT",
+                    ShiftNotificationType.SHIFT.value,
                     date)
             assertThat(notifications).isEqualTo(1)
         }
@@ -109,8 +111,52 @@ class ShiftNotificationRepositoryTest(
             val notifications = repository.countAllByQuantumIdAndShiftDateAndShiftTypeAndShiftModified(
                     "XYZ",
                     date.toLocalDate(),
-                    "SHIFT",
+                    ShiftNotificationType.SHIFT.value,
                     date)
+            assertThat(notifications).isEqualTo(2)
+        }
+
+        @Test
+        fun `Add Type Check Should return count of 0 matches`() {
+            val date = now.plusDays(3).atStartOfDay()
+
+            val notifications = repository.countAllByQuantumIdAndShiftDateAndShiftTypeAndShiftModifiedAndActionType(
+                    "XYZ",
+                    date.toLocalDate(),
+                    ShiftNotificationType.SHIFT.value,
+                    date,
+                    ShiftActionType.ADD.value)
+            assertThat(notifications).isEqualTo(0)
+        }
+
+        @Test
+        fun `Add Type Check Should return count if 1 matches`() {
+            val date = now.plusDays(3).atStartOfDay()
+            val notification = getValidShiftNotification(date, date)
+            repository.save(notification)
+
+            val notifications = repository.countAllByQuantumIdAndShiftDateAndShiftTypeAndShiftModifiedAndActionType(
+                    "XYZ",
+                    date.toLocalDate(),
+                    ShiftNotificationType.SHIFT.value,
+                    date,
+                    ShiftActionType.ADD.value)
+            assertThat(notifications).isEqualTo(1)
+        }
+
+
+        @Test
+        fun `Add Type Check Should return count if 2 matches`() {
+            val date = now.plusDays(3).atStartOfDay()
+            val notification = getValidShiftNotification(date, date)
+            repository.saveAll(listOf(notification, notification))
+
+            val notifications = repository.countAllByQuantumIdAndShiftDateAndShiftTypeAndShiftModifiedAndActionType(
+                    "XYZ",
+                    date.toLocalDate(),
+                    ShiftNotificationType.SHIFT.value,
+                    date,
+                    ShiftActionType.ADD.value)
             assertThat(notifications).isEqualTo(2)
         }
     }
@@ -173,8 +219,8 @@ class ShiftNotificationRepositoryTest(
             val taskStart = 123L
             val taskEnd = 456L
             val task = "Any Activity"
-            val shiftType = "SHIFT"
-            val actionType = "ADD"
+            val shiftType = ShiftNotificationType.SHIFT.value
+            val actionType = ShiftActionType.ADD.value
 
             return ShiftNotification(
                     1L,

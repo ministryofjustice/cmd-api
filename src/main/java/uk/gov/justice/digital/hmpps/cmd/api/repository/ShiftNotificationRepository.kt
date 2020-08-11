@@ -16,4 +16,6 @@ interface ShiftNotificationRepository : CrudRepository<ShiftNotification, Long> 
 
     fun countAllByQuantumIdAndShiftDateAndShiftTypeAndShiftModified(quantumId: String, shiftDate: LocalDate, shiftNotificationType: String, shiftModified: LocalDateTime): Int
 
+    fun countAllByQuantumIdAndShiftDateAndShiftTypeAndShiftModifiedAndActionType(quantumId: String, shiftDate: LocalDate, shiftNotificationType: String, shiftModified: LocalDateTime, actionType: String): Int
+
 }

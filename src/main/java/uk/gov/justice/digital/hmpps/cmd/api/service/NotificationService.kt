@@ -67,12 +67,19 @@ class NotificationService(
         val newShiftNotifications = allPrisons
                 .flatMap { prison ->
                     csrClient.getShiftNotifications(prison.csrPlanUnit, prison.region)
+                }.distinct()
+                .map{
+                    if(it.actionType == ShiftActionType.EDIT.value && !checkIfEditNotificationsHasCorrespondingAdd(it.quantumId, it.shiftDate, it.shiftType, it.shiftModified)) {
+                        it.actionType = ShiftActionType.ADD.value
+                    }
+                    it
                 }
+                .filter { it.actionType != ShiftActionType.EDIT.value }
 
         val newTaskNotifications = allPrisons
                 .flatMap { prison ->
                   csrClient.getShiftTaskNotifications(prison.csrPlanUnit, prison.region)
-                }
+                }.distinct()
 
         val allNotifications = newShiftNotifications.plus(newTaskNotifications)
                 .filter { it.actionType != ShiftActionType.UNCHANGED.value }
@@ -86,6 +93,15 @@ class NotificationService(
                 shiftDate,
                 shiftNotificationType,
                 shiftModified) > 0
+    }
+
+    private fun checkIfEditNotificationsHasCorrespondingAdd(quantumId: String, shiftDate: LocalDate, shiftNotificationType: String, shiftModified : LocalDateTime): Boolean{
+        return shiftNotificationRepository.countAllByQuantumIdAndShiftDateAndShiftTypeAndShiftModifiedAndActionType(
+                quantumId,
+                shiftDate,
+                shiftNotificationType,
+                shiftModified,
+                ShiftActionType.ADD.value) > 0
     }
 
     private fun calculateStartDateTime(fromParam: Optional<LocalDate>, toParam: Optional<LocalDate>): LocalDateTime {
