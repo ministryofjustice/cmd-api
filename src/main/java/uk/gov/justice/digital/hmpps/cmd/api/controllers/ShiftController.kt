@@ -9,7 +9,7 @@ import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.dto.DayModelDto
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.dto.DayEventDto
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.dto.TaskModelDto
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.service.ShiftService
 import java.time.LocalDate
 import java.util.*
@@ -37,19 +37,9 @@ class ShiftController(val shiftService: ShiftService) {
     ])
     @GetMapping("/shifts/tasks")
     fun getShift(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) date: Optional<LocalDate>): ResponseEntity<Collection<DayEventDto>> {
-        val result = shiftService.getShiftFor(date)
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) date: Optional<LocalDate>): ResponseEntity<TaskModelDto> {
+        val result = shiftService.getTaskDetailFor(date)
         return ResponseEntity.ok(result)
-    }
-
-    @ApiOperation(value = "Retrieve a shift for a user for a specific")
-    @ApiResponses(value = [
-        ApiResponse(code = 200, message = "OK")
-    ])
-    @GetMapping("/shifts/overtime/tasks")
-    fun getOvertimeShift(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) date: Optional<LocalDate>): ResponseEntity<Collection<DayEventDto>> {
-        return ResponseEntity.ok(listOf())//shiftService.getOvertimeShiftFor(date))
     }
 
 }

@@ -1,35 +1,26 @@
 package uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.dto
 
 import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.annotations.ApiModel
 import io.swagger.annotations.ApiModelProperty
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 
 @ApiModel(description = "Shift")
 data class DayEventDto @JsonCreator constructor(
-        @ApiModelProperty(value = "The date of the shift", position = 1, example = "2020-04-20")
-        @JsonProperty("date")
-        val date : LocalDate,
 
-        @ApiModelProperty(value = "The readable label for the task", position = 2, example = "Internal Training")
-        @JsonProperty("label")
-        val label : String,
+        @ApiModelProperty(value = "The time the even occours at", position = 1, example = "07:40")
+        @JsonProperty("eventTime")
+        val eventTime : LocalTime,
 
-        @ApiModelProperty(value = "The type of task", position = 3, example = "Shift")
-        @JsonProperty("taskType")
-        val taskType : String,
-
-        @ApiModelProperty(value = "The start of the task", position = 4, example = "2020-04-20T17:00:00")
-        @JsonProperty("startDateTime")
-        val time : LocalDateTime,
-
-        @ApiModelProperty(value = "Hint for the UI on how to display this task", position = 5, example = "NIGHT_FINISH")
+        @ApiModelProperty(value = "Hint for the UI on how to display this task", position = 2, example = "night_finish")
         @JsonProperty("displayType")
         var displayType : String,
 
-        @ApiModelProperty(value = "If the type is a 'finish' we include put the shift duration.", position = 6, example = "3h 24m")
+        @ApiModelProperty(value = "If the type is a 'finish' we include put the shift duration.", position = 3, example = "3h 24m")
         @JsonProperty("finishDuration")
         var finishDuration : String? = null
 

@@ -4,6 +4,7 @@ import java.util.*
 
 
 enum class TaskType(val value: String, val description: String) {
+    NONE("none", "None"),
     UNSPECIFIC("unspecific", "Unspecific"),
     SHIFT("shift", "Shift"),
     BREAK("break", "Break"),
