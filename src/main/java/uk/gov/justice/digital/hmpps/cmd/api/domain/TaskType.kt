@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain
+package uk.gov.justice.digital.hmpps.cmd.api.domain
 
 import java.util.*
 

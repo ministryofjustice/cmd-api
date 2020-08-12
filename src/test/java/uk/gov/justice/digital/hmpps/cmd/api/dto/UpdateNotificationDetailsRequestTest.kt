@@ -2,8 +2,8 @@ package uk.gov.justice.digital.hmpps.cmd.api.dto
 
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.dto.UpdateNotificationDetailsRequest
+import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
+import uk.gov.justice.digital.hmpps.cmd.api.dto.UpdateNotificationDetailsRequest
 
 class UpdateNotificationDetailsRequestTest {
 

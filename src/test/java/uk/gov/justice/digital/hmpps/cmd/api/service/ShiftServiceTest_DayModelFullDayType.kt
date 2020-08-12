@@ -8,16 +8,16 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.client.CsrApiClient
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.client.ShiftTaskDto
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.service.ShiftService
+import uk.gov.justice.digital.hmpps.cmd.api.client.CsrApiClient
+import uk.gov.justice.digital.hmpps.cmd.api.client.ShiftTaskDto
+import uk.gov.justice.digital.hmpps.cmd.api.service.ShiftService
 import java.time.Clock
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.*
 
 @ExtendWith(MockKExtension::class)
-@DisplayName("Shift Service tests")
+@DisplayName("Shift Service Full Day Type tests")
 internal class ShiftServiceTest_DayModelFullDayType {
     private val csrApiClient: CsrApiClient = mockk(relaxUnitFun = true)
     private val clock = Clock.fixed(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())

@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.cmd.api.model
 
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
+import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import java.time.LocalDate
 import javax.persistence.Column
 import javax.persistence.Entity

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*
 import uk.gov.justice.digital.hmpps.cmd.api.dto.UpdateSnoozeUntilRequest
 import uk.gov.justice.digital.hmpps.cmd.api.dto.UserPreferenceDto
 import uk.gov.justice.digital.hmpps.cmd.api.service.UserPreferenceService
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.dto.UpdateNotificationDetailsRequest
+import uk.gov.justice.digital.hmpps.cmd.api.dto.UpdateNotificationDetailsRequest
 import javax.validation.Valid
 
 @Api(tags = ["user-preferences"])

@@ -20,7 +20,7 @@ import java.util.*
 
 @ExtendWith(MockKExtension::class)
 @DisplayName("Shift Service tests")
-internal class ShiftServiceTest {
+internal class ShiftServiceTest_Task_Scenarios {
     private val csrApiClient: CsrApiClient = mockk(relaxUnitFun = true)
     private val clock = Clock.fixed(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
     private val service = ShiftService(csrApiClient, clock)

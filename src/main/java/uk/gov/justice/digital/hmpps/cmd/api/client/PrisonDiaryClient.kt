@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.client
+package uk.gov.justice.digital.hmpps.cmd.api.client
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -16,8 +16,8 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.netty.http.client.HttpClient
 import reactor.netty.tcp.TcpClient
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftNotificaitonActionType
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.utils.region.Regions
+import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftNotificaitonActionType
+import uk.gov.justice.digital.hmpps.cmd.api.utils.region.Regions
 import java.nio.charset.Charset
 import java.security.Key
 import java.time.LocalDateTime

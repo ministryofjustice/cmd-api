@@ -1,16 +1,16 @@
-package uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.service
+package uk.gov.justice.digital.hmpps.cmd.api.service
 
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.client.CsrApiClient
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.client.ShiftTaskDto
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.TaskDisplayType
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.TaskType
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.dto.DayModelDto
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.dto.DayEventDto
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.dto.TaskEventDto
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.dto.TaskModelDto
+import uk.gov.justice.digital.hmpps.cmd.api.client.CsrApiClient
+import uk.gov.justice.digital.hmpps.cmd.api.client.ShiftTaskDto
+import uk.gov.justice.digital.hmpps.cmd.api.domain.TaskDisplayType
+import uk.gov.justice.digital.hmpps.cmd.api.domain.TaskType
+import uk.gov.justice.digital.hmpps.cmd.api.dto.DayModelDto
+import uk.gov.justice.digital.hmpps.cmd.api.dto.DayEventDto
+import uk.gov.justice.digital.hmpps.cmd.api.dto.TaskEventDto
+import uk.gov.justice.digital.hmpps.cmd.api.dto.TaskModelDto
 import java.time.*
 import java.util.*
 import java.util.stream.Collectors
@@ -143,11 +143,11 @@ class ShiftService(val csrClient: CsrApiClient, val clock: Clock) {
                 TaskDisplayType.DAY_FINISH -> {
                     TaskDisplayType.OVERTIME_DAY_FINISH.value
                 }
-                TaskDisplayType.OVERTIME_NIGHT_START -> {
+                TaskDisplayType.NIGHT_START -> {
                     TaskDisplayType.OVERTIME_NIGHT_START.value
                 }
-                TaskDisplayType.OVERTIME_DAY_FINISH -> {
-                    TaskDisplayType.OVERTIME_DAY_FINISH.value
+                TaskDisplayType.NIGHT_FINISH -> {
+                    TaskDisplayType.OVERTIME_NIGHT_FINISH.value
                 }
                 else -> {
                     displayType

@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.controllers
+package uk.gov.justice.digital.hmpps.cmd.api.controllers
 
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
@@ -8,9 +8,9 @@ import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.dto.DayModelDto
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.dto.TaskModelDto
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.service.ShiftService
+import uk.gov.justice.digital.hmpps.cmd.api.dto.DayModelDto
+import uk.gov.justice.digital.hmpps.cmd.api.dto.TaskModelDto
+import uk.gov.justice.digital.hmpps.cmd.api.service.ShiftService
 import java.time.LocalDate
 import java.util.*
 

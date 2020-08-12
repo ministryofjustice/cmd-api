@@ -2,8 +2,8 @@ package uk.gov.justice.digital.hmpps.cmd.api.dto
 
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.dto.DayModelDto
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.dto.DayEventDto
+import uk.gov.justice.digital.hmpps.cmd.api.dto.DayModelDto
+import uk.gov.justice.digital.hmpps.cmd.api.dto.DayEventDto
 import java.time.LocalDate
 import java.time.LocalDateTime
 
