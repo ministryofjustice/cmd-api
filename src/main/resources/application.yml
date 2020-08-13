@@ -8,9 +8,25 @@ spring:
     open-in-view: false
     show-sql: false
 
+  security:
+    oauth2:
+      client:
+        registration:
+          elite2-api:
+            provider: hmpps-auth
+            client-id: ${oauth.client.id}
+            client-secret: ${oauth.client.secret}
+            authorization-grant-type: client_credentials
+            scope: read
+        provider:
+          hmpps-auth:
+            token-uri: ${oauth.endpoint.url}/oauth/token
+
   datasource:
     hikari:
-      maximum-pool-size: 15
+      maximum-pool-size: 5
+      connectionTimeout: 1000
+      validationTimeout:  500
 
 server:
   port: 8080
@@ -62,7 +78,10 @@ csr:
       url: ${csr.region5.url}
     - name: 6
       url: ${csr.region6.url}
-
+  endpoint.url: localhost:8081
 #💩💩💩
 jwt:
   secret: ${jwt.secret.key:invalidValue}
+
+elite2api:
+  endpoint.url: localhost:8082

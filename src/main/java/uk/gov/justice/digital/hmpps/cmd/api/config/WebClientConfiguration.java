@@ -33,7 +33,7 @@ public class WebClientConfiguration {
 
     @Bean
     @RequestScope
-    public WebClient elite2ApiWebClient(final ClientRegistrationRepository clientRegistrationRepository,
+    public WebClient elite2WebClient(final ClientRegistrationRepository clientRegistrationRepository,
                                      final OAuth2AuthorizedClientRepository authorizedClientRepository,
                                      final WebClient.Builder builder) {
         return getOAuthWebClient(authorizedClientManager(clientRegistrationRepository, authorizedClientRepository), builder, elite2ApiRootUri);

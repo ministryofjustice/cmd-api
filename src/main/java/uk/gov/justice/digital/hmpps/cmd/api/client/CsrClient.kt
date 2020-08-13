@@ -14,9 +14,8 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.netty.http.client.HttpClient
 import reactor.netty.tcp.TcpClient
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftNotificationType
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.client.dto.ShiftNotificationDto
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.client.dto.ShiftNotificationsDto
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.client.dto.ShiftTaskNotificationsDto
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.utils.region.Regions
 import java.nio.charset.Charset
 import java.security.Key
@@ -27,7 +26,7 @@ import javax.crypto.spec.SecretKeySpec
 class CsrClient(val regionData: Regions, @Value("\${jwt.secret}") val secret: String) {
 
     fun getShiftNotifications(planUnit: String, region: Int): Collection<ShiftNotificationDto> {
-        val notifications : ShiftNotificationsDto
+        val notifications : ShiftNotificationsDto?
         log.info("Finding shift notifications, PlanUnit $planUnit, Region $region")
         try {
              notifications = getAuthorisedWebClient(region)
@@ -47,7 +46,7 @@ class CsrClient(val regionData: Regions, @Value("\${jwt.secret}") val secret: St
     }
 
     fun getShiftTaskNotifications(planUnit: String, region: Int): Collection<ShiftNotificationDto> {
-        val notifications : ShiftTaskNotificationsDto
+        val notifications : ShiftTaskNotificationsDto?
         log.info("Finding shift task notifications, PlanUnit $planUnit, Region $region")
         try {
             notifications = getAuthorisedWebClient(region)
@@ -63,6 +62,7 @@ class CsrClient(val regionData: Regions, @Value("\${jwt.secret}") val secret: St
             log.info("Found 0 shift task notifications, PlanUnit $planUnit, Region $region")
             return listOf()
         }
+        notifications.shiftTaskNotifications.forEach { notification -> notification.shiftType = if(notification.shiftType.equals(ShiftNotificationType.SHIFT.value, true)) { ShiftNotificationType.SHIFT_TASK.value } else { ShiftNotificationType.OVERTIME_TASK.value } }
 
         return notifications.shiftTaskNotifications
     }
@@ -118,3 +118,40 @@ class CsrClient(val regionData: Regions, @Value("\${jwt.secret}") val secret: St
 
     }
 }
+
+data class ShiftNotificationsDto @JsonCreator constructor(
+        @JsonProperty("shiftNotifications")
+        var shiftNotifications: List<ShiftNotificationDto>
+)
+
+data class ShiftTaskNotificationsDto @JsonCreator constructor(
+        @JsonProperty("shiftTaskNotifications")
+        var shiftTaskNotifications: List<ShiftNotificationDto>
+)
+
+data class ShiftNotificationDto @JsonCreator constructor(
+
+        @JsonProperty("quantumId")
+        var quantumId: String,
+
+        @JsonProperty("shiftDate")
+        var shiftDate: LocalDate,
+
+        @JsonProperty("lastModifiedDateTime")
+        var shiftModified: LocalDateTime,
+
+        @JsonProperty("taskStartTimeInSeconds")
+        var taskStart: Long?,
+
+        @JsonProperty("taskEndTimeInSeconds")
+        var taskEnd: Long?,
+
+        @JsonProperty("activity")
+        var task: String?,
+
+        @JsonProperty("type")
+        var shiftType: String,
+
+        @JsonProperty("actionType")
+        var actionType: String = ShiftActionType.EDIT.value
+)
