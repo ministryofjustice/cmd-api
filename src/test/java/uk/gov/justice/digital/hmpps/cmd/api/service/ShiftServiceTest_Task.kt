@@ -207,8 +207,8 @@ internal class ShiftServiceTest_Task {
             assertThat(dayModel.fullDayType).isEqualTo("Shift")
 
             val overtimeStartTask = dayModel.tasks.first{ it.displayType == TaskDisplayType.DAY_FINISH.value}
-            assertThat(overtimeStartTask.start).isEqualTo(LocalTime.of(13,0))
-            assertThat(overtimeStartTask.start).isEqualTo(LocalTime.of(17,0))
+            assertThat(overtimeStartTask.start).isEqualTo(LocalTime.of(13,30))
+            assertThat(overtimeStartTask.end).isEqualTo(LocalTime.of(17,0))
             assertThat(overtimeStartTask.finishDuration).isEqualTo("8h 45m")
         }
 
@@ -220,8 +220,8 @@ internal class ShiftServiceTest_Task {
                     ShiftTaskDto(day1, "Unspecific", day1.atTime(20,15), day2.atTime(12,30), "Night OSG")
             )
 
-            every { csrApiClient.getShiftTasks(day1, day2) } returns nightShift
-            every { csrApiClient.getOvertimeShiftTasks(day1, day2) } returns listOf()
+            every { csrApiClient.getShiftTasks(day1, day1) } returns nightShift
+            every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns listOf()
 
             val dayModel = service.getTaskDetailFor(Optional.of(day1))
 
@@ -235,6 +235,81 @@ internal class ShiftServiceTest_Task {
             assertThat(overtimeStartTask.start).isEqualTo(LocalTime.of(20,15))
             assertThat(overtimeStartTask.end).isNull()
             assertThat(overtimeStartTask.finishDuration).isNull()
+        }
+
+        @Test
+        fun `Should identify Night Shift end`() {
+            val day1 = LocalDate.now(clock)
+            val day2 = day1.plusDays(1)
+            val nightShift = listOf(
+                    ShiftTaskDto(day1, "Unspecific", day1.atTime(20,15), day2.atTime(12,30), "Night OSG")
+            )
+
+            every { csrApiClient.getShiftTasks(day2, day2) } returns nightShift
+            every { csrApiClient.getOvertimeShiftTasks(day2, day2) } returns listOf()
+
+            val dayModel = service.getTaskDetailFor(Optional.of(day2))
+
+            verify { csrApiClient.getShiftTasks(day2, day2) }
+            verify { csrApiClient.getOvertimeShiftTasks(day2, day2) }
+
+            assertThat(dayModel.date).isEqualTo(day2)
+            assertThat(dayModel.fullDayType).isEqualTo("Shift")
+
+            val overtimeStartTask = dayModel.tasks.first{ it.displayType == TaskDisplayType.NIGHT_FINISH.value}
+            assertThat(overtimeStartTask.start).isNull()
+            assertThat(overtimeStartTask.end).isEqualTo(LocalTime.of(12,30))
+            assertThat(overtimeStartTask.finishDuration).isEqualTo("16h 15m")
+        }
+
+        @Test
+        fun `Should identify Overtime Night Shift start`() {
+            val day1 = LocalDate.now(clock)
+            val day2 = day1.plusDays(1)
+            val nightShift = listOf(
+                    ShiftTaskDto(day1, "Unspecific", day1.atTime(20,15), day2.atTime(12,30), "Night OSG")
+            )
+
+            every { csrApiClient.getShiftTasks(day1, day1) } returns listOf()
+            every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns nightShift
+
+            val dayModel = service.getTaskDetailFor(Optional.of(day1))
+
+            verify { csrApiClient.getShiftTasks(day1, day1) }
+            verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
+
+            assertThat(dayModel.date).isEqualTo(day1)
+            assertThat(dayModel.fullDayType).isEqualTo("Shift")
+
+            val overtimeStartTask = dayModel.tasks.first{ it.displayType == TaskDisplayType.OVERTIME_NIGHT_START.value}
+            assertThat(overtimeStartTask.start).isEqualTo(LocalTime.of(20,15))
+            assertThat(overtimeStartTask.end).isNull()
+            assertThat(overtimeStartTask.finishDuration).isNull()
+        }
+
+        @Test
+        fun `Should identify Overtime Night Shift end`() {
+            val day1 = LocalDate.now(clock)
+            val day2 = day1.plusDays(1)
+            val nightShift = listOf(
+                    ShiftTaskDto(day1, "Unspecific", day1.atTime(20,15), day2.atTime(12,30), "Night OSG")
+            )
+
+            every { csrApiClient.getShiftTasks(day2, day2) } returns listOf()
+            every { csrApiClient.getOvertimeShiftTasks(day2, day2) } returns nightShift
+
+            val dayModel = service.getTaskDetailFor(Optional.of(day2))
+
+            verify { csrApiClient.getShiftTasks(day2, day2) }
+            verify { csrApiClient.getOvertimeShiftTasks(day2, day2) }
+
+            assertThat(dayModel.date).isEqualTo(day2)
+            assertThat(dayModel.fullDayType).isEqualTo("Shift")
+
+            val overtimeStartTask = dayModel.tasks.first{ it.displayType == TaskDisplayType.OVERTIME_NIGHT_FINISH.value}
+            assertThat(overtimeStartTask.start).isNull()
+            assertThat(overtimeStartTask.end).isEqualTo(LocalTime.of(12,30))
+            assertThat(overtimeStartTask.finishDuration).isEqualTo("16h 15m")
         }
     }
 }
