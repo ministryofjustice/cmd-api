@@ -61,6 +61,12 @@ env:
         name: check-my-diary-rds
         key: rds_instance_endpoint
 
+  - name: APPLICATION_NOTIFY_KEY
+    valueFrom:
+        secretKeyRef:
+          name: check-my-diary-notifications
+          key: NOTIFY_CLIENT_KEY
+
   - name: APPINSIGHTS_INSTRUMENTATIONKEY
     valueFrom:
       secretKeyRef:
