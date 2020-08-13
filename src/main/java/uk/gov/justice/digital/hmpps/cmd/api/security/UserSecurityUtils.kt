@@ -13,14 +13,19 @@ class UserSecurityUtils : AuthenticationFacade {
     override fun getCurrentUsername(): String? {
         val username: String?
         val userPrincipal = userPrincipal
-        if (userPrincipal is String) {
-            username = userPrincipal
-        } else if (userPrincipal is UserDetails) {
-            username = userPrincipal.username
-        } else if (userPrincipal is Map<*, *>) {
-            username = (userPrincipal["username"] as String?)!!
-        } else {
-            username = null
+        username = when (userPrincipal) {
+            is String -> {
+                userPrincipal
+            }
+            is UserDetails -> {
+                userPrincipal.username
+            }
+            is Map<*, *> -> {
+                (userPrincipal["username"] as String?)!!
+            }
+            else -> {
+                null
+            }
         }
         return username
     }

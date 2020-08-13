@@ -40,7 +40,7 @@ class ClientTrackingTelemetryModuleTest(
 
     @Test
     fun shouldAddClientIdAndUserNameToInsightTelemetry() {
-        val token = createJwt("bob", java.util.List.of(), 1L)
+        val token = createJwt("bob", listOf(), 1L)
         val req = MockHttpServletRequest()
         req.addHeader(HttpHeaders.AUTHORIZATION, "Bearer $token")
         val res = MockHttpServletResponse()

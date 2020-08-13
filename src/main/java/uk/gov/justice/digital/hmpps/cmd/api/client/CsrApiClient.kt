@@ -1,13 +1,12 @@
 package uk.gov.justice.digital.hmpps.cmd.api.client
 
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
-import org.springframework.web.reactive.function.client.WebClient
-import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftNotificationType
-import java.time.*
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 @Component
-class CsrApiClient(@Qualifier("csrApiWebClient") private val webClient: WebClient) {
+class CsrApiClient {
 
     fun getShiftTasks(start : LocalDate, end : LocalDate ) : Collection<ShiftTaskDto> {
         return simpleDayShift

@@ -20,8 +20,8 @@ import uk.gov.justice.digital.hmpps.cmd.api.utils.UserContext;
 @Configuration
 public class WebClientConfiguration {
 
-    private String elite2ApiRootUri;
-    private String csrRootUri;
+    private final String elite2ApiRootUri;
+    private final String csrRootUri;
 
     public WebClientConfiguration(
             @Value("${elite2api.endpoint.url}") final String eliteHealthRootUri,

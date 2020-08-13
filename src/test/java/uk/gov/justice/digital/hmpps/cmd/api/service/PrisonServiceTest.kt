@@ -10,8 +10,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import uk.gov.justice.digital.hmpps.cmd.api.model.Prison
 import uk.gov.justice.digital.hmpps.cmd.api.repository.PrisonRepository
-import uk.gov.justice.digital.hmpps.cmd.api.service.PrisonService
-import java.time.LocalTime
 
 @ExtendWith(MockKExtension::class)
 @DisplayName("Prison Service tests")

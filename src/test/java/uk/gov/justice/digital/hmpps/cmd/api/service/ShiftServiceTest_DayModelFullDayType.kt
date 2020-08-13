@@ -1,7 +1,10 @@
 package uk.gov.justice.digital.hmpps.cmd.api.service
 
-import io.mockk.*
+import io.mockk.clearMocks
+import io.mockk.every
 import io.mockk.junit5.MockKExtension
+import io.mockk.mockk
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -10,7 +13,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import uk.gov.justice.digital.hmpps.cmd.api.client.CsrApiClient
 import uk.gov.justice.digital.hmpps.cmd.api.client.ShiftTaskDto
-import uk.gov.justice.digital.hmpps.cmd.api.service.ShiftService
 import java.time.Clock
 import java.time.LocalDate
 import java.time.ZoneId

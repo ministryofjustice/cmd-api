@@ -1,12 +1,9 @@
 package uk.gov.justice.digital.hmpps.cmd.api.dto
 
 import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.annotations.ApiModel
 import io.swagger.annotations.ApiModelProperty
-import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.LocalTime
 
 @ApiModel(description = "Shift")

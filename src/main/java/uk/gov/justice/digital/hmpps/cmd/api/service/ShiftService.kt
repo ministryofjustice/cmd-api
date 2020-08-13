@@ -7,11 +7,14 @@ import uk.gov.justice.digital.hmpps.cmd.api.client.CsrApiClient
 import uk.gov.justice.digital.hmpps.cmd.api.client.ShiftTaskDto
 import uk.gov.justice.digital.hmpps.cmd.api.domain.TaskDisplayType
 import uk.gov.justice.digital.hmpps.cmd.api.domain.TaskType
-import uk.gov.justice.digital.hmpps.cmd.api.dto.DayModelDto
 import uk.gov.justice.digital.hmpps.cmd.api.dto.DayEventDto
+import uk.gov.justice.digital.hmpps.cmd.api.dto.DayModelDto
 import uk.gov.justice.digital.hmpps.cmd.api.dto.TaskEventDto
 import uk.gov.justice.digital.hmpps.cmd.api.dto.TaskModelDto
-import java.time.*
+import java.time.Clock
+import java.time.Duration
+import java.time.LocalDate
+import java.time.LocalTime
 import java.util.*
 import java.util.stream.Collectors
 
@@ -101,21 +104,21 @@ class ShiftService(val csrClient: CsrApiClient, val clock: Clock) {
         val shiftTypes = shiftCandidates.partition { it.start.toLocalDate() == it.end.toLocalDate() }
 
         val shiftStart = shiftTypes.first.minBy { it.start }?.let {
-            TaskEventDto(it.activity, it.type, it.start, it.end, TaskDisplayType.DAY_START.value)
+            TaskEventDto(it.activity, it.start.toLocalTime(), it.end.toLocalTime(), TaskDisplayType.DAY_START.value)
         }
         val shiftEnd = shiftTypes.first.maxBy { it.end }?.let {
-            TaskEventDto(it.activity, it.type, it.start, it.end, TaskDisplayType.DAY_FINISH.value,
+            TaskEventDto(it.activity, it.start.toLocalTime(), it.end.toLocalTime(), TaskDisplayType.DAY_FINISH.value,
                     calculateShiftDuration(shiftTypes.first))
         }
         val nightShiftStart = shiftTypes.second.filter { it.start.toLocalDate() == date }.maxBy { it.start }?.let {
-            TaskEventDto(it.activity, it.type, it.start, null, TaskDisplayType.NIGHT_START.value)
+            TaskEventDto(it.activity, it.start.toLocalTime(), null, TaskDisplayType.NIGHT_START.value)
         }
         val nightShiftEnd = shiftTypes.second.filter { it.end.toLocalDate() == date }.minBy { it.end }?.let {
-            TaskEventDto(it.activity, it.type, null, it.end, TaskDisplayType.NIGHT_FINISH.value,
+            TaskEventDto(it.activity, null, it.end.toLocalTime(), TaskDisplayType.NIGHT_FINISH.value,
                     calculateShiftDuration(shiftTypes.second.filter { s -> s.start.isBefore(it.end) }))
         }
         val shiftEvents = shiftCandidates.map {
-            TaskEventDto(it.activity, it.type, it.start, it.end, null)
+            TaskEventDto(it.activity, it.start.toLocalTime(), it.end.toLocalTime(), null)
         }
 
         // We have the boundaries identified, so only add in the extras
