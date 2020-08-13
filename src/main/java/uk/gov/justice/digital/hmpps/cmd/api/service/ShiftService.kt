@@ -47,7 +47,7 @@ class ShiftService(val csrClient: CsrApiClient, val clock: Clock) {
 
         return TaskModelDto(
                 date,
-                calculateShiftType(date, taskData),
+                calculateShiftType(date, taskData + overtimeData),
                 getShiftTasks(date, taskData) + getOvertimeTasks(date, overtimeData)
         )
 

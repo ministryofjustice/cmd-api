@@ -80,7 +80,7 @@ internal class ShiftServiceTest {
         }
 
         @Test
-        fun `Should return no day for no task data`() {
+        fun `Should return 'no day' for no task data`() {
             val day1 = LocalDate.now(clock)
 
             every { csrApiClient.getShiftTasks(day1, day1) } returns listOf()
@@ -100,7 +100,7 @@ internal class ShiftServiceTest {
         }
 
         @Test
-        fun `Should return shift for shift data`() {
+        fun `Should return 'shift' for shift data`() {
             val day1 = LocalDate.now(clock)
             val dayShift = listOf(
                     ShiftTaskDto(day1, "Unspecific", day1.atTime(7,15), day1.atTime(12,30), "Present"),
@@ -124,7 +124,7 @@ internal class ShiftServiceTest {
         }
 
         @Test
-        fun `Should shift for overtime data`() {
+        fun `Should return 'shift' for overtime data`() {
             val day1 = LocalDate.now(clock)
             val dayShift = listOf(
                     ShiftTaskDto(day1, "Unspecific", day1.atTime(7,15), day1.atTime(12,30), "Present"),
@@ -145,7 +145,6 @@ internal class ShiftServiceTest {
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
             assertThat(dayModel.fullDayType).isEqualTo("Shift")
-
         }
 
         @Test
