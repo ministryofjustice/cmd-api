@@ -23,6 +23,10 @@ spring:
       resourceserver:
         jwt:
           public-key-location: classpath:local-public-key.pub
+oauth:
+  client:
+    id: cmd-api-client
+    secret: clientsecret
 
 logging:
   level:

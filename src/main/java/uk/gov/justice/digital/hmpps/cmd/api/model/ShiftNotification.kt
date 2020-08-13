@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.cmd.api.model
 
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.client.dto.ShiftNotificationDto
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.client.ShiftNotificationDto
 import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.persistence.*

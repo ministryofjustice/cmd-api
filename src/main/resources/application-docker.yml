@@ -15,3 +15,7 @@ spring:
       resourceserver:
         jwt:
           jwk-set-uri: https://sign-in-dev.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json
+
+logging:
+  level:
+    uk.gov: DEBUG
