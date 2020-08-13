@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.test.context.ActiveProfiles
 import uk.gov.justice.digital.hmpps.cmd.api.model.Prison
+import uk.gov.justice.digital.hmpps.cmd.api.repository.PrisonRepository
 import java.time.LocalDate
 
 @ActiveProfiles("test")

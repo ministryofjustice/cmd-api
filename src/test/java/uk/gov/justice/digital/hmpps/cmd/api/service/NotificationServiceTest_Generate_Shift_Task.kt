@@ -11,11 +11,11 @@ import org.junit.jupiter.api.extension.ExtendWith
 import uk.gov.justice.digital.hmpps.cmd.api.model.ShiftNotification
 import uk.gov.justice.digital.hmpps.cmd.api.repository.ShiftNotificationRepository
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.client.CsrClient
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.client.dto.ShiftNotificationDto
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftActionType
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.model.Prison
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.service.PrisonService
+import uk.gov.justice.digital.hmpps.cmd.api.client.CsrClient
+import uk.gov.justice.digital.hmpps.cmd.api.client.dto.ShiftNotificationDto
+import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftActionType
+import uk.gov.justice.digital.hmpps.cmd.api.model.Prison
+import uk.gov.justice.digital.hmpps.cmd.api.service.PrisonService
 import uk.gov.service.notify.NotificationClient
 import java.time.*
 
