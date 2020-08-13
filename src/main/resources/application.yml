@@ -4,7 +4,6 @@ spring:
   profiles:
     include: stdout
 
-
   jpa:
     open-in-view: false
     show-sql: false
@@ -48,9 +47,6 @@ management:
 application:
   to:
     defaultMonths: 3
-
-  notify:
-    key: aaaaaaaaaa-11111111-1111-1111-1111-111111111111-11111111-1111-1111-aaaa-aaaaaaaaaaaa
 
 
 #💩💩💩

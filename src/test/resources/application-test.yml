@@ -34,6 +34,10 @@ jwt:
     password: s3cre3tK3y
     alias: elite2api
 
+application:
+  notify:
+    key: aaaaaaaaaa-11111111-1111-1111-1111-111111111111-11111111-1111-1111-aaaa-aaaaaaaaaaaa
+
 oauth:
   api.base.url: http://localhost:8998/auth
 
