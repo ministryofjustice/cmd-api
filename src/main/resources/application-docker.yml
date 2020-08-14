@@ -20,7 +20,7 @@ oauth:
     url: https://sign-in-dev.hmpps.service.justice.gov.uk/auth
   client:
     id: my-diary
-    secret: kJwGCYAhn4AYRQF9
+    secret: somesecret
 
 logging:
   level:
