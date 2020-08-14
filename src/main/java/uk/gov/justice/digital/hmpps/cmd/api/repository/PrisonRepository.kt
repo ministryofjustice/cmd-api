@@ -8,4 +8,6 @@ import java.util.*
 @Repository
 interface PrisonRepository : CrudRepository<Prison, UUID> {
     override fun findAll(): Collection<Prison>
+
+    fun findByPrisonId(prisonId: String) : Prison
 }

@@ -17,8 +17,11 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.netty.http.client.HttpClient
 import reactor.netty.tcp.TcpClient
+import uk.gov.justice.digital.hmpps.cmd.api.client.Elite2ApiClient
+import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftActionType
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftNotificationType
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.service.PrisonService
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.utils.region.Regions
 import java.nio.charset.Charset
 import java.security.Key
@@ -31,11 +34,45 @@ import javax.crypto.spec.SecretKeySpec
     This is a client and Anti-corruption layer to the legacy C# app.
  */
 @Component
-class CsrClient(@Qualifier("csrApiWebClient") private val webClient: WebClient, val regionData: Regions, @Value("\${jwt.secret}") val secret: String) {
+class CsrClient(val prisonService: PrisonService, @Qualifier("csrApiWebClient") val csrClient: WebClient, val elite2Client: Elite2ApiClient, val authenticationFacade: AuthenticationFacade, val regionData: Regions, @Value("\${jwt.secret}") val secret: String) {
 
-    fun getShiftTasks(region: Int) : Collection<ShiftTaskDto> {
+    fun getShiftTasks(from: LocalDate, to: LocalDate) : Collection<ShiftTaskDto> {
+        log.debug("Finding shift tasks for ${authenticationFacade.currentUsername}")
+        val shiftTasks : ShiftTasksDto?
+        try {
 
-        return
+            shiftTasks = getRegionSpecificWebClient()
+                    .get()
+                    .uri("/api/shifts?startdate=$from&enddate=$to")
+                    .retrieve()
+                    .bodyToMono(ShiftTasksDto::class.java)
+                    .block()
+        } catch (e : Exception) {
+            // 💩 The Legacy API returns 404 when there are no results.
+            log.info("Found 0 shift notifications for ${authenticationFacade.currentUsername}")
+            return listOf()
+        }
+        log.info("Found ${shiftTasks.tasks.size} shifts for ${authenticationFacade.currentUsername}")
+        return shiftTasks.tasks
+    }
+
+    fun getOvertimeShiftTasks(from: LocalDate, to: LocalDate) : Collection<ShiftTaskDto> {
+        log.debug("Finding Overtime shift tasks for ${authenticationFacade.currentUsername}")
+        val shiftTasks : ShiftTasksDto?
+        try {
+                shiftTasks = getRegionSpecificWebClient()
+                    .get()
+                    .uri("/api/shifts/overtime?startdate=$from&enddate=$to")
+                    .retrieve()
+                    .bodyToMono(ShiftTasksDto::class.java)
+                    .block()
+        } catch (e : Exception) {
+            // 💩 The Legacy API returns 404 when there are no results.
+            log.info("Found 0 overtime shift tasks for ${authenticationFacade.currentUsername}")
+            return listOf()
+        }
+        log.info("Found ${shiftTasks.tasks.size} shift for ${authenticationFacade.currentUsername}")
+        return shiftTasks.tasks
     }
 
     fun getShiftNotifications(planUnit: String, region: Int): Collection<ShiftNotificationDto> {
@@ -80,7 +117,10 @@ class CsrClient(@Qualifier("csrApiWebClient") private val webClient: WebClient, 
         return notifications.shiftTaskNotifications
     }
 
-
+    private fun getRegionSpecificWebClient() : WebClient {
+        val prison = prisonService.getPrisonByPrisonId(elite2Client.getCurrentPrison().activeCaseLoadId)
+        return csrClient.mutate().baseUrl(getCorrectRegionUrl(prison.region)).build()
+    }
 
     private fun getSelfSignedWebClient(region : Int) : WebClient {
         val tcpClient = TcpClient.create()
