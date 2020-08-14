@@ -9,6 +9,7 @@ import io.netty.channel.ChannelOption
 import io.netty.handler.timeout.ReadTimeoutHandler
 import io.netty.handler.timeout.WriteTimeoutHandler
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
@@ -26,14 +27,22 @@ import java.time.LocalDateTime
 import java.util.*
 import javax.crypto.spec.SecretKeySpec
 
+/*
+    This is a client and Anti-corruption layer to the legacy C# app.
+ */
 @Component
-class CsrClient(val regionData: Regions, @Value("\${jwt.secret}") val secret: String) {
+class CsrClient(@Qualifier("csrApiWebClient") private val webClient: WebClient, val regionData: Regions, @Value("\${jwt.secret}") val secret: String) {
+
+    fun getShiftTasks(region: Int) : Collection<ShiftTaskDto> {
+
+        return
+    }
 
     fun getShiftNotifications(planUnit: String, region: Int): Collection<ShiftNotificationDto> {
         val notifications : ShiftNotificationsDto?
         log.info("Finding shift notifications, PlanUnit $planUnit, Region $region")
         try {
-             notifications = getAuthorisedWebClient(region)
+             notifications = getSelfSignedWebClient(region)
                     .get()
                     .uri("/notifications/shifts/${planUnit}?interval=24&intervaltype=1")
                     .retrieve()
@@ -42,7 +51,7 @@ class CsrClient(val regionData: Regions, @Value("\${jwt.secret}") val secret: St
             log.info("Found ${notifications.shiftNotifications.size} shift notifications, PlanUnit $planUnit, Region $region")
 
         } catch (e : Exception) {
-            // 💩💩💩 The Legacy API returns 404 when there are no results.
+            // 💩 The Legacy API returns 404 when there are no results.
             log.info("Found 0 shift notifications, PlanUnit $planUnit, Region $region")
             return listOf()
         }
@@ -53,7 +62,7 @@ class CsrClient(val regionData: Regions, @Value("\${jwt.secret}") val secret: St
         val notifications : ShiftTaskNotificationsDto?
         log.info("Finding shift task notifications, PlanUnit $planUnit, Region $region")
         try {
-            notifications = getAuthorisedWebClient(region)
+            notifications = getSelfSignedWebClient(region)
                     .get()
                     .uri("/notifications/shifts/${planUnit}/tasks?interval=24&intervaltype=1")
                     .retrieve()
@@ -62,7 +71,7 @@ class CsrClient(val regionData: Regions, @Value("\${jwt.secret}") val secret: St
             log.info("Found ${notifications.shiftTaskNotifications.size} shift task notifications, PlanUnit $planUnit, Region $region")
 
         } catch (e : Exception) {
-            // 💩💩💩 The Legacy API returns 404 when there are no results.
+            // 💩 The Legacy API returns 404 when there are no results.
             log.info("Found 0 shift task notifications, PlanUnit $planUnit, Region $region")
             return listOf()
         }
@@ -72,8 +81,8 @@ class CsrClient(val regionData: Regions, @Value("\${jwt.secret}") val secret: St
     }
 
 
-    /* 💩💩💩 This should move to bean definition */
-    private fun getAuthorisedWebClient(region : Int) : WebClient {
+
+    private fun getSelfSignedWebClient(region : Int) : WebClient {
         val tcpClient = TcpClient.create()
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 360_000)
                 .doOnConnected { connection ->
@@ -89,18 +98,14 @@ class CsrClient(val regionData: Regions, @Value("\${jwt.secret}") val secret: St
                 .build()
     }
 
-    /* 💩💩💩 This Is only needed because we're calling the
-    *  multiple legacy services
-    */
     private fun getCorrectRegionUrl(region : Int) : String {
         return regionData.regions.map {
             it.name to it.url
         }.toMap().getOrDefault(region.toString(), regionData.regions[0].url)
     }
 
-    /* 💩💩💩 We need to self sign a JWT because the legacy
-    * service doesn't interact with HMPPS Auth correctly,
-    * until we move over to the proper service.
+    /* 💩 We need to self sign a JWT because the legacy
+    * service doesn't interact with HMPPS Auth correctly for notification calls.
     */
     private fun generateSelfSignedJwt() : String {
         val signingKey: Key = SecretKeySpec(secret.toByteArray(Charset.defaultCharset()),SignatureAlgorithm.HS256.jcaName)
@@ -122,6 +127,18 @@ class CsrClient(val regionData: Regions, @Value("\${jwt.secret}") val secret: St
 
     }
 }
+
+data class ShiftTasksDto(
+        @JsonProperty("shifts")
+        var tasks: List<ShiftTaskDto>
+)
+
+data class ShiftTaskDto(
+        val date : LocalDate,
+        val type : String,
+        val start : LocalDateTime,
+        val end : LocalDateTime,
+        val activity: String)
 
 data class ShiftNotificationsDto @JsonCreator constructor(
         @JsonProperty("shiftNotifications")
