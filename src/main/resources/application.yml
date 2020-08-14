@@ -78,10 +78,10 @@ csr:
       url: ${csr.region5.url}
     - name: 6
       url: ${csr.region6.url}
-  endpoint.url: localhost:8081
+  endpoint.url: https://api.check-my-diary-dev.hmpps.dsd.io
 #💩💩💩
 jwt:
   secret: ${jwt.secret.key:invalidValue}
 
 elite2api:
-  endpoint.url: localhost:8082
+  endpoint.url: https://api-dev.prison.service.justice.gov.uk

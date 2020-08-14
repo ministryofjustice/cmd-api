@@ -15,6 +15,13 @@ class PrisonService(val repository: PrisonRepository) {
         return prisons
     }
 
+    fun getPrisonByPrisonId(prisonId: String) : Prison {
+        log.debug("Finding prisons by id $prisonId")
+        val prison = repository.findByPrisonId(prisonId)
+        log.info("Found prison ${prison.prisonName} by id $prisonId" )
+        return prison
+    }
+
     companion object {
         private val log = LoggerFactory.getLogger(PrisonService::class.java)
     }

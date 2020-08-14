@@ -3,14 +3,14 @@ package uk.gov.justice.digital.hmpps.cmd.api.service
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import uk.gov.justice.digital.hmpps.cmd.api.client.CsrApiClient
-import uk.gov.justice.digital.hmpps.cmd.api.client.ShiftTaskDto
 import uk.gov.justice.digital.hmpps.cmd.api.domain.TaskDisplayType
 import uk.gov.justice.digital.hmpps.cmd.api.domain.TaskType
 import uk.gov.justice.digital.hmpps.cmd.api.dto.DayEventDto
 import uk.gov.justice.digital.hmpps.cmd.api.dto.DayModelDto
 import uk.gov.justice.digital.hmpps.cmd.api.dto.TaskEventDto
 import uk.gov.justice.digital.hmpps.cmd.api.dto.TaskModelDto
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.client.CsrClient
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.client.ShiftTaskDto
 import java.time.Clock
 import java.time.Duration
 import java.time.LocalDate
@@ -20,7 +20,7 @@ import java.util.stream.Collectors
 
 @Service
 @Transactional
-class ShiftService(val csrClient: CsrApiClient, val clock: Clock) {
+class ShiftService(val csrClient: CsrClient, val clock: Clock) {
 
     fun getShiftsBetween(fromParam: Optional<LocalDate>, toParam: Optional<LocalDate>): Collection<DayModelDto> {
         val start = fromParam.orElse(LocalDate.now(clock))
