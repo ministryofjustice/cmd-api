@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.cmd.api.model.ShiftNotification
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.NotificationDescription
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.NotificationDescription.Companion.getNotificationDescription
 import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -24,47 +24,22 @@ class NotificationDescriptionTest {
         @Test
         fun `Should return shift changed None`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 0, 0, "", "shift", "edit", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.NONE, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.NONE)
             assertThat(result).isEqualTo("Your shift on Sunday, 3rd May has changed.")
         }
 
         @Test
         fun `Should return shift changed Sms`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 0, 0, "", "shift", "edit", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.SMS, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.SMS)
             assertThat(result).isEqualTo("Your shift on Sunday, 3rd May has changed.")
         }
 
         @Test
         fun `Should return shift changed Email`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 0, 0, "", "shift", "edit", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.EMAIL, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.EMAIL)
             assertThat(result).isEqualTo("* Your shift on Sunday, 3rd May has changed.")
-        }
-    }
-
-    @Nested
-    @DisplayName("Shift, Edit, Next year tests")
-    inner class ShiftEditNextYear {
-        @Test
-        fun `Should return shift changed None`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 0, 0, "", "shift", "edit", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.NONE, clock)
-            assertThat(result).isEqualTo("Your shift on Monday, 3rd May, 2021 has changed.")
-        }
-
-        @Test
-        fun `Should return shift changed Sms`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 0, 0, "", "shift", "edit", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.SMS, clock)
-            assertThat(result).isEqualTo("Your shift on Monday, 3rd May, 2021 has changed.")
-        }
-
-        @Test
-        fun `Should return shift changed Email`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 0, 0, "", "shift", "edit", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.EMAIL, clock)
-            assertThat(result).isEqualTo("* Your shift on Monday, 3rd May, 2021 has changed.")
         }
     }
 
@@ -74,47 +49,22 @@ class NotificationDescriptionTest {
         @Test
         fun `Should return overtime shift changed None`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 0, 0, "", "overtime", "edit", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.NONE, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.NONE)
             assertThat(result).isEqualTo("Your overtime shift on Sunday, 3rd May has changed.")
         }
 
         @Test
         fun `Should return overtime shift changed Sms`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 0, 0, "", "overtime", "edit", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.SMS, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.SMS)
             assertThat(result).isEqualTo("Your overtime shift on Sunday, 3rd May has changed.")
         }
 
         @Test
         fun `Should return overtime shift changed Email`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 0, 0, "", "overtime", "edit", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.EMAIL, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.EMAIL)
             assertThat(result).isEqualTo("* Your overtime shift on Sunday, 3rd May has changed.")
-        }
-    }
-
-    @Nested
-    @DisplayName("Overtime Shift, Edit, Next year tests")
-    inner class OvertimeShiftEditNextYear {
-        @Test
-        fun `Should return overtime shift changed None`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 0, 0, "", "overtime", "edit", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.NONE, clock)
-            assertThat(result).isEqualTo("Your overtime shift on Monday, 3rd May, 2021 has changed.")
-        }
-
-        @Test
-        fun `Should return overtime shift changed Sms`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 0, 0, "", "overtime", "edit", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.SMS, clock)
-            assertThat(result).isEqualTo("Your overtime shift on Monday, 3rd May, 2021 has changed.")
-        }
-
-        @Test
-        fun `Should return overtime shift changed Email`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 0, 0, "", "overtime", "edit", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.EMAIL, clock)
-            assertThat(result).isEqualTo("* Your overtime shift on Monday, 3rd May, 2021 has changed.")
         }
     }
 
@@ -124,47 +74,22 @@ class NotificationDescriptionTest {
         @Test
         fun `Should return shift changed None`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 0, 0, "", "shift", "add", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.NONE, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.NONE)
             assertThat(result).isEqualTo("Your shift on Sunday, 3rd May has been added.")
         }
 
         @Test
         fun `Should return shift changed Sms`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 0, 0, "", "shift", "add", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.SMS, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.SMS)
             assertThat(result).isEqualTo("Your shift on Sunday, 3rd May has been added.")
         }
 
         @Test
         fun `Should return shift changed Email`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 0, 0, "", "shift", "add", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.EMAIL, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.EMAIL)
             assertThat(result).isEqualTo("* Your shift on Sunday, 3rd May has been added.")
-        }
-    }
-
-    @Nested
-    @DisplayName("Shift, Add, Next year tests")
-    inner class ShiftAddNextYear {
-        @Test
-        fun `Should return shift changed None`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 0, 0, "", "shift", "add", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.NONE, clock)
-            assertThat(result).isEqualTo("Your shift on Monday, 3rd May, 2021 has been added.")
-        }
-
-        @Test
-        fun `Should return shift changed Sms`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 0, 0, "", "shift", "add", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.SMS, clock)
-            assertThat(result).isEqualTo("Your shift on Monday, 3rd May, 2021 has been added.")
-        }
-
-        @Test
-        fun `Should return shift changed Email`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 0, 0, "", "shift", "add", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.EMAIL, clock)
-            assertThat(result).isEqualTo("* Your shift on Monday, 3rd May, 2021 has been added.")
         }
     }
 
@@ -174,47 +99,22 @@ class NotificationDescriptionTest {
         @Test
         fun `Should return overtime shift changed None`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 0, 0, "", "overtime", "add", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.NONE, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.NONE)
             assertThat(result).isEqualTo("Your overtime shift on Sunday, 3rd May has been added.")
         }
 
         @Test
         fun `Should return overtime shift changed Sms`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 0, 0, "", "overtime", "add", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.SMS, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.SMS)
             assertThat(result).isEqualTo("Your overtime shift on Sunday, 3rd May has been added.")
         }
 
         @Test
         fun `Should return overtime shift changed Email`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 0, 0, "", "overtime", "add", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.EMAIL, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.EMAIL)
             assertThat(result).isEqualTo("* Your overtime shift on Sunday, 3rd May has been added.")
-        }
-    }
-
-    @Nested
-    @DisplayName("Overtime Shift, Add, Next year tests")
-    inner class OvertimeShiftAddNextYear {
-        @Test
-        fun `Should return overtime shift changed None`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 0, 0, "", "overtime", "add", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.NONE, clock)
-            assertThat(result).isEqualTo("Your overtime shift on Monday, 3rd May, 2021 has been added.")
-        }
-
-        @Test
-        fun `Should return overtime shift changed Sms`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 0, 0, "", "overtime", "add", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.SMS, clock)
-            assertThat(result).isEqualTo("Your overtime shift on Monday, 3rd May, 2021 has been added.")
-        }
-
-        @Test
-        fun `Should return overtime shift changed Email`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 0, 0, "", "overtime", "add", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.EMAIL, clock)
-            assertThat(result).isEqualTo("* Your overtime shift on Monday, 3rd May, 2021 has been added.")
         }
     }
 
@@ -224,47 +124,22 @@ class NotificationDescriptionTest {
         @Test
         fun `Should return shift changed None`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 0, 0, "", "shift", "delete", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.NONE, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.NONE)
             assertThat(result).isEqualTo("Your shift on Sunday, 3rd May has been removed.")
         }
 
         @Test
         fun `Should return shift changed Sms`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 0, 0, "", "shift", "delete", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.SMS, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.SMS)
             assertThat(result).isEqualTo("Your shift on Sunday, 3rd May has been removed.")
         }
 
         @Test
         fun `Should return shift changed Email`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 0, 0, "", "shift", "delete", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.EMAIL, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.EMAIL)
             assertThat(result).isEqualTo("* Your shift on Sunday, 3rd May has been removed.")
-        }
-    }
-
-    @Nested
-    @DisplayName("Shift, Remove, Next year tests")
-    inner class ShiftRemoveNextYear {
-        @Test
-        fun `Should return shift changed None`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 0, 0, "", "shift", "delete", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.NONE, clock)
-            assertThat(result).isEqualTo("Your shift on Monday, 3rd May, 2021 has been removed.")
-        }
-
-        @Test
-        fun `Should return shift changed Sms`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 0, 0, "", "shift", "delete", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.SMS, clock)
-            assertThat(result).isEqualTo("Your shift on Monday, 3rd May, 2021 has been removed.")
-        }
-
-        @Test
-        fun `Should return shift changed Email`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 0, 0, "", "shift", "delete", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.EMAIL, clock)
-            assertThat(result).isEqualTo("* Your shift on Monday, 3rd May, 2021 has been removed.")
         }
     }
 
@@ -274,47 +149,22 @@ class NotificationDescriptionTest {
         @Test
         fun `Should return overtime shift changed None`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 0, 0, "", "overtime", "delete", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.NONE, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.NONE)
             assertThat(result).isEqualTo("Your overtime shift on Sunday, 3rd May has been removed.")
         }
 
         @Test
         fun `Should return overtime shift changed Sms`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 0, 0, "", "overtime", "delete", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.SMS, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.SMS)
             assertThat(result).isEqualTo("Your overtime shift on Sunday, 3rd May has been removed.")
         }
 
         @Test
         fun `Should return overtime shift changed Email`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 0, 0, "", "overtime", "delete", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.EMAIL, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.EMAIL)
             assertThat(result).isEqualTo("* Your overtime shift on Sunday, 3rd May has been removed.")
-        }
-    }
-
-    @Nested
-    @DisplayName("Overtime Shift, Remove, Next year tests")
-    inner class OvertimeShiftRemoveNextYear {
-        @Test
-        fun `Should return overtime shift changed None`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 0, 0, "", "overtime", "delete", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.NONE, clock)
-            assertThat(result).isEqualTo("Your overtime shift on Monday, 3rd May, 2021 has been removed.")
-        }
-
-        @Test
-        fun `Should return overtime shift changed Sms`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 0, 0, "", "overtime", "delete", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.SMS, clock)
-            assertThat(result).isEqualTo("Your overtime shift on Monday, 3rd May, 2021 has been removed.")
-        }
-
-        @Test
-        fun `Should return overtime shift changed Email`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 0, 0, "", "overtime", "delete", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.EMAIL, clock)
-            assertThat(result).isEqualTo("* Your overtime shift on Monday, 3rd May, 2021 has been removed.")
         }
     }
 
@@ -324,47 +174,22 @@ class NotificationDescriptionTest {
         @Test
         fun `Should return shift task changed None`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "shift_task", "edit", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.NONE, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.NONE)
             assertThat(result).isEqualTo("Your activity on Sunday, 3rd May (00:20:34 - 03:25:45) has changed to Test Duty.")
         }
 
         @Test
         fun `Should return shift changed Sms`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "shift_task", "edit", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.SMS, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.SMS)
             assertThat(result).isEqualTo("Your activity on Sunday, 3rd May (00:20:34 - 03:25:45) has changed.")
         }
 
         @Test
         fun `Should return shift changed Email`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "shift_task", "edit", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.EMAIL, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.EMAIL)
             assertThat(result).isEqualTo("* Your activity on Sunday, 3rd May (00:20:34 - 03:25:45) has changed.")
-        }
-    }
-
-    @Nested
-    @DisplayName("Shift Task, Edit, next year tests")
-    inner class ShiftTaskEditNextYear {
-        @Test
-        fun `Should return shift task changed None`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "shift_task", "edit", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.NONE, clock)
-            assertThat(result).isEqualTo("Your activity on Monday, 3rd May, 2021 (00:20:34 - 03:25:45) has changed to Test Duty.")
-        }
-
-        @Test
-        fun `Should return shift changed Sms`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "shift_task", "edit", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.SMS, clock)
-            assertThat(result).isEqualTo("Your activity on Monday, 3rd May, 2021 (00:20:34 - 03:25:45) has changed.")
-        }
-
-        @Test
-        fun `Should return shift changed Email`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "shift_task", "edit", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.EMAIL, clock)
-            assertThat(result).isEqualTo("* Your activity on Monday, 3rd May, 2021 (00:20:34 - 03:25:45) has changed.")
         }
     }
 
@@ -374,47 +199,22 @@ class NotificationDescriptionTest {
         @Test
         fun `Should return shift task changed None`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "overtime_task", "edit", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.NONE, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.NONE)
             assertThat(result).isEqualTo("Your overtime activity on Sunday, 3rd May (00:20:34 - 03:25:45) has changed to Test Duty.")
         }
 
         @Test
         fun `Should return shift changed Sms`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "overtime_task", "edit", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.SMS, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.SMS)
             assertThat(result).isEqualTo("Your overtime activity on Sunday, 3rd May (00:20:34 - 03:25:45) has changed.")
         }
 
         @Test
         fun `Should return shift changed Email`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "overtime_task", "edit", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.EMAIL, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.EMAIL)
             assertThat(result).isEqualTo("* Your overtime activity on Sunday, 3rd May (00:20:34 - 03:25:45) has changed.")
-        }
-    }
-
-    @Nested
-    @DisplayName("Overtime Shift Task, Edit, next year tests")
-    inner class OvertimeShiftTaskEditNextYear {
-        @Test
-        fun `Should return shift task changed None`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "overtime_task", "edit", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.NONE, clock)
-            assertThat(result).isEqualTo("Your overtime activity on Monday, 3rd May, 2021 (00:20:34 - 03:25:45) has changed to Test Duty.")
-        }
-
-        @Test
-        fun `Should return shift changed Sms`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "overtime_task", "edit", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.SMS, clock)
-            assertThat(result).isEqualTo("Your overtime activity on Monday, 3rd May, 2021 (00:20:34 - 03:25:45) has changed.")
-        }
-
-        @Test
-        fun `Should return shift changed Email`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "overtime_task", "edit", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.EMAIL, clock)
-            assertThat(result).isEqualTo("* Your overtime activity on Monday, 3rd May, 2021 (00:20:34 - 03:25:45) has changed.")
         }
     }
 
@@ -424,47 +224,22 @@ class NotificationDescriptionTest {
         @Test
         fun `Should return shift task changed None`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "shift_task", "add", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.NONE, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.NONE)
             assertThat(result).isEqualTo("Your activity on Sunday, 3rd May (00:20:34 - 03:25:45) has been added as Test Duty.")
         }
 
         @Test
         fun `Should return shift changed Sms`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "shift_task", "add", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.SMS, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.SMS)
             assertThat(result).isEqualTo("Your activity on Sunday, 3rd May (00:20:34 - 03:25:45) has been added.")
         }
 
         @Test
         fun `Should return shift changed Email`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "shift_task", "add", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.EMAIL, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.EMAIL)
             assertThat(result).isEqualTo("* Your activity on Sunday, 3rd May (00:20:34 - 03:25:45) has been added.")
-        }
-    }
-
-    @Nested
-    @DisplayName("Shift Task, Add, next year tests")
-    inner class ShiftTaskAddNextYear {
-        @Test
-        fun `Should return shift task changed None`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "shift_task", "add", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.NONE, clock)
-            assertThat(result).isEqualTo("Your activity on Monday, 3rd May, 2021 (00:20:34 - 03:25:45) has been added as Test Duty.")
-        }
-
-        @Test
-        fun `Should return shift changed Sms`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "shift_task", "add", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.SMS, clock)
-            assertThat(result).isEqualTo("Your activity on Monday, 3rd May, 2021 (00:20:34 - 03:25:45) has been added.")
-        }
-
-        @Test
-        fun `Should return shift changed Email`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "shift_task", "add", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.EMAIL, clock)
-            assertThat(result).isEqualTo("* Your activity on Monday, 3rd May, 2021 (00:20:34 - 03:25:45) has been added.")
         }
     }
 
@@ -474,47 +249,22 @@ class NotificationDescriptionTest {
         @Test
         fun `Should return shift task changed None`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "overtime_task", "add", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.NONE, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.NONE)
             assertThat(result).isEqualTo("Your overtime activity on Sunday, 3rd May (00:20:34 - 03:25:45) has been added as Test Duty.")
         }
 
         @Test
         fun `Should return shift changed Sms`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "overtime_task", "add", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.SMS, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.SMS)
             assertThat(result).isEqualTo("Your overtime activity on Sunday, 3rd May (00:20:34 - 03:25:45) has been added.")
         }
 
         @Test
         fun `Should return shift changed Email`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "overtime_task", "add", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.EMAIL, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.EMAIL)
             assertThat(result).isEqualTo("* Your overtime activity on Sunday, 3rd May (00:20:34 - 03:25:45) has been added.")
-        }
-    }
-
-    @Nested
-    @DisplayName("Overtime Shift Task, Add, next year tests")
-    inner class OvertimeShiftTaskAddNextYear {
-        @Test
-        fun `Should return shift task changed None`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "overtime_task", "add", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.NONE, clock)
-            assertThat(result).isEqualTo("Your overtime activity on Monday, 3rd May, 2021 (00:20:34 - 03:25:45) has been added as Test Duty.")
-        }
-
-        @Test
-        fun `Should return shift changed Sms`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "overtime_task", "add", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.SMS, clock)
-            assertThat(result).isEqualTo("Your overtime activity on Monday, 3rd May, 2021 (00:20:34 - 03:25:45) has been added.")
-        }
-
-        @Test
-        fun `Should return shift changed Email`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "overtime_task", "add", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.EMAIL, clock)
-            assertThat(result).isEqualTo("* Your overtime activity on Monday, 3rd May, 2021 (00:20:34 - 03:25:45) has been added.")
         }
     }
 
@@ -524,47 +274,22 @@ class NotificationDescriptionTest {
         @Test
         fun `Should return shift task changed None`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "shift_task", "delete", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.NONE, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.NONE)
             assertThat(result).isEqualTo("Your activity on Sunday, 3rd May (00:20:34 - 03:25:45) has been removed (was Test Duty).")
         }
 
         @Test
         fun `Should return shift changed Sms`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "shift_task", "delete", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.SMS, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.SMS)
             assertThat(result).isEqualTo("Your activity on Sunday, 3rd May (00:20:34 - 03:25:45) has been removed.")
         }
 
         @Test
         fun `Should return shift changed Email`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "shift_task", "delete", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.EMAIL, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.EMAIL)
             assertThat(result).isEqualTo("* Your activity on Sunday, 3rd May (00:20:34 - 03:25:45) has been removed.")
-        }
-    }
-
-    @Nested
-    @DisplayName("Shift Task, Remove, next year tests")
-    inner class ShiftTaskRemoveNextYear {
-        @Test
-        fun `Should return shift task changed None`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "shift_task", "delete", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.NONE, clock)
-            assertThat(result).isEqualTo("Your activity on Monday, 3rd May, 2021 (00:20:34 - 03:25:45) has been removed (was Test Duty).")
-        }
-
-        @Test
-        fun `Should return shift changed Sms`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "shift_task", "delete", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.SMS, clock)
-            assertThat(result).isEqualTo("Your activity on Monday, 3rd May, 2021 (00:20:34 - 03:25:45) has been removed.")
-        }
-
-        @Test
-        fun `Should return shift changed Email`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "shift_task", "delete", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.EMAIL, clock)
-            assertThat(result).isEqualTo("* Your activity on Monday, 3rd May, 2021 (00:20:34 - 03:25:45) has been removed.")
         }
     }
 
@@ -574,47 +299,22 @@ class NotificationDescriptionTest {
         @Test
         fun `Should return shift task changed None`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "overtime_task", "delete", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.NONE, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.NONE)
             assertThat(result).isEqualTo("Your overtime activity on Sunday, 3rd May (00:20:34 - 03:25:45) has been removed (was Test Duty).")
         }
 
         @Test
         fun `Should return shift changed Sms`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "overtime_task", "delete", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.SMS, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.SMS)
             assertThat(result).isEqualTo("Your overtime activity on Sunday, 3rd May (00:20:34 - 03:25:45) has been removed.")
         }
 
         @Test
         fun `Should return shift changed Email`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "overtime_task", "delete", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.EMAIL, clock)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.EMAIL)
             assertThat(result).isEqualTo("* Your overtime activity on Sunday, 3rd May (00:20:34 - 03:25:45) has been removed.")
-        }
-    }
-
-    @Nested
-    @DisplayName("Overtime Shift Task, Remove, next year tests")
-    inner class OvertimeShiftTaskRemoveNextYear {
-        @Test
-        fun `Should return shift task changed None`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "overtime_task", "delete", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.NONE, clock)
-            assertThat(result).isEqualTo("Your overtime activity on Monday, 3rd May, 2021 (00:20:34 - 03:25:45) has been removed (was Test Duty).")
-        }
-
-        @Test
-        fun `Should return shift changed Sms`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "overtime_task", "delete", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.SMS, clock)
-            assertThat(result).isEqualTo("Your overtime activity on Monday, 3rd May, 2021 (00:20:34 - 03:25:45) has been removed.")
-        }
-
-        @Test
-        fun `Should return shift changed Email`() {
-            val shiftNotification = ShiftNotification(1, "", now.plusYears(1), LocalDateTime.MIN, 1234L, 12345L, "Test Duty", "overtime_task", "delete", false)
-            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.EMAIL, clock)
-            assertThat(result).isEqualTo("* Your overtime activity on Monday, 3rd May, 2021 (00:20:34 - 03:25:45) has been removed.")
         }
     }
 

@@ -25,17 +25,7 @@ data class NotificationDto @JsonCreator constructor(
 
     companion object {
 
-        fun from(shiftNotifications: Collection<ShiftNotification>, clock: Clock): Collection<NotificationDto> {
-            return shiftNotifications.map {
-                from(it, clock)
-            }
-        }
-
-        fun from(shiftNotification: ShiftNotification, clock: Clock): NotificationDto {
-            val description = NotificationDescription.getNotificationDescription(
-                    shiftNotification,
-                    CommunicationPreference.NONE,
-                    clock)
+        fun from(shiftNotification: ShiftNotification, description: String): NotificationDto {
             return NotificationDto(description,
                     shiftNotification.shiftModified,
                     shiftNotification.processed)

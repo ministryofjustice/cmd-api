@@ -13,12 +13,12 @@ class NotificationDtoTest {
     @Test
     fun `Create Notification Dto from collection of ShiftNotification`() {
         val shifts = listOf(getValidShiftNotification())
-        val notificationDtos = shifts.map { NotificationDto.from(it, clock) }
+        val notificationDtos = shifts.map { NotificationDto.from(it, "Any Description") }
 
         Assertions.assertThat(notificationDtos).hasSize(1)
 
         val first = notificationDtos[0]
-        Assertions.assertThat(first.description).isEqualTo("Your shift on Sunday, 3rd May has been added.")
+        Assertions.assertThat(first.description).isEqualTo("Any Description")
         Assertions.assertThat(first.shiftModified).isEqualTo(shifts[0].shiftModified)
         Assertions.assertThat(first.processed).isEqualTo(shifts[0].processed)
     }
@@ -26,22 +26,14 @@ class NotificationDtoTest {
     @Test
     fun `Create Notification Dto from collection of ShiftTaskNotification`() {
         val shifts = listOf(getValidShiftTaskNotification())
-        val notificationDtos = shifts.map { NotificationDto.from(it, clock) }
+        val notificationDtos = shifts.map { NotificationDto.from(it,"Any Description") }
 
         Assertions.assertThat(notificationDtos).hasSize(1)
 
         val first = notificationDtos[0]
-        Assertions.assertThat(first.description).isEqualTo("Your shift on Sunday, 3rd May (00:02:03 - 00:07:36) has been added as Any Activity.")
+        Assertions.assertThat(first.description).isEqualTo("Any Description")
         Assertions.assertThat(first.shiftModified).isEqualTo(shifts[0].shiftModified)
         Assertions.assertThat(first.processed).isEqualTo(shifts[0].processed)
-    }
-
-    @Test
-    fun `Create Notification Dto from empty collection of ShiftNotification`() {
-        val shifts: List<ShiftNotification> = listOf()
-        val notificationDtos = NotificationDto.from(shifts, clock)
-
-        Assertions.assertThat(notificationDtos).hasSize(0)
     }
 
     companion object {
