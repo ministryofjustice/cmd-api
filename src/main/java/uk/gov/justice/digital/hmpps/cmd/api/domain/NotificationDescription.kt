@@ -40,9 +40,14 @@ class NotificationDescription {
 
         private fun getOptionalTaskDescription(from: Long?, to: Long?): String {
             return if (from != null && from != 0L && to != null && to != 0L) {
-                val fromTime = LocalTime.ofSecondOfDay(from)
-                val toTime = LocalTime.ofSecondOfDay(to)
-                "($fromTime - $toTime) "
+                if((from > LocalTime.MAX.toSecondOfDay() || from < LocalTime.MIN.toSecondOfDay()) ||
+                    (to > LocalTime.MAX.toSecondOfDay() || to < LocalTime.MIN.toSecondOfDay())) {
+                    "(full day) "
+                } else {
+                    val fromTime = LocalTime.ofSecondOfDay(from)
+                    val toTime = LocalTime.ofSecondOfDay(to)
+                    "($fromTime - $toTime) "
+                }
             } else ""
         }
 

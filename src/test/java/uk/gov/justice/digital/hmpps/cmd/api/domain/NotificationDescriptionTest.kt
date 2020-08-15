@@ -19,6 +19,38 @@ class NotificationDescriptionTest {
     private val now = LocalDate.now(clock)
 
     @Nested
+    @DisplayName("Shift Task boundary checks")
+    inner class ShitTaskBoundary {
+        @Test
+        fun `Should return full day for from less than 0 `() {
+            val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, -1234L, 12345L, "Test Duty", "shift_task", "edit", false)
+            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.NONE, clock)
+            assertThat(result).isEqualTo("Your activity on Sunday, 3rd May (full day) has changed to Test Duty.")
+        }
+
+        @Test
+        fun `Should return full day for to less than 0 `() {
+            val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 1234L, -12345L, "Test Duty", "shift_task", "edit", false)
+            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.NONE, clock)
+            assertThat(result).isEqualTo("Your activity on Sunday, 3rd May (full day) has changed to Test Duty.")
+        }
+
+        @Test
+        fun `Should return full day for from more than 86400 `() {
+            val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 1234L, 87345L, "Test Duty", "shift_task", "edit", false)
+            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.NONE, clock)
+            assertThat(result).isEqualTo("Your activity on Sunday, 3rd May (full day) has changed to Test Duty.")
+        }
+
+        @Test
+        fun `Should return full day for to more than 86400 `() {
+            val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 87234L, 12345L, "Test Duty", "shift_task", "edit", false)
+            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.NONE, clock)
+            assertThat(result).isEqualTo("Your activity on Sunday, 3rd May (full day) has changed to Test Duty.")
+        }
+    }
+
+    @Nested
     @DisplayName("Shift, Edit, This year tests")
     inner class ShiftEditThisYear {
         @Test
