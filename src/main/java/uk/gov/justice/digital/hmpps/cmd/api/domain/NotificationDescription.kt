@@ -39,19 +39,25 @@ class NotificationDescription {
         }
 
         private fun getOptionalTaskDescription(from: Long?, to: Long?, task: String?): String {
-             return if (from != null && to != null)
+             return if ((from != null && to != null) && !task.isNullOrEmpty())
              {
                  if(from > 1000L && to > 1000L) {
-                     val fullDay = 86400L
-                     val startTime = LocalTime.ofSecondOfDay(if(from > fullDay) { from - fullDay } else { from })
-                     val endTime = LocalTime.ofSecondOfDay(if(to > fullDay) { to - fullDay } else { to })
-                     "($startTime - $endTime) "
-                 } else if(!task.isNullOrEmpty()){
-                     "(full day) "
+                     "(${getTimeWithoutDayOffset(from)} - ${getTimeWithoutDayOffset(to)}) "
                  } else {
-                     ""
+                     "(full day) "
                  }
             } else ""
+        }
+
+        private fun getTimeWithoutDayOffset(seconds: Long): LocalTime {
+            val fullDay = 86_400L
+            return LocalTime.ofSecondOfDay(
+                    if (seconds > fullDay) {
+                        seconds - fullDay
+                    } else {
+                        seconds
+                    }
+            )
         }
 
         private fun getOptionalTaskTo(task: String?, communicationPreference: CommunicationPreference, shiftActionType: ShiftActionType): String {
