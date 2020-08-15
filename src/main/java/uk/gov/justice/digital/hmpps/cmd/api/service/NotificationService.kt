@@ -49,6 +49,7 @@ class NotificationService(
                 .forEach { group ->
                     try{
                         sendNotification(group.key, group.value)
+                        group.value.forEach { it.processed = true }
                     } catch (e: NotificationClientException) {
                         log.warn("Sending notifications to user ${group.key} FAILED", e)
                     }
@@ -64,10 +65,10 @@ class NotificationService(
                 .flatMap { prison ->
                     csrClient.getShiftNotifications(prison.csrPlanUnit, prison.region).distinct()
                 }.map{
-                    // Some manually created shifts start off with an action type of Edit
-                    // Identify them and change them to Add.
                     if(ShiftActionType.from(it.actionType) == ShiftActionType.EDIT &&
                             !checkIfNotificationHasCorrespondingAdd(it.quantumId, it.shiftDate, it.shiftType)) {
+                        // Some manually created shifts start off with an action type of Edit
+                        // Identify them and change them to Add.
                         it.actionType = ShiftActionType.ADD.value
                     }
                     it
@@ -197,7 +198,6 @@ class NotificationService(
         } else {
             log.info("Skipped sending notifications to ${userPreference.quantumId}, snooze set to ${userPreference.snoozeUntil}")
         }
-        notificationGroup.forEach { it.processed = true }
     }
 
     private fun userHasSnoozedNotifications(snoozeUntil: LocalDate?): Boolean {
@@ -218,8 +218,8 @@ class NotificationService(
         // Map each notification onto an predefined key
         personalisation.putAll(
                 notificationKeys
-                        .mapIndexed { index, value ->
-                            value to (chunk.getOrNull(index)?.getNotificationDescription(communicationPreference) ?: "")
+                        .mapIndexed { index, templateKey ->
+                            templateKey to (chunk.getOrNull(index)?.getNotificationDescription(communicationPreference) ?: "")
                         }.toMap())
         return personalisation
     }
