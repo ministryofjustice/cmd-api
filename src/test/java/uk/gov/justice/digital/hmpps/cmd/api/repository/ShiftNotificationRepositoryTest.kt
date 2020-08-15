@@ -32,6 +32,22 @@ class ShiftNotificationRepositoryTest(
     inner class GetShiftNotificationTests {
 
         @Test
+        fun `Should return a notification between the dates case insensitive quantum_id`() {
+            val quantumId = "XyZ"
+            val date = now.atStartOfDay()
+            val notification = getValidShiftNotification(date, date)
+            repository.save(notification)
+
+            val notifications = repository.findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(
+                    quantumId,
+                    now.minusDays(1).atStartOfDay(),
+                    now.plusDays(1).atStartOfDay())
+            assertThat(notifications).isNotEmpty
+
+            assertThat(notifications.contains(notification))
+        }
+
+        @Test
         fun `Should return a notification between the dates`() {
             val quantumId = "XYZ"
             val date = now.atStartOfDay()
@@ -85,6 +101,34 @@ class ShiftNotificationRepositoryTest(
                     ShiftNotificationType.SHIFT.value,
                     date)
             assertThat(notifications).isEqualTo(0)
+        }
+
+        @Test
+        fun `Should return count if 1 matches case insensitive quantum_id`() {
+            val date = now.plusDays(3).atStartOfDay()
+            val notification = getValidShiftNotification(date, date)
+            repository.save(notification)
+
+            val notifications = repository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(
+                    "XyZ",
+                    date.toLocalDate(),
+                    ShiftNotificationType.SHIFT.value,
+                    date)
+            assertThat(notifications).isEqualTo(1)
+        }
+
+        @Test
+        fun `Should return count if 1 matches case insensitive shift_type`() {
+            val date = now.plusDays(3).atStartOfDay()
+            val notification = getValidShiftNotification(date, date)
+            repository.save(notification)
+
+            val notifications = repository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(
+                    "XYZ",
+                    date.toLocalDate(),
+                    "ShIfT",
+                    date)
+            assertThat(notifications).isEqualTo(1)
         }
 
         @Test
