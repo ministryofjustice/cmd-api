@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.cmd.api.model.ShiftNotification
 import uk.gov.justice.digital.hmpps.cmd.api.repository.ShiftNotificationRepository
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.client.CsrClient
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.client.dto.ShiftNotificationDto
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.NotificationDescription.Companion.getDateTimeFormattedForTemplate
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.NotificationDescription.Companion.getNotificationDescription
@@ -61,31 +62,38 @@ class NotificationService(
         log.info("Refreshing notifications")
         val allPrisons = prisonService.getAllPrisons().distinctBy { it.csrPlanUnit }
         log.info("Found ${allPrisons.size} prisons")
-        val newShiftNotifications = allPrisons
-                .flatMap { prison ->
-                    csrClient.getShiftNotifications(prison.csrPlanUnit, prison.region).distinct()
-                }.map{
-                    if(ShiftActionType.from(it.actionType) == ShiftActionType.EDIT &&
-                            !checkIfNotificationHasCorrespondingAdd(it.quantumId, it.shiftDate, it.shiftType)) {
-                        // Some manually created shifts start off with an action type of Edit
-                        // Identify them and change them to Add.
-                        it.actionType = ShiftActionType.ADD.value
-                    }
-                    it
-                }
-                // Shift notifications cover Add and Delete, Task notifications cover Edit
-                // as they have more detail for Edits.
-                .filter { ShiftActionType.from(it.actionType) != ShiftActionType.EDIT }
-
-        val newTaskNotifications = allPrisons
-                .flatMap { prison ->
-                  csrClient.getShiftTaskNotifications(prison.csrPlanUnit, prison.region).distinct()
+        allPrisons
+                .forEach { prison ->
+                    saveNotifications(
+                        csrClient.getShiftNotifications(prison.csrPlanUnit, prison.region)
+                            .distinct()
+                            .map{
+                                if(ShiftActionType.from(it.actionType) == ShiftActionType.EDIT &&
+                                        !checkIfNotificationHasCorrespondingAdd(it.quantumId, it.shiftDate, it.shiftType)) {
+                                    // Some manually created shifts start off with an action type of Edit
+                                    // Identify them and change them to Add.
+                                    it.actionType = ShiftActionType.ADD.value
+                                }
+                                it
+                            }
+                            // Shift notifications cover Add and Delete, Task notifications cover Edit
+                            // as they have more detail for Edits.
+                            .filter { ShiftActionType.from(it.actionType) != ShiftActionType.EDIT })
                 }
 
-        val allNotifications = newShiftNotifications.plus(newTaskNotifications)
+        allPrisons.forEach { prison ->
+                  saveNotifications(
+                      csrClient.getShiftTaskNotifications(prison.csrPlanUnit, prison.region)
+                              .distinct())
+                }
+
+    }
+
+    private fun saveNotifications(notifications: Collection<ShiftNotificationDto>) {
+        val filteredNotifications = notifications
                 .filter { ShiftActionType.from(it.actionType) != ShiftActionType.UNCHANGED }
                 .filter { !checkIfNotificationsExist(it.quantumId, it.shiftDate, it.shiftType, it.shiftModified) }
-        shiftNotificationRepository.saveAll(ShiftNotification.fromDto(allNotifications))
+        shiftNotificationRepository.saveAll(ShiftNotification.fromDto(filteredNotifications))
     }
 
     private fun getNotifications(quantumId: String, start: LocalDateTime, end: LocalDateTime, unprocessedOnly: Boolean) : Collection<ShiftNotification> {
