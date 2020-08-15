@@ -13,7 +13,7 @@ class NotificationDescription {
 
             val bulletPoint = getOptionalBulletPoint(communicationPreference)
             val date = getDateTimeFormattedForTemplate(shiftNotification.shiftDate, clock)
-            val taskTime = getOptionalTaskDescription(shiftNotification.taskStart, shiftNotification.taskEnd)
+            val taskTime = getOptionalTaskDescription(shiftNotification.taskStart, shiftNotification.taskEnd, shiftNotification.task)
             val shiftActionType = ShiftActionType.from(shiftNotification.actionType)
             val taskTo = getOptionalTaskTo(shiftNotification.task, communicationPreference, shiftActionType)
             val shiftNotificationType = ShiftNotificationType.from(shiftNotification.shiftType)
@@ -38,16 +38,19 @@ class NotificationDescription {
             return DateTimeFormatter.ofPattern("EEEE, d'$ordinal' MMMM$year").format(shiftDate)
         }
 
-        private fun getOptionalTaskDescription(from: Long?, to: Long?): String {
-            return if (from != null && from != 0L && to != null && to != 0L) {
-                if((from > LocalTime.MAX.toSecondOfDay() || from < LocalTime.MIN.toSecondOfDay()) ||
-                    (to > LocalTime.MAX.toSecondOfDay() || to < LocalTime.MIN.toSecondOfDay())) {
-                    "(full day) "
-                } else {
-                    val fromTime = LocalTime.ofSecondOfDay(from)
-                    val toTime = LocalTime.ofSecondOfDay(to)
-                    "($fromTime - $toTime) "
-                }
+        private fun getOptionalTaskDescription(from: Long?, to: Long?, task: String?): String {
+             return if (from != null && to != null)
+             {
+                 if(from > 1000L && to > 1000L) {
+                     val fullDay = 86400L
+                     val startTime = LocalTime.ofSecondOfDay(if(from > fullDay) { from - fullDay } else { from })
+                     val endTime = LocalTime.ofSecondOfDay(if(to > fullDay) { to - fullDay } else { to })
+                     "($startTime - $endTime) "
+                 } else if(!task.isNullOrEmpty()){
+                     "(full day) "
+                 } else {
+                     ""
+                 }
             } else ""
         }
 

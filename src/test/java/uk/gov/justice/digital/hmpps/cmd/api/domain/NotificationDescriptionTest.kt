@@ -12,7 +12,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 
-
 class NotificationDescriptionTest {
 
     private val clock = Clock.fixed(LocalDate.of(2020, 5, 3).atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
@@ -22,31 +21,38 @@ class NotificationDescriptionTest {
     @DisplayName("Shift Task boundary checks")
     inner class ShitTaskBoundary {
         @Test
-        fun `Should return full day for from less than 0 `() {
-            val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, -1234L, 12345L, "Test Duty", "shift_task", "edit", false)
+        fun `Should return full day for 0 0 `() {
+            val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 0L, 0L, "Test Duty", "shift_task", "edit", false)
             val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.NONE, clock)
             assertThat(result).isEqualTo("Your activity on Sunday, 3rd May (full day) has changed to Test Duty.")
         }
 
         @Test
-        fun `Should return full day for to less than 0 `() {
-            val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 1234L, -12345L, "Test Duty", "shift_task", "edit", false)
+        fun `Should return full day for -2147483648 -2147483648 `() {
+            val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, -2147483648L, -2147483648L, "Test Duty", "shift_task", "edit", false)
             val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.NONE, clock)
             assertThat(result).isEqualTo("Your activity on Sunday, 3rd May (full day) has changed to Test Duty.")
         }
 
         @Test
-        fun `Should return full day for from more than 86400 `() {
-            val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 1234L, 87345L, "Test Duty", "shift_task", "edit", false)
+        fun `Should return full day for 0 86400`() {
+            val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 0L, 86400L, "Test Duty", "shift_task", "edit", false)
             val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.NONE, clock)
             assertThat(result).isEqualTo("Your activity on Sunday, 3rd May (full day) has changed to Test Duty.")
         }
 
         @Test
-        fun `Should return full day for to more than 86400 `() {
-            val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 87234L, 12345L, "Test Duty", "shift_task", "edit", false)
+        fun `Should return full day for 0 86700`() {
+            val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 0L, 86700L, "Test Duty", "shift_task", "edit", false)
             val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.NONE, clock)
             assertThat(result).isEqualTo("Your activity on Sunday, 3rd May (full day) has changed to Test Duty.")
+        }
+
+        @Test
+        fun `Should return night hours for 73800 113400`() {
+            val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 73800L, 113400L, "Test Duty", "shift_task", "edit", false)
+            val result = NotificationDescription.getNotificationDescription(shiftNotification, CommunicationPreference.NONE, clock)
+            assertThat(result).isEqualTo("Your activity on Sunday, 3rd May (20:30 - 07:30) has changed to Test Duty.")
         }
     }
 
