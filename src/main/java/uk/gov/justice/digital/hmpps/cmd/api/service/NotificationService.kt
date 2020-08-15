@@ -39,21 +39,7 @@ class NotificationService(
     fun getNotifications(processOnReadParam: Optional<Boolean>, unprocessedOnlyParam: Optional<Boolean>, fromParam: Optional<LocalDate>, toParam: Optional<LocalDate>, quantumId: String = authenticationFacade.currentUsername): Collection<NotificationDto> {
         val start = calculateStartDateTime(fromParam, toParam)
         val end = calculateEndDateTime(toParam, start)
-        val unprocessedOnly = unprocessedOnlyParam.orElse(false)
-        val processOnRead = processOnReadParam.orElse(true)
-
-        log.debug("Finding unprocessedOnly: $unprocessedOnly notifications between $start and $end for $quantumId")
-        val notifications = getNotifications(quantumId, start, end, unprocessedOnly)
-        log.info("Found ${notifications.size} unprocessedOnly: $unprocessedOnly notifications between $start and $end for $quantumId")
-
-        val notificationDtos = notifications.map {
-            NotificationDto.from(it, it.getNotificationDescription(CommunicationPreference.NONE))
-        }
-
-        if (processOnRead) {
-            notifications.forEach { it.processed = true }
-        }
-        return notificationDtos
+        return getShiftNotificationDtos(start, end, unprocessedOnlyParam.orElse(false), processOnReadParam.orElse(true))
     }
 
     fun sendNotifications() {
@@ -61,42 +47,11 @@ class NotificationService(
         shiftNotificationRepository.findAllByProcessedIsFalse()
                 .groupBy { it.quantumId }
                 .forEach { group ->
-                    log.info("Found ${group.value.size} results for ${group.key}")
-
-                    val userPreference = userPreferenceService.getOrCreateUserPreference(group.key)
-
-                    if (!userHasSnoozedNotifications(userPreference.snoozeUntil)) {
-                        // Only send the latest notification for a shift if there are multiple
-                        group.value
-                                .asSequence()
-                                .groupBy { it.compoundKey() }
-                                .map { (_, value) -> value.maxBy { it.shiftModified } }.filterNotNull()
-                                .sortedBy { it.shiftDate }.chunked(10)
-                                .forEach { chunk ->
-                                    try {
-                                        log.info("Sending ${chunk.size} deduplicated notifications to ${userPreference.quantumId}, preference set to ${userPreference.commPref}")
-
-                                        when (val communicationPreference = CommunicationPreference.from(userPreference.commPref)) {
-                                            CommunicationPreference.EMAIL -> {
-                                                notifyClient.sendEmail(NotificationType.EMAIL_SUMMARY.value, userPreference.email, generateTemplateValues(chunk, communicationPreference), null)
-                                                log.info("Sent Email notification (${chunk}.size} lines) for ${group.key}")
-                                            }
-                                            CommunicationPreference.SMS -> {
-                                                notifyClient.sendSms(NotificationType.SMS_SUMMARY.value, userPreference.sms, generateTemplateValues(chunk, communicationPreference), null)
-                                                log.info("Sent SMS notification (${chunk}.size} lines) for ${group.key}")
-                                            }
-                                            else -> {
-                                                log.info("Skipped sending notifications for ${userPreference.quantumId}, preference ${userPreference.commPref}")
-                                            }
-                                        }
-                                    } catch (e: NotificationClientException) {
-                                        log.warn("Sending notifications to user ${group.key} FAILED", e)
-                                    }
-                                }
-                    } else {
-                        log.info("Skipped sending notifications to ${userPreference.quantumId}, snooze set to ${userPreference.snoozeUntil}")
+                    try{
+                        sendNotification(group.key, group.value)
+                    } catch (e: NotificationClientException) {
+                        log.warn("Sending notifications to user ${group.key} FAILED", e)
                     }
-                    group.value.forEach { it.processed = true }
                 }
         log.info("Finished sending notifications")
     }
@@ -187,6 +142,62 @@ class NotificationService(
             }
         }
         return end.atTime(LocalTime.MAX)
+    }
+
+    private fun getShiftNotificationDtos(from: LocalDateTime, to: LocalDateTime, unprocessedOnly: Boolean, processOnRead: Boolean, quantumId: String = authenticationFacade.currentUsername): Collection<NotificationDto> {
+        log.debug("Finding unprocessedOnly: $unprocessedOnly notifications between $from and $to for $quantumId")
+        val notifications = getNotifications(quantumId, from, to, unprocessedOnly)
+        log.info("Found ${notifications.size} unprocessedOnly: $unprocessedOnly notifications between $from and $to for $quantumId")
+
+        val notificationDtos = notifications.map {
+            NotificationDto.from(it, it.getNotificationDescription(CommunicationPreference.NONE))
+        }
+
+        if (processOnRead) {
+            notifications.forEach { it.processed = true }
+        }
+        return notificationDtos
+    }
+
+    /*
+    * Chunk the notifications into 10s -
+    * Notify doesn't support vertical lists
+    * so we have to have a fixed size template with 'slots'
+    * 10 means we can cover 99.9% of scenarios in one email.
+    */
+    private fun sendNotification(quantumId: String, notificationGroup: List<ShiftNotification>) {
+        log.info("Found ${notificationGroup.size} results for $quantumId")
+
+        val userPreference = userPreferenceService.getOrCreateUserPreference(quantumId)
+
+        if (!userHasSnoozedNotifications(userPreference.snoozeUntil)) {
+            // Only send the latest notification for a shift if there are multiple
+            notificationGroup
+                    .asSequence()
+                    .groupBy { it.compoundKey() }
+                    .map { (_, value) -> value.maxBy { it.shiftModified } }.filterNotNull()
+                    .sortedBy { it.shiftDate }.chunked(10)
+                    .forEach { chunk ->
+                        log.info("Sending ${chunk.size} deduplicated notifications to ${userPreference.quantumId}, preference set to ${userPreference.commPref}")
+
+                        when (val communicationPreference = CommunicationPreference.from(userPreference.commPref)) {
+                            CommunicationPreference.EMAIL -> {
+                                notifyClient.sendEmail(NotificationType.EMAIL_SUMMARY.value, userPreference.email, generateTemplateValues(chunk, communicationPreference), null)
+                                log.info("Sent Email notification (${chunk}.size} lines) for $quantumId")
+                            }
+                            CommunicationPreference.SMS -> {
+                                notifyClient.sendSms(NotificationType.SMS_SUMMARY.value, userPreference.sms, generateTemplateValues(chunk, communicationPreference), null)
+                                log.info("Sent SMS notification (${chunk}.size} lines) for $quantumId")
+                            }
+                            else -> {
+                                log.info("Skipped sending notifications for ${userPreference.quantumId}, preference ${userPreference.commPref}")
+                            }
+                        }
+                    }
+        } else {
+            log.info("Skipped sending notifications to ${userPreference.quantumId}, snooze set to ${userPreference.snoozeUntil}")
+        }
+        notificationGroup.forEach { it.processed = true }
     }
 
     private fun userHasSnoozedNotifications(snoozeUntil: LocalDate?): Boolean {
