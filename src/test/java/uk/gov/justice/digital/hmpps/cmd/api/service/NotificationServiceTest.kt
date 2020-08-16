@@ -74,6 +74,26 @@ internal class NotificationServiceTest {
         }
 
         @Test
+        fun `Should filter duplicate notifications Notifications`() {
+            val quantumId = "XYZ"
+            val from = Optional.of(LocalDate.now(clock).minusDays(1))
+            val to = Optional.of(LocalDate.now(clock).plusDays(1))
+            val unprocessedOnly = Optional.of(false)
+            val processOnRead = Optional.of(true)
+
+            val shiftNotifications = listOf(getValidShiftNotification(clock),getValidShiftNotification(clock),getValidShiftNotification(clock))
+            every { shiftNotificationRepository.findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(quantumId, from.get().atTime(LocalTime.MIN), to.get().atTime(LocalTime.MAX)) } returns shiftNotifications
+            every { authenticationFacade.currentUsername } returns quantumId
+
+            val returnValue = service.getNotifications(processOnRead, unprocessedOnly, from, to)
+
+            verify { shiftNotificationRepository.findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(quantumId, from.get().atTime(LocalTime.MIN), to.get().atTime(LocalTime.MAX)) }
+            confirmVerified(shiftNotificationRepository)
+
+            assertThat(returnValue).hasSize(1)
+        }
+
+        @Test
         fun `Should get Notifications when there is only a shift notification`() {
             val quantumId = "XYZ"
             val from = Optional.of(LocalDate.now(clock).minusDays(1))

@@ -165,7 +165,7 @@ class NotificationService(
         if (processOnRead) {
             notifications.forEach { it.processed = true }
         }
-        return notificationDtos
+        return notificationDtos.distinct()
     }
 
     /*
