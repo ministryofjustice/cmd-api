@@ -2,8 +2,7 @@ package uk.gov.justice.digital.hmpps.cmd.api.model
 
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
-import uk.gov.justice.digital.hmpps.cmd.api.client.CsrDetailDto
-import uk.gov.justice.digital.hmpps.cmd.api.client.CsrModifiedDetailDto
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.client.dto.ShiftNotificationDto
 import java.time.LocalDateTime
 
 class ShiftNotificationTest {
@@ -62,14 +61,15 @@ class ShiftNotificationTest {
 
         val processed = false
 
-        val shiftNotificationDto = CsrModifiedDetailDto(
+        val shiftNotificationDto = ShiftNotificationDto(
                 quantumId,
-                shiftModified,
                 shiftDate,
-                shiftType,
+                null,
+                shiftModified,
                 taskStart,
                 taskEnd,
                 task,
+                shiftType,
                 actionType
         )
 
@@ -101,14 +101,15 @@ class ShiftNotificationTest {
 
         val processed = false
 
-        val shiftNotificationDto = CsrModifiedDetailDto(
+        val shiftNotificationDto = ShiftNotificationDto(
                 quantumId,
-                shiftModified,
+                null,
                 shiftDate,
-                shiftType,
+                shiftModified,
                 taskStart,
                 taskEnd,
                 task,
+                shiftType,
                 actionType
         )
 

@@ -9,12 +9,12 @@ import java.time.LocalDateTime
 @Repository
 interface ShiftNotificationRepository : CrudRepository<ShiftNotification, Long> {
 
-    fun findAllByQuantumIdAndShiftModifiedIsBetween(quantumId: String, from: LocalDateTime, to: LocalDateTime): Collection<ShiftNotification>
+    fun findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(quantumId: String, from: LocalDateTime, to: LocalDateTime): Collection<ShiftNotification>
 
     fun findAllByProcessedIsFalse(): Collection<ShiftNotification>
 
-    fun countAllByQuantumIdAndShiftDateAndShiftTypeAndShiftModified(quantumId: String, shiftDate: LocalDate, shiftNotificationType: String, shiftModified: LocalDateTime): Int
+    fun countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(quantumId: String, shiftDate: LocalDate, shiftNotificationType: String, shiftModified: LocalDateTime): Int
 
-    fun countAllByQuantumIdAndShiftDateAndShiftTypeAndShiftModifiedAndActionType(quantumId: String?, shiftDate: LocalDate?, shiftNotificationType: String?, shiftModified: LocalDateTime?, actionType: String): Int
+    fun countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndActionTypeIgnoreCase(quantumId: String, shiftDate: LocalDate, shiftNotificationType: String, actionType: String): Int
 
 }

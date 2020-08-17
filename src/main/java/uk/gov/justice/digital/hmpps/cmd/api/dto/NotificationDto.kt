@@ -5,9 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.annotations.ApiModel
 import io.swagger.annotations.ApiModelProperty
 import uk.gov.justice.digital.hmpps.cmd.api.model.ShiftNotification
-import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
-import uk.gov.justice.digital.hmpps.cmd.api.domain.NotificationDescription
-import java.time.Clock
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import java.time.LocalDateTime
 
 @ApiModel(description = "Notification")
@@ -25,20 +23,12 @@ data class NotificationDto @JsonCreator constructor(
 
     companion object {
 
-        fun from(shiftNotifications: Collection<ShiftNotification>, clock: Clock): Collection<NotificationDto> {
-            return shiftNotifications.map {
-                from(it, clock)
-            }
-        }
-
-        fun from(shiftNotification: ShiftNotification, clock: Clock): NotificationDto {
-            val description = NotificationDescription.getNotificationDescription(
-                    shiftNotification,
-                    CommunicationPreference.NONE,
-                    clock)
-            return NotificationDto(description,
+        fun from(shiftNotification: ShiftNotification, communicationPreference: CommunicationPreference): NotificationDto {
+            return NotificationDto(
+                    shiftNotification.getNotificationDescription(communicationPreference),
                     shiftNotification.shiftModified,
-                    shiftNotification.processed)
+                    shiftNotification.processed
+                    )
         }
 
     }

@@ -12,13 +12,16 @@ import uk.gov.justice.digital.hmpps.cmd.api.model.ShiftNotification
 import uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
 import uk.gov.justice.digital.hmpps.cmd.api.repository.ShiftNotificationRepository
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
-import uk.gov.justice.digital.hmpps.cmd.api.client.CsrClient
-import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
-import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftActionType
-import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftNotificationType
-import uk.gov.justice.digital.hmpps.cmd.api.service.PrisonService
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.client.CsrClient
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftActionType
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftNotificationType
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.service.PrisonService
 import uk.gov.service.notify.NotificationClient
-import java.time.*
+import java.time.Clock
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 @ExtendWith(MockKExtension::class)
 @DisplayName("Notification Service tests")
@@ -100,75 +103,6 @@ internal class NotificationServiceTest_Send {
             verify { userPreferenceService.getOrCreateUserPreference(quantumId1) }
             verify(exactly = 1) { notifyClient.sendEmail(any(), "email", any(), null) }
         }
-
-        @Test
-        fun `Should not send a notification to one user if they have a blank Email and Email Preference`() {
-            val quantumId1 = "XYZ"
-            val shiftNotifications: List<ShiftNotification> = listOf(
-                    ShiftNotification(1, quantumId1, LocalDate.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
-            )
-
-            every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
-            every { userPreferenceService.getOrCreateUserPreference(quantumId1) } returns UserPreference(quantumId1, null, "", "sms", CommunicationPreference.EMAIL.value)
-            every { notifyClient.sendEmail(any(), "email", any(), any()) } returns null
-
-            service.sendNotifications()
-
-            verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
-            verify { userPreferenceService.getOrCreateUserPreference(quantumId1) }
-        }
-
-        @Test
-        fun `Should not send a notification to one user if they have a null Email and Email Preference`() {
-            val quantumId1 = "XYZ"
-            val shiftNotifications: List<ShiftNotification> = listOf(
-                    ShiftNotification(1, quantumId1, LocalDate.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
-            )
-
-            every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
-            every { userPreferenceService.getOrCreateUserPreference(quantumId1) } returns UserPreference(quantumId1, null, null, "sms", CommunicationPreference.EMAIL.value)
-            every { notifyClient.sendEmail(any(), "email", any(), any()) } returns null
-
-            service.sendNotifications()
-
-            verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
-            verify { userPreferenceService.getOrCreateUserPreference(quantumId1) }
-        }
-
-        @Test
-        fun `Should not send a notification to one user if they have a blank Sms and Sms Preference`() {
-            val quantumId1 = "XYZ"
-            val shiftNotifications: List<ShiftNotification> = listOf(
-                    ShiftNotification(1, quantumId1, LocalDate.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
-            )
-
-            every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
-            every { userPreferenceService.getOrCreateUserPreference(quantumId1) } returns UserPreference(quantumId1, null, "email", "", CommunicationPreference.SMS.value)
-            every { notifyClient.sendEmail(any(), "email", any(), any()) } returns null
-
-            service.sendNotifications()
-
-            verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
-            verify { userPreferenceService.getOrCreateUserPreference(quantumId1) }
-        }
-
-        @Test
-        fun `Should not send a notification to one user if they have a null Sms and Sms Preference`() {
-            val quantumId1 = "XYZ"
-            val shiftNotifications: List<ShiftNotification> = listOf(
-                    ShiftNotification(1, quantumId1, LocalDate.now(clock).plusDays(4), LocalDateTime.now(clock), null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
-            )
-
-            every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
-            every { userPreferenceService.getOrCreateUserPreference(quantumId1) } returns UserPreference(quantumId1, null, "email", null, CommunicationPreference.SMS.value)
-            every { notifyClient.sendEmail(any(), "email", any(), any()) } returns null
-
-            service.sendNotifications()
-
-            verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
-            verify { userPreferenceService.getOrCreateUserPreference(quantumId1) }
-        }
-
 
         @Test
         fun `Should respect communication preferences Email`() {
@@ -330,7 +264,7 @@ internal class NotificationServiceTest_Send {
             verify(exactly = 1) { notifyClient.sendEmail(any(), "email", any(), null) }
             verify(exactly = 0) { notifyClient.sendSms(any(), "sms", any(), null) }
 
-            assertThat(slot.captured.getValue("not1")).isEqualTo("* Your shift on Tuesday, 2nd November, 2010 has been added.")
+            assertThat(slot.captured.getValue("not1")).isEqualTo("* Your shift on Tuesday, 2nd November has been added.")
             assertThat(slot.captured.getValue("not2")).isEqualTo("")
         }
 

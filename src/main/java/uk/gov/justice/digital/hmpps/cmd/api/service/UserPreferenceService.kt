@@ -35,7 +35,7 @@ class UserPreferenceService(val repository: UserPreferenceRepository, val authen
     }
 
     fun getOrCreateUserPreference(quantumId: String = authenticationFacade.currentUsername): UserPreference {
-        val userPreference = repository.findByQuantumId(quantumId.toUpperCase())
+        val userPreference = repository.findByQuantumIdIgnoreCase(quantumId)
         log.info("Finding user preference for $quantumId")
         return if (userPreference != null) {
             log.info("Found user preference for $quantumId")
