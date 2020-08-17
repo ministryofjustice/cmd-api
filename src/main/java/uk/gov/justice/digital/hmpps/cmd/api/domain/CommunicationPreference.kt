@@ -10,7 +10,7 @@ enum class CommunicationPreference(val value: String) {
     companion object {
         fun from(value: String): CommunicationPreference {
             return Arrays.stream(values())
-                    .filter { type -> type.value == value }
+                    .filter { type -> type.value.equals(value,true) }
                     .findFirst().orElseThrow { IllegalArgumentException() }
         }
     }

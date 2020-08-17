@@ -33,7 +33,7 @@ class UserPreferenceRepositoryTest(
             val quantumId = "XYZ"
             repository.save(UserPreference(quantumId, now.plusDays(20)))
 
-            val pref = repository.findByQuantumId(quantumId)
+            val pref = repository.findByQuantumIdIgnoreCase(quantumId)
             assertThat(pref).isNotNull
 
             assertThat(pref?.quantumId).isEqualTo(quantumId)
@@ -45,7 +45,7 @@ class UserPreferenceRepositoryTest(
             val quantumId = "XYZ"
             repository.save(UserPreference(quantumId, now))
 
-            val pref = repository.findByQuantumId(quantumId)
+            val pref = repository.findByQuantumIdIgnoreCase(quantumId)
             assertThat(pref).isNotNull
 
             assertThat(pref?.quantumId).isEqualTo(quantumId)
@@ -57,7 +57,7 @@ class UserPreferenceRepositoryTest(
             val quantumId = "XYZ"
             repository.save(UserPreference(quantumId, now.minusDays(10)))
 
-            val pref = repository.findByQuantumId(quantumId)
+            val pref = repository.findByQuantumIdIgnoreCase(quantumId)
             assertThat(pref).isNotNull
         }
 
@@ -72,7 +72,7 @@ class UserPreferenceRepositoryTest(
             val quantumId = "XYZ"
             repository.save(UserPreference(quantumId, now.plusDays(20)))
 
-            val result = repository.findByQuantumId(quantumId)
+            val result = repository.findByQuantumIdIgnoreCase(quantumId)
 
             assertThat(result).isNotNull
             assertThat(result?.quantumId).isEqualTo(quantumId)
@@ -84,14 +84,26 @@ class UserPreferenceRepositoryTest(
             val quantumId = "XYZ"
             repository.save(UserPreference(quantumId, now.minusDays(10)))
 
-            // If we use the other repository method `findByQuantumIdAndSnoozeGreaterThanEqual`
-            // we might not return anything when there is actually an entry.
-            val result = repository.findByQuantumId(quantumId)
+            val result = repository.findByQuantumIdIgnoreCase(quantumId)
 
             assertThat(result).isNotNull
             assertThat(result?.quantumId).isEqualTo(quantumId)
             assertThat(result?.snoozeUntil).isEqualTo(now.minusDays(10))
         }
+
+
+        @Test
+        fun `Should ignore case`() {
+            val quantumId = "XyZ123aDSddsdsd"
+            repository.save(UserPreference(quantumId.toUpperCase(), now.minusDays(10)))
+
+            val result = repository.findByQuantumIdIgnoreCase(quantumId.toLowerCase())
+
+            assertThat(result).isNotNull
+            assertThat(result?.quantumId).isEqualToIgnoringCase(quantumId)
+            assertThat(result?.snoozeUntil).isEqualTo(now.minusDays(10))
+        }
+
 
     }
 
