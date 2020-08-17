@@ -6,8 +6,6 @@ import io.swagger.annotations.ApiModel
 import io.swagger.annotations.ApiModelProperty
 import uk.gov.justice.digital.hmpps.cmd.api.model.ShiftNotification
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.NotificationDescription
-import java.time.Clock
 import java.time.LocalDateTime
 
 @ApiModel(description = "Notification")
@@ -25,10 +23,12 @@ data class NotificationDto @JsonCreator constructor(
 
     companion object {
 
-        fun from(shiftNotification: ShiftNotification, description: String): NotificationDto {
-            return NotificationDto(description,
+        fun from(shiftNotification: ShiftNotification, communicationPreference: CommunicationPreference): NotificationDto {
+            return NotificationDto(
+                    shiftNotification.getNotificationDescription(communicationPreference),
                     shiftNotification.shiftModified,
-                    shiftNotification.processed)
+                    shiftNotification.processed
+                    )
         }
 
     }

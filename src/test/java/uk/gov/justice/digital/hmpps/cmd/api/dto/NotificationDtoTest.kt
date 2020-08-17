@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.cmd.api.dto
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.cmd.api.model.ShiftNotification
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -13,12 +14,12 @@ class NotificationDtoTest {
     @Test
     fun `Create Notification Dto from collection of ShiftNotification`() {
         val shifts = listOf(getValidShiftNotification())
-        val notificationDtos = shifts.map { NotificationDto.from(it, "Any Description") }
+        val notificationDtos = shifts.map { NotificationDto.from(it, CommunicationPreference.NONE) }
 
         Assertions.assertThat(notificationDtos).hasSize(1)
 
         val first = notificationDtos[0]
-        Assertions.assertThat(first.description).isEqualTo("Any Description")
+        Assertions.assertThat(first.description).isEqualTo("Your shift on Sunday, 3rd May has been added.")
         Assertions.assertThat(first.shiftModified).isEqualTo(shifts[0].shiftModified)
         Assertions.assertThat(first.processed).isEqualTo(shifts[0].processed)
     }
@@ -26,12 +27,12 @@ class NotificationDtoTest {
     @Test
     fun `Create Notification Dto from collection of ShiftTaskNotification`() {
         val shifts = listOf(getValidShiftTaskNotification())
-        val notificationDtos = shifts.map { NotificationDto.from(it,"Any Description") }
+        val notificationDtos = shifts.map { NotificationDto.from(it, CommunicationPreference.NONE) }
 
         Assertions.assertThat(notificationDtos).hasSize(1)
 
         val first = notificationDtos[0]
-        Assertions.assertThat(first.description).isEqualTo("Any Description")
+        Assertions.assertThat(first.description).isEqualTo("Your shift on Sunday, 3rd May (00:02:03 - 00:07:36) has been added as Any Activity.")
         Assertions.assertThat(first.shiftModified).isEqualTo(shifts[0].shiftModified)
         Assertions.assertThat(first.processed).isEqualTo(shifts[0].processed)
     }
