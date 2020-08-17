@@ -37,7 +37,7 @@ class CmdApiApplication {
         return NotificationClient(key)
     }
 
-    @Bean
+    @Bean(name = ["globalObjectMapper"])
     @Primary
     fun objectMapper(): ObjectMapper? {
         return ObjectMapper()
