@@ -49,7 +49,7 @@ data class ShiftNotification(
 
                 val bulletPoint = getOptionalBulletPoint(communicationPreference)
                 val date = this.shiftDate.getDateTimeFormattedForTemplate()
-                val taskTime = getOptionalTaskDescription(this.taskStart, this.taskEnd)
+                val taskTime = getOptionalTaskDescription(this.taskStart, this.taskEnd, this.task)
                 val shiftActionType = ShiftActionType.from(this.actionType)
                 val taskTo = getOptionalTaskTo(this.task, communicationPreference, shiftActionType)
                 val shiftNotificationType = ShiftNotificationType.from(this.shiftType)
@@ -90,12 +90,26 @@ data class ShiftNotification(
                         return DateTimeFormatter.ofPattern("EEEE, d'$ordinal' MMMM").format(this)
                 }
 
-                private fun getOptionalTaskDescription(from: Long?, to: Long?): String {
-                        return if (from != null && from != 0L && to != null && to != 0L) {
-                                val fromTime = LocalTime.ofSecondOfDay(from)
-                                val toTime = LocalTime.ofSecondOfDay(to)
-                                "($fromTime - $toTime) "
+                private fun getOptionalTaskDescription(from: Long?, to: Long?, task: String?): String {
+                        return if ((from != null && to != null) && !task.isNullOrEmpty())
+                        {
+                                if(from > 1000L && to > 1000L) {
+                                        "(${getTimeWithoutDayOffset(from)} - ${getTimeWithoutDayOffset(to)}) "
+                                } else {
+                                        "(full day) "
+                                }
                         } else ""
+                }
+
+                private fun getTimeWithoutDayOffset(seconds: Long): LocalTime {
+                        val fullDay = 86_400L
+                        return LocalTime.ofSecondOfDay(
+                                if (seconds > fullDay) {
+                                        seconds - fullDay
+                                } else {
+                                        seconds
+                                }
+                        )
                 }
 
                 private fun getOptionalTaskTo(task: String?, communicationPreference: CommunicationPreference, shiftActionType: ShiftActionType): String {

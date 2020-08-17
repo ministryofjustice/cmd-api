@@ -18,6 +18,45 @@ class NotificationDescriptionTest {
     private val now = LocalDate.now(clock)
 
     @Nested
+    @DisplayName("Shift Task boundary checks")
+    inner class ShitTaskBoundary {
+        @Test
+        fun `Should return full day for 0 0 `() {
+            val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 0L, 0L, "Test Duty", "shift_task", "edit", false)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.NONE)
+            assertThat(result).isEqualTo("Your activity on Sunday, 3rd May (full day) has changed to Test Duty.")
+        }
+
+        @Test
+        fun `Should return full day for -2147483648 -2147483648 `() {
+            val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, -2147483648L, -2147483648L, "Test Duty", "shift_task", "edit", false)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.NONE)
+            assertThat(result).isEqualTo("Your activity on Sunday, 3rd May (full day) has changed to Test Duty.")
+        }
+
+        @Test
+        fun `Should return full day for 0 86400`() {
+            val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 0L, 86400L, "Test Duty", "shift_task", "edit", false)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.NONE)
+            assertThat(result).isEqualTo("Your activity on Sunday, 3rd May (full day) has changed to Test Duty.")
+        }
+
+        @Test
+        fun `Should return full day for 0 86700`() {
+            val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 0L, 86700L, "Test Duty", "shift_task", "edit", false)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.NONE)
+            assertThat(result).isEqualTo("Your activity on Sunday, 3rd May (full day) has changed to Test Duty.")
+        }
+
+        @Test
+        fun `Should return night hours for 73800 113400`() {
+            val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 73800L, 113400L, "Test Duty", "shift_task", "edit", false)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.NONE)
+            assertThat(result).isEqualTo("Your activity on Sunday, 3rd May (20:30 - 07:30) has changed to Test Duty.")
+        }
+    }
+
+    @Nested
     @DisplayName("Shift, Edit, This year tests")
     inner class ShiftEditThisYear {
         @Test
