@@ -4,7 +4,7 @@ kind: CronJob
 metadata:
   name: "refresh-shift-changes"
 spec:
-  schedule: "10 */3 * * *"
+  schedule: "30 */3 * * *"
   concurrencyPolicy: Allow
   jobTemplate:
     spec:
