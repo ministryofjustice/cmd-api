@@ -49,7 +49,7 @@ data class ShiftNotification(
                 fun fromDto(dto: ShiftNotificationDto): ShiftNotification {
                         return ShiftNotification(
                                 quantumId = dto.quantumId.toUpperCase(),
-                                shiftDate = dto.shiftDate,
+                                shiftDate = dto.actionDate,
                                 shiftModified = dto.shiftModified,
                                 taskStart = dto.taskStart,
                                 taskEnd = dto.taskEnd,

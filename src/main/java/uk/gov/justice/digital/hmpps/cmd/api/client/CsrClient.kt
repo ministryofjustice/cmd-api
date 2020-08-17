@@ -64,7 +64,7 @@ class CsrClient(val regionData: Regions, @Value("\${jwt.secret}") val secret: St
             log.info("Found 0 shift task notifications, PlanUnit $planUnit, Region $region")
             return listOf()
         }
-        notifications.shiftTaskNotifications.forEach { notification -> notification.shiftType = if(notification.shiftType.equals(ShiftNotificationType.SHIFT.value, true) || notification.shiftType.equals("task",true)) { ShiftNotificationType.SHIFT_TASK.value } else { ShiftNotificationType.OVERTIME_TASK.value } }
+        notifications.shiftTaskNotifications.forEach { notification -> notification.shiftType = if(ShiftNotificationType.from(notification.shiftType) == ShiftNotificationType.SHIFT || notification.shiftType.equals("task",true)) { ShiftNotificationType.SHIFT_TASK.value } else { ShiftNotificationType.OVERTIME_TASK.value } }
 
         return notifications.shiftTaskNotifications
     }

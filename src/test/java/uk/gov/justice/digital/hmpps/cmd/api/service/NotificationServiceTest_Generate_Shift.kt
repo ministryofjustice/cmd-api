@@ -76,6 +76,7 @@ internal class NotificationServiceTest_Generate_Shift {
             val dto1 = ShiftNotificationDto(
                     quantumId,
                     shiftDate,
+                    null,
                     today,
                     start,
                     end,
@@ -89,12 +90,12 @@ internal class NotificationServiceTest_Generate_Shift {
 
             every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(quantumId, shiftDate, shiftType, today) } returns 1
 
-            val slot = slot<Collection<ShiftNotification>>()
-            every { shiftNotificationRepository.saveAll(capture(slot)) } returns listOf()
+            val results = mutableListOf<Collection<ShiftNotification>>()
+            every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
 
             service.refreshNotifications()
 
-            assertThat(slot.captured).isEqualTo(listOf<ShiftNotification>())
+            assertThat(results[1]).isEqualTo(listOf<ShiftNotification>())
         }
 
         @Test
@@ -108,6 +109,7 @@ internal class NotificationServiceTest_Generate_Shift {
             val dto1 = ShiftNotificationDto(
                     quantumId,
                     today.plusDays(1).toLocalDate(),
+                    null,
                     today,
                     start,
                     end,
@@ -119,6 +121,7 @@ internal class NotificationServiceTest_Generate_Shift {
             val dto2 = ShiftNotificationDto(
                     quantumId,
                     today.plusDays(2).toLocalDate(),
+                    null,
                     today,
                     start,
                     end,
@@ -130,6 +133,7 @@ internal class NotificationServiceTest_Generate_Shift {
             val dto3 = ShiftNotificationDto(
                     quantumId,
                     today.plusDays(3).toLocalDate(),
+                    null,
                     today,
                     start,
                     end,
@@ -150,7 +154,7 @@ internal class NotificationServiceTest_Generate_Shift {
             val notification1 = ShiftNotification(null, quantumId, today.plusDays(1).toLocalDate(), today, start, end, task, shiftType, ShiftActionType.ADD.value, false)
             val notification2 = ShiftNotification(null, quantumId, today.plusDays(2).toLocalDate(), today, start, end, task, shiftType, ShiftActionType.ADD.value, false)
             val notification3 = ShiftNotification(null, quantumId, today.plusDays(3).toLocalDate(), today, start, end, task, shiftType, ShiftActionType.ADD.value, false)
-            assertThat(results[0]).isEqualTo(listOf(notification1, notification2, notification3))
+            assertThat(results[1]).isEqualTo(listOf(notification1, notification2, notification3))
         }
 
         @Test
@@ -164,6 +168,7 @@ internal class NotificationServiceTest_Generate_Shift {
             val dto1 = ShiftNotificationDto(
                     quantumId,
                     today.toLocalDate(),
+                    null,
                     today,
                     start,
                     end,
@@ -175,6 +180,7 @@ internal class NotificationServiceTest_Generate_Shift {
             val dto2 = ShiftNotificationDto(
                     quantumId,
                     today.toLocalDate(),
+                    null,
                     today,
                     start,
                     end,
@@ -186,6 +192,7 @@ internal class NotificationServiceTest_Generate_Shift {
             val dto3 = ShiftNotificationDto(
                     quantumId,
                     today.toLocalDate(),
+                    null,
                     today,
                     start,
                     end,
@@ -204,7 +211,7 @@ internal class NotificationServiceTest_Generate_Shift {
 
             service.refreshNotifications()
             val notification1 = ShiftNotification(null, quantumId, today.toLocalDate(), today, start, end, task, shiftType, ShiftActionType.ADD.value, false)
-            assertThat(results[0]).isEqualTo(listOf(notification1))
+            assertThat(results[1]).isEqualTo(listOf(notification1))
         }
 
         @Test
@@ -218,6 +225,7 @@ internal class NotificationServiceTest_Generate_Shift {
             val dto1 = ShiftNotificationDto(
                     quantumId,
                     today.toLocalDate(),
+                    null,
                     today,
                     start,
                     end,
@@ -229,6 +237,7 @@ internal class NotificationServiceTest_Generate_Shift {
             val dto2 = ShiftNotificationDto(
                     quantumId,
                     today.toLocalDate(),
+                    null,
                     today.plusSeconds(5),
                     start,
                     end,
@@ -240,6 +249,7 @@ internal class NotificationServiceTest_Generate_Shift {
             val dto3 = ShiftNotificationDto(
                     quantumId,
                     today.toLocalDate(),
+                    null,
                     today.plusSeconds(10),
                     start,
                     end,
@@ -262,7 +272,7 @@ internal class NotificationServiceTest_Generate_Shift {
             val notification1 = ShiftNotification(null, quantumId, today.toLocalDate(), today, start, end, task, shiftType, ShiftActionType.ADD.value, false)
             val notification2 = ShiftNotification(null, quantumId, today.toLocalDate(), today.plusSeconds(5), start, end, task, shiftType, ShiftActionType.ADD.value, false)
             val notification3 = ShiftNotification(null, quantumId, today.toLocalDate(), today.plusSeconds(10), start, end, task, shiftType, ShiftActionType.ADD.value, false)
-            assertThat(results[0]).isEqualTo(listOf(notification1,notification2,notification3))
+            assertThat(results[1]).isEqualTo(listOf(notification1,notification2,notification3))
         }
 
         @Test
@@ -276,6 +286,7 @@ internal class NotificationServiceTest_Generate_Shift {
             val shiftType = "Shift"
             val dto1 = ShiftNotificationDto(
                     quantumId,
+                    null,
                     shiftDate,
                     today,
                     start,
@@ -291,12 +302,12 @@ internal class NotificationServiceTest_Generate_Shift {
             every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndActionTypeIgnoreCase(quantumId, shiftDate, shiftType, ShiftActionType.ADD.value) } returns 1
             every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(quantumId, shiftDate, shiftType, today) } returns 0
 
-            val slot = slot<Collection<ShiftNotification>>()
-            every { shiftNotificationRepository.saveAll(capture(slot)) } returns listOf()
+            val results = mutableListOf<Collection<ShiftNotification>>()
+            every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
 
             service.refreshNotifications()
 
-            assertThat(slot.captured).isEqualTo(listOf<ShiftNotification>())
+            assertThat(results[0]).isEqualTo(listOf<ShiftNotification>())
         }
 
 
@@ -312,6 +323,7 @@ internal class NotificationServiceTest_Generate_Shift {
             val dto1 = ShiftNotificationDto(
                     quantumId,
                     shiftDate,
+                    null,
                     today,
                     start,
                     end,
@@ -330,7 +342,7 @@ internal class NotificationServiceTest_Generate_Shift {
             service.refreshNotifications()
 
             val expected = ShiftNotification(null, quantumId, shiftDate, today, start, end, task, shiftType, ShiftActionType.ADD.value, false)
-            assertThat(results[0]).isEqualTo(listOf(expected))
+            assertThat(results[1]).isEqualTo(listOf(expected))
         }
 
         @Test
@@ -345,6 +357,7 @@ internal class NotificationServiceTest_Generate_Shift {
             val dto1 = ShiftNotificationDto(
                     quantumId,
                     shiftDate,
+                    null,
                     today,
                     start,
                     end,
@@ -364,7 +377,7 @@ internal class NotificationServiceTest_Generate_Shift {
             service.refreshNotifications()
 
             val expected = ShiftNotification(null, quantumId, shiftDate, today, start, end, task, shiftType, ShiftActionType.DELETE.value, false)
-            assertThat(results[0]).isEqualTo(listOf(expected))
+            assertThat(results[1]).isEqualTo(listOf(expected))
         }
 
         @Test
@@ -378,6 +391,7 @@ internal class NotificationServiceTest_Generate_Shift {
             val shiftType = "Shift"
             val dto1 = ShiftNotificationDto(
                     quantumId,
+                    null,
                     shiftDate,
                     today,
                     start,
@@ -392,12 +406,12 @@ internal class NotificationServiceTest_Generate_Shift {
 
             every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(quantumId, shiftDate, shiftType, today) } returns 1
 
-            val slot = slot<Collection<ShiftNotification>>()
-            every { shiftNotificationRepository.saveAll(capture(slot)) } returns listOf()
+            val results = mutableListOf<Collection<ShiftNotification>>()
+            every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
 
             service.refreshNotifications()
 
-            assertThat(slot.captured).isEqualTo(listOf<ShiftNotification>())
+            assertThat(results[1]).isEqualTo(listOf<ShiftNotification>())
         }
 
         @Test
@@ -424,6 +438,7 @@ internal class NotificationServiceTest_Generate_Shift {
             val dto1 = ShiftNotificationDto(
                     quantumId,
                     shiftDate,
+                    null,
                     today,
                     start,
                     end,
@@ -444,7 +459,7 @@ internal class NotificationServiceTest_Generate_Shift {
             service.refreshNotifications()
 
             val expected = ShiftNotification(null, quantumId, shiftDate, today, start, end, task, shiftType, ShiftActionType.ADD.value, false)
-            assertThat(results[0]).isEqualTo(listOf(expected))
+            assertThat(results[1]).isEqualTo(listOf(expected))
         }
 
     }

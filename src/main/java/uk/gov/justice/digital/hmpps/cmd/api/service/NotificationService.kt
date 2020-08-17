@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.cmd.api.service
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.cmd.api.dto.NotificationDto
 import uk.gov.justice.digital.hmpps.cmd.api.model.ShiftNotification
 import uk.gov.justice.digital.hmpps.cmd.api.repository.ShiftNotificationRepository
@@ -23,9 +22,9 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*
+import javax.transaction.Transactional
 
 @Service
-@Transactional
 class NotificationService(
         val shiftNotificationRepository: ShiftNotificationRepository,
         val userPreferenceService: UserPreferenceService,
@@ -37,12 +36,14 @@ class NotificationService(
         val csrClient: CsrClient
 ) {
 
+    @Transactional
     fun getNotifications(processOnReadParam: Optional<Boolean>, unprocessedOnlyParam: Optional<Boolean>, fromParam: Optional<LocalDate>, toParam: Optional<LocalDate>): Collection<NotificationDto> {
         val start = calculateStartDateTime(fromParam, toParam)
         val end = calculateEndDateTime(toParam, start)
         return getShiftNotificationDtos(start, end, unprocessedOnlyParam.orElse(false), processOnReadParam.orElse(true))
     }
 
+    @Transactional
     fun sendNotifications() {
         log.info("Sending Notifications")
         shiftNotificationRepository.findAllByProcessedIsFalse()
@@ -61,15 +62,18 @@ class NotificationService(
     fun refreshNotifications() {
         log.info("Refreshing notifications")
         val allPrisons = prisonService.getAllPrisons().distinctBy { it.csrPlanUnit }
-        log.info("Found ${allPrisons.size} prisons")
-        allPrisons
-                .forEach { prison ->
-                    saveNotifications(
-                        csrClient.getShiftNotifications(prison.csrPlanUnit, prison.region)
+        log.info("Found ${allPrisons.size} unique planUnits")
+
+        allPrisons.forEach { prison ->
+            saveNotifications(
+                    csrClient.getShiftTaskNotifications(prison.csrPlanUnit, prison.region)
+                            .distinct())
+            saveNotifications(
+                    csrClient.getShiftNotifications(prison.csrPlanUnit, prison.region)
                             .distinct()
                             .map{
                                 if(ShiftActionType.from(it.actionType) == ShiftActionType.EDIT &&
-                                        !checkIfNotificationHasCorrespondingAdd(it.quantumId, it.shiftDate, it.shiftType)) {
+                                        !checkIfNotificationHasCorrespondingAdd(it.quantumId, it.actionDate, it.shiftType)) {
                                     // Some manually created shifts start off with an action type of Edit
                                     // Identify them and change them to Add.
                                     it.actionType = ShiftActionType.ADD.value
@@ -79,20 +83,14 @@ class NotificationService(
                             // Shift notifications cover Add and Delete, Task notifications cover Edit
                             // as they have more detail for Edits.
                             .filter { ShiftActionType.from(it.actionType) != ShiftActionType.EDIT })
-                }
 
-        allPrisons.forEach { prison ->
-                  saveNotifications(
-                      csrClient.getShiftTaskNotifications(prison.csrPlanUnit, prison.region)
-                              .distinct())
-                }
-
+        }
     }
 
     private fun saveNotifications(notifications: Collection<ShiftNotificationDto>) {
         val filteredNotifications = notifications
                 .filter { ShiftActionType.from(it.actionType) != ShiftActionType.UNCHANGED }
-                .filter { !checkIfNotificationsExist(it.quantumId, it.shiftDate, it.shiftType, it.shiftModified) }
+                .filter { !checkIfNotificationsExist(it.quantumId, it.actionDate, it.shiftType, it.shiftModified) }
         shiftNotificationRepository.saveAll(ShiftNotification.fromDto(filteredNotifications))
     }
 
