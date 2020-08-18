@@ -104,7 +104,7 @@ data class ShiftNotification(
                 private fun getTimeWithoutDayOffset(seconds: Long): LocalTime {
                         val fullDay = 86_400L
                         return LocalTime.ofSecondOfDay(
-                                if (seconds > fullDay) {
+                                if (seconds >= fullDay) {
                                         seconds - fullDay
                                 } else {
                                         seconds

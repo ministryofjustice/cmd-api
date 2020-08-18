@@ -49,6 +49,13 @@ class NotificationDescriptionTest {
         }
 
         @Test
+        fun `Should return hours for 1001 86400`() {
+            val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 53820L, 86400L, "Test Duty", "shift_task", "edit", false)
+            val result = shiftNotification.getNotificationDescription(CommunicationPreference.NONE)
+            assertThat(result).isEqualTo("Your activity on Sunday, 3rd May (14:57 - 00:00) has changed to Test Duty.")
+        }
+
+        @Test
         fun `Should return night hours for 73800 113400`() {
             val shiftNotification = ShiftNotification(1, "", now, LocalDateTime.MIN, 73800L, 113400L, "Test Duty", "shift_task", "edit", false)
             val result = shiftNotification.getNotificationDescription(CommunicationPreference.NONE)
