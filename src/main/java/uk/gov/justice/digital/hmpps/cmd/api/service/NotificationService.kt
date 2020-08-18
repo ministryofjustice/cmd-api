@@ -73,11 +73,7 @@ class NotificationService(
                             // There is a bug with the query that returns a Shift and an Overtime shift row for the same change.
                             .groupBy { it.compoundKey() }
                             .map { (_, value) ->
-                                if(value.any {ShiftNotificationType.from(it.shiftType) == ShiftNotificationType.OVERTIME_TASK }) {
-                                    value.first { ShiftNotificationType.from(it.shiftType) == ShiftNotificationType.OVERTIME_TASK  }
-                                } else {
-                                    value.first()
-                                }
+                                value.firstOrNull {ShiftNotificationType.from(it.shiftType) == ShiftNotificationType.OVERTIME_TASK } ?: value.first()
                             }
             )
             saveNotifications(
