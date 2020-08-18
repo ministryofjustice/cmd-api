@@ -93,7 +93,7 @@ data class ShiftNotification(
                 private fun getOptionalTaskDescription(from: Long?, to: Long?, task: String?): String {
                         return if ((from != null && to != null) && !task.isNullOrEmpty())
                         {
-                                if(from > 1000L && to > 1000L && to <= 86399) {
+                                if(from > 1000L && to > 1000L) {
                                         "(${getTimeWithoutDayOffset(from)} - ${getTimeWithoutDayOffset(to)}) "
                                 } else {
                                         "(full day) "
@@ -104,7 +104,7 @@ data class ShiftNotification(
                 private fun getTimeWithoutDayOffset(seconds: Long): LocalTime {
                         val fullDay = 86_400L
                         return LocalTime.ofSecondOfDay(
-                                if (seconds > fullDay) {
+                                if (seconds >= fullDay) {
                                         seconds - fullDay
                                 } else {
                                         seconds
