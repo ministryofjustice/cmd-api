@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.cmd.api.service
 
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.cmd.api.dto.UserPreferenceDto
 import uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
 import uk.gov.justice.digital.hmpps.cmd.api.repository.UserPreferenceRepository
@@ -11,7 +10,6 @@ import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api
 import java.time.LocalDate
 
 @Service
-@Transactional
 class UserPreferenceService(val repository: UserPreferenceRepository, val authenticationFacade: AuthenticationFacade) {
 
     fun getUserPreference(): UserPreferenceDto {
