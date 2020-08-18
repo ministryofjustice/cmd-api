@@ -17,7 +17,6 @@ import reactor.netty.tcp.TcpClient
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.client.dto.ShiftNotificationDto
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.client.dto.ShiftNotificationsDto
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.client.dto.ShiftTaskNotificationsDto
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftNotificationType
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.utils.region.Regions
 import java.nio.charset.Charset
 import java.security.Key
@@ -64,15 +63,6 @@ class CsrClient(val regionData: Regions, @Value("\${jwt.secret}") val secret: St
             log.info("Found 0 shift task notifications, PlanUnit $planUnit, Region $region")
             return listOf()
         }
-        notifications.shiftTaskNotifications
-                .forEach { notification ->
-                    notification.shiftType = if(ShiftNotificationType.from(notification.shiftType) == ShiftNotificationType.SHIFT ||
-                            notification.shiftType.equals("task",true)) {
-                        ShiftNotificationType.SHIFT_TASK.value
-                    } else {
-                        ShiftNotificationType.OVERTIME_TASK.value
-                    }
-                }
 
         return notifications.shiftTaskNotifications
     }
