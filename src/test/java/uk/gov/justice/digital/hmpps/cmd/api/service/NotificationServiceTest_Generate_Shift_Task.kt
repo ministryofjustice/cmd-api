@@ -88,7 +88,7 @@ internal class NotificationServiceTest_Generate_Shift_Task {
             every { csrClient.getShiftTaskNotifications(any(), any()) } returns listOf(dto1)
 
             every { csrClient.getShiftTaskNotifications(any(), any()) } returns listOf()
-            every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(quantumId, shiftDate, shiftType, today) } returns 1
+            every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(quantumId, shiftDate, any(), today) } returns 1
 
             val results = mutableListOf<Collection<ShiftNotification>>()
             every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
@@ -145,15 +145,15 @@ internal class NotificationServiceTest_Generate_Shift_Task {
             every { csrClient.getShiftNotifications(any(), any()) } returns listOf()
             every { csrClient.getShiftTaskNotifications(any(), any()) } returns listOf(dto1, dto2, dto3)
 
-            every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(quantumId, any(), shiftType, today) } returns 0
+            every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(quantumId, any(), any(), today) } returns 0
 
             val results = mutableListOf<Collection<ShiftNotification>>()
             every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
 
             service.refreshNotifications()
-            val notification1 = ShiftNotification(null, quantumId, today.plusDays(1).toLocalDate(), today, start, end, task, shiftType, ShiftActionType.EDIT.value, false)
-            val notification2 = ShiftNotification(null, quantumId, today.plusDays(2).toLocalDate(), today, start, end, task, shiftType, ShiftActionType.EDIT.value, false)
-            val notification3 = ShiftNotification(null, quantumId, today.plusDays(3).toLocalDate(), today, start, end, task, shiftType, ShiftActionType.EDIT.value, false)
+            val notification1 = ShiftNotification(null, quantumId, today.plusDays(1).toLocalDate(), today, start, end, task, "shift_task", ShiftActionType.EDIT.value, false)
+            val notification2 = ShiftNotification(null, quantumId, today.plusDays(2).toLocalDate(), today, start, end, task, "shift_task", ShiftActionType.EDIT.value, false)
+            val notification3 = ShiftNotification(null, quantumId, today.plusDays(3).toLocalDate(), today, start, end, task, "shift_task", ShiftActionType.EDIT.value, false)
             assertThat(results[0]).isEqualTo(listOf(notification1, notification2, notification3))
         }
 
@@ -204,13 +204,70 @@ internal class NotificationServiceTest_Generate_Shift_Task {
             every { csrClient.getShiftNotifications(any(), any()) } returns listOf()
             every { csrClient.getShiftTaskNotifications(any(), any()) } returns listOf(dto1, dto2, dto3)
 
-            every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(quantumId, any(), shiftType, today) } returns 0
+            every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(quantumId, any(), any(), today) } returns 0
 
             val results = mutableListOf<Collection<ShiftNotification>>()
             every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
 
             service.refreshNotifications()
-            val notification1 = ShiftNotification(null, quantumId, today.toLocalDate(), today, start, end, task, shiftType, ShiftActionType.ADD.value, false)
+            val notification1 = ShiftNotification(null, quantumId, today.toLocalDate(), today, start, end, task, "shift_task", ShiftActionType.ADD.value, false)
+            assertThat(results[0]).isEqualTo(listOf(notification1))
+        }
+
+        @Test
+        fun `Should filter out duplicate Shift Task notifications when there is an OverTime one too`() {
+            val today = LocalDateTime.now(clock)
+            val quantumId = "CSTRIFE_GEN"
+            val start = 123L
+            val end = 456L
+            val task = "Guard Duty"
+            val shiftType = "Shift"
+            val dto1 = ShiftNotificationDto(
+                    quantumId,
+                    today.toLocalDate(),
+                    null,
+                    today,
+                    start,
+                    end,
+                    task,
+                    "OverTime",
+                    ShiftActionType.EDIT.value
+            )
+
+            val dto2 = ShiftNotificationDto(
+                    quantumId,
+                    today.toLocalDate(),
+                    null,
+                    today,
+                    start,
+                    end,
+                    task,
+                    shiftType,
+                    ShiftActionType.EDIT.value
+            )
+
+            val dto3 = ShiftNotificationDto(
+                    quantumId,
+                    today.toLocalDate(),
+                    null,
+                    today,
+                    start,
+                    end,
+                    task,
+                    shiftType,
+                    ShiftActionType.EDIT.value
+            )
+
+            every { csrClient.getShiftNotifications(any(), any()) } returns listOf()
+            every { csrClient.getShiftTaskNotifications(any(), any()) } returns listOf(dto1, dto2, dto3)
+
+            every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(quantumId, any(), any(), today) } returns 0
+
+            val results = mutableListOf<Collection<ShiftNotification>>()
+            every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
+
+            service.refreshNotifications()
+            val notification1 = ShiftNotification(null, quantumId, today.toLocalDate(), today, start, end, task, "overtime_task", ShiftActionType.EDIT.value, false)
             assertThat(results[0]).isEqualTo(listOf(notification1))
         }
 
@@ -261,17 +318,17 @@ internal class NotificationServiceTest_Generate_Shift_Task {
             every { csrClient.getShiftNotifications(any(), any()) } returns listOf()
             every { csrClient.getShiftTaskNotifications(any(), any()) } returns listOf(dto1, dto2, dto3)
 
-            every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(quantumId, any(), shiftType, today) } returns 0
-            every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(quantumId, any(), shiftType, today.plusSeconds(5)) } returns 0
-            every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(quantumId, any(), shiftType, today.plusSeconds(10)) } returns 0
+            every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(quantumId, any(), any(), today) } returns 0
+            every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(quantumId, any(), any(), today.plusSeconds(5)) } returns 0
+            every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(quantumId, any(), any(), today.plusSeconds(10)) } returns 0
 
             val results = mutableListOf<Collection<ShiftNotification>>()
             every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
 
             service.refreshNotifications()
-            val notification1 = ShiftNotification(null, quantumId, today.toLocalDate(), today, start, end, task, shiftType, ShiftActionType.ADD.value, false)
-            val notification2 = ShiftNotification(null, quantumId, today.toLocalDate(), today.plusSeconds(5), start, end, task, shiftType, ShiftActionType.ADD.value, false)
-            val notification3 = ShiftNotification(null, quantumId, today.toLocalDate(), today.plusSeconds(10), start, end, task, shiftType, ShiftActionType.ADD.value, false)
+            val notification1 = ShiftNotification(null, quantumId, today.toLocalDate(), today, start, end, task, "shift_task", ShiftActionType.ADD.value, false)
+            val notification2 = ShiftNotification(null, quantumId, today.toLocalDate(), today.plusSeconds(5), start, end, task, "shift_task", ShiftActionType.ADD.value, false)
+            val notification3 = ShiftNotification(null, quantumId, today.toLocalDate(), today.plusSeconds(10), start, end, task, "shift_task", ShiftActionType.ADD.value, false)
             assertThat(results[0]).isEqualTo(listOf(notification1,notification2,notification3))
         }
 
@@ -300,13 +357,13 @@ internal class NotificationServiceTest_Generate_Shift_Task {
             every { csrClient.getShiftTaskNotifications(any(), any()) } returns listOf(dto1)
 
 
-            every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(quantumId, shiftDate, shiftType, today) } returns 0
+            every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(quantumId, shiftDate, any(), today) } returns 0
 
             val results = mutableListOf<Collection<ShiftNotification>>()
             every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
 
             service.refreshNotifications()
-            val expected = ShiftNotification(null, quantumId, shiftDate, today, start, end, task, shiftType, ShiftActionType.EDIT.value, false)
+            val expected = ShiftNotification(null, quantumId, shiftDate, today, start, end, task, "shift_task", ShiftActionType.EDIT.value, false)
             assertThat(results[0]).isEqualTo(listOf(expected))
         }
 
@@ -334,14 +391,14 @@ internal class NotificationServiceTest_Generate_Shift_Task {
             every { csrClient.getShiftNotifications(any(), any()) } returns listOf()
             every { csrClient.getShiftTaskNotifications(any(), any()) } returns listOf(dto1)
 
-            every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(quantumId, shiftDate, shiftType, today) } returns 0
+            every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(quantumId, shiftDate, any(), today) } returns 0
 
             val results = mutableListOf<Collection<ShiftNotification>>()
             every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
 
             service.refreshNotifications()
 
-            val expected = ShiftNotification(null, quantumId, shiftDate, today, start, end, task, shiftType, ShiftActionType.ADD.value, false)
+            val expected = ShiftNotification(null, quantumId, shiftDate, today, start, end, task, "shift_task", ShiftActionType.ADD.value, false)
             assertThat(results[0]).isEqualTo(listOf(expected))
         }
 
@@ -369,14 +426,14 @@ internal class NotificationServiceTest_Generate_Shift_Task {
             every { csrClient.getShiftNotifications(any(), any()) } returns listOf()
             every { csrClient.getShiftTaskNotifications(any(), any()) } returns listOf(dto1)
 
-            every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(quantumId, shiftDate, shiftType, today) } returns 0
+            every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(quantumId, shiftDate, any(), today) } returns 0
 
             val results = mutableListOf<Collection<ShiftNotification>>()
             every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
 
             service.refreshNotifications()
 
-            val expected = ShiftNotification(null, quantumId, shiftDate, today, start, end, task, shiftType, ShiftActionType.DELETE.value, false)
+            val expected = ShiftNotification(null, quantumId, shiftDate, today, start, end, task, "shift_task", ShiftActionType.DELETE.value, false)
             assertThat(results[0]).isEqualTo(listOf(expected))
         }
 
@@ -404,7 +461,7 @@ internal class NotificationServiceTest_Generate_Shift_Task {
             every { csrClient.getShiftNotifications(any(), any()) } returns listOf()
             every { csrClient.getShiftTaskNotifications(any(), any()) } returns listOf(dto1)
 
-            every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(quantumId, shiftDate, shiftType, today) } returns 1
+            every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(quantumId, shiftDate, any(), today) } returns 1
 
             val results = mutableListOf<Collection<ShiftNotification>>()
             every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
@@ -412,6 +469,19 @@ internal class NotificationServiceTest_Generate_Shift_Task {
             service.refreshNotifications()
 
             assertThat(results[0]).isEqualTo(listOf<ShiftNotification>())
+        }
+
+        @Test
+        fun `Should do nothing if there are no notifications`() {
+            every { csrClient.getShiftNotifications(any(), any()) } returns listOf()
+            every { csrClient.getShiftTaskNotifications(any(), any()) } returns listOf()
+
+            val results = mutableListOf<Collection<ShiftNotification>>()
+            every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
+
+            service.refreshNotifications()
+
+            assertThat(results[0]).hasSize(0)
         }
 
     }

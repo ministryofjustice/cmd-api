@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.NotificationType
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftActionType
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftNotificationType
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.service.PrisonService
 import uk.gov.service.notify.NotificationClientApi
 import uk.gov.service.notify.NotificationClientException
@@ -57,8 +58,24 @@ class NotificationService(
 
         allPrisons.forEach { prison ->
             saveNotifications(
-                    csrClient.getShiftTaskNotifications(prison.csrPlanUnit, prison.region)
-                            .distinct())
+                   csrClient.getShiftTaskNotifications(prison.csrPlanUnit, prison.region)
+                            .map {
+                                if(ShiftNotificationType.from(it.shiftType) == ShiftNotificationType.SHIFT || it.shiftType.equals("task",true)) {
+                                    it.shiftType = ShiftNotificationType.SHIFT_TASK.value
+                                } else {
+                                    it.shiftType = ShiftNotificationType.OVERTIME_TASK.value
+                                }
+                                it
+                            }
+                            // There is a bug with the query that returns a Shift and an Overtime shift row for the same change.
+                            .groupBy { it.compoundKey() }
+                            .map { (_, value) ->
+                                value.firstOrNull {
+                                    val shiftType = ShiftNotificationType.from(it.shiftType)
+                                    shiftType == ShiftNotificationType.OVERTIME_TASK
+                                } ?: value.first()
+                            }
+            )
             saveNotifications(
                     csrClient.getShiftNotifications(prison.csrPlanUnit, prison.region)
                             .distinct()
@@ -73,7 +90,8 @@ class NotificationService(
                             }
                             // Shift notifications cover Add and Delete, Task notifications cover Edit
                             // as they have more detail for Edits.
-                            .filter { ShiftActionType.from(it.actionType) != ShiftActionType.EDIT })
+                            .filter { ShiftActionType.from(it.actionType) != ShiftActionType.EDIT }
+            )
 
         }
     }
@@ -231,8 +249,11 @@ class NotificationService(
 
     companion object {
 
-        data class Key(val shiftDate: LocalDate, val shiftType: String, val quantumId: String)
-        fun ShiftNotification.compoundKey() = Key(this.shiftDate, this.shiftType.toUpperCase(), this.quantumId.toUpperCase())
+        data class Key(val quantumId: String, val shiftDate: LocalDate, val shiftType: String, val taskStart: Long? )
+        fun ShiftNotification.compoundKey() = Key(this.quantumId.toUpperCase(), this.shiftDate, this.shiftType.toUpperCase(), this.taskStart)
+
+        data class ShiftTaskSaveKey(val quantumId: String, val shiftDate: LocalDate, val shiftModified: LocalDateTime, var taskStart: Long)
+        fun ShiftNotificationDto.compoundKey() = ShiftTaskSaveKey(this.quantumId.toUpperCase(), this.actionDate, this.shiftModified, this.taskStart!!)
 
         private val log = LoggerFactory.getLogger(NotificationService::class.java)
 

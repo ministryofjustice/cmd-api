@@ -233,7 +233,7 @@ internal class NotificationServiceTest_Send {
         }
 
         @Test
-        fun `Should only send most recent notification for duplicates'`() {
+        fun `Should only send most recent notification for duplicates`() {
             val frozenClock = Clock.fixed(LocalDate.of(2010, 10, 29).atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
             val quantumId = "CSTRIFE_GEN"
             val shiftDate = LocalDate.now(frozenClock).plusDays(4)
@@ -266,6 +266,39 @@ internal class NotificationServiceTest_Send {
 
             assertThat(slot.captured.getValue("not1")).isEqualTo("* Your shift on Tuesday, 2nd November has been added.")
             assertThat(slot.captured.getValue("not2")).isEqualTo("")
+        }
+
+        @Test
+        fun `Should only send most recent notification for duplicates if some are tasks too`() {
+            val frozenClock = Clock.fixed(LocalDate.of(2010, 10, 29).atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
+            val quantumId = "CSTRIFE_GEN"
+            val shiftDate = LocalDate.now(frozenClock).plusDays(4)
+            val modified1 = LocalDateTime.now(frozenClock).plusHours(1)
+
+            val shiftNotifications: List<ShiftNotification> = listOf(
+                    ShiftNotification(1, quantumId, shiftDate, modified1, null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false),
+                    ShiftNotification(1, quantumId, shiftDate, modified1, 9876, 6544, "A Task", ShiftNotificationType.SHIFT_TASK.value, ShiftActionType.ADD.value, false),
+                    ShiftNotification(1, quantumId, shiftDate, modified1, 1234, 4567, "Any Task", ShiftNotificationType.SHIFT_TASK.value, ShiftActionType.ADD.value, false)
+            )
+
+            every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
+            every { userPreferenceService.getOrCreateUserPreference(quantumId) } returns UserPreference(quantumId, null, "email", "sms", CommunicationPreference.EMAIL.value)
+            every { notifyClient.sendEmail(any(), "email", any(), any()) } returns null
+            every { notifyClient.sendSms(any(), "sms", any(), any()) } returns null
+
+            val slot = slot<Map<String, String>>()
+            every { notifyClient.sendEmail(any(), any(), capture(slot), null) } returns null
+
+            service.sendNotifications()
+
+            verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
+            verify { userPreferenceService.getOrCreateUserPreference(quantumId) }
+            verify(exactly = 1) { notifyClient.sendEmail(any(), "email", any(), null) }
+            verify(exactly = 0) { notifyClient.sendSms(any(), "sms", any(), null) }
+
+            assertThat(slot.captured.getValue("not1")).isEqualTo("* Your shift on Tuesday, 2nd November has been added.")
+            assertThat(slot.captured.getValue("not2")).isEqualTo("* Your activity on Tuesday, 2nd November (02:44:36 - 01:49:04) has been added.")
+            assertThat(slot.captured.getValue("not3")).isEqualTo("* Your activity on Tuesday, 2nd November (00:20:34 - 01:16:07) has been added.")
         }
 
     }
