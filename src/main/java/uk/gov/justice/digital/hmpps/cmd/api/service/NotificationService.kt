@@ -172,6 +172,7 @@ class NotificationService(
         if (processOnRead) {
             notifications.forEach { it.processed = true }
         }
+        shiftNotificationRepository.saveAll(notifications)
         return notificationDtos.distinct()
     }
 
