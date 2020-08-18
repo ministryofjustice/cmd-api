@@ -48,12 +48,7 @@ class NotificationService(
         shiftNotificationRepository.findAllByProcessedIsFalse()
                 .groupBy { it.quantumId }
                 .forEach { group ->
-                    try{
-                        sendNotification(group.key, group.value)
-                        group.value.forEach { it.processed = true }
-                    } catch (e: NotificationClientException) {
-                        log.warn("Sending notifications to user ${group.key} FAILED", e)
-                    }
+                    sendNotification(group.key, group.value)
                 }
         log.info("Finished sending notifications")
     }
@@ -176,6 +171,10 @@ class NotificationService(
 
         val userPreference = userPreferenceService.getOrCreateUserPreference(quantumId)
 
+        // Set them all to true then set failed ones to false again
+        // Its the only way to mark duplicate entries as processed
+        // because we're about to deduplicate them.
+        notificationGroup.forEach { it.processed = true }
         if (!userHasSnoozedNotifications(userPreference.snoozeUntil)) {
             // Only send the latest notification for a shift if there are multiple
             notificationGroup
@@ -185,19 +184,23 @@ class NotificationService(
                     .sortedBy { it.shiftDate }.chunked(10)
                     .forEach { chunk ->
                         log.info("Sending ${chunk.size} deduplicated notifications to ${userPreference.quantumId}, preference set to ${userPreference.commPref}")
-
-                        when (val communicationPreference = CommunicationPreference.from(userPreference.commPref)) {
-                            CommunicationPreference.EMAIL -> {
-                                notifyClient.sendEmail(NotificationType.EMAIL_SUMMARY.value, userPreference.email, generateTemplateValues(chunk, communicationPreference), null)
-                                log.info("Sent Email notification (${chunk}.size} lines) for $quantumId")
+                        try {
+                            when (val communicationPreference = CommunicationPreference.from(userPreference.commPref)) {
+                                CommunicationPreference.EMAIL -> {
+                                    notifyClient.sendEmail(NotificationType.EMAIL_SUMMARY.value, userPreference.email, generateTemplateValues(chunk, communicationPreference), null)
+                                    log.info("Sent Email notification (${chunk}.size} lines) for $quantumId")
+                                }
+                                CommunicationPreference.SMS -> {
+                                    notifyClient.sendSms(NotificationType.SMS_SUMMARY.value, userPreference.sms, generateTemplateValues(chunk, communicationPreference), null)
+                                    log.info("Sent SMS notification (${chunk}.size} lines) for $quantumId")
+                                }
+                                else -> {
+                                    log.info("Skipped sending notifications for ${userPreference.quantumId}, preference ${userPreference.commPref}")
+                                }
                             }
-                            CommunicationPreference.SMS -> {
-                                notifyClient.sendSms(NotificationType.SMS_SUMMARY.value, userPreference.sms, generateTemplateValues(chunk, communicationPreference), null)
-                                log.info("Sent SMS notification (${chunk}.size} lines) for $quantumId")
-                            }
-                            else -> {
-                                log.info("Skipped sending notifications for ${userPreference.quantumId}, preference ${userPreference.commPref}")
-                            }
+                        } catch (e: NotificationClientException) {
+                            chunk.forEach { it.processed = false }
+                            log.warn("Sending notifications to user ${userPreference.quantumId} FAILED", e)
                         }
                     }
         } else {
