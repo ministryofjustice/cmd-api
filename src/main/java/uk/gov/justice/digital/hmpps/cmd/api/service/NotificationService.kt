@@ -22,7 +22,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*
-import javax.transaction.Transactional
 
 @Service
 class NotificationService(
@@ -36,14 +35,12 @@ class NotificationService(
         val csrClient: CsrClient
 ) {
 
-    @Transactional
     fun getNotifications(processOnReadParam: Optional<Boolean>, unprocessedOnlyParam: Optional<Boolean>, fromParam: Optional<LocalDate>, toParam: Optional<LocalDate>): Collection<NotificationDto> {
         val start = calculateStartDateTime(fromParam, toParam)
         val end = calculateEndDateTime(toParam, start)
         return getShiftNotificationDtos(start, end, unprocessedOnlyParam.orElse(false), processOnReadParam.orElse(true))
     }
 
-    @Transactional
     fun sendNotifications() {
         log.info("Sending Notifications")
         shiftNotificationRepository.findAllByProcessedIsFalse()
