@@ -471,5 +471,18 @@ internal class NotificationServiceTest_Generate_Shift_Task {
             assertThat(results[0]).isEqualTo(listOf<ShiftNotification>())
         }
 
+        @Test
+        fun `Should do nothing if there are no notifications`() {
+            every { csrClient.getShiftNotifications(any(), any()) } returns listOf()
+            every { csrClient.getShiftTaskNotifications(any(), any()) } returns listOf()
+
+            val results = mutableListOf<Collection<ShiftNotification>>()
+            every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
+
+            service.refreshNotifications()
+
+            assertThat(results[0]).hasSize(0)
+        }
+
     }
 }
