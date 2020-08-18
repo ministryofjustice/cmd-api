@@ -222,6 +222,7 @@ class NotificationService(
         } else {
             log.info("Skipped sending notifications to ${userPreference.quantumId}, snooze set to ${userPreference.snoozeUntil}")
         }
+        shiftNotificationRepository.saveAll(notificationGroup)
     }
 
     private fun userHasSnoozedNotifications(snoozeUntil: LocalDate?): Boolean {
