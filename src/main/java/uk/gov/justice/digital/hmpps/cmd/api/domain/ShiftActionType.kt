@@ -8,6 +8,10 @@ enum class ShiftActionType(val value: String, val description: String) {
     DELETE("delete", "been removed"),
     UNCHANGED("unchanged", "not changed");
 
+    fun equalsValue(value: String): Boolean {
+        return this == from(value)
+    }
+
     companion object {
         fun from(value: String): ShiftActionType {
             return Arrays.stream(values())
