@@ -9,12 +9,18 @@ spring:
     username: '${DATABASE_USERNAME:check-my-diary}'
     password: '${DATABASE_PASSWORD:check-my-diary}'
 
-
   security:
     oauth2:
       resourceserver:
         jwt:
           jwk-set-uri: https://sign-in-dev.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json
+
+oauth:
+  endpoint:
+    url: https://sign-in-dev.hmpps.service.justice.gov.uk/auth
+  client:
+    id: my-diary
+    secret: kJwGCYAhn4AYRQF9
 
 logging:
   level:

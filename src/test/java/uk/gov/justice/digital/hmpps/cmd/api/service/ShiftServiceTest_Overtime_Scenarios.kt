@@ -39,9 +39,9 @@ internal class ShiftServiceTest_Overtime_Scenarios {
         fun `Should return a basic day shift with overtime after`() {
             val day1 = LocalDate.now(clock)
             val dayShift = listOf(
-                    ShiftTaskDto(day1, "Unspecific", day1.atTime(7,15), day1.atTime(12,30), "Present"),
-                    ShiftTaskDto(day1, "Break", day1.atTime(12,30), day1.atTime(13,30), "Break (Unpaid)"),
-                    ShiftTaskDto(day1, "Unspecific", day1.atTime(13,30), day1.atTime(17,0), "Present")
+                    ShiftTaskDto(day1, "Unspecific", LocalTime.of(7,15).toSecondOfDay().toLong(), LocalTime.of(12,30).toSecondOfDay().toLong(), "Present"),
+                    ShiftTaskDto(day1, "Break", LocalTime.of(12,30).toSecondOfDay().toLong(), LocalTime.of(13,30).toSecondOfDay().toLong(), "Break (Unpaid)"),
+                    ShiftTaskDto(day1, "Unspecific", LocalTime.of(13,30).toSecondOfDay().toLong(), LocalTime.of(17,0).toSecondOfDay().toLong(), "Present")
             )
 
             val overtime = listOf(
@@ -54,7 +54,7 @@ internal class ShiftServiceTest_Overtime_Scenarios {
             every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns overtime
 
 
-            val dayModelList = service.getShiftsBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
 
             assertThat(dayModelList).hasSize(1)
 
@@ -85,21 +85,21 @@ internal class ShiftServiceTest_Overtime_Scenarios {
             val day1 = LocalDate.now(clock)
             val dayShift = listOf(
                     ShiftTaskDto(day1, "Unspecific", day1.atTime(17,15), day1.atTime(18,30), "Present"),
-                    ShiftTaskDto(day1, "Break", day1.atTime(18,30), day1.atTime(13,30), "Break (Unpaid)"),
+                    ShiftTaskDto(day1, "Break", day1.atTime(18,30), LocalTime.of(13,30).toSecondOfDay().toLong(), "Break (Unpaid)"),
                     ShiftTaskDto(day1, "Unspecific", day1.atTime(19,30), day1.atTime(22,0), "Present")
             )
 
             val overtime = listOf(
-                    ShiftTaskDto(day1, "Unspecific", day1.atTime(7,15), day1.atTime(12,30), "Present"),
-                    ShiftTaskDto(day1, "Break", day1.atTime(12,30), day1.atTime(13,30), "Break (Unpaid)"),
-                    ShiftTaskDto(day1, "Unspecific", day1.atTime(13,30), day1.atTime(17,0), "Present")
+                    ShiftTaskDto(day1, "Unspecific", LocalTime.of(7,15).toSecondOfDay().toLong(), LocalTime.of(12,30).toSecondOfDay().toLong(), "Present"),
+                    ShiftTaskDto(day1, "Break", LocalTime.of(12,30).toSecondOfDay().toLong(), LocalTime.of(13,30).toSecondOfDay().toLong(), "Break (Unpaid)"),
+                    ShiftTaskDto(day1, "Unspecific", LocalTime.of(13,30).toSecondOfDay().toLong(), LocalTime.of(17,0).toSecondOfDay().toLong(), "Present")
             )
 
             every { csrApiClient.getShiftTasks(day1, day1) } returns dayShift
             every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns overtime
 
 
-            val dayModelList = service.getShiftsBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
 
             assertThat(dayModelList).hasSize(1)
 
@@ -143,7 +143,7 @@ internal class ShiftServiceTest_Overtime_Scenarios {
             every { csrApiClient.getShiftTasks(day1, day2) } returns nightShift
             every { csrApiClient.getOvertimeShiftTasks(day1, day2) } returns overtime
 
-            val dayModelList = service.getShiftsBetween(Optional.of(day1), Optional.of(day2))
+            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day2))
 
             assertThat(dayModelList).hasSize(2)
 
@@ -192,7 +192,7 @@ internal class ShiftServiceTest_Overtime_Scenarios {
             every { csrApiClient.getShiftTasks(day1, day2) } returns nightShift
             every { csrApiClient.getOvertimeShiftTasks(day1, day2) } returns overtime
 
-            val dayModelList = service.getShiftsBetween(Optional.of(day1), Optional.of(day2))
+            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day2))
 
             assertThat(dayModelList).hasSize(2)
 

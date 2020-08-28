@@ -8,16 +8,16 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import uk.gov.justice.digital.hmpps.cmd.api.client.Elite2ApiClient
 import uk.gov.justice.digital.hmpps.cmd.api.model.Prison
 import uk.gov.justice.digital.hmpps.cmd.api.repository.PrisonRepository
+import uk.gov.justice.digital.hmpps.cmd.api.service.PrisonService
+import java.time.LocalTime
 
 @ExtendWith(MockKExtension::class)
 @DisplayName("Prison Service tests")
 internal class PrisonServiceTest {
     private val prisonRepository: PrisonRepository = mockk(relaxUnitFun = true)
-    private val elite2Client: Elite2ApiClient = mockk(relaxUnitFun = true)
-    private val service = PrisonService(prisonRepository, elite2Client)
+    private val service = PrisonService(prisonRepository)
 
     @BeforeEach
     fun resetAllMocks() {
