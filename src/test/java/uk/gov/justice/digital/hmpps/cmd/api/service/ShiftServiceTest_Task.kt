@@ -60,9 +60,9 @@ internal class ShiftServiceTest_Task {
         fun `Should not modify passed in dates`() {
             val day1 = LocalDate.now(clock)
             val dayShift = listOf(
-                    ShiftTaskDto(day1, "Unspecific", day1.atTime(7,15), day1.atTime(12,30), "Present"),
-                    ShiftTaskDto(day1, "Break", day1.atTime(12,30), day1.atTime(13,30), "Break (Unpaid)"),
-                    ShiftTaskDto(day1, "Unspecific", day1.atTime(13,30), day1.atTime(17,0), "Present")
+                    ShiftTaskDto(day1, "Unspecific", LocalTime.of(7,15).toSecondOfDay().toLong(), LocalTime.of(12,30).toSecondOfDay().toLong(), "Present"),
+                    ShiftTaskDto(day1, "Break", LocalTime.of(12,30).toSecondOfDay().toLong(), LocalTime.of(13,30).toSecondOfDay().toLong(), "Break (Unpaid)"),
+                    ShiftTaskDto(day1, "Unspecific", LocalTime.of(13,30).toSecondOfDay().toLong(), LocalTime.of(17,0).toSecondOfDay().toLong(), "Present")
             )
 
             every { csrApiClient.getShiftTasks(day1, day1) } returns dayShift
@@ -98,9 +98,9 @@ internal class ShiftServiceTest_Task {
         fun `Should return 'shift' for shift data`() {
             val day1 = LocalDate.now(clock)
             val dayShift = listOf(
-                    ShiftTaskDto(day1, "Unspecific", day1.atTime(7,15), day1.atTime(12,30), "Present"),
-                    ShiftTaskDto(day1, "Break", day1.atTime(12,30), day1.atTime(13,30), "Break (Unpaid)"),
-                    ShiftTaskDto(day1, "Unspecific", day1.atTime(13,30), day1.atTime(17,0), "Present")
+                    ShiftTaskDto(day1, "Unspecific", LocalTime.of(7,15).toSecondOfDay().toLong(), LocalTime.of(12,30).toSecondOfDay().toLong(), "Present"),
+                    ShiftTaskDto(day1, "Break", LocalTime.of(12,30).toSecondOfDay().toLong(), LocalTime.of(13,30).toSecondOfDay().toLong(), "Break (Unpaid)"),
+                    ShiftTaskDto(day1, "Unspecific", LocalTime.of(13,30).toSecondOfDay().toLong(), LocalTime.of(17,0).toSecondOfDay().toLong(), "Present")
             )
 
             every { csrApiClient.getShiftTasks(day1, day1) } returns listOf()
@@ -119,9 +119,9 @@ internal class ShiftServiceTest_Task {
         fun `Should return 'shift' for overtime data`() {
             val day1 = LocalDate.now(clock)
             val dayShift = listOf(
-                    ShiftTaskDto(day1, "Unspecific", day1.atTime(7,15), day1.atTime(12,30), "Present"),
-                    ShiftTaskDto(day1, "Break", day1.atTime(12,30), day1.atTime(13,30), "Break (Unpaid)"),
-                    ShiftTaskDto(day1, "Unspecific", day1.atTime(13,30), day1.atTime(17,0), "Present")
+                    ShiftTaskDto(day1, "Unspecific", LocalTime.of(7,15).toSecondOfDay().toLong(), LocalTime.of(12,30).toSecondOfDay().toLong(), "Present"),
+                    ShiftTaskDto(day1, "Break", LocalTime.of(12,30).toSecondOfDay().toLong(), LocalTime.of(13,30).toSecondOfDay().toLong(), "Break (Unpaid)"),
+                    ShiftTaskDto(day1, "Unspecific", LocalTime.of(13,30).toSecondOfDay().toLong(), LocalTime.of(17,0).toSecondOfDay().toLong(), "Present")
             )
 
             every { csrApiClient.getShiftTasks(day1, day1) } returns listOf()
@@ -141,9 +141,9 @@ internal class ShiftServiceTest_Task {
             val day1 = LocalDate.now(clock)
             val day2 = day1.plusDays(1)
             val dayShift = listOf(
-                    ShiftTaskDto(day1, "Unspecific", day1.atTime(7,15), day1.atTime(12,30), "Present"),
-                    ShiftTaskDto(day1, "Break", day1.atTime(12,30), day1.atTime(13,30), "Break (Unpaid)"),
-                    ShiftTaskDto(day1, "Unspecific", day1.atTime(13,30), day1.atTime(17,0), "Present")
+                    ShiftTaskDto(day1, "Unspecific", LocalTime.of(7,15).toSecondOfDay().toLong(), LocalTime.of(12,30).toSecondOfDay().toLong(), "Present"),
+                    ShiftTaskDto(day1, "Break", LocalTime.of(12,30).toSecondOfDay().toLong(), LocalTime.of(13,30).toSecondOfDay().toLong(), "Break (Unpaid)"),
+                    ShiftTaskDto(day1, "Unspecific", LocalTime.of(13,30).toSecondOfDay().toLong(), LocalTime.of(17,0).toSecondOfDay().toLong(), "Present")
             )
 
             every { csrApiClient.getShiftTasks(day2, day2) } returns dayShift
@@ -156,7 +156,7 @@ internal class ShiftServiceTest_Task {
 
             assertThat(dayModel.date).isEqualTo(day2)
             assertThat(dayModel.fullDayType).isEqualTo("None")
-            assertThat(dayModel.tasks).hasSize(0)
+            assertThat(dayModel.details).hasSize(0)
 
         }
 
@@ -164,9 +164,9 @@ internal class ShiftServiceTest_Task {
         fun `Should identify Shift start`() {
             val day1 = LocalDate.now(clock)
             val dayShift = listOf(
-                    ShiftTaskDto(day1, "Unspecific", day1.atTime(7,15), day1.atTime(12,30), "Present"),
-                    ShiftTaskDto(day1, "Break", day1.atTime(12,30), day1.atTime(13,30), "Break (Unpaid)"),
-                    ShiftTaskDto(day1, "Unspecific", day1.atTime(13,30), day1.atTime(17,0), "Present")
+                    ShiftTaskDto(day1, "Unspecific", LocalTime.of(7,15).toSecondOfDay().toLong(), LocalTime.of(12,30).toSecondOfDay().toLong(), "Present"),
+                    ShiftTaskDto(day1, "Break", LocalTime.of(12,30).toSecondOfDay().toLong(), LocalTime.of(13,30).toSecondOfDay().toLong(), "Break (Unpaid)"),
+                    ShiftTaskDto(day1, "Unspecific", LocalTime.of(13,30).toSecondOfDay().toLong(), LocalTime.of(17,0).toSecondOfDay().toLong(), "Present")
             )
 
             every { csrApiClient.getShiftTasks(day1, day1) } returns dayShift
@@ -180,7 +180,7 @@ internal class ShiftServiceTest_Task {
             assertThat(dayModel.date).isEqualTo(day1)
             assertThat(dayModel.fullDayType).isEqualTo("Shift")
 
-            val overtimeStartTask = dayModel.tasks.first{ it.displayType == TaskDisplayType.DAY_START.value}
+            val overtimeStartTask = dayModel.details.first{ it.displayType == TaskDisplayType.DAY_START.value}
             assertThat(overtimeStartTask.start).isEqualTo(LocalTime.of(7,15))
             assertThat(overtimeStartTask.end).isEqualTo(LocalTime.of(12,30))
             assertThat(overtimeStartTask.finishDuration).isNull()
@@ -190,9 +190,9 @@ internal class ShiftServiceTest_Task {
         fun `Should identify Shift end`() {
             val day1 = LocalDate.now(clock)
             val dayShift = listOf(
-                    ShiftTaskDto(day1, "Unspecific", day1.atTime(7,15), day1.atTime(12,30), "Present"),
-                    ShiftTaskDto(day1, "Break", day1.atTime(12,30), day1.atTime(13,30), "Break (Unpaid)"),
-                    ShiftTaskDto(day1, "Unspecific", day1.atTime(13,30), day1.atTime(17,0), "Present")
+                    ShiftTaskDto(day1, "Unspecific", LocalTime.of(7,15).toSecondOfDay().toLong(), LocalTime.of(12,30).toSecondOfDay().toLong(), "Present"),
+                    ShiftTaskDto(day1, "Break", LocalTime.of(12,30).toSecondOfDay().toLong(), LocalTime.of(13,30).toSecondOfDay().toLong(), "Break (Unpaid)"),
+                    ShiftTaskDto(day1, "Unspecific", LocalTime.of(13,30).toSecondOfDay().toLong(), LocalTime.of(17,0).toSecondOfDay().toLong(), "Present")
             )
 
             every { csrApiClient.getShiftTasks(day1, day1) } returns dayShift
@@ -206,7 +206,7 @@ internal class ShiftServiceTest_Task {
             assertThat(dayModel.date).isEqualTo(day1)
             assertThat(dayModel.fullDayType).isEqualTo("Shift")
 
-            val overtimeStartTask = dayModel.tasks.first{ it.displayType == TaskDisplayType.DAY_FINISH.value}
+            val overtimeStartTask = dayModel.details.first{ it.displayType == TaskDisplayType.DAY_FINISH.value}
             assertThat(overtimeStartTask.start).isEqualTo(LocalTime.of(13,30))
             assertThat(overtimeStartTask.end).isEqualTo(LocalTime.of(17,0))
             assertThat(overtimeStartTask.finishDuration).isEqualTo("8h 45m")
@@ -231,7 +231,7 @@ internal class ShiftServiceTest_Task {
             assertThat(dayModel.date).isEqualTo(day1)
             assertThat(dayModel.fullDayType).isEqualTo("Shift")
 
-            val overtimeStartTask = dayModel.tasks.first{ it.displayType == TaskDisplayType.NIGHT_START.value}
+            val overtimeStartTask = dayModel.details.first{ it.displayType == TaskDisplayType.NIGHT_START.value}
             assertThat(overtimeStartTask.start).isEqualTo(LocalTime.of(20,15))
             assertThat(overtimeStartTask.end).isNull()
             assertThat(overtimeStartTask.finishDuration).isNull()
@@ -256,7 +256,7 @@ internal class ShiftServiceTest_Task {
             assertThat(dayModel.date).isEqualTo(day2)
             assertThat(dayModel.fullDayType).isEqualTo("Shift")
 
-            val overtimeStartTask = dayModel.tasks.first{ it.displayType == TaskDisplayType.NIGHT_FINISH.value}
+            val overtimeStartTask = dayModel.details.first{ it.displayType == TaskDisplayType.NIGHT_FINISH.value}
             assertThat(overtimeStartTask.start).isNull()
             assertThat(overtimeStartTask.end).isEqualTo(LocalTime.of(12,30))
             assertThat(overtimeStartTask.finishDuration).isEqualTo("16h 15m")
@@ -281,7 +281,7 @@ internal class ShiftServiceTest_Task {
             assertThat(dayModel.date).isEqualTo(day1)
             assertThat(dayModel.fullDayType).isEqualTo("Shift")
 
-            val overtimeStartTask = dayModel.tasks.first{ it.displayType == TaskDisplayType.OVERTIME_NIGHT_START.value}
+            val overtimeStartTask = dayModel.details.first{ it.displayType == TaskDisplayType.OVERTIME_NIGHT_START.value}
             assertThat(overtimeStartTask.start).isEqualTo(LocalTime.of(20,15))
             assertThat(overtimeStartTask.end).isNull()
             assertThat(overtimeStartTask.finishDuration).isNull()
@@ -306,7 +306,7 @@ internal class ShiftServiceTest_Task {
             assertThat(dayModel.date).isEqualTo(day2)
             assertThat(dayModel.fullDayType).isEqualTo("Shift")
 
-            val overtimeStartTask = dayModel.tasks.first{ it.displayType == TaskDisplayType.OVERTIME_NIGHT_FINISH.value}
+            val overtimeStartTask = dayModel.details.first{ it.displayType == TaskDisplayType.OVERTIME_NIGHT_FINISH.value}
             assertThat(overtimeStartTask.start).isNull()
             assertThat(overtimeStartTask.end).isEqualTo(LocalTime.of(12,30))
             assertThat(overtimeStartTask.finishDuration).isEqualTo("16h 15m")

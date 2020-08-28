@@ -7,9 +7,12 @@ import io.swagger.annotations.ApiResponses
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
-import uk.gov.justice.digital.hmpps.cmd.api.dto.DayModelDto
-import uk.gov.justice.digital.hmpps.cmd.api.dto.TaskModelDto
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.cmd.api.dto.DetailDto
+import uk.gov.justice.digital.hmpps.cmd.api.dto.DetailSummaryDto
 import uk.gov.justice.digital.hmpps.cmd.api.service.ShiftService
 import java.time.LocalDate
 import java.util.*
@@ -26,8 +29,8 @@ class ShiftController(val shiftService: ShiftService) {
     @GetMapping("/shifts")
     fun getShifts(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) from: Optional<LocalDate>,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: Optional<LocalDate>): ResponseEntity<Collection<DayModelDto>> {
-        val result = shiftService.getShiftsBetween(from, to)
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: Optional<LocalDate>): ResponseEntity<Collection<DetailDto>> {
+        val result = shiftService.getShiftsForUserBetween(from, to)
         return ResponseEntity.ok(result)
     }
 
@@ -37,7 +40,7 @@ class ShiftController(val shiftService: ShiftService) {
     ])
     @GetMapping("/shifts/tasks")
     fun getShift(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) date: Optional<LocalDate>): ResponseEntity<TaskModelDto> {
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) date: Optional<LocalDate>): ResponseEntity<DetailDto> {
         val result = shiftService.getTaskDetailFor(date)
         return ResponseEntity.ok(result)
     }

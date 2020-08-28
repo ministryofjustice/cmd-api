@@ -44,7 +44,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
             every { csrApiClient.getShiftTasks(day1, day1) } returns dayShift
             every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns listOf()
 
-            val dayModelList = service.getShiftsBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
 
             verify { csrApiClient.getShiftTasks(day1, day1) }
             verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
@@ -60,13 +60,13 @@ internal class ShiftServiceTest_DayModelFullDayType {
         fun `Should return type as Full Day Type for Training Internal`() {
             val day1 = LocalDate.now(clock)
             val dayShift = listOf(
-                    ShiftTaskDto(day1, "Shift", day1.atTime(7,15), day1.atTime(12,30), "Training - Internal")
+                    ShiftTaskDto(day1, "Shift", LocalTime.of(7,15).toSecondOfDay().toLong(), LocalTime.of(12,30).toSecondOfDay().toLong(), "Training - Internal")
             )
 
             every { csrApiClient.getShiftTasks(day1, day1) } returns dayShift
             every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns listOf()
 
-            val dayModelList = service.getShiftsBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
 
             verify { csrApiClient.getShiftTasks(day1, day1) }
             verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
@@ -82,13 +82,13 @@ internal class ShiftServiceTest_DayModelFullDayType {
         fun `Should return type as Full Day Type for Training external`() {
             val day1 = LocalDate.now(clock)
             val dayShift = listOf(
-                    ShiftTaskDto(day1, "Shift", day1.atTime(7,15), day1.atTime(12,30), "Training - External")
+                    ShiftTaskDto(day1, "Shift", LocalTime.of(7,15).toSecondOfDay().toLong(), LocalTime.of(12,30).toSecondOfDay().toLong(), "Training - External")
             )
 
             every { csrApiClient.getShiftTasks(day1, day1) } returns dayShift
             every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns listOf()
 
-            val dayModelList = service.getShiftsBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
 
             verify { csrApiClient.getShiftTasks(day1, day1) }
             verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
@@ -110,7 +110,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
             every { csrApiClient.getShiftTasks(day1, day1) } returns dayShift
             every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns listOf()
 
-            val dayModelList = service.getShiftsBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
 
             verify { csrApiClient.getShiftTasks(day1, day1) }
             verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
@@ -132,7 +132,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
             every { csrApiClient.getShiftTasks(day1, day1) } returns dayShift
             every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns listOf()
 
-            val dayModelList = service.getShiftsBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
 
             verify { csrApiClient.getShiftTasks(day1, day1) }
             verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
@@ -154,7 +154,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
             every { csrApiClient.getShiftTasks(day1, day1) } returns dayShift
             every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns listOf()
 
-            val dayModelList = service.getShiftsBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
 
             verify { csrApiClient.getShiftTasks(day1, day1) }
             verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
@@ -177,7 +177,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
             every { csrApiClient.getShiftTasks(day1, day1) } returns dayShift
             every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns listOf()
 
-            val dayModelList = service.getShiftsBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
 
             verify { csrApiClient.getShiftTasks(day1, day1) }
             verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
@@ -199,7 +199,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
             every { csrApiClient.getShiftTasks(day1, day1) } returns dayShift
             every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns listOf()
 
-            val dayModelList = service.getShiftsBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
 
             verify { csrApiClient.getShiftTasks(day1, day1) }
             verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
@@ -221,7 +221,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
             every { csrApiClient.getShiftTasks(day1, day1) } returns dayShift
             every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns listOf()
 
-            val dayModelList = service.getShiftsBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
 
             verify { csrApiClient.getShiftTasks(day1, day1) }
             verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
@@ -243,7 +243,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
             every { csrApiClient.getShiftTasks(day1, day1) } returns listOf()
             every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns dayShift
 
-            val dayModelList = service.getShiftsBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
 
             verify { csrApiClient.getShiftTasks(day1, day1) }
             verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
@@ -259,13 +259,13 @@ internal class ShiftServiceTest_DayModelFullDayType {
         fun `Overtime - Should return type as Full Day Type for Training Internal`() {
             val day1 = LocalDate.now(clock)
             val dayShift = listOf(
-                    ShiftTaskDto(day1, "Shift", day1.atTime(7,15), day1.atTime(12,30), "Training - Internal")
+                    ShiftTaskDto(day1, "Shift", LocalTime.of(7,15).toSecondOfDay().toLong(), LocalTime.of(12,30).toSecondOfDay().toLong(), "Training - Internal")
             )
 
             every { csrApiClient.getShiftTasks(day1, day1) } returns listOf()
             every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns dayShift
 
-            val dayModelList = service.getShiftsBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
 
             verify { csrApiClient.getShiftTasks(day1, day1) }
             verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
@@ -281,13 +281,13 @@ internal class ShiftServiceTest_DayModelFullDayType {
         fun `Overtime Should return type as Full Day Type for Training external`() {
             val day1 = LocalDate.now(clock)
             val dayShift = listOf(
-                    ShiftTaskDto(day1, "Shift", day1.atTime(7,15), day1.atTime(12,30), "Training - External")
+                    ShiftTaskDto(day1, "Shift", LocalTime.of(7,15).toSecondOfDay().toLong(), LocalTime.of(12,30).toSecondOfDay().toLong(), "Training - External")
             )
 
             every { csrApiClient.getShiftTasks(day1, day1) } returns listOf()
             every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns dayShift
 
-            val dayModelList = service.getShiftsBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
 
             verify { csrApiClient.getShiftTasks(day1, day1) }
             verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
@@ -309,7 +309,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
             every { csrApiClient.getShiftTasks(day1, day1) } returns listOf()
             every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns dayShift
 
-            val dayModelList = service.getShiftsBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
 
             verify { csrApiClient.getShiftTasks(day1, day1) }
             verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
@@ -331,7 +331,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
             every { csrApiClient.getShiftTasks(day1, day1) } returns listOf()
             every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns dayShift
 
-            val dayModelList = service.getShiftsBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
 
             verify { csrApiClient.getShiftTasks(day1, day1) }
             verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
@@ -353,7 +353,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
             every { csrApiClient.getShiftTasks(day1, day1) } returns listOf()
             every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns dayShift
 
-            val dayModelList = service.getShiftsBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
 
             verify { csrApiClient.getShiftTasks(day1, day1) }
             verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
@@ -376,7 +376,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
             every { csrApiClient.getShiftTasks(day1, day1) } returns listOf()
             every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns dayShift
 
-            val dayModelList = service.getShiftsBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
 
             verify { csrApiClient.getShiftTasks(day1, day1) }
             verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
@@ -398,7 +398,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
             every { csrApiClient.getShiftTasks(day1, day1) } returns listOf()
             every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns dayShift
 
-            val dayModelList = service.getShiftsBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
 
             verify { csrApiClient.getShiftTasks(day1, day1) }
             verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
@@ -420,7 +420,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
             every { csrApiClient.getShiftTasks(day1, day1) } returns listOf()
             every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns dayShift
 
-            val dayModelList = service.getShiftsBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
 
             verify { csrApiClient.getShiftTasks(day1, day1) }
             verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }

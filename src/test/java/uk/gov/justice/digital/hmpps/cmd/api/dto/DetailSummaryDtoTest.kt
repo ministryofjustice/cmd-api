@@ -4,7 +4,7 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
-class DayModelDtoTest {
+class DetailSummaryDtoTest {
 
     @Test
     fun `Create Day Dto `() {
@@ -13,7 +13,7 @@ class DayModelDtoTest {
         val type = "anytype"
         val tasks : Collection<DayEventDto> = listOf()
 
-        val day = DayModelDto(
+        val day = DetailSummaryDto(
             date,
             type,
             tasks

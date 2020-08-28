@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.cmd.api.model
 
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.model.Prison
+import uk.gov.justice.digital.hmpps.cmd.api.model.Prison
 
 class PrisonTest {
 

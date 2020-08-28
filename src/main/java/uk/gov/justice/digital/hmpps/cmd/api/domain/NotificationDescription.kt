@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain
+package uk.gov.justice.digital.hmpps.cmd.api.domain
 
 import uk.gov.justice.digital.hmpps.cmd.api.model.ShiftNotification
 import java.time.Clock

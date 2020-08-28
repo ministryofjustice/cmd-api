@@ -67,17 +67,17 @@ application:
 csr:
   regions:
     - name: 1
-      url: ${csr.region1.url}
+      url: https://api.check-my-diary-dev.hmpps.dsd.io
     - name: 2
-      url: ${csr.region2.url}
+      url: https://api.check-my-diary-dev.hmpps.dsd.io
     - name: 3
-      url: ${csr.region3.url}
+      url: https://api.check-my-diary-dev.hmpps.dsd.io
     - name: 4
-      url: ${csr.region4.url}
+      url: https://api.check-my-diary-dev.hmpps.dsd.io
     - name: 5
-      url: ${csr.region5.url}
+      url: https://api.check-my-diary-dev.hmpps.dsd.io
     - name: 6
-      url: ${csr.region6.url}
+      url: https://api.check-my-diary-dev.hmpps.dsd.io
   endpoint.url: https://api.check-my-diary-dev.hmpps.dsd.io
 #💩💩💩
 jwt:

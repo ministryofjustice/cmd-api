@@ -4,7 +4,7 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import java.time.LocalTime
 
-class TaskEventDtoTest {
+class DetailEventDtoTest {
 
     @Test
     fun `Create Task Dto `() {
@@ -15,7 +15,7 @@ class TaskEventDtoTest {
         val displayType = "displayType"
         val finish = "Five hours or so"
 
-        val day = TaskEventDto(
+        val day = DetailEventDto(
             label,
             start,
             end,

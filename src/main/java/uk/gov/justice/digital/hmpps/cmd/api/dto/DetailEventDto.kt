@@ -4,13 +4,14 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.annotations.ApiModel
 import io.swagger.annotations.ApiModelProperty
+import uk.gov.justice.digital.hmpps.cmd.api.domain.TaskDisplayType
 import java.time.LocalTime
 
 @ApiModel(description = "Shift")
-data class TaskEventDto @JsonCreator constructor(
+data class DetailEventDto @JsonCreator constructor(
         @ApiModelProperty(value = "The readable label for the task", position = 1, example = "Internal Training")
         @JsonProperty("label")
-        val label : String,
+        val label : String?,
 
         @ApiModelProperty(value = "The start of the task", position = 3, example = "2020-04-20T17:00:00")
         @JsonProperty("startTime")
@@ -22,7 +23,7 @@ data class TaskEventDto @JsonCreator constructor(
 
         @ApiModelProperty(value = "Hint for the UI on how to display this entity", position = 5, example = "NIGHT_FINISH")
         @JsonProperty("displayType")
-        var displayType : String?,
+        var displayType : TaskDisplayType?,
 
         @ApiModelProperty(value = "If the type is a 'finish' we include put the shift duration.", position = 6, example = "3h 24m")
         @JsonProperty("finishDuration")

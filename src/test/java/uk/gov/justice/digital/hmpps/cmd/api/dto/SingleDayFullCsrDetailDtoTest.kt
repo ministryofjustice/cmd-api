@@ -4,24 +4,24 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
-class TaskModelDtoTest {
+class SingleDayFullCsrDetailDtoTest {
 
     @Test
     fun `Create Day Dto `() {
 
         val date = LocalDate.now()
         val type = "anytype"
-        val tasks : Collection<TaskEventDto> = listOf()
+        val details : Collection<DetailEventDto> = listOf()
 
-        val day = TaskModelDto(
+        val day = DetailDto(
             date,
             type,
-            tasks
+            details
         )
 
         Assertions.assertThat(day.date).isEqualTo(date)
         Assertions.assertThat(day.fullDayType).isEqualTo(type)
-        Assertions.assertThat(day.tasks).isEqualTo(tasks)
+        Assertions.assertThat(day.details).isEqualTo(details)
     }
 
 } 
