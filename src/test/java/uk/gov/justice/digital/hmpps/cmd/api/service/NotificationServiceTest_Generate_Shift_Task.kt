@@ -4,19 +4,20 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
+import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import uk.gov.justice.digital.hmpps.cmd.api.client.CsrClient
+import uk.gov.justice.digital.hmpps.cmd.api.client.CsrModifiedDetailDto
+import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftActionType
+import uk.gov.justice.digital.hmpps.cmd.api.model.Prison
 import uk.gov.justice.digital.hmpps.cmd.api.model.ShiftNotification
 import uk.gov.justice.digital.hmpps.cmd.api.repository.ShiftNotificationRepository
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
-import uk.gov.justice.digital.hmpps.cmd.api.client.CsrClient
-import uk.gov.justice.digital.hmpps.cmd.api.client.CsrDetailDto
-import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftActionType
-import uk.gov.justice.digital.hmpps.cmd.api.model.Prison
 import uk.gov.service.notify.NotificationClient
 import java.time.*
 
@@ -68,7 +69,7 @@ internal class NotificationServiceTest_Generate_Shift_Task {
             val end = 456L
             val task = "Guard Duty"
             val shiftType = "Shift"
-            val dto1 = CsrDetailDto(
+            val dto1 = CsrModifiedDetailDto(
                     quantumId,
                     today,
                     shiftDate,
@@ -79,10 +80,8 @@ internal class NotificationServiceTest_Generate_Shift_Task {
                     ShiftActionType.ADD.value
             )
 
-            every { csrClient.getModifiedDetails(any(), any()) } returns listOf()
-            every { csrClient.getShiftTaskNotifications(any(), any()) } returns listOf(dto1)
+            every { csrClient.getModifiedDetails(any(), any()) } returns listOf(dto1)
 
-            every { csrClient.getShiftTaskNotifications(any(), any()) } returns listOf()
             every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(quantumId, shiftDate, any(), today) } returns 1
 
             val results = mutableListOf<Collection<ShiftNotification>>()
@@ -101,7 +100,7 @@ internal class NotificationServiceTest_Generate_Shift_Task {
             val end = 456L
             val task = "Guard Duty"
             val shiftType = "Shift"
-            val dto1 = CsrDetailDto(
+            val dto1 = CsrModifiedDetailDto(
                     quantumId,
                     today,
                     today.plusDays(1).toLocalDate(),
@@ -112,7 +111,7 @@ internal class NotificationServiceTest_Generate_Shift_Task {
                     ShiftActionType.EDIT.value
             )
 
-            val dto2 = CsrDetailDto(
+            val dto2 = CsrModifiedDetailDto(
                     quantumId,
                     today,
                     today.plusDays(2).toLocalDate(),
@@ -123,7 +122,7 @@ internal class NotificationServiceTest_Generate_Shift_Task {
                     ShiftActionType.EDIT.value
             )
 
-            val dto3 = CsrDetailDto(
+            val dto3 = CsrModifiedDetailDto(
                     quantumId,
                     today,
                     today.plusDays(3).toLocalDate(),
@@ -134,8 +133,7 @@ internal class NotificationServiceTest_Generate_Shift_Task {
                     ShiftActionType.EDIT.value
             )
 
-            every { csrClient.getModifiedDetails(any(), any()) } returns listOf()
-            every { csrClient.getShiftTaskNotifications(any(), any()) } returns listOf(dto1, dto2, dto3)
+            every { csrClient.getModifiedDetails(any(), any()) } returns listOf(dto1, dto2, dto3)
 
             every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(quantumId, any(), any(), today) } returns 0
 
@@ -157,7 +155,7 @@ internal class NotificationServiceTest_Generate_Shift_Task {
             val end = 456L
             val task = "Guard Duty"
             val shiftType = "Shift"
-            val dto1 = CsrDetailDto(
+            val dto1 = CsrModifiedDetailDto(
                     quantumId,
                     today,
                     today.toLocalDate(),
@@ -168,7 +166,7 @@ internal class NotificationServiceTest_Generate_Shift_Task {
                     ShiftActionType.ADD.value
             )
 
-            val dto2 = CsrDetailDto(
+            val dto2 = CsrModifiedDetailDto(
                     quantumId,
                     today,
                     today.toLocalDate(),
@@ -179,7 +177,7 @@ internal class NotificationServiceTest_Generate_Shift_Task {
                     ShiftActionType.ADD.value
             )
 
-            val dto3 = CsrDetailDto(
+            val dto3 = CsrModifiedDetailDto(
                     quantumId,
                     today,
                     today.toLocalDate(),
@@ -190,8 +188,7 @@ internal class NotificationServiceTest_Generate_Shift_Task {
                     ShiftActionType.ADD.value
             )
 
-            every { csrClient.getModifiedDetails(any(), any()) } returns listOf()
-            every { csrClient.getShiftTaskNotifications(any(), any()) } returns listOf(dto1, dto2, dto3)
+            every { csrClient.getModifiedDetails(any(), any()) } returns listOf(dto1, dto2, dto3)
 
             every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(quantumId, any(), any(), today) } returns 0
 
@@ -268,7 +265,7 @@ internal class NotificationServiceTest_Generate_Shift_Task {
             val end = 456L
             val task = "Guard Duty"
             val shiftType = "Shift"
-            val dto1 = CsrDetailDto(
+            val dto1 = CsrModifiedDetailDto(
                     quantumId,
                     today,
                     today.toLocalDate(),
@@ -279,7 +276,7 @@ internal class NotificationServiceTest_Generate_Shift_Task {
                     ShiftActionType.ADD.value
             )
 
-            val dto2 = CsrDetailDto(
+            val dto2 = CsrModifiedDetailDto(
                     quantumId,
                     today.plusSeconds(5),
                     today.toLocalDate(),
@@ -290,7 +287,7 @@ internal class NotificationServiceTest_Generate_Shift_Task {
                     ShiftActionType.ADD.value
             )
 
-            val dto3 = CsrDetailDto(
+            val dto3 = CsrModifiedDetailDto(
                     quantumId,
                     today.plusSeconds(10),
                     today.toLocalDate(),
@@ -301,8 +298,7 @@ internal class NotificationServiceTest_Generate_Shift_Task {
                     ShiftActionType.ADD.value
             )
 
-            every { csrClient.getModifiedDetails(any(), any()) } returns listOf()
-            every { csrClient.getShiftTaskNotifications(any(), any()) } returns listOf(dto1, dto2, dto3)
+            every { csrClient.getModifiedDetails(any(), any()) } returns listOf(dto1, dto2, dto3)
 
             every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(quantumId, any(), any(), today) } returns 0
             every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(quantumId, any(), any(), today.plusSeconds(5)) } returns 0
@@ -327,7 +323,7 @@ internal class NotificationServiceTest_Generate_Shift_Task {
             val end = 456L
             val task = "Guard Duty"
             val shiftType = "Shift"
-            val dto1 = CsrDetailDto(
+            val dto1 = CsrModifiedDetailDto(
                     quantumId,
                     today,
                     shiftDate,
@@ -338,8 +334,7 @@ internal class NotificationServiceTest_Generate_Shift_Task {
                     ShiftActionType.EDIT.value
             )
 
-            every { csrClient.getModifiedDetails(any(), any()) } returns listOf()
-            every { csrClient.getShiftTaskNotifications(any(), any()) } returns listOf(dto1)
+            every { csrClient.getModifiedDetails(any(), any()) } returns listOf(dto1)
 
 
             every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(quantumId, shiftDate, any(), today) } returns 0
@@ -361,7 +356,7 @@ internal class NotificationServiceTest_Generate_Shift_Task {
             val end = 456L
             val task = "Guard Duty"
             val shiftType = "Shift"
-            val dto1 = CsrDetailDto(
+            val dto1 = CsrModifiedDetailDto(
                     quantumId,
                     today,
                     shiftDate,
@@ -372,8 +367,7 @@ internal class NotificationServiceTest_Generate_Shift_Task {
                     ShiftActionType.ADD.value
             )
 
-            every { csrClient.getModifiedDetails(any(), any()) } returns listOf()
-            every { csrClient.getShiftTaskNotifications(any(), any()) } returns listOf(dto1)
+            every { csrClient.getModifiedDetails(any(), any()) } returns listOf(dto1)
 
             every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(quantumId, shiftDate, any(), today) } returns 0
 
@@ -395,7 +389,7 @@ internal class NotificationServiceTest_Generate_Shift_Task {
             val end = 456L
             val task = "Guard Duty"
             val shiftType = "Shift"
-            val dto1 = CsrDetailDto(
+            val dto1 = CsrModifiedDetailDto(
                     quantumId,
                     today,
                     shiftDate,
@@ -406,8 +400,7 @@ internal class NotificationServiceTest_Generate_Shift_Task {
                     ShiftActionType.DELETE.value
             )
 
-            every { csrClient.getModifiedDetails(any(), any()) } returns listOf()
-            every { csrClient.getShiftTaskNotifications(any(), any()) } returns listOf(dto1)
+            every { csrClient.getModifiedDetails(any(), any()) } returns listOf(dto1)
 
             every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(quantumId, shiftDate, any(), today) } returns 0
 
@@ -429,7 +422,7 @@ internal class NotificationServiceTest_Generate_Shift_Task {
             val end = 456L
             val task = "Guard Duty"
             val shiftType = "Shift"
-            val dto1 = CsrDetailDto(
+            val dto1 = CsrModifiedDetailDto(
                     quantumId,
                     today,
                     shiftDate,
@@ -440,8 +433,7 @@ internal class NotificationServiceTest_Generate_Shift_Task {
                     ShiftActionType.ADD.value
             )
 
-            every { csrClient.getModifiedDetails(any(), any()) } returns listOf()
-            every { csrClient.getShiftTaskNotifications(any(), any()) } returns listOf(dto1)
+            every { csrClient.getModifiedDetails(any(), any()) } returns listOf(dto1)
 
             every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndShiftDateAndShiftTypeIgnoreCaseAndShiftModified(quantumId, shiftDate, any(), today) } returns 1
 

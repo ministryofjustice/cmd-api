@@ -1,33 +1,39 @@
 package uk.gov.justice.digital.hmpps.cmd.api.service
 
-import io.mockk.clearMocks
-import io.mockk.every
+import io.mockk.*
 import io.mockk.junit5.MockKExtension
-import io.mockk.mockk
-import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
-import uk.gov.justice.digital.hmpps.cmd.api.client.CsrApiClient
-import uk.gov.justice.digital.hmpps.cmd.api.client.ShiftTaskDto
+import uk.gov.justice.digital.hmpps.cmd.api.client.CsrClient
+import uk.gov.justice.digital.hmpps.cmd.api.client.CsrDetailDto
+import uk.gov.justice.digital.hmpps.cmd.api.model.Prison
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.DetailType
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.EntityType
 import java.time.Clock
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.ZoneId
 import java.util.*
 
 @ExtendWith(MockKExtension::class)
 @DisplayName("Shift Service Full Day Type tests")
 internal class ShiftServiceTest_DayModelFullDayType {
-    private val csrApiClient: CsrApiClient = mockk(relaxUnitFun = true)
+    private val csrApiClient: CsrClient = mockk(relaxUnitFun = true)
+    private val prisonService: PrisonService = mockk(relaxUnitFun = true)
     private val clock = Clock.fixed(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
-    private val service = ShiftService(csrApiClient, clock)
+    private val service = ShiftService(prisonService, csrApiClient, clock)
 
     @BeforeEach
     fun resetAllMocks() {
         clearMocks(csrApiClient)
+        clearMocks(prisonService)
+    }
+
+    @AfterEach
+    fun confirmVerifiedMocks() {
+        confirmVerified(csrApiClient)
+        confirmVerified(prisonService)
     }
 
     @Nested
@@ -37,17 +43,17 @@ internal class ShiftServiceTest_DayModelFullDayType {
         @Test
         fun `Should return activity as Full Day Type for full day Unspecific`() {
             val day1 = LocalDate.now(clock)
-            val dayShift = listOf(
-                    ShiftTaskDto(day1, "Unspecific", day1.atTime(0,0), day1.atTime(23,59,59), "My Activity")
+            val shifts = listOf(
+                    CsrDetailDto(day1, EntityType.SHIFT, LocalTime.of(0,0).toSecondOfDay().toLong(), LocalTime.of(23,59,59).toSecondOfDay().toLong(), DetailType.UNSPECIFIC, "My Activity")
             )
 
-            every { csrApiClient.getShiftTasks(day1, day1) } returns dayShift
-            every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns listOf()
+            every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
+            every { csrApiClient.getDetailsForUser(day1, day1, 1) } returns shifts
 
-            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
-
-            verify { csrApiClient.getShiftTasks(day1, day1) }
-            verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
+            val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
+            
+            verify { prisonService.getPrisonForUser()}
+            verify { csrApiClient.getDetailsForUser(day1, day1, 1) }
 
             assertThat(dayModelList).hasSize(1)
 
@@ -59,17 +65,17 @@ internal class ShiftServiceTest_DayModelFullDayType {
         @Test
         fun `Should return type as Full Day Type for Training Internal`() {
             val day1 = LocalDate.now(clock)
-            val dayShift = listOf(
-                    ShiftTaskDto(day1, "Shift", LocalTime.of(7,15).toSecondOfDay().toLong(), LocalTime.of(12,30).toSecondOfDay().toLong(), "Training - Internal")
+            val shifts = listOf(
+                    CsrDetailDto(day1, EntityType.SHIFT, LocalTime.of(7,15).toSecondOfDay().toLong(), LocalTime.of(12,30).toSecondOfDay().toLong(), DetailType.UNSPECIFIC, "Training - Internal")
             )
 
-            every { csrApiClient.getShiftTasks(day1, day1) } returns dayShift
-            every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns listOf()
+            every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
+            every { csrApiClient.getDetailsForUser(day1, day1, 1) } returns shifts
 
-            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
-            verify { csrApiClient.getShiftTasks(day1, day1) }
-            verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
+            verify { prisonService.getPrisonForUser()}
+            verify { csrApiClient.getDetailsForUser(day1, day1, 1) }
 
             assertThat(dayModelList).hasSize(1)
 
@@ -81,17 +87,17 @@ internal class ShiftServiceTest_DayModelFullDayType {
         @Test
         fun `Should return type as Full Day Type for Training external`() {
             val day1 = LocalDate.now(clock)
-            val dayShift = listOf(
-                    ShiftTaskDto(day1, "Shift", LocalTime.of(7,15).toSecondOfDay().toLong(), LocalTime.of(12,30).toSecondOfDay().toLong(), "Training - External")
+            val shifts = listOf(
+                    CsrDetailDto(day1, EntityType.SHIFT, LocalTime.of(7,15).toSecondOfDay().toLong(), LocalTime.of(12,30).toSecondOfDay().toLong(), DetailType.UNSPECIFIC, "Training - External")
             )
 
-            every { csrApiClient.getShiftTasks(day1, day1) } returns dayShift
-            every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns listOf()
+            every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
+            every { csrApiClient.getDetailsForUser(day1, day1, 1) } returns shifts
 
-            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
-            verify { csrApiClient.getShiftTasks(day1, day1) }
-            verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
+            verify { prisonService.getPrisonForUser()}
+            verify { csrApiClient.getDetailsForUser(day1, day1, 1) }
 
             assertThat(dayModelList).hasSize(1)
 
@@ -103,17 +109,17 @@ internal class ShiftServiceTest_DayModelFullDayType {
         @Test
         fun `Should return activity as Full Day Type for Absence`() {
             val day1 = LocalDate.now(clock)
-            val dayShift = listOf(
-                    ShiftTaskDto(day1, "Absence", day1.atTime(0,0), day1.atTime(23,59,59), "My Activity")
+            val shifts = listOf(
+                    CsrDetailDto(day1, EntityType.SHIFT, LocalTime.of(0,0).toSecondOfDay().toLong(), LocalTime.of(23,59,59).toSecondOfDay().toLong(), DetailType.ABSENCE, "My Activity")
             )
 
-            every { csrApiClient.getShiftTasks(day1, day1) } returns dayShift
-            every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns listOf()
+            every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
+            every { csrApiClient.getDetailsForUser(day1, day1, 1) } returns shifts
 
-            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
-            verify { csrApiClient.getShiftTasks(day1, day1) }
-            verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
+            verify { prisonService.getPrisonForUser()}
+            verify { csrApiClient.getDetailsForUser(day1, day1, 1) }
 
             assertThat(dayModelList).hasSize(1)
 
@@ -125,17 +131,17 @@ internal class ShiftServiceTest_DayModelFullDayType {
         @Test
         fun `Should return Holiday as Full Day Type for full day Holiday`() {
             val day1 = LocalDate.now(clock)
-            val dayShift = listOf(
-                    ShiftTaskDto(day1, "Holiday", day1.atTime(0,0), day1.atTime(23,59,59), "My Activity")
+            val shifts = listOf(
+                    CsrDetailDto(day1, EntityType.SHIFT, LocalTime.of(0,0).toSecondOfDay().toLong(), LocalTime.of(23,59,59).toSecondOfDay().toLong(), DetailType.HOLIDAY, "My Activity")
             )
 
-            every { csrApiClient.getShiftTasks(day1, day1) } returns dayShift
-            every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns listOf()
+            every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
+            every { csrApiClient.getDetailsForUser(day1, day1, 1) } returns shifts
 
-            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
-            verify { csrApiClient.getShiftTasks(day1, day1) }
-            verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
+            verify { prisonService.getPrisonForUser()}
+            verify { csrApiClient.getDetailsForUser(day1, day1, 1) }
 
             assertThat(dayModelList).hasSize(1)
 
@@ -147,17 +153,17 @@ internal class ShiftServiceTest_DayModelFullDayType {
         @Test
         fun `Should return Holiday as Full Day Type for Holiday with not other Unspecific tasks`() {
             val day1 = LocalDate.now(clock)
-            val dayShift = listOf(
-                    ShiftTaskDto(day1, "Holiday", day1.atTime(7,0), day1.atTime(10,0), "My Activity")
+            val shifts = listOf(
+                    CsrDetailDto(day1, EntityType.SHIFT, LocalTime.of(7,0).toSecondOfDay().toLong(), LocalTime.of(10,0).toSecondOfDay().toLong(), DetailType.HOLIDAY, "My Activity")
             )
 
-            every { csrApiClient.getShiftTasks(day1, day1) } returns dayShift
-            every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns listOf()
+            every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
+            every { csrApiClient.getDetailsForUser(day1, day1, 1) } returns shifts
 
-            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
-            verify { csrApiClient.getShiftTasks(day1, day1) }
-            verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
+            verify { prisonService.getPrisonForUser()}
+            verify { csrApiClient.getDetailsForUser(day1, day1, 1) }
 
             assertThat(dayModelList).hasSize(1)
 
@@ -169,18 +175,18 @@ internal class ShiftServiceTest_DayModelFullDayType {
         @Test
         fun `Should return Shift as Full Day Type for Holiday with other Unspecific tasks`() {
             val day1 = LocalDate.now(clock)
-            val dayShift = listOf(
-                    ShiftTaskDto(day1, "Holiday", day1.atTime(7,0), day1.atTime(10,0), "My Activity"),
-                    ShiftTaskDto(day1, "Unspecific", day1.atTime(19,0), day1.atTime(20,0), "Door Guard")
+            val shifts = listOf(
+                    CsrDetailDto(day1, EntityType.SHIFT, LocalTime.of(7,0).toSecondOfDay().toLong(), LocalTime.of(10,0).toSecondOfDay().toLong(), DetailType.HOLIDAY, "My Activity"),
+                    CsrDetailDto(day1, EntityType.SHIFT, LocalTime.of(19,0).toSecondOfDay().toLong(), LocalTime.of(20,0).toSecondOfDay().toLong(), DetailType.UNSPECIFIC, "Door Guard")
             )
 
-            every { csrApiClient.getShiftTasks(day1, day1) } returns dayShift
-            every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns listOf()
+            every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
+            every { csrApiClient.getDetailsForUser(day1, day1, 1) } returns shifts
 
-            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
-            verify { csrApiClient.getShiftTasks(day1, day1) }
-            verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
+            verify { prisonService.getPrisonForUser()}
+            verify { csrApiClient.getDetailsForUser(day1, day1, 1) }
 
             assertThat(dayModelList).hasSize(1)
 
@@ -192,17 +198,17 @@ internal class ShiftServiceTest_DayModelFullDayType {
         @Test
         fun `Should return Illness as Full Day Type for Illness`() {
             val day1 = LocalDate.now(clock)
-            val dayShift = listOf(
-                    ShiftTaskDto(day1, "Illness", day1.atTime(7,0), day1.atTime(10,0), "My Activity")
+            val shifts = listOf(
+                    CsrDetailDto(day1, EntityType.SHIFT, LocalTime.of(7,0).toSecondOfDay().toLong(), LocalTime.of(10,0).toSecondOfDay().toLong(), DetailType.ILLNESS, "My Activity")
             )
 
-            every { csrApiClient.getShiftTasks(day1, day1) } returns dayShift
-            every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns listOf()
+            every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
+            every { csrApiClient.getDetailsForUser(day1, day1, 1) } returns shifts
 
-            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
-            verify { csrApiClient.getShiftTasks(day1, day1) }
-            verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
+            verify { prisonService.getPrisonForUser()}
+            verify { csrApiClient.getDetailsForUser(day1, day1, 1) }
 
             assertThat(dayModelList).hasSize(1)
 
@@ -214,17 +220,17 @@ internal class ShiftServiceTest_DayModelFullDayType {
         @Test
         fun `Should return Shift as Full Day Type if no rules met`() {
             val day1 = LocalDate.now(clock)
-            val dayShift = listOf(
-                    ShiftTaskDto(day1, "New Type", day1.atTime(7,0), day1.atTime(10,0), "My Activity")
+            val shifts = listOf(
+                    CsrDetailDto(day1, EntityType.SHIFT, LocalTime.of(7,0).toSecondOfDay().toLong(), LocalTime.of(10,0).toSecondOfDay().toLong(), DetailType.ONCALL, "My Activity")
             )
 
-            every { csrApiClient.getShiftTasks(day1, day1) } returns dayShift
-            every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns listOf()
+            every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
+            every { csrApiClient.getDetailsForUser(day1, day1, 1) } returns shifts
 
-            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
-            verify { csrApiClient.getShiftTasks(day1, day1) }
-            verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
+            verify { prisonService.getPrisonForUser()}
+            verify { csrApiClient.getDetailsForUser(day1, day1, 1) }
 
             assertThat(dayModelList).hasSize(1)
 
@@ -236,17 +242,17 @@ internal class ShiftServiceTest_DayModelFullDayType {
         @Test
         fun `Overtime - Should return activity as Full Day Type for full day Unspecific`() {
             val day1 = LocalDate.now(clock)
-            val dayShift = listOf(
-                    ShiftTaskDto(day1, "Unspecific", day1.atTime(0,0), day1.atTime(23,59,59), "My Activity")
+            val shifts = listOf(
+                    CsrDetailDto(day1, EntityType.OVERTIME, LocalTime.of(0,0).toSecondOfDay().toLong(), LocalTime.of(23,59,59).toSecondOfDay().toLong(), DetailType.UNSPECIFIC, "My Activity")
             )
 
-            every { csrApiClient.getShiftTasks(day1, day1) } returns listOf()
-            every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns dayShift
+            every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
+            every { csrApiClient.getDetailsForUser(day1, day1, 1) } returns shifts
 
-            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
-            verify { csrApiClient.getShiftTasks(day1, day1) }
-            verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
+            verify { prisonService.getPrisonForUser()}
+            verify { csrApiClient.getDetailsForUser(day1, day1, 1) }
 
             assertThat(dayModelList).hasSize(1)
 
@@ -258,17 +264,17 @@ internal class ShiftServiceTest_DayModelFullDayType {
         @Test
         fun `Overtime - Should return type as Full Day Type for Training Internal`() {
             val day1 = LocalDate.now(clock)
-            val dayShift = listOf(
-                    ShiftTaskDto(day1, "Shift", LocalTime.of(7,15).toSecondOfDay().toLong(), LocalTime.of(12,30).toSecondOfDay().toLong(), "Training - Internal")
+            val shifts = listOf(
+                    CsrDetailDto(day1, EntityType.OVERTIME, LocalTime.of(7,15).toSecondOfDay().toLong(), LocalTime.of(12,30).toSecondOfDay().toLong(), DetailType.UNSPECIFIC, "Training - Internal")
             )
 
-            every { csrApiClient.getShiftTasks(day1, day1) } returns listOf()
-            every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns dayShift
+            every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
+            every { csrApiClient.getDetailsForUser(day1, day1, 1) } returns shifts
 
-            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
-            verify { csrApiClient.getShiftTasks(day1, day1) }
-            verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
+            verify { prisonService.getPrisonForUser()}
+            verify { csrApiClient.getDetailsForUser(day1, day1, 1) }
 
             assertThat(dayModelList).hasSize(1)
 
@@ -280,17 +286,17 @@ internal class ShiftServiceTest_DayModelFullDayType {
         @Test
         fun `Overtime Should return type as Full Day Type for Training external`() {
             val day1 = LocalDate.now(clock)
-            val dayShift = listOf(
-                    ShiftTaskDto(day1, "Shift", LocalTime.of(7,15).toSecondOfDay().toLong(), LocalTime.of(12,30).toSecondOfDay().toLong(), "Training - External")
+            val shifts = listOf(
+                    CsrDetailDto(day1, EntityType.OVERTIME, LocalTime.of(7,15).toSecondOfDay().toLong(), LocalTime.of(12,30).toSecondOfDay().toLong(), DetailType.UNSPECIFIC, "Training - External")
             )
 
-            every { csrApiClient.getShiftTasks(day1, day1) } returns listOf()
-            every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns dayShift
+            every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
+            every { csrApiClient.getDetailsForUser(day1, day1, 1) } returns shifts
 
-            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
-            verify { csrApiClient.getShiftTasks(day1, day1) }
-            verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
+            verify { prisonService.getPrisonForUser()}
+            verify { csrApiClient.getDetailsForUser(day1, day1, 1) }
 
             assertThat(dayModelList).hasSize(1)
 
@@ -302,17 +308,17 @@ internal class ShiftServiceTest_DayModelFullDayType {
         @Test
         fun `Overtime - Should return activity as Full Day Type for Absence`() {
             val day1 = LocalDate.now(clock)
-            val dayShift = listOf(
-                    ShiftTaskDto(day1, "Absence", day1.atTime(0,0), day1.atTime(23,59,59), "My Activity")
+            val shifts = listOf(
+                    CsrDetailDto(day1, EntityType.OVERTIME, LocalTime.of(0,0).toSecondOfDay().toLong(), LocalTime.of(23,59,59).toSecondOfDay().toLong(), DetailType.ABSENCE, "My Activity")
             )
 
-            every { csrApiClient.getShiftTasks(day1, day1) } returns listOf()
-            every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns dayShift
+            every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
+            every { csrApiClient.getDetailsForUser(day1, day1, 1) } returns shifts
 
-            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
-            verify { csrApiClient.getShiftTasks(day1, day1) }
-            verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
+            verify { prisonService.getPrisonForUser()}
+            verify { csrApiClient.getDetailsForUser(day1, day1, 1) }
 
             assertThat(dayModelList).hasSize(1)
 
@@ -324,17 +330,17 @@ internal class ShiftServiceTest_DayModelFullDayType {
         @Test
         fun `Overtime - Should return Holiday as Full Day Type for full day Holiday`() {
             val day1 = LocalDate.now(clock)
-            val dayShift = listOf(
-                    ShiftTaskDto(day1, "Holiday", day1.atTime(0,0), day1.atTime(23,59,59), "My Activity")
+            val shifts = listOf(
+                    CsrDetailDto(day1, EntityType.OVERTIME, LocalTime.of(0,0).toSecondOfDay().toLong(), LocalTime.of(23,59,59).toSecondOfDay().toLong(), DetailType.HOLIDAY, "My Activity")
             )
 
-            every { csrApiClient.getShiftTasks(day1, day1) } returns listOf()
-            every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns dayShift
+            every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
+            every { csrApiClient.getDetailsForUser(day1, day1, 1) } returns shifts
 
-            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
-            verify { csrApiClient.getShiftTasks(day1, day1) }
-            verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
+            verify { prisonService.getPrisonForUser()}
+            verify { csrApiClient.getDetailsForUser(day1, day1, 1) }
 
             assertThat(dayModelList).hasSize(1)
 
@@ -346,17 +352,17 @@ internal class ShiftServiceTest_DayModelFullDayType {
         @Test
         fun `Overtime - Should return Holiday as Full Day Type for Holiday with not other Unspecific tasks`() {
             val day1 = LocalDate.now(clock)
-            val dayShift = listOf(
-                    ShiftTaskDto(day1, "Holiday", day1.atTime(7,0), day1.atTime(10,0), "My Activity")
+            val shifts = listOf(
+                    CsrDetailDto(day1, EntityType.OVERTIME, LocalTime.of(7,0).toSecondOfDay().toLong(), LocalTime.of(10,0).toSecondOfDay().toLong(), DetailType.HOLIDAY, "My Activity")
             )
 
-            every { csrApiClient.getShiftTasks(day1, day1) } returns listOf()
-            every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns dayShift
+            every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
+            every { csrApiClient.getDetailsForUser(day1, day1, 1) } returns shifts
 
-            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
-            verify { csrApiClient.getShiftTasks(day1, day1) }
-            verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
+            verify { prisonService.getPrisonForUser()}
+            verify { csrApiClient.getDetailsForUser(day1, day1, 1) }
 
             assertThat(dayModelList).hasSize(1)
 
@@ -368,18 +374,18 @@ internal class ShiftServiceTest_DayModelFullDayType {
         @Test
         fun `Overtime - Should return Shift as Full Day Type for Holiday with other Unspecific tasks`() {
             val day1 = LocalDate.now(clock)
-            val dayShift = listOf(
-                    ShiftTaskDto(day1, "Holiday", day1.atTime(7,0), day1.atTime(10,0), "My Activity"),
-                    ShiftTaskDto(day1, "Unspecific", day1.atTime(19,0), day1.atTime(20,0), "Door Guard")
+            val shifts = listOf(
+                    CsrDetailDto(day1, EntityType.OVERTIME, LocalTime.of(7,0).toSecondOfDay().toLong(), LocalTime.of(10,0).toSecondOfDay().toLong(), DetailType.HOLIDAY, "My Activity"),
+                    CsrDetailDto(day1, EntityType.OVERTIME, LocalTime.of(19,0).toSecondOfDay().toLong(), LocalTime.of(20,0).toSecondOfDay().toLong(), DetailType.UNSPECIFIC, "Door Guard")
             )
 
-            every { csrApiClient.getShiftTasks(day1, day1) } returns listOf()
-            every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns dayShift
+            every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
+            every { csrApiClient.getDetailsForUser(day1, day1, 1) } returns shifts
 
-            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
-            verify { csrApiClient.getShiftTasks(day1, day1) }
-            verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
+            verify { prisonService.getPrisonForUser()}
+            verify { csrApiClient.getDetailsForUser(day1, day1, 1) }
 
             assertThat(dayModelList).hasSize(1)
 
@@ -391,17 +397,17 @@ internal class ShiftServiceTest_DayModelFullDayType {
         @Test
         fun `Overtime - Should return Illness as Full Day Type for Illness`() {
             val day1 = LocalDate.now(clock)
-            val dayShift = listOf(
-                    ShiftTaskDto(day1, "Illness", day1.atTime(7,0), day1.atTime(10,0), "My Activity")
+            val shifts = listOf(
+                    CsrDetailDto(day1, EntityType.OVERTIME, LocalTime.of(7,0).toSecondOfDay().toLong(), LocalTime.of(10,0).toSecondOfDay().toLong(), DetailType.ILLNESS, "My Activity")
             )
 
-            every { csrApiClient.getShiftTasks(day1, day1) } returns listOf()
-            every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns dayShift
+            every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
+            every { csrApiClient.getDetailsForUser(day1, day1, 1) } returns shifts
 
-            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
-            verify { csrApiClient.getShiftTasks(day1, day1) }
-            verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
+            verify { prisonService.getPrisonForUser()}
+            verify { csrApiClient.getDetailsForUser(day1, day1, 1) }
 
             assertThat(dayModelList).hasSize(1)
 
@@ -413,17 +419,17 @@ internal class ShiftServiceTest_DayModelFullDayType {
         @Test
         fun `Overtime - Should return Shift as Full Day Type if no rules met`() {
             val day1 = LocalDate.now(clock)
-            val dayShift = listOf(
-                    ShiftTaskDto(day1, "New Type", day1.atTime(7,0), day1.atTime(10,0), "My Activity")
+            val shifts = listOf(
+                    CsrDetailDto(day1, EntityType.OVERTIME, LocalTime.of(7,0).toSecondOfDay().toLong(), LocalTime.of(10,0).toSecondOfDay().toLong(), DetailType.ONCALL, "My Activity")
             )
 
-            every { csrApiClient.getShiftTasks(day1, day1) } returns listOf()
-            every { csrApiClient.getOvertimeShiftTasks(day1, day1) } returns dayShift
+            every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
+            every { csrApiClient.getDetailsForUser(day1, day1, 1) } returns shifts
 
-            val dayModelList = service.getShiftsForUserBetween(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
-            verify { csrApiClient.getShiftTasks(day1, day1) }
-            verify { csrApiClient.getOvertimeShiftTasks(day1, day1) }
+            verify { prisonService.getPrisonForUser()}
+            verify { csrApiClient.getDetailsForUser(day1, day1, 1) }
 
             assertThat(dayModelList).hasSize(1)
 
