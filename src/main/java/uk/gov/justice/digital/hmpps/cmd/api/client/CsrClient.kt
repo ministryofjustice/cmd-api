@@ -9,6 +9,8 @@ import org.springframework.core.ParameterizedTypeReference
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.DetailType
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.EntityType
 import uk.gov.justice.digital.hmpps.cmd.api.utils.region.Regions
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -71,7 +73,7 @@ data class CsrDetailDto @JsonCreator constructor(
         var shiftDate: LocalDate,
 
         @JsonProperty("entityType")
-        var entityType: String,
+        var entityType: EntityType,
 
         @JsonProperty("detailStart")
         var start: Long,
@@ -80,7 +82,7 @@ data class CsrDetailDto @JsonCreator constructor(
         var end: Long,
 
         @JsonProperty("detailType")
-        var detailType: String,
+        var detailType: DetailType,
 
         @JsonProperty("activity")
         var activity: String

@@ -46,10 +46,10 @@ class NotificationService(
         val unprocessedNotifications = shiftNotificationRepository.findAllByProcessedIsFalse()
         log.info("Sending notifications, found: ${unprocessedNotifications.size}")
 
-        unprocessedNotifications.filter { it.quantumId != null }.groupBy { it.quantumId }
+        unprocessedNotifications.groupBy { it.quantumId }
                 .forEach { group ->
                     try {
-                        sendNotification(group.key!!, group.value)
+                        sendNotification(group.key, group.value)
                         group.value.forEach { it.processed = true }
                     } catch (e: NotificationClientException) {
                         log.warn("Sending notifications to user ${group.key} FAILED", e)
@@ -66,21 +66,22 @@ class NotificationService(
                     csrClient.getModifiedDetails(prison.csrPlanUnit, prison.region)
                 }.distinct()
                 .map{
-                    if(it.actionType == ShiftActionType.EDIT.value && !checkIfEditNotificationsHasCorrespondingAdd(it.quantumId, it.shiftDate, it.shiftType, it.shiftModified)) {
-                        it.actionType = ShiftActionType.ADD.value
+                    // We only want to transform shift level changes, not detail changes.
+                    if(it.detailStart == null){
+                        if(ShiftActionType.from(it.actionType) == ShiftActionType.EDIT && !checkIfEditNotificationsHasCorrespondingAdd(it.quantumId, it.shiftDate, it.shiftType, it.shiftModified)) {
+                           it.actionType = ShiftActionType.ADD.value
+                        }
                     }
                     it
                 }
-                .filter { it.actionType != ShiftActionType.EDIT.value }
 
-        val newTaskNotifications = allPrisons
-                .flatMap { prison ->
-                  csrClient.getModifiedDetails(prison.csrPlanUnit, prison.region)
-                }.distinct()
-
-        val allNotifications = newShiftNotifications.plus(newTaskNotifications)
-                .filter { it.actionType != ShiftActionType.UNCHANGED.value }
-                .filter { !checkIfNotificationsExist(it.quantumId, it.shiftDate, it.shiftType, it.shiftModified!!) }
+        val allNotifications = newShiftNotifications
+                // We want to remove Shift level changes that aren't 'add'
+                // we want to filter anything that is unchanged
+                .filterNot { (it.detailStart == null && ShiftActionType.from(it.actionType) != ShiftActionType.ADD) ||
+                        ShiftActionType.from(it.actionType) == ShiftActionType.UNCHANGED ||
+                        checkIfNotificationsExist(it.quantumId, it.shiftDate, it.shiftType, it.shiftModified)
+                }
         shiftNotificationRepository.saveAll(ShiftNotification.fromDto(allNotifications))
     }
 
@@ -136,7 +137,7 @@ class NotificationService(
 
     private fun getShiftNotificationDtos(from: LocalDateTime, to: LocalDateTime, unprocessedOnly: Boolean, processOnRead: Boolean, quantumId: String = authenticationFacade.currentUsername): Collection<NotificationDto> {
         log.debug("Finding unprocessedOnly: $unprocessedOnly notifications between $from and $to for $quantumId")
-        val notifications = shiftNotificationRepository.findAllByQuantumIdAndShiftModifiedIsBetween(quantumId, from, to).filter { !unprocessedOnly || (unprocessedOnly && !it.processed!!) }
+        val notifications = shiftNotificationRepository.findAllByQuantumIdAndShiftModifiedIsBetween(quantumId, from, to).filter { !unprocessedOnly || (unprocessedOnly && !it.processed) }
         log.info("Found ${notifications.size} unprocessedOnly: $unprocessedOnly notifications between $from and $to for $quantumId")
         val notificationDtos = NotificationDto.from(notifications, clock)
         if (processOnRead) {
@@ -154,14 +155,14 @@ class NotificationService(
     private fun sendNotification(quantumId: String, notificationGroup: List<ShiftNotification>) {
         val userPreference = userPreferenceService.getOrCreateUserPreference(quantumId)
 
-        data class Key(val shiftDate: LocalDate, val shiftType: String, val quantumId: String)
+        data class Key(val shiftDate: LocalDate, val shiftType: String, val quantumId: String, val taskStart: Long?)
 
-        fun ShiftNotification.toKeyDuplicates() = Key(this.shiftDate!!, this.shiftType!!, this.quantumId!!)
+        fun ShiftNotification.toKeyDuplicates() = Key(this.shiftDate, this.shiftType.toUpperCase(), this.quantumId.toUpperCase(), this.taskStart)
 
         // Only send the latest notification for a shift if there are multiple
         val mostRecentNotifications = notificationGroup
                 .groupBy { it.toKeyDuplicates() }
-                .map { (key, value) -> value.maxBy { it.shiftModified!! } }
+                .map { (_, value) -> value.maxBy { it.shiftModified } }
                 .filterNotNull()
 
         if (shouldSend(userPreference)) {
@@ -201,7 +202,7 @@ class NotificationService(
     private fun generateTemplateValues(chunk: List<ShiftNotification>, communicationPreference: CommunicationPreference): MutableMap<String, String?> {
         val personalisation = mutableMapOf<String, String?>()
         // Get the oldest modified date "Changes since"
-        personalisation["title"] = chunk.minBy { it.shiftModified!! }?.shiftModified?.let { "Changes since ${getDateTimeFormattedForTemplate(it.toLocalDate(), clock)}" }
+        personalisation["title"] = chunk.minBy { it.shiftModified }?.shiftModified?.let { "Changes since ${getDateTimeFormattedForTemplate(it.toLocalDate(), clock)}" }
         // Map each notification onto an predefined key
         personalisation.putAll(
                 notificationKeys
