@@ -35,9 +35,6 @@ dependencies {
     implementation("io.springfox:springfox-swagger-ui:2.9.2")
     implementation("org.apache.commons:commons-lang3:3.10")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.0")
-    implementation("io.jsonwebtoken:jjwt-api:0.11.2") // 💩
-    implementation("io.jsonwebtoken:jjwt-impl:0.11.2")// 💩
-    implementation("io.jsonwebtoken:jjwt-jackson:0.11.2")// 💩
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.11.0")
     implementation("com.nimbusds:nimbus-jose-jwt:8.19")

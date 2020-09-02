@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
@@ -16,7 +15,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Component
-class CsrClient(@Qualifier("csrApiWebClient") val csrClient: WebClient, val authenticationFacade: AuthenticationFacade, val regionData: Regions, @Value("\${jwt.secret}") val secret: String) {
+class CsrClient(@Qualifier("csrApiWebClient") val csrClient: WebClient, val authenticationFacade: AuthenticationFacade, val regionData: Regions) {
 
     fun getDetailsForUser(from: LocalDate, to: LocalDate, region: Int?) : Collection<CsrDetailDto> {
         if(region != null) {
