@@ -24,16 +24,6 @@ class ShiftService(private val prisonService: PrisonService,
                    private val csrClient: CsrClient,
                    private val clock: Clock) {
 
-    fun getDetailsSummaryForUser(fromParam: Optional<LocalDate>, toParam: Optional<LocalDate>): Collection<DetailDto> {
-        return getDetailsForUser(fromParam, toParam).map{
-            DetailDto(
-                    it.date,
-                    it.fullDayType,
-                    it.details.filter { detail -> detail.displayType != null}
-            )
-        }
-    }
-
     fun getDetailsForUser(fromParam: Optional<LocalDate>, toParam: Optional<LocalDate>): Collection<DetailDto> {
         val start = fromParam.orElse(LocalDate.now(clock))
         val end = toParam.orElse(LocalDate.now(clock))

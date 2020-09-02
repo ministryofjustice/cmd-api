@@ -21,27 +21,17 @@ import java.util.*
 @RequestMapping(produces = [APPLICATION_JSON_VALUE])
 class ShiftController(private val shiftService: ShiftService) {
 
-    @ApiOperation(value = "Retrieve all shifts for a user between two dates")
-    @ApiResponses(value = [
-        ApiResponse(code = 200, message = "OK")
-    ])
-    @GetMapping("/user/detail/summary")
-    fun getShifts(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) from: Optional<LocalDate>,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: Optional<LocalDate>): ResponseEntity<Collection<DetailDto>> {
-        val result = shiftService.getDetailsSummaryForUser(from, to)
-        return ResponseEntity.ok(result)
-    }
-
-    @ApiOperation(value = "Retrieve a shift for a user for a specific")
+    @ApiOperation(value = "Retrieve all details for a user between two dates")
     @ApiResponses(value = [
         ApiResponse(code = 200, message = "OK")
     ])
     @GetMapping("/user/detail")
-    fun getShift(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) date: Optional<LocalDate>): ResponseEntity<DetailDto> {
-        val result = shiftService.getDetailsForUser(date, date)
-        return ResponseEntity.ok(result.first())
+    fun getShifts(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) from: Optional<LocalDate>,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: Optional<LocalDate>): ResponseEntity<Collection<DetailDto>> {
+        val result = shiftService.getDetailsForUser(from, to)
+        return ResponseEntity.ok(result)
     }
+
 
 }

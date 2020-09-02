@@ -59,7 +59,7 @@ internal class ShiftServiceTest_Overtime_Scenarios {
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
             every { csrApiClient.getDetailsForUser(day1, day1, 1) } returns dayShift + overtime
 
-            val dayModelList = service.getDetailsSummaryForUser(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
             verify { prisonService.getPrisonForUser()}
             verify { csrApiClient.getDetailsForUser(day1, day1, 1) }
@@ -69,7 +69,10 @@ internal class ShiftServiceTest_Overtime_Scenarios {
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
             assertThat(dayModel.fullDayType).isEqualTo("Shift")
-            assertThat(dayModel.details).hasSize(4)
+            assertThat(dayModel.details).hasSize(6)
+            // 4 significant events but 6 details total
+            assertThat(dayModel.details.filter { it.displayType != null}).hasSize(4)
+
 
             val startTask = dayModel.details.first{ it.displayType == TaskDisplayType.DAY_START}
             assertThat(startTask.eventTime).isEqualTo(LocalTime.of(7,15))
@@ -106,7 +109,7 @@ internal class ShiftServiceTest_Overtime_Scenarios {
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
             every { csrApiClient.getDetailsForUser(day1, day1, 1) } returns dayShift + overtime
 
-            val dayModelList = service.getDetailsSummaryForUser(Optional.of(day1), Optional.of(day1))
+            val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
             verify { prisonService.getPrisonForUser()}
             verify { csrApiClient.getDetailsForUser(day1, day1, 1) }
@@ -116,7 +119,9 @@ internal class ShiftServiceTest_Overtime_Scenarios {
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
             assertThat(dayModel.fullDayType).isEqualTo("Shift")
-            assertThat(dayModel.details).hasSize(4)
+            assertThat(dayModel.details).hasSize(6)
+            // 4 significant events but 6 details total
+            assertThat(dayModel.details.filter { it.displayType != null}).hasSize(4)
 
             val overtimeStartTask = dayModel.details.first{ it.displayType == TaskDisplayType.DAY_START}
             assertThat(overtimeStartTask.eventTime).isEqualTo(LocalTime.of(17,15))
@@ -153,7 +158,7 @@ internal class ShiftServiceTest_Overtime_Scenarios {
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
             every { csrApiClient.getDetailsForUser(day1, day2, 1) } returns nightShift + overtime
 
-            val dayModelList = service.getDetailsSummaryForUser(Optional.of(day1), Optional.of(day2))
+            val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day2))
 
             verify { prisonService.getPrisonForUser()}
             verify { csrApiClient.getDetailsForUser(day1, day2, 1) }
@@ -172,7 +177,9 @@ internal class ShiftServiceTest_Overtime_Scenarios {
             val dayModel2 = dayModelList.first{ it.date == day2 }
             assertThat(dayModel2.date).isEqualTo(day2)
             assertThat(dayModel2.fullDayType).isEqualTo("Shift")
-            assertThat(dayModel2.details).hasSize(3)
+            assertThat(dayModel2.details).hasSize(4)
+            // 3 significant events but 4 details total
+            assertThat(dayModel2.details.filter { it.displayType != null}).hasSize(3)
 
             val startTask2 = dayModel2.details.first{ it.displayType == TaskDisplayType.NIGHT_FINISH}
             assertThat(startTask2.eventTime).isEqualTo(LocalTime.of(7,45))
@@ -205,7 +212,7 @@ internal class ShiftServiceTest_Overtime_Scenarios {
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
             every { csrApiClient.getDetailsForUser(day1, day2, 1) } returns nightShift + overtime
 
-            val dayModelList = service.getDetailsSummaryForUser(Optional.of(day1), Optional.of(day2))
+            val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day2))
 
             verify { prisonService.getPrisonForUser()}
             verify { csrApiClient.getDetailsForUser(day1, day2, 1) }
@@ -215,7 +222,9 @@ internal class ShiftServiceTest_Overtime_Scenarios {
             val dayModel1 = dayModelList.first{ it.date == day1 }
             assertThat(dayModel1.date).isEqualTo(day1)
             assertThat(dayModel1.fullDayType).isEqualTo("Shift")
-            assertThat(dayModel1.details).hasSize(3)
+            assertThat(dayModel1.details).hasSize(4)
+            // 3 significant events but 4 details total
+            assertThat(dayModel1.details.filter { it.displayType != null}).hasSize(3)
 
             val overtimeStartTask = dayModel1.details.first{ it.displayType == TaskDisplayType.OVERTIME_DAY_START}
             assertThat(overtimeStartTask.eventTime).isEqualTo(LocalTime.of(17,15))
