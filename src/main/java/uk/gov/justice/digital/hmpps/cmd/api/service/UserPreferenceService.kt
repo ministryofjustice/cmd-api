@@ -21,6 +21,7 @@ class UserPreferenceService(val repository: UserPreferenceRepository, val authen
         log.debug("Updating snooze preference for user ${userPreferences.quantumId} (${userPreferences.snoozeUntil}) with $newDate")
         userPreferences.snoozeUntil = newDate
         log.info("Updated snooze preference for user ${userPreferences.quantumId} (${userPreferences.snoozeUntil})")
+        repository.save(userPreferences)
     }
 
     fun updateNotificationDetails(email: String, sms: String, communicationPreference: CommunicationPreference) {
@@ -30,6 +31,7 @@ class UserPreferenceService(val repository: UserPreferenceRepository, val authen
         userPreferences.sms = sms
         userPreferences.commPref = communicationPreference.value
         log.info("Updated snooze preference for user ${userPreferences.quantumId}")
+        repository.save(userPreferences)
     }
 
     fun getOrCreateUserPreference(quantumId: String = authenticationFacade.currentUsername): UserPreference {
