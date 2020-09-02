@@ -1,7 +1,9 @@
 package uk.gov.justice.digital.hmpps.cmd.api.model
 
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.client.dto.ShiftNotificationDto
 import uk.gov.justice.digital.hmpps.cmd.api.client.CsrModifiedDetailDto
+import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
+import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftActionType
+import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftNotificationType
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -50,9 +52,9 @@ data class ShiftNotification(
                 val taskTime = getOptionalTaskDescription(this.taskStart, this.taskEnd, this.task)
                 val shiftActionType = ShiftActionType.from(this.actionType)
                 val taskTo = getOptionalTaskTo(this.task, communicationPreference, shiftActionType)
-                val shiftNotificationType = ShiftNotificationType.from(this.shiftType)
+                val shiftNotificationType = getNotificationType(ShiftNotificationType.from(this.shiftType), this.taskStart, this.taskEnd)
 
-                return "${bulletPoint}Your ${shiftNotificationType.description} on $date ${taskTime}has ${shiftActionType.description}${taskTo}."
+                return "${bulletPoint}Your ${shiftNotificationType} on $date ${taskTime}has ${shiftActionType.description}${taskTo}."
         }
 
         companion object {
@@ -86,6 +88,22 @@ data class ShiftNotification(
                         }
 
                         return DateTimeFormatter.ofPattern("EEEE, d'$ordinal' MMMM").format(this)
+                }
+
+                private fun getNotificationType(shiftNotificationType: ShiftNotificationType, detailStart : Long?, detailEnd: Long?) : String {
+                        if(shiftNotificationType == ShiftNotificationType.SHIFT) {
+                                if(detailStart == null && detailEnd == null) {
+                                        return "shift"
+                                } else {
+                                        return "detail"
+                                }
+                        } else {
+                                if(detailStart == null && detailEnd == null) {
+                                        return "overtime shift"
+                                } else {
+                                        return "overtime detail"
+                                }
+                        }
                 }
 
                 private fun getOptionalTaskDescription(from: Long?, to: Long?, task: String?): String {

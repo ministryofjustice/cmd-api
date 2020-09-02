@@ -12,12 +12,6 @@ import uk.gov.justice.digital.hmpps.cmd.api.model.ShiftNotification
 import uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
 import uk.gov.justice.digital.hmpps.cmd.api.repository.ShiftNotificationRepository
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.client.CsrClient
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.client.dto.ShiftNotificationDto
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftActionType
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftNotificationType
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.service.PrisonService
 import uk.gov.justice.digital.hmpps.cmd.api.client.CsrClient
 import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftActionType
@@ -303,8 +297,9 @@ internal class NotificationServiceTest_Send {
 
             val shiftNotifications: List<ShiftNotification> = listOf(
                     ShiftNotification(1, quantumId, shiftDate, modified1, null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false),
-                    ShiftNotification(1, quantumId, shiftDate, modified1, 9876, 6544, "A Task", ShiftNotificationType.SHIFT_TASK.value, ShiftActionType.ADD.value, false),
-                    ShiftNotification(1, quantumId, shiftDate, modified1, 1234, 4567, "Any Task", ShiftNotificationType.SHIFT_TASK.value, ShiftActionType.ADD.value, false)
+                    ShiftNotification(1, quantumId, shiftDate, modified1, null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false),
+                    ShiftNotification(1, quantumId, shiftDate, modified1, 9876, 6544, "A Task", ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false),
+                    ShiftNotification(1, quantumId, shiftDate, modified1, 1234, 4567, "Any Task", ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
             )
 
             every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
@@ -325,8 +320,46 @@ internal class NotificationServiceTest_Send {
             verify { shiftNotificationRepository.saveAll(shiftNotifications) }
 
             assertThat(slot.captured.getValue("not1")).isEqualTo("* Your shift on Tuesday, 2nd November has been added.")
-            assertThat(slot.captured.getValue("not2")).isEqualTo("* Your activity on Tuesday, 2nd November (02:44:36 - 01:49:04) has been added.")
-            assertThat(slot.captured.getValue("not3")).isEqualTo("* Your activity on Tuesday, 2nd November (00:20:34 - 01:16:07) has been added.")
+            assertThat(slot.captured.getValue("not2")).isEqualTo("* Your detail on Tuesday, 2nd November (00:20:34 - 01:16:07) has been added.")
+            assertThat(slot.captured.getValue("not3")).isEqualTo("* Your detail on Tuesday, 2nd November (02:44:36 - 01:49:04) has been added.")
+        }
+
+        @Test
+        fun `Should order events by shiftDate then StartTime`() {
+            val frozenClock = Clock.fixed(LocalDate.of(2010, 10, 29).atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
+            val quantumId = "CSTRIFE_GEN"
+            val shiftDate = LocalDate.now(frozenClock).plusDays(4)
+            val modified1 = LocalDateTime.now(frozenClock).plusHours(1)
+
+            val shiftNotifications: List<ShiftNotification> = listOf(
+                    ShiftNotification(1, quantumId, shiftDate, modified1, null, null, null, ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false),
+                    ShiftNotification(1, quantumId, shiftDate, modified1, 9876, 6544, "A Task", ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false),
+                    ShiftNotification(1, quantumId, shiftDate, modified1, 1234, 4567, "Any Task", ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false),
+                    ShiftNotification(1, quantumId, shiftDate.minusDays(1), modified1, 1234, 4567, "Any Task", ShiftNotificationType.SHIFT.value, ShiftActionType.ADD.value, false)
+            )
+
+            every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
+            every { userPreferenceService.getOrCreateUserPreference(quantumId) } returns UserPreference(quantumId, null, "email", "sms", CommunicationPreference.EMAIL.value)
+            every { notifyClient.sendEmail(any(), "email", any(), any()) } returns null
+            every { notifyClient.sendSms(any(), "sms", any(), any()) } returns null
+            every { shiftNotificationRepository.saveAll(shiftNotifications) } returns shiftNotifications
+
+            val slot = slot<Map<String, String>>()
+            every { notifyClient.sendEmail(any(), any(), capture(slot), null) } returns null
+
+            service.sendNotifications()
+
+            verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
+            verify { userPreferenceService.getOrCreateUserPreference(quantumId) }
+            verify(exactly = 1) { notifyClient.sendEmail(any(), "email", any(), null) }
+            verify(exactly = 0) { notifyClient.sendSms(any(), "sms", any(), null) }
+            verify { shiftNotificationRepository.saveAll(shiftNotifications) }
+
+            assertThat(slot.captured.getValue("not1")).isEqualTo("* Your detail on Monday, 1st November (00:20:34 - 01:16:07) has been added.")
+            assertThat(slot.captured.getValue("not2")).isEqualTo("* Your shift on Tuesday, 2nd November has been added.")
+            assertThat(slot.captured.getValue("not3")).isEqualTo("* Your detail on Tuesday, 2nd November (00:20:34 - 01:16:07) has been added.")
+            assertThat(slot.captured.getValue("not4")).isEqualTo("* Your detail on Tuesday, 2nd November (02:44:36 - 01:49:04) has been added.")
+
         }
 
     }

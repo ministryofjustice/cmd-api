@@ -2,8 +2,8 @@ package uk.gov.justice.digital.hmpps.cmd.api.dto
 
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
+import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import uk.gov.justice.digital.hmpps.cmd.api.model.ShiftNotification
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -32,7 +32,7 @@ class NotificationDtoTest {
         Assertions.assertThat(notificationDtos).hasSize(1)
 
         val first = notificationDtos[0]
-        Assertions.assertThat(first.description).isEqualTo("Your activity on Sunday, 3rd May (full day) has been added as Any Activity.")
+        Assertions.assertThat(first.description).isEqualTo("Your detail on Sunday, 3rd May (full day) has been added as Any Activity.")
         Assertions.assertThat(first.shiftModified).isEqualTo(shifts[0].shiftModified)
         Assertions.assertThat(first.processed).isEqualTo(shifts[0].processed)
     }
@@ -46,8 +46,8 @@ class NotificationDtoTest {
 
             val quantumId = "XYZ"
             val shiftModified = shiftDate.minusDays(3)
-            val taskStart = 0L
-            val taskEnd = 0L
+            val taskStart = null
+            val taskEnd = null
             val task = ""
             val shiftType = "shift"
             val actionType = "add"
@@ -76,7 +76,7 @@ class NotificationDtoTest {
             val taskStart = 123L
             val taskEnd = 456L
             val task = "Any Activity"
-            val shiftType = "shift_task"
+            val shiftType = "shift"
             val actionType = "add"
 
             val processed = false

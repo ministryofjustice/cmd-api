@@ -13,12 +13,8 @@ env:
   SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "https://sign-in-preprod.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json"
   OAUTH_ROOT_URL: "https://sign-in-preprod.hmpps.service.justice.gov.uk/auth"
   ELITE2API_ENDPOINT_URL: "https://api-preprod.prison.service.justice.gov.uk"
-  CSR_REGION1_URL: "https://api.check-my-diary-preprod.hmpps.dsd.io/api"
-  CSR_REGION2_URL: "https://api.check-my-diary-preprod.hmpps.dsd.io/api"
-  CSR_REGION3_URL: "https://api.check-my-diary-preprod.hmpps.dsd.io/api"
-  CSR_REGION4_URL: "https://api.check-my-diary-preprod.hmpps.dsd.io/api"
-  CSR_REGION5_URL: "https://api.check-my-diary-preprod.hmpps.dsd.io/api"
-  CSR_REGION6_URL: "https://api.check-my-diary-preprod.hmpps.dsd.io/api"
+  CSR_ENDPOINT_URL: "csr-api-prprod.aks-live-1.studio-hosting.service.justice.gov.uk"
+
   
 cron:
   namespace: check-my-diary-preprod

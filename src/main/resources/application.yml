@@ -61,27 +61,3 @@ management:
 application:
   to:
     defaultMonths: 3
-
-
-#💩💩💩
-csr:
-  regions:
-    - name: 1
-      url: https://api.check-my-diary-dev.hmpps.dsd.io
-    - name: 2
-      url: https://api.check-my-diary-dev.hmpps.dsd.io
-    - name: 3
-      url: https://api.check-my-diary-dev.hmpps.dsd.io
-    - name: 4
-      url: https://api.check-my-diary-dev.hmpps.dsd.io
-    - name: 5
-      url: https://api.check-my-diary-dev.hmpps.dsd.io
-    - name: 6
-      url: https://api.check-my-diary-dev.hmpps.dsd.io
-  endpoint.url: https://api.check-my-diary-dev.hmpps.dsd.io
-#💩💩💩
-jwt:
-  secret: ${jwt.secret.key:invalidValue}
-
-elite2api:
-  endpoint.url: https://api-dev.prison.service.justice.gov.uk
