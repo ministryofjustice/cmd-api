@@ -87,7 +87,7 @@ class NotificationService(
         val allNotifications = newShiftNotifications
                 // We want to remove Shift level changes that aren't 'add'
                 // we want to filter anything that is unchanged
-                .filterNot { (it.detailStart == null && ShiftActionType.from(it.actionType) != ShiftActionType.ADD) ||
+                .filterNot { (it.detailStart == null && ShiftActionType.from(it.actionType) == ShiftActionType.EDIT) ||
                         ShiftActionType.from(it.actionType) == ShiftActionType.UNCHANGED ||
                         checkIfNotificationsExist(it.quantumId, it.shiftDate, it.shiftType, it.shiftModified)
                 }
