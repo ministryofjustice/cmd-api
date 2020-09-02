@@ -121,11 +121,13 @@ internal class UserPreferenceServiceTest {
             val newDate = now.plusDays(3)
 
             every { repository.findByQuantumIdIgnoreCase(any()) } returns userPref
+            every { repository.save(userPref)} returns userPref
             every { authenticationFacade.currentUsername } returns quantumId
 
             service.updateSnoozePreference(newDate)
 
             verify { repository.findByQuantumIdIgnoreCase(quantumId) }
+            verify { repository.save(userPref)}
             confirmVerified(repository)
         }
 
@@ -135,11 +137,13 @@ internal class UserPreferenceServiceTest {
             val userPref = UserPreference(quantumId, now.plusDays(1))
             val newDate = now.minusDays(3)
             every { repository.findByQuantumIdIgnoreCase(any()) } returns userPref
+            every { repository.save(userPref)} returns userPref
             every { authenticationFacade.currentUsername } returns quantumId
 
             service.updateSnoozePreference(newDate)
 
             verify { repository.findByQuantumIdIgnoreCase(quantumId) }
+            verify { repository.save(userPref)}
             confirmVerified(repository)
         }
 
@@ -192,11 +196,13 @@ internal class UserPreferenceServiceTest {
                     CommunicationPreference.EMAIL.value)
 
             every { repository.findByQuantumIdIgnoreCase(any()) } returns userPref
+            every { repository.save(userPref)} returns userPref
             every { authenticationFacade.currentUsername } returns quantumId
 
             service.updateNotificationDetails("new Email", "new Sms", CommunicationPreference.EMAIL)
 
             verify { repository.findByQuantumIdIgnoreCase(quantumId) }
+            verify { repository.save(userPref)}
             confirmVerified(repository)
         }
 
