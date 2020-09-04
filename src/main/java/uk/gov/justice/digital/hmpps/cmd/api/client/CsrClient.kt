@@ -7,9 +7,10 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
+import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftActionType
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.DetailType
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.EntityType
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.cmd.api.utils.region.Regions
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -68,23 +69,21 @@ class CsrClient(@Qualifier("csrApiWebClient") val csrClient: WebClient, val auth
 }
 
 data class CsrDetailDto @JsonCreator constructor(
-        @JsonProperty("shiftDate")
-        var shiftDate: LocalDate,
 
-        @JsonProperty("entityType")
-        var entityType: EntityType,
+        @JsonProperty("shiftType")
+        var shiftType: ShiftType,
 
         @JsonProperty("detailStart")
-        var start: Long,
+        var detailStart: LocalDateTime,
 
         @JsonProperty("detailEnd")
-        var end: Long,
-
-        @JsonProperty("detailType")
-        var detailType: DetailType,
+        var detailEnd: LocalDateTime,
 
         @JsonProperty("activity")
-        var activity: String
+        var activity: String,
+
+        @JsonProperty("detailType")
+        var detailType: DetailType
 )
 
 data class CsrModifiedDetailDto @JsonCreator constructor(
@@ -95,21 +94,18 @@ data class CsrModifiedDetailDto @JsonCreator constructor(
         @JsonProperty("shiftModified")
         var shiftModified: LocalDateTime,
 
-        @JsonProperty("shiftDate")
-        var shiftDate: LocalDate,
-
         @JsonProperty("shiftType")
-        var shiftType: String,
+        var shiftType: ShiftType,
 
         @JsonProperty("detailStart")
-        var detailStart: Long?,
+        var detailStart: LocalDateTime,
 
         @JsonProperty("detailEnd")
-        var detailEnd: Long?,
+        var detailEnd: LocalDateTime,
 
         @JsonProperty("activity")
         var activity: String?,
 
         @JsonProperty("actionType")
-        var actionType: String
+        var actionType: ShiftActionType
 )

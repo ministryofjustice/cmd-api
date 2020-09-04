@@ -1,3 +1,3 @@
 DELETE
-FROM shift_notification
+FROM notification
 WHERE TRUE;

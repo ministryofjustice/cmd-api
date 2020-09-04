@@ -3,16 +3,15 @@ package uk.gov.justice.digital.hmpps.cmd.api.model
 import uk.gov.justice.digital.hmpps.cmd.api.client.CsrModifiedDetailDto
 import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftActionType
-import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftNotificationType
-import java.time.LocalDate
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import javax.persistence.*
 
 @Entity
-@Table(name = "shift_notification")
-data class ShiftNotification(
+@Table(name = "notification")
+data class Notification(
         @Id
         @Column(name = "ID")
         @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,25 +21,24 @@ data class ShiftNotification(
         var quantumId: String,
 
         @Column(nullable = false)
-        var shiftDate: LocalDate,
-
-        @Column(nullable = false)
         var shiftModified: LocalDateTime,
 
-        @Column
-        var taskStart: Long?,
-
-        @Column
-        var taskEnd: Long?,
-
-        @Column
-        var task: String?,
+        @Column(nullable = false)
+        var detailStart: LocalDateTime,
 
         @Column(nullable = false)
-        var shiftType: String,
+        var detailEnd: LocalDateTime,
 
+        @Column
+        var activity: String?,
+
+        @Enumerated(EnumType.STRING)
         @Column(nullable = false)
-        var actionType: String,
+        var shiftType: ShiftType,
+
+        @Enumerated(EnumType.STRING)
+        @Column(nullable = false)
+        var actionType: ShiftActionType,
 
         @Column(nullable = false)
         var processed: Boolean
@@ -48,35 +46,34 @@ data class ShiftNotification(
         fun getNotificationDescription(communicationPreference: CommunicationPreference): String {
 
                 val bulletPoint = getOptionalBulletPoint(communicationPreference)
-                val date = this.shiftDate.getDateTimeFormattedForTemplate()
-                val taskTime = getOptionalTaskDescription(this.taskStart, this.taskEnd, this.task)
-                val shiftActionType = ShiftActionType.from(this.actionType)
-                val taskTo = getOptionalTaskTo(this.task, communicationPreference, shiftActionType)
-                val shiftNotificationType = getNotificationType(ShiftNotificationType.from(this.shiftType), this.taskStart, this.taskEnd)
+                val date = this.detailStart.getDateTimeFormattedForTemplate()
+                val taskTime = getOptionalTaskDescription(this.detailStart, this.detailEnd, this.activity)
+                val shiftActionType = this.actionType
+                val taskTo = getOptionalTaskTo(this.activity, communicationPreference, shiftActionType)
+                val shiftNotificationType = getNotificationType(this.shiftType, this.activity)
 
-                return "${bulletPoint}Your ${shiftNotificationType} on $date ${taskTime}has ${shiftActionType.description}${taskTo}."
+                return "${bulletPoint}Your $shiftNotificationType on $date ${taskTime}has ${shiftActionType.description}${taskTo}."
         }
 
         companion object {
 
-                fun fromDto(dtoCsrs: Collection<CsrModifiedDetailDto>): Collection<ShiftNotification> {
+                fun fromDto(dtoCsrs: Collection<CsrModifiedDetailDto>): Collection<Notification> {
                         return dtoCsrs.map { fromDto(it) }
                 }
 
-                fun fromDto(dtoCsr: CsrModifiedDetailDto): ShiftNotification {
-                        return ShiftNotification(
+                fun fromDto(dtoCsr: CsrModifiedDetailDto): Notification {
+                        return Notification(
                                 quantumId = dtoCsr.quantumId,
-                                shiftDate = dtoCsr.shiftDate,
                                 shiftModified = dtoCsr.shiftModified,
-                                taskStart = dtoCsr.detailStart,
-                                taskEnd = dtoCsr.detailEnd,
-                                task = dtoCsr.activity,
+                                detailStart = dtoCsr.detailStart,
+                                detailEnd = dtoCsr.detailEnd,
+                                activity = dtoCsr.activity,
                                 shiftType = dtoCsr.shiftType,
                                 actionType = dtoCsr.actionType,
                                 processed = false)
                 }
 
-                fun LocalDate.getDateTimeFormattedForTemplate(): String {
+                fun LocalDateTime.getDateTimeFormattedForTemplate(): String {
                         val day = this.dayOfMonth
                         val ordinal = if (day in 11..13) {
                                 "th"
@@ -90,42 +87,31 @@ data class ShiftNotification(
                         return DateTimeFormatter.ofPattern("EEEE, d'$ordinal' MMMM").format(this)
                 }
 
-                private fun getNotificationType(shiftNotificationType: ShiftNotificationType, detailStart : Long?, detailEnd: Long?) : String {
-                        if(shiftNotificationType == ShiftNotificationType.SHIFT) {
-                                if(detailStart == null && detailEnd == null) {
-                                        return "shift"
+                private fun getNotificationType(shiftNotificationType: ShiftType, activity: String?) : String {
+                        return if(shiftNotificationType == ShiftType.SHIFT) {
+                                if(activity == null) {
+                                        "shift"
                                 } else {
-                                        return "detail"
+                                        "detail"
                                 }
                         } else {
-                                if(detailStart == null && detailEnd == null) {
-                                        return "overtime shift"
+                                if(activity == null) {
+                                        "overtime shift"
                                 } else {
-                                        return "overtime detail"
+                                        "overtime detail"
                                 }
                         }
                 }
 
-                private fun getOptionalTaskDescription(from: Long?, to: Long?, task: String?): String {
-                        return if ((from != null && to != null) && !task.isNullOrEmpty())
+                private fun getOptionalTaskDescription(from: LocalDateTime, to: LocalDateTime, task: String?): String {
+                        return if (!task.isNullOrEmpty())
                         {
-                                if(from > 1000L && to > 1000L) {
-                                        "(${getTimeWithoutDayOffset(from)} - ${getTimeWithoutDayOffset(to)}) "
+                                if(from.toLocalTime().isAfter(LocalTime.MIN) && to.toLocalTime().isAfter(LocalTime.MIN)) {
+                                        "(${from.toLocalTime()} - ${to.toLocalTime()}) "
                                 } else {
                                         "(full day) "
                                 }
                         } else ""
-                }
-
-                private fun getTimeWithoutDayOffset(seconds: Long): LocalTime {
-                        val fullDay = 86_400L
-                        return LocalTime.ofSecondOfDay(
-                                if (seconds >= fullDay) {
-                                        seconds - fullDay
-                                } else {
-                                        seconds
-                                }
-                        )
                 }
 
                 private fun getOptionalTaskTo(task: String?, communicationPreference: CommunicationPreference, shiftActionType: ShiftActionType): String {
