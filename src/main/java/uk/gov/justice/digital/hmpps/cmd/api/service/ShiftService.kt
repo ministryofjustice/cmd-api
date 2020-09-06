@@ -10,11 +10,8 @@ import uk.gov.justice.digital.hmpps.cmd.api.domain.TaskDisplayType
 import uk.gov.justice.digital.hmpps.cmd.api.dto.DetailDto
 import uk.gov.justice.digital.hmpps.cmd.api.dto.DetailEventDto
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.DetailType
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.EntityType
-import java.time.Clock
-import java.time.Duration
-import java.time.LocalDate
-import java.time.LocalTime
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
+import java.time.*
 import java.util.*
 import java.util.stream.Collectors
 
@@ -37,15 +34,14 @@ class ShiftService(private val prisonService: PrisonService,
             DetailDto(
                     date,
                     calculateFullDayType(detailsForDate),
-                    getAllEvents(date, detailsForDate)
+                    getAllEvents(date, detailsForDate.distinct())
             )
         }.collect(Collectors.toList())
     }
 
     private fun groupDetailsByDate(details : Collection<CsrDetailDto>): Map<LocalDate, Collection<CsrDetailDto>> {
-        val detailStartGroup = details.groupBy { it.shiftDate }
-        // a detail with an end earlier than start means it finishes on the next day (night shift)
-        val detailEndGroup = details.filter { it.end < it.start }.groupBy { it.shiftDate.plusDays(1) }
+        val detailStartGroup = details.groupBy { it.detailStart.toLocalDate() }
+        val detailEndGroup = details.groupBy { it.detailEnd.toLocalDate() }
         return (detailStartGroup.keys + detailEndGroup.keys)
                 .associateWith {
                     detailStartGroup.getOrDefault(it, listOf()) +
@@ -55,7 +51,7 @@ class ShiftService(private val prisonService: PrisonService,
 
     private fun calculateFullDayType(tasks: Collection<CsrDetailDto>): String {
         if (tasks.any()) {
-            val isFullDay = tasks.minBy { it.start }?.start == 0L
+            val isFullDay = tasks.minBy { it.detailStart }?.detailStart?.toLocalTime() == LocalTime.MIDNIGHT
             tasks.forEach {
                 val detailType = it.detailType
                 val activityType = ActivityType.fromDescription(it.activity)
@@ -79,7 +75,7 @@ class ShiftService(private val prisonService: PrisonService,
     }
 
     private fun getAllEvents(date: LocalDate, csrDetails: Collection<CsrDetailDto>): Collection<DetailEventDto> {
-        val (shiftDetails, overtimeDetails) = csrDetails.partition { it.entityType == EntityType.SHIFT }
+        val (shiftDetails, overtimeDetails) = csrDetails.partition { it.shiftType == ShiftType.SHIFT }
 
         val shiftStartAndFinishEvents = getStartAndFinishEvents(date, shiftDetails)
         val overtimeStartAndFinishEvents = getStartAndFinishEvents(date, overtimeDetails)
@@ -89,9 +85,9 @@ class ShiftService(private val prisonService: PrisonService,
                 .map {
                     DetailEventDto(
                             it.activity,
-                            LocalTime.ofSecondOfDay(it.start),
-                            LocalTime.ofSecondOfDay(it.end),
-                            it.entityType,
+                            it.detailStart,
+                            it.detailEnd,
+                            it.shiftType,
                             null
                     )
                 }.filter { event ->
@@ -110,98 +106,93 @@ class ShiftService(private val prisonService: PrisonService,
     private fun getStartAndFinishEvents(date: LocalDate, csrDetails: Collection<CsrDetailDto>): Collection<DetailEventDto> {
 
         val (dayShiftDetails, nightShiftDetails) = csrDetails
-                .filter { it.start != 0L }
-                .partition { it.start < it.end }
+                .filter { it.detailStart != LocalDateTime.MIN }
+                .partition { it.detailStart.toLocalTime() < it.detailEnd.toLocalTime()}
 
         // Identify a Day Shift Starting
-        val dayShiftStart = dayShiftDetails.minBy { it.start }?.let {
+        val dayShiftStart = dayShiftDetails.filter { it.detailStart.toLocalDate() == date }.minBy { it.detailStart }?.let {
             DetailEventDto(
                     it.activity,
-                    LocalTime.ofSecondOfDay(it.start),
-                    LocalTime.ofSecondOfDay(it.end),
-                    it.entityType,
-                    when (it.entityType) {
-                        EntityType.OVERTIME -> {
+                    it.detailStart,
+                    it.detailEnd,
+                    it.shiftType,
+                    when (it.shiftType) {
+                        ShiftType.OVERTIME -> {
                             TaskDisplayType.OVERTIME_DAY_START
                         }
                         else -> {
                             TaskDisplayType.DAY_START
                         }
                     },
-                    LocalTime.ofSecondOfDay(it.start))
+                    it.detailStart)
         }
 
         // Identify a Day Shift Finishing
-        val dayShiftEnd = dayShiftDetails.maxBy { it.end }?.let {
+        val dayShiftEnd = dayShiftDetails.filter { it.detailEnd.toLocalDate() == date }.maxBy { it.detailEnd }?.let {
             DetailEventDto(
                     it.activity,
-                    LocalTime.ofSecondOfDay(it.start),
-                    LocalTime.ofSecondOfDay(it.end),
-                    it.entityType,
-                    when (it.entityType) {
-                        EntityType.OVERTIME -> {
+                    it.detailStart,
+                    it.detailEnd,
+                    it.shiftType,
+                    when (it.shiftType) {
+                        ShiftType.OVERTIME -> {
                             TaskDisplayType.OVERTIME_DAY_FINISH
                         }
                         else -> {
                             TaskDisplayType.DAY_FINISH
                         }
                     },
-                    LocalTime.ofSecondOfDay(it.end),
-                    calculateShiftDuration(it.shiftDate, dayShiftDetails))
+                    it.detailEnd,
+                    calculateShiftDuration(dayShiftDetails))
         }
 
         // Identify a Night Shift Starting
-        val nightShiftStart = nightShiftDetails.filter { it.shiftDate == date }.maxBy { it.start }?.let {
+        val nightShiftStart = nightShiftDetails.filter { it.detailStart.toLocalDate() == date }.maxBy { it.detailStart }?.let {
             DetailEventDto(
                     it.activity,
-                    LocalTime.ofSecondOfDay(it.start),
-                    LocalTime.ofSecondOfDay(it.end),
-                    it.entityType,
-                    when (it.entityType) {
-                        EntityType.OVERTIME -> {
+                    it.detailStart,
+                    it.detailEnd,
+                    it.shiftType,
+                    when (it.shiftType) {
+                        ShiftType.OVERTIME -> {
                             TaskDisplayType.OVERTIME_NIGHT_START
                         }
                         else -> {
                             TaskDisplayType.NIGHT_START
                         }
                     },
-                    LocalTime.ofSecondOfDay(it.start))
+                    it.detailStart)
         }
 
         // Identify a Night Shift Finishing
-        val nightShiftEnd = nightShiftDetails.filter { it.shiftDate.plusDays(1) == date }.minBy { it.end }?.let {
+        val nightShiftEnd = nightShiftDetails.filter { it.detailEnd.toLocalDate() == date }.minBy { it.detailEnd }?.let {
             DetailEventDto(
                     it.activity,
-                    LocalTime.ofSecondOfDay(it.start),
-                    LocalTime.ofSecondOfDay(it.end),
-                    it.entityType,
-                    when (it.entityType) {
-                        EntityType.OVERTIME -> {
+                    it.detailStart,
+                    it.detailEnd,
+                    it.shiftType,
+                    when (it.shiftType) {
+                        ShiftType.OVERTIME -> {
                             TaskDisplayType.OVERTIME_NIGHT_FINISH
                         }
                         else -> {
                             TaskDisplayType.NIGHT_FINISH
                         }
                     },
-                    LocalTime.ofSecondOfDay(it.end),
-                    //TODO: Do we need to filter this here? why not the day shift too?
-                    calculateShiftDuration(it.shiftDate, nightShiftDetails))
+                    it.detailEnd,
+                    calculateShiftDuration(nightShiftDetails))
         }
 
         return listOfNotNull(nightShiftEnd, nightShiftStart, dayShiftStart, dayShiftEnd)
     }
 
-    private fun calculateShiftDuration(startDate: LocalDate, details: Collection<CsrDetailDto>): String {
+    private fun calculateShiftDuration(details: Collection<CsrDetailDto>): String {
         // We have to exclude unpaid breaks
         val sum = details.filter { detail -> detail.detailType != DetailType.BREAK }.map {
             detail ->
-            if(detail.start < detail.end) {
-                detail.end - detail.start
-            } else {
                 Duration.between(
-                startDate.atTime(LocalTime.ofSecondOfDay(detail.start)),
-                startDate.plusDays(1).atTime(LocalTime.ofSecondOfDay(detail.end))).toSeconds()
-            }
+                detail.detailStart,
+                detail.detailEnd).toSeconds()
         }.sum()
         return String.format("%dh %02dm", sum / 3600, (sum % 3600) / 60)
     }

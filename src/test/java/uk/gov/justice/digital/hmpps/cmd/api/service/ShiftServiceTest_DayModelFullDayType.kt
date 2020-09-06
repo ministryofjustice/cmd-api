@@ -9,7 +9,7 @@ import uk.gov.justice.digital.hmpps.cmd.api.client.CsrClient
 import uk.gov.justice.digital.hmpps.cmd.api.client.CsrDetailDto
 import uk.gov.justice.digital.hmpps.cmd.api.model.Prison
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.DetailType
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.EntityType
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
 import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalTime
@@ -44,7 +44,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
         fun `Should return activity as Full Day Type for full day Unspecific`() {
             val day1 = LocalDate.now(clock)
             val shifts = listOf(
-                    CsrDetailDto(day1, EntityType.SHIFT, LocalTime.of(0,0).toSecondOfDay().toLong(), LocalTime.of(23,59,59).toSecondOfDay().toLong(), DetailType.UNSPECIFIC, "My Activity")
+                    CsrDetailDto(ShiftType.SHIFT, day1.atTime(LocalTime.of(0,0)), day1.atTime(LocalTime.of(23,59,59)), "My Activity", DetailType.UNSPECIFIC)
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
@@ -66,7 +66,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
         fun `Should return type as Full Day Type for Training Internal`() {
             val day1 = LocalDate.now(clock)
             val shifts = listOf(
-                    CsrDetailDto(day1, EntityType.SHIFT, LocalTime.of(7,15).toSecondOfDay().toLong(), LocalTime.of(12,30).toSecondOfDay().toLong(), DetailType.UNSPECIFIC, "Training - Internal")
+                    CsrDetailDto(ShiftType.SHIFT, day1.atTime(LocalTime.of(7,15)), day1.atTime(LocalTime.of(12,30)), "Training - Internal", DetailType.UNSPECIFIC)
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
@@ -88,7 +88,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
         fun `Should return type as Full Day Type for Training external`() {
             val day1 = LocalDate.now(clock)
             val shifts = listOf(
-                    CsrDetailDto(day1, EntityType.SHIFT, LocalTime.of(7,15).toSecondOfDay().toLong(), LocalTime.of(12,30).toSecondOfDay().toLong(), DetailType.UNSPECIFIC, "Training - External")
+                    CsrDetailDto(ShiftType.SHIFT, day1.atTime(LocalTime.of(7,15)), day1.atTime(LocalTime.of(12,30)), "Training - External", DetailType.UNSPECIFIC)
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
@@ -110,7 +110,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
         fun `Should return activity as Full Day Type for Absence`() {
             val day1 = LocalDate.now(clock)
             val shifts = listOf(
-                    CsrDetailDto(day1, EntityType.SHIFT, LocalTime.of(0,0).toSecondOfDay().toLong(), LocalTime.of(23,59,59).toSecondOfDay().toLong(), DetailType.ABSENCE, "My Activity")
+                    CsrDetailDto(ShiftType.SHIFT, day1.atTime(LocalTime.of(0,0)), day1.atTime(LocalTime.of(23,59,59)), "My Activity", DetailType.ABSENCE)
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
@@ -132,7 +132,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
         fun `Should return Holiday as Full Day Type for full day Holiday`() {
             val day1 = LocalDate.now(clock)
             val shifts = listOf(
-                    CsrDetailDto(day1, EntityType.SHIFT, LocalTime.of(0,0).toSecondOfDay().toLong(), LocalTime.of(23,59,59).toSecondOfDay().toLong(), DetailType.HOLIDAY, "My Activity")
+                    CsrDetailDto(ShiftType.SHIFT, day1.atTime(LocalTime.of(0,0)), day1.atTime(LocalTime.of(23,59,59)), "My Activity", DetailType.HOLIDAY)
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
@@ -154,7 +154,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
         fun `Should return Holiday as Full Day Type for Holiday with not other Unspecific tasks`() {
             val day1 = LocalDate.now(clock)
             val shifts = listOf(
-                    CsrDetailDto(day1, EntityType.SHIFT, LocalTime.of(7,0).toSecondOfDay().toLong(), LocalTime.of(10,0).toSecondOfDay().toLong(), DetailType.HOLIDAY, "My Activity")
+                    CsrDetailDto(ShiftType.SHIFT, day1.atTime(LocalTime.of(7,0)), day1.atTime(LocalTime.of(10,0)), "My Activity", DetailType.HOLIDAY)
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
@@ -176,8 +176,8 @@ internal class ShiftServiceTest_DayModelFullDayType {
         fun `Should return Shift as Full Day Type for Holiday with other Unspecific tasks`() {
             val day1 = LocalDate.now(clock)
             val shifts = listOf(
-                    CsrDetailDto(day1, EntityType.SHIFT, LocalTime.of(7,0).toSecondOfDay().toLong(), LocalTime.of(10,0).toSecondOfDay().toLong(), DetailType.HOLIDAY, "My Activity"),
-                    CsrDetailDto(day1, EntityType.SHIFT, LocalTime.of(19,0).toSecondOfDay().toLong(), LocalTime.of(20,0).toSecondOfDay().toLong(), DetailType.UNSPECIFIC, "Door Guard")
+                    CsrDetailDto(ShiftType.SHIFT, day1.atTime(LocalTime.of(7,0)), day1.atTime(LocalTime.of(10,0)), "My Activity", DetailType.HOLIDAY),
+                    CsrDetailDto(ShiftType.SHIFT, day1.atTime(LocalTime.of(19,0)), day1.atTime(LocalTime.of(20,0)), "Door Guard", DetailType.UNSPECIFIC)
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
@@ -199,7 +199,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
         fun `Should return Illness as Full Day Type for Illness`() {
             val day1 = LocalDate.now(clock)
             val shifts = listOf(
-                    CsrDetailDto(day1, EntityType.SHIFT, LocalTime.of(7,0).toSecondOfDay().toLong(), LocalTime.of(10,0).toSecondOfDay().toLong(), DetailType.ILLNESS, "My Activity")
+                    CsrDetailDto(ShiftType.SHIFT, day1.atTime(LocalTime.of(7,0)), day1.atTime(LocalTime.of(10,0)), "My Activity", DetailType.ILLNESS)
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
@@ -221,7 +221,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
         fun `Should return Shift as Full Day Type if no rules met`() {
             val day1 = LocalDate.now(clock)
             val shifts = listOf(
-                    CsrDetailDto(day1, EntityType.SHIFT, LocalTime.of(7,0).toSecondOfDay().toLong(), LocalTime.of(10,0).toSecondOfDay().toLong(), DetailType.ONCALL, "My Activity")
+                    CsrDetailDto(ShiftType.SHIFT, day1.atTime(LocalTime.of(7,0)), day1.atTime(LocalTime.of(10,0)), "My Activity", DetailType.ONCALL)
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
@@ -243,7 +243,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
         fun `Overtime - Should return activity as Full Day Type for full day Unspecific`() {
             val day1 = LocalDate.now(clock)
             val shifts = listOf(
-                    CsrDetailDto(day1, EntityType.OVERTIME, LocalTime.of(0,0).toSecondOfDay().toLong(), LocalTime.of(23,59,59).toSecondOfDay().toLong(), DetailType.UNSPECIFIC, "My Activity")
+                    CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(0,0)), day1.atTime(LocalTime.of(23,59,59)), "My Activity", DetailType.UNSPECIFIC)
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
@@ -265,7 +265,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
         fun `Overtime - Should return type as Full Day Type for Training Internal`() {
             val day1 = LocalDate.now(clock)
             val shifts = listOf(
-                    CsrDetailDto(day1, EntityType.OVERTIME, LocalTime.of(7,15).toSecondOfDay().toLong(), LocalTime.of(12,30).toSecondOfDay().toLong(), DetailType.UNSPECIFIC, "Training - Internal")
+                    CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(7,15)), day1.atTime(LocalTime.of(12,30)), "Training - Internal", DetailType.UNSPECIFIC)
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
@@ -287,7 +287,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
         fun `Overtime Should return type as Full Day Type for Training external`() {
             val day1 = LocalDate.now(clock)
             val shifts = listOf(
-                    CsrDetailDto(day1, EntityType.OVERTIME, LocalTime.of(7,15).toSecondOfDay().toLong(), LocalTime.of(12,30).toSecondOfDay().toLong(), DetailType.UNSPECIFIC, "Training - External")
+                    CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(7,15)), day1.atTime(LocalTime.of(12,30)), "Training - External", DetailType.UNSPECIFIC)
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
@@ -309,7 +309,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
         fun `Overtime - Should return activity as Full Day Type for Absence`() {
             val day1 = LocalDate.now(clock)
             val shifts = listOf(
-                    CsrDetailDto(day1, EntityType.OVERTIME, LocalTime.of(0,0).toSecondOfDay().toLong(), LocalTime.of(23,59,59).toSecondOfDay().toLong(), DetailType.ABSENCE, "My Activity")
+                    CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(0,0)), day1.atTime(LocalTime.of(23,59,59)), "My Activity", DetailType.ABSENCE)
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
@@ -331,7 +331,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
         fun `Overtime - Should return Holiday as Full Day Type for full day Holiday`() {
             val day1 = LocalDate.now(clock)
             val shifts = listOf(
-                    CsrDetailDto(day1, EntityType.OVERTIME, LocalTime.of(0,0).toSecondOfDay().toLong(), LocalTime.of(23,59,59).toSecondOfDay().toLong(), DetailType.HOLIDAY, "My Activity")
+                    CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(0,0)), day1.atTime(LocalTime.of(23,59,59)), "My Activity", DetailType.HOLIDAY)
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
@@ -353,7 +353,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
         fun `Overtime - Should return Holiday as Full Day Type for Holiday with not other Unspecific tasks`() {
             val day1 = LocalDate.now(clock)
             val shifts = listOf(
-                    CsrDetailDto(day1, EntityType.OVERTIME, LocalTime.of(7,0).toSecondOfDay().toLong(), LocalTime.of(10,0).toSecondOfDay().toLong(), DetailType.HOLIDAY, "My Activity")
+                    CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(7,0)), day1.atTime(LocalTime.of(10,0)), "My Activity", DetailType.HOLIDAY)
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
@@ -375,8 +375,8 @@ internal class ShiftServiceTest_DayModelFullDayType {
         fun `Overtime - Should return Shift as Full Day Type for Holiday with other Unspecific tasks`() {
             val day1 = LocalDate.now(clock)
             val shifts = listOf(
-                    CsrDetailDto(day1, EntityType.OVERTIME, LocalTime.of(7,0).toSecondOfDay().toLong(), LocalTime.of(10,0).toSecondOfDay().toLong(), DetailType.HOLIDAY, "My Activity"),
-                    CsrDetailDto(day1, EntityType.OVERTIME, LocalTime.of(19,0).toSecondOfDay().toLong(), LocalTime.of(20,0).toSecondOfDay().toLong(), DetailType.UNSPECIFIC, "Door Guard")
+                    CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(7,0)), day1.atTime(LocalTime.of(10,0)), "My Activity", DetailType.HOLIDAY),
+                    CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(19,0)), day1.atTime(LocalTime.of(20,0)), "Door Guard", DetailType.UNSPECIFIC)
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
@@ -398,7 +398,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
         fun `Overtime - Should return Illness as Full Day Type for Illness`() {
             val day1 = LocalDate.now(clock)
             val shifts = listOf(
-                    CsrDetailDto(day1, EntityType.OVERTIME, LocalTime.of(7,0).toSecondOfDay().toLong(), LocalTime.of(10,0).toSecondOfDay().toLong(), DetailType.ILLNESS, "My Activity")
+                    CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(7,0)), day1.atTime(LocalTime.of(10,0)), "My Activity", DetailType.ILLNESS)
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
@@ -420,7 +420,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
         fun `Overtime - Should return Shift as Full Day Type if no rules met`() {
             val day1 = LocalDate.now(clock)
             val shifts = listOf(
-                    CsrDetailDto(day1, EntityType.OVERTIME, LocalTime.of(7,0).toSecondOfDay().toLong(), LocalTime.of(10,0).toSecondOfDay().toLong(), DetailType.ONCALL, "My Activity")
+                    CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(7,0)), day1.atTime(LocalTime.of(10,0)), "My Activity", DetailType.ONCALL)
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)

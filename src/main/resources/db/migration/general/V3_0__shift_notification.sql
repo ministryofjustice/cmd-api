@@ -17,7 +17,7 @@ CREATE INDEX IF NOT EXISTS shift_notification_processed
 
 INSERT INTO shift_notification (quantum_id, shift_date, shift_modified, shift_type, action_type, processed)
 SELECT "QuantumId", "ShiftDate", "LastModifiedDateTime", 'SHIFT', 'EDIT', TRUE
-FROM "ShiftNotification";
+FROM "Notification";
 
 INSERT INTO shift_notification (quantum_id, shift_date, shift_modified, task_start, task_end, task, shift_type,
                                 action_type, processed)

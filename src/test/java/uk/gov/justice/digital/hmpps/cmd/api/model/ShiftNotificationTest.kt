@@ -2,31 +2,29 @@ package uk.gov.justice.digital.hmpps.cmd.api.model
 
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
-import uk.gov.justice.digital.hmpps.cmd.api.client.CsrDetailDto
 import uk.gov.justice.digital.hmpps.cmd.api.client.CsrModifiedDetailDto
-import java.time.LocalDateTime
+import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftActionType
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
+import java.time.LocalDate
 
-class ShiftNotificationTest {
+class NotificationTest {
 
     @Test
     fun `Should return a valid shift notification`() {
-        val date = LocalDateTime.now()
+        val shiftDate = LocalDate.now()
 
         val quantumId = "XYZ"
-        val shiftDate = date.plusDays(2).toLocalDate()
-        val shiftModified = date.plusDays(3)
-        val taskStart = 123L
-        val taskEnd = 456L
+        val shiftModified = shiftDate.plusDays(3).atStartOfDay().minusDays(3)
+        val taskStart = shiftDate.atStartOfDay().plusSeconds(123L)
+        val taskEnd = shiftDate.atStartOfDay().plusSeconds(456L)
         val task = "Any Activity"
-        val shiftType = "SHIFT"
-        val actionType = "ADD"
-
+        val shiftType = ShiftType.SHIFT
+        val actionType = ShiftActionType.ADD
         val processed = false
 
-        val shiftNotification = ShiftNotification(
+        val notification = Notification(
                 1L,
                 quantumId,
-                shiftDate,
                 shiftModified,
                 taskStart,
                 taskEnd,
@@ -36,36 +34,32 @@ class ShiftNotificationTest {
                 processed
         )
 
-        Assertions.assertThat(shiftNotification.quantumId).isEqualTo(quantumId)
-        Assertions.assertThat(shiftNotification.shiftDate).isEqualTo(shiftDate)
-        Assertions.assertThat(shiftNotification.shiftModified).isEqualTo(shiftModified)
-        Assertions.assertThat(shiftNotification.taskStart).isEqualTo(taskStart)
-        Assertions.assertThat(shiftNotification.taskEnd).isEqualTo(taskEnd)
-        Assertions.assertThat(shiftNotification.task).isEqualTo(task)
-        Assertions.assertThat(shiftNotification.shiftType).isEqualTo(shiftType)
-        Assertions.assertThat(shiftNotification.actionType).isEqualTo(actionType)
-        Assertions.assertThat(shiftNotification.processed).isEqualTo(processed)
+        Assertions.assertThat(notification.quantumId).isEqualTo(quantumId)
+        Assertions.assertThat(notification.shiftModified).isEqualTo(shiftModified)
+        Assertions.assertThat(notification.detailStart).isEqualTo(taskStart)
+        Assertions.assertThat(notification.detailEnd).isEqualTo(taskEnd)
+        Assertions.assertThat(notification.activity).isEqualTo(task)
+        Assertions.assertThat(notification.shiftType).isEqualTo(shiftType)
+        Assertions.assertThat(notification.actionType).isEqualTo(actionType)
+        Assertions.assertThat(notification.processed).isEqualTo(processed)
     }
 
     @Test
     fun `Can convert from DTO`() {
-        val date = LocalDateTime.now()
+        val shiftDate = LocalDate.now()
 
         val quantumId = "XYZ"
-        val shiftDate = date.plusDays(2).toLocalDate()
-        val shiftModified = date.plusDays(3)
-        val taskStart = 123L
-        val taskEnd = 456L
+        val shiftModified = shiftDate.plusDays(3).atStartOfDay().minusDays(3)
+        val taskStart = shiftDate.atStartOfDay().plusSeconds(123L)
+        val taskEnd = shiftDate.atStartOfDay().plusSeconds(456L)
         val task = "Any Activity"
-        val shiftType = "SHIFT"
-        val actionType = "ADD"
-
+        val shiftType = ShiftType.SHIFT
+        val actionType = ShiftActionType.ADD
         val processed = false
 
         val shiftNotificationDto = CsrModifiedDetailDto(
                 quantumId,
                 shiftModified,
-                shiftDate,
                 shiftType,
                 taskStart,
                 taskEnd,
@@ -73,14 +67,13 @@ class ShiftNotificationTest {
                 actionType
         )
 
-        val shiftNotification = ShiftNotification.fromDto(shiftNotificationDto)
+        val shiftNotification = Notification.fromDto(shiftNotificationDto)
 
         Assertions.assertThat(shiftNotification.quantumId).isEqualTo(quantumId)
-        Assertions.assertThat(shiftNotification.shiftDate).isEqualTo(shiftDate)
         Assertions.assertThat(shiftNotification.shiftModified).isEqualTo(shiftModified)
-        Assertions.assertThat(shiftNotification.taskStart).isEqualTo(taskStart)
-        Assertions.assertThat(shiftNotification.taskEnd).isEqualTo(taskEnd)
-        Assertions.assertThat(shiftNotification.task).isEqualTo(task)
+        Assertions.assertThat(shiftNotification.detailStart).isEqualTo(taskStart)
+        Assertions.assertThat(shiftNotification.detailEnd).isEqualTo(taskEnd)
+        Assertions.assertThat(shiftNotification.activity).isEqualTo(task)
         Assertions.assertThat(shiftNotification.shiftType).isEqualTo(shiftType)
         Assertions.assertThat(shiftNotification.actionType).isEqualTo(actionType)
         Assertions.assertThat(shiftNotification.processed).isEqualTo(processed)
@@ -88,23 +81,20 @@ class ShiftNotificationTest {
 
     @Test
     fun `Can convert a collection from DTO`() {
-        val date = LocalDateTime.now()
+        val shiftDate = LocalDate.now()
 
-        val quantumId = "ABC"
-        val shiftDate = date.plusDays(4).toLocalDate()
-        val shiftModified = date.minusDays(7)
-        val taskStart = 223L
-        val taskEnd = 466L
+        val quantumId = "XYZ"
+        val shiftModified = shiftDate.plusDays(3).atStartOfDay().minusDays(3)
+        val taskStart = shiftDate.atStartOfDay().plusSeconds(123L)
+        val taskEnd = shiftDate.atStartOfDay().plusSeconds(456L)
         val task = "Any Activity"
-        val shiftType = "SHIFT"
-        val actionType = "ADD"
-
+        val shiftType = ShiftType.SHIFT
+        val actionType = ShiftActionType.ADD
         val processed = false
 
         val shiftNotificationDto = CsrModifiedDetailDto(
                 quantumId,
                 shiftModified,
-                shiftDate,
                 shiftType,
                 taskStart,
                 taskEnd,
@@ -114,15 +104,14 @@ class ShiftNotificationTest {
 
         val lisfOfDtos = listOf(shiftNotificationDto)
 
-        val shiftNotifications = ShiftNotification.fromDto(lisfOfDtos)
+        val shiftNotifications = Notification.fromDto(lisfOfDtos)
         val shiftNotification = shiftNotifications.elementAt(0)
 
         Assertions.assertThat(shiftNotification.quantumId).isEqualTo(quantumId)
-        Assertions.assertThat(shiftNotification.shiftDate).isEqualTo(shiftDate)
         Assertions.assertThat(shiftNotification.shiftModified).isEqualTo(shiftModified)
-        Assertions.assertThat(shiftNotification.taskStart).isEqualTo(taskStart)
-        Assertions.assertThat(shiftNotification.taskEnd).isEqualTo(taskEnd)
-        Assertions.assertThat(shiftNotification.task).isEqualTo(task)
+        Assertions.assertThat(shiftNotification.detailStart).isEqualTo(taskStart)
+        Assertions.assertThat(shiftNotification.detailEnd).isEqualTo(taskEnd)
+        Assertions.assertThat(shiftNotification.activity).isEqualTo(task)
         Assertions.assertThat(shiftNotification.shiftType).isEqualTo(shiftType)
         Assertions.assertThat(shiftNotification.actionType).isEqualTo(actionType)
         Assertions.assertThat(shiftNotification.processed).isEqualTo(processed)
