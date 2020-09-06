@@ -38,7 +38,7 @@ class CsrClient(@Qualifier("csrApiWebClient") val csrClient: WebClient, val auth
         val responseType = object : ParameterizedTypeReference<Collection<CsrModifiedDetailDto>>() {}
         val csrModifiedDetails : Collection<CsrModifiedDetailDto> = csrClient
                 .get()
-                .uri("/planUnit/${planUnit}/detail/modified")
+                .uri("/planUnit/${planUnit}/details/modified")
                 .header("X-Region", region.toString())
                 .retrieve()
                 .bodyToMono(responseType)
@@ -53,7 +53,7 @@ class CsrClient(@Qualifier("csrApiWebClient") val csrClient: WebClient, val auth
         val responseType = object : ParameterizedTypeReference<Collection<CsrDetailDto>>() {}
         val csrDetails : Collection<CsrDetailDto> = csrClient
                 .get()
-                .uri("/user/detail?from=$from&to=$to")
+                .uri("/user/details?from=$from&to=$to")
                 .header("X-Region", region)
                 .retrieve()
                 .bodyToMono(responseType)
