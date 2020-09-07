@@ -24,5 +24,5 @@ data class UserPreference(
         var sms: String? = null,
 
         @Column
-        var commPref: String = CommunicationPreference.NONE.value
+        var commPref: CommunicationPreference = CommunicationPreference.NONE
 )

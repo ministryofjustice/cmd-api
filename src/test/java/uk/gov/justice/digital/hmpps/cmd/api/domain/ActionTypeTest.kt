@@ -5,24 +5,24 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
-class ShiftActionTypeTest {
+class DetailModificationTypeTest {
 
     @Nested
     @DisplayName("Case Insensitive From")
     inner class CaseInsensitiveFrom {
         @Test
         fun `It should match case insensitive lower`() {
-            assertThat(ShiftActionType.from("edit")).isEqualTo(ShiftActionType.EDIT)
+            assertThat(DetailModificationType.from("edit")).isEqualTo(DetailModificationType.EDIT)
         }
 
         @Test
         fun `It should match case insensitive upper`() {
-            assertThat(ShiftActionType.from("EDIT")).isEqualTo(ShiftActionType.EDIT)
+            assertThat(DetailModificationType.from("EDIT")).isEqualTo(DetailModificationType.EDIT)
         }
 
         @Test
         fun `It should match case insensitive mixed`() {
-            assertThat(ShiftActionType.from("eDIt")).isEqualTo(ShiftActionType.EDIT)
+            assertThat(DetailModificationType.from("eDIt")).isEqualTo(DetailModificationType.EDIT)
         }
     }
 
@@ -31,17 +31,17 @@ class ShiftActionTypeTest {
     inner class CaseInsensitiveEquals {
         @Test
         fun `It should match case insensitive lower`() {
-            assertThat(ShiftActionType.EDIT.equalsValue("edit")).isTrue()
+            assertThat(DetailModificationType.EDIT.equalsValue("edit")).isTrue()
         }
 
         @Test
         fun `It should match case insensitive upper`() {
-            assertThat(ShiftActionType.EDIT.equalsValue("EDIT")).isTrue()
+            assertThat(DetailModificationType.EDIT.equalsValue("EDIT")).isTrue()
         }
 
         @Test
         fun `It should match case insensitive mixed`() {
-            assertThat(ShiftActionType.EDIT.equalsValue("eDIt")).isTrue()        }
+            assertThat(DetailModificationType.EDIT.equalsValue("eDIt")).isTrue()        }
     }
 
 }

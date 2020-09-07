@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.cmd.api.domain
 
 
-enum class TaskDisplayType() {
+enum class DetailDisplayType {
     DAY_START,
     DAY_FINISH,
     NIGHT_START,

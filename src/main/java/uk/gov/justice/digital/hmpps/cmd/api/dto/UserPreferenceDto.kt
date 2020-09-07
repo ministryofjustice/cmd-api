@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.annotations.ApiModel
 import io.swagger.annotations.ApiModelProperty
+import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
 import java.time.LocalDate
 
@@ -20,7 +21,7 @@ data class UserPreferenceDto @JsonCreator constructor(
         val sms: String?,
         @ApiModelProperty(required = false, value = "User's preferred method of communication", position = 1, example = "EMAIL")
         @JsonProperty("preference")
-        val preference: String?) {
+        val preference: CommunicationPreference?) {
 
     companion object {
         fun from(userPreference: UserPreference?): UserPreferenceDto {

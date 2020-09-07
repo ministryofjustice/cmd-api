@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.test.context.ActiveProfiles
-import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftActionType
+import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
 import uk.gov.justice.digital.hmpps.cmd.api.model.Notification
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.DetailParentType
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -95,10 +95,10 @@ class NotificationRepositoryTest(
         fun `Should return count of 0 matches`() {
             val date = now.plusDays(3).atStartOfDay()
 
-            val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndShiftTypeAndShiftModified(
+            val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndDetailParentTypeAndShiftModified(
                     "XYZ",
                     date,
-                    ShiftType.SHIFT,
+                    DetailParentType.SHIFT,
                     date)
             assertThat(notifications).isEqualTo(0)
         }
@@ -109,10 +109,10 @@ class NotificationRepositoryTest(
             val notification = getValidNotification(date, date)
             repository.save(notification)
 
-            val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndShiftTypeAndShiftModified(
+            val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndDetailParentTypeAndShiftModified(
                     "XyZ",
                     date,
-                    ShiftType.SHIFT,
+                    DetailParentType.SHIFT,
                     date)
             assertThat(notifications).isEqualTo(1)
         }
@@ -124,10 +124,10 @@ class NotificationRepositoryTest(
             val notification = getValidNotification(date, date)
             repository.save(notification)
 
-            val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndShiftTypeAndShiftModified(
+            val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndDetailParentTypeAndShiftModified(
                     "XYZ",
                     date,
-                    ShiftType.SHIFT,
+                    DetailParentType.SHIFT,
                     date)
             assertThat(notifications).isEqualTo(1)
         }
@@ -139,10 +139,10 @@ class NotificationRepositoryTest(
             val notification = getValidNotification(date, date)
             repository.saveAll(listOf(notification, notification))
 
-            val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndShiftTypeAndShiftModified(
+            val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndDetailParentTypeAndShiftModified(
                     "XYZ",
                     date,
-                    ShiftType.SHIFT,
+                    DetailParentType.SHIFT,
                     date)
             assertThat(notifications).isEqualTo(2)
         }
@@ -151,11 +151,11 @@ class NotificationRepositoryTest(
         fun `Add Type Check Should return count of 0 matches`() {
             val date = now.plusDays(3).atStartOfDay()
 
-            val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndShiftTypeAndActionType(
+            val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndDetailParentTypeAndActionType(
                     "XYZ",
                     date,
-                    ShiftType.SHIFT,
-                    ShiftActionType.ADD)
+                    DetailParentType.SHIFT,
+                    DetailModificationType.ADD)
             assertThat(notifications).isEqualTo(0)
         }
 
@@ -165,11 +165,11 @@ class NotificationRepositoryTest(
             val notification = getValidNotification(date, date)
             repository.save(notification)
 
-            val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndShiftTypeAndActionType(
+            val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndDetailParentTypeAndActionType(
                     "XYZ",
                     date,
-                    ShiftType.SHIFT,
-                    ShiftActionType.ADD)
+                    DetailParentType.SHIFT,
+                    DetailModificationType.ADD)
             assertThat(notifications).isEqualTo(1)
         }
 
@@ -180,11 +180,11 @@ class NotificationRepositoryTest(
             val notification = getValidNotification(date, date)
             repository.saveAll(listOf(notification, notification))
 
-            val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndShiftTypeAndActionType(
+            val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndDetailParentTypeAndActionType(
                     "XYZ",
                     date,
-                    ShiftType.SHIFT,
-                    ShiftActionType.ADD)
+                    DetailParentType.SHIFT,
+                    DetailModificationType.ADD)
             assertThat(notifications).isEqualTo(2)
         }
     }
@@ -248,8 +248,8 @@ class NotificationRepositoryTest(
             val taskStart = shiftDate
             val taskEnd = shiftDate
             val task = "Any Activity"
-            val shiftType = ShiftType.SHIFT
-            val actionType = ShiftActionType.ADD
+            val shiftType = DetailParentType.SHIFT
+            val actionType = DetailModificationType.ADD
             val processed = processed
 
             return Notification(

@@ -2,8 +2,8 @@ package uk.gov.justice.digital.hmpps.cmd.api.model
 
 import uk.gov.justice.digital.hmpps.cmd.api.client.CsrModifiedDetailDto
 import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
-import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftActionType
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
+import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.DetailParentType
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -34,11 +34,11 @@ data class Notification(
 
         @Enumerated(EnumType.STRING)
         @Column(nullable = false)
-        var shiftType: ShiftType,
+        var parentType: DetailParentType,
 
         @Enumerated(EnumType.STRING)
         @Column(nullable = false)
-        var actionType: ShiftActionType,
+        var actionType: DetailModificationType,
 
         @Column(nullable = false)
         var processed: Boolean
@@ -50,7 +50,7 @@ data class Notification(
                 val taskTime = getOptionalTaskDescription(this.detailStart, this.detailEnd, this.activity)
                 val shiftActionType = this.actionType
                 val taskTo = getOptionalTaskTo(this.activity, communicationPreference, shiftActionType)
-                val shiftNotificationType = getNotificationType(this.shiftType, this.activity)
+                val shiftNotificationType = getNotificationType(this.parentType, this.activity)
 
                 return "${bulletPoint}Your $shiftNotificationType on $date ${taskTime}has ${shiftActionType.description}${taskTo}."
         }
@@ -68,7 +68,7 @@ data class Notification(
                                 detailStart = dtoCsr.detailStart,
                                 detailEnd = dtoCsr.detailEnd,
                                 activity = dtoCsr.activity,
-                                shiftType = dtoCsr.shiftType,
+                                parentType = dtoCsr.shiftType,
                                 actionType = dtoCsr.actionType,
                                 processed = false)
                 }
@@ -87,8 +87,8 @@ data class Notification(
                         return DateTimeFormatter.ofPattern("EEEE, d'$ordinal' MMMM").format(this)
                 }
 
-                private fun getNotificationType(shiftNotificationType: ShiftType, activity: String?) : String {
-                        return if(shiftNotificationType == ShiftType.SHIFT) {
+                private fun getNotificationType(shiftNotificationType: DetailParentType, activity: String?) : String {
+                        return if(shiftNotificationType == DetailParentType.SHIFT) {
                                 if(activity == null) {
                                         "shift"
                                 } else {
@@ -114,16 +114,16 @@ data class Notification(
                         } else ""
                 }
 
-                private fun getOptionalTaskTo(task: String?, communicationPreference: CommunicationPreference, shiftActionType: ShiftActionType): String {
+                private fun getOptionalTaskTo(task: String?, communicationPreference: CommunicationPreference, shiftActionType: DetailModificationType): String {
                         return if (communicationPreference == CommunicationPreference.NONE && task != null && task.isNotEmpty()) {
                                 when(shiftActionType) {
-                                        ShiftActionType.ADD -> {
+                                        DetailModificationType.ADD -> {
                                                 " as $task"
                                         }
-                                        ShiftActionType.EDIT -> {
+                                        DetailModificationType.EDIT -> {
                                                 " to $task"
                                         }
-                                        ShiftActionType.DELETE -> {
+                                        DetailModificationType.DELETE -> {
                                                 " (was $task)"
                                         }
                                         else -> {

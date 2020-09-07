@@ -5,15 +5,15 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.cmd.api.client.CsrClient
 import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
+import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
 import uk.gov.justice.digital.hmpps.cmd.api.domain.NotificationType
-import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftActionType
 import uk.gov.justice.digital.hmpps.cmd.api.dto.NotificationDto
 import uk.gov.justice.digital.hmpps.cmd.api.model.Notification
 import uk.gov.justice.digital.hmpps.cmd.api.model.Notification.Companion.getDateTimeFormattedForTemplate
 import uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
 import uk.gov.justice.digital.hmpps.cmd.api.repository.NotificationRepository
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.DetailParentType
 import uk.gov.service.notify.NotificationClientApi
 import uk.gov.service.notify.NotificationClientException
 import java.time.Clock
@@ -79,8 +79,8 @@ class NotificationService(
                 }.distinct()
                 .map{
                     // We only want to transform shift level changes, not detail changes.
-                    if(it.activity == null && it.actionType == ShiftActionType.EDIT && !checkIfEditNotificationsHasCorrespondingAdd(it.quantumId, it.detailStart, it.shiftType)) {
-                       it.actionType = ShiftActionType.ADD
+                    if(it.activity == null && it.actionType == DetailModificationType.EDIT && !checkIfEditNotificationsHasCorrespondingAdd(it.quantumId, it.detailStart, it.shiftType)) {
+                       it.actionType = DetailModificationType.ADD
                     }
                     it
                 }
@@ -88,8 +88,8 @@ class NotificationService(
         val allNotifications = newNotifications
                 // We want to remove Shift level changes that aren't 'add'
                 // we want to filter anything that is unchanged
-                .filterNot { (it.activity == null && it.actionType == ShiftActionType.EDIT) ||
-                        it.actionType == ShiftActionType.UNCHANGED ||
+                .filterNot { (it.activity == null && it.actionType == DetailModificationType.EDIT) ||
+                        it.actionType == DetailModificationType.UNCHANGED ||
                         checkIfNotificationsExist(it.quantumId, it.detailStart, it.shiftType, it.shiftModified)
                 }
         shiftNotificationRepository.saveAll(Notification.fromDto(allNotifications))
@@ -103,20 +103,20 @@ class NotificationService(
                 .filter { !unprocessedOnly || (unprocessedOnly && !it.processed) }
     }
 
-    private fun checkIfNotificationsExist(quantumId: String, detailStart: LocalDateTime, shiftType: ShiftType, shiftModified: LocalDateTime): Boolean {
-        return shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndShiftTypeAndShiftModified(
+    private fun checkIfNotificationsExist(quantumId: String, detailStart: LocalDateTime, shiftType: DetailParentType, shiftModified: LocalDateTime): Boolean {
+        return shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
                 quantumId,
                 detailStart,
                 shiftType,
                 shiftModified) > 0
     }
 
-    private fun checkIfEditNotificationsHasCorrespondingAdd(quantumId: String, detailStart: LocalDateTime, shiftType: ShiftType): Boolean{
-        return shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndShiftTypeAndActionType(
+    private fun checkIfEditNotificationsHasCorrespondingAdd(quantumId: String, detailStart: LocalDateTime, shiftType: DetailParentType): Boolean{
+        return shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndActionType(
                 quantumId,
                 detailStart,
                 shiftType,
-                ShiftActionType.ADD) > 0
+                DetailModificationType.ADD) > 0
     }
 
     private fun calculateStartDateTime(fromParam: Optional<LocalDate>, toParam: Optional<LocalDate>): LocalDateTime {
@@ -161,9 +161,9 @@ class NotificationService(
     private fun sendNotification(quantumId: String, notificationGroup: List<Notification>) {
         val userPreference = userPreferenceService.getOrCreateUserPreference(quantumId)
 
-        data class Key(val shiftType: ShiftType, val quantumId: String, val detailStart: LocalDateTime)
+        data class Key(val shiftType: DetailParentType, val quantumId: String, val detailStart: LocalDateTime)
 
-        fun Notification.toKeyDuplicates() = Key(this.shiftType, this.quantumId.toUpperCase(), this.detailStart)
+        fun Notification.toKeyDuplicates() = Key(this.parentType, this.quantumId.toUpperCase(), this.detailStart)
 
         // Only send the latest notification for a shift if there are multiple
         val mostRecentNotifications = notificationGroup
@@ -174,7 +174,7 @@ class NotificationService(
         if (shouldSend(userPreference)) {
             log.debug("Sending (${mostRecentNotifications.size}) notifications to ${userPreference.quantumId}, preference set to ${userPreference.commPref}")
             mostRecentNotifications.sortedWith(compareBy { it.detailStart }).chunked(10).forEach { chunk ->
-                when (val communicationPreference = CommunicationPreference.from(userPreference.commPref)) {
+                when (val communicationPreference = userPreference.commPref) {
                     CommunicationPreference.EMAIL -> {
                         notifyClient.sendEmail(NotificationType.EMAIL_SUMMARY.value, userPreference.email, generateTemplateValues(chunk, communicationPreference), null)
                     }
@@ -192,10 +192,10 @@ class NotificationService(
     private fun shouldSend(userPreference: UserPreference): Boolean {
         val isNotSnoozed = (userPreference.snoozeUntil == null || userPreference.snoozeUntil != null && userPreference.snoozeUntil!!.isBefore(LocalDate.now(clock)))
         val isValidCommunicationMethod = when (userPreference.commPref) {
-            CommunicationPreference.EMAIL.value -> {
+            CommunicationPreference.EMAIL -> {
                 !userPreference.email.isNullOrBlank()
             }
-            CommunicationPreference.SMS.value -> {
+            CommunicationPreference.SMS -> {
                 !userPreference.sms.isNullOrBlank()
             }
             else -> {

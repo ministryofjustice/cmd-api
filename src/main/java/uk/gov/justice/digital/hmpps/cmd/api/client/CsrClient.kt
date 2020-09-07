@@ -7,10 +7,10 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
-import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftActionType
+import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.DetailParentType
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.DetailType
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.cmd.api.utils.region.Regions
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -71,7 +71,7 @@ class CsrClient(@Qualifier("csrApiWebClient") val csrClient: WebClient, val auth
 data class CsrDetailDto @JsonCreator constructor(
 
         @JsonProperty("shiftType")
-        var shiftType: ShiftType,
+        var shiftType: DetailParentType,
 
         @JsonProperty("detailStart")
         var detailStart: LocalDateTime,
@@ -95,7 +95,7 @@ data class CsrModifiedDetailDto @JsonCreator constructor(
         var shiftModified: LocalDateTime,
 
         @JsonProperty("shiftType")
-        var shiftType: ShiftType,
+        var shiftType: DetailParentType,
 
         @JsonProperty("detailStart")
         var detailStart: LocalDateTime,
@@ -107,5 +107,5 @@ data class CsrModifiedDetailDto @JsonCreator constructor(
         var activity: String?,
 
         @JsonProperty("actionType")
-        var actionType: ShiftActionType
+        var actionType: DetailModificationType
 )

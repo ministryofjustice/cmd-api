@@ -10,13 +10,13 @@ import java.time.LocalDateTime
 
 @ApiModel(description = "Notification")
 data class NotificationDto @JsonCreator constructor(
-        @ApiModelProperty(required = true, value = "Description of notification", position = 1, example = "Your shift on 2020-04-20 has changed.")
+        @ApiModelProperty(required = true, value = "Description of notification", example = "Your shift on 2020-04-20 has changed.")
         @JsonProperty("description")
         val description: String,
-        @ApiModelProperty(required = true, value = "When the shift was modified", position = 2, example = "2020-04-20T17:45:55")
+        @ApiModelProperty(required = true, value = "When the shift was modified", example = "2020-04-20T17:45:55")
         @JsonProperty("shiftModified")
         val shiftModified: LocalDateTime,
-        @ApiModelProperty(required = true, value = "Whether the notification has been processed", position = 3, example = "true")
+        @ApiModelProperty(required = true, value = "Whether the notification has been processed", example = "true")
         @JsonProperty("processed")
         val processed: Boolean
 ) {

@@ -3,9 +3,9 @@ package uk.gov.justice.digital.hmpps.cmd.api.dto
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
-import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftActionType
+import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
 import uk.gov.justice.digital.hmpps.cmd.api.model.Notification
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.DetailParentType
 import java.time.Clock
 import java.time.LocalDate
 import java.time.ZoneId
@@ -50,8 +50,8 @@ class NotificationDtoTest {
             val taskStart = shiftDate.atStartOfDay()
             val taskEnd = shiftDate.atStartOfDay()
             val task = null
-            val shiftType = ShiftType.SHIFT
-            val actionType = ShiftActionType.ADD
+            val shiftType = DetailParentType.SHIFT
+            val actionType = DetailModificationType.ADD
             val processed = false
 
             return Notification(
@@ -75,8 +75,8 @@ class NotificationDtoTest {
             val taskStart = shiftDate.atStartOfDay()
             val taskEnd = shiftDate.atStartOfDay()
             val task = "Any Activity"
-            val shiftType = ShiftType.SHIFT
-            val actionType = ShiftActionType.ADD
+            val shiftType = DetailParentType.SHIFT
+            val actionType = DetailModificationType.ADD
             val processed = false
 
             return Notification(

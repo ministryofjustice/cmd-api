@@ -2,18 +2,14 @@ package uk.gov.justice.digital.hmpps.cmd.api.domain
 
 import java.util.*
 
-enum class ShiftActionType(val description: String) {
+enum class DetailModificationType(val description: String) {
     ADD("been added"),
     EDIT("changed"),
     DELETE("been removed"),
     UNCHANGED("not changed");
 
-    fun equalsValue(value: String): Boolean {
-        return this == from(value)
-    }
-
     companion object {
-        fun from(value: String): ShiftActionType {
+        fun from(value: String): DetailModificationType {
             return Arrays.stream(values())
                     .filter { type -> type.name.equals(value,true) }
                     .findFirst().orElseThrow { IllegalArgumentException() }

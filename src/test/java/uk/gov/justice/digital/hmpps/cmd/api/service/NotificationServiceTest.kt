@@ -10,12 +10,12 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import uk.gov.justice.digital.hmpps.cmd.api.client.CsrClient
 import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
-import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftActionType
+import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
 import uk.gov.justice.digital.hmpps.cmd.api.model.Notification
 import uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
 import uk.gov.justice.digital.hmpps.cmd.api.repository.NotificationRepository
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.DetailParentType
 import uk.gov.service.notify.NotificationClient
 import java.time.*
 import java.util.*
@@ -246,7 +246,7 @@ internal class NotificationServiceTest {
         fun `Should not send a notification if the user has a snooze preference set to future date`() {
             val quantumId1 = "XYZ"
             val shiftNotifications: List<Notification> = listOf(
-                    Notification(1, quantumId1, LocalDateTime.now(clock),  LocalDateTime.now(clock), LocalDateTime.now(clock), null, ShiftType.SHIFT, ShiftActionType.ADD, false)
+                    Notification(1, quantumId1, LocalDateTime.now(clock),  LocalDateTime.now(clock), LocalDateTime.now(clock), null, DetailParentType.SHIFT, DetailModificationType.ADD, false)
             )
 
             val snoozePref = LocalDate.now(clock).plusDays(20)
@@ -268,7 +268,7 @@ internal class NotificationServiceTest {
         fun `Should not send a notification if the user has a snooze preference set to today's date`() {
             val quantumId1 = "XYZ"
             val shiftNotifications: List<Notification> = listOf(
-                    Notification(1, quantumId1, LocalDateTime.now(clock), LocalDateTime.now(clock), LocalDateTime.now(clock), null, ShiftType.SHIFT, ShiftActionType.ADD, false)
+                    Notification(1, quantumId1, LocalDateTime.now(clock), LocalDateTime.now(clock), LocalDateTime.now(clock), null, DetailParentType.SHIFT, DetailModificationType.ADD, false)
             )
 
             val snoozePref = LocalDate.now(clock)
@@ -289,7 +289,7 @@ internal class NotificationServiceTest {
         fun `Should send a notification if the user has a snooze preference set to yesterday's date`() {
             val quantumId1 = "XYZ"
             val shiftNotifications: List<Notification> = listOf(
-                    Notification(1, quantumId1, LocalDateTime.now(clock), LocalDateTime.now(clock), LocalDateTime.now(clock), null, ShiftType.SHIFT, ShiftActionType.ADD, false)
+                    Notification(1, quantumId1, LocalDateTime.now(clock), LocalDateTime.now(clock), LocalDateTime.now(clock), null, DetailParentType.SHIFT, DetailModificationType.ADD, false)
             )
 
             val snoozePref = LocalDate.now(clock).minusDays(1)
@@ -319,8 +319,8 @@ internal class NotificationServiceTest {
             val taskStart = shiftDate.atStartOfDay().plusSeconds(123L)
             val taskEnd = shiftDate.atStartOfDay().plusSeconds(456L)
             val task = "Any Activity"
-            val shiftType = ShiftType.SHIFT
-            val actionType = ShiftActionType.ADD
+            val shiftType = DetailParentType.SHIFT
+            val actionType = DetailModificationType.ADD
 
             val processed = false
 

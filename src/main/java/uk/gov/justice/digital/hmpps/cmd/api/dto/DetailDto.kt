@@ -4,19 +4,38 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.annotations.ApiModel
 import io.swagger.annotations.ApiModelProperty
-import java.time.LocalDate
+import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailDisplayType
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.DetailParentType
+import java.time.LocalDateTime
 
-@ApiModel(description = "Day model")
+@ApiModel(description = "Shift")
 data class DetailDto @JsonCreator constructor(
-        @ApiModelProperty(value = "The date of the shift", position = 1, example = "2020-04-20")
-        @JsonProperty("date")
-        val date : LocalDate,
+        @ApiModelProperty(value = "The human readable activity", example = "Internal Training")
+        @JsonProperty("activity")
+        val activity: String?,
 
-        @ApiModelProperty(value = "The type of the full day", position = 2, example = "Absent")
-        @JsonProperty("fullDayType")
-        val fullDayType : String,
+        @ApiModelProperty(value = "The start of the detail", example = "2020-04-20T17:00:00")
+        @JsonProperty("start")
+        val start: LocalDateTime,
 
-        @ApiModelProperty(value = "A collection of tasks that make up the shift", position = 3)
-        @JsonProperty("tasks")
-        val details : Collection<DetailEventDto>
+        @ApiModelProperty(value = "The end of the detail", example = "2020-04-20T17:00:00")
+        @JsonProperty("end")
+        val end: LocalDateTime,
+
+        @ApiModelProperty(value = "The type of the Shift the detail belongs to", example = "OVERTIME")
+        @JsonProperty("parentType")
+        val detail: DetailParentType,
+
+        @ApiModelProperty(value = "Hint for the UI on how to display this entity", example = "NIGHT_FINISH")
+        @JsonProperty("displayType")
+        var displayType: DetailDisplayType? = null,
+
+        @ApiModelProperty(value = "If there is a display type", example = "2020-04-20T17:00:00")
+        @JsonProperty("displayTypeTime")
+        var displayTypeTime: LocalDateTime? = null,
+
+        @ApiModelProperty(value = "If the type is a 'finish' we include the duration of the whole shift", example = "3h 24m")
+        @JsonProperty("finishDuration")
+        var finishDuration: String? = null
+
 )

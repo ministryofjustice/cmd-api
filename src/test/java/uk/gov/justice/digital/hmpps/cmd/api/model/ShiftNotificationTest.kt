@@ -3,8 +3,8 @@ package uk.gov.justice.digital.hmpps.cmd.api.model
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.cmd.api.client.CsrModifiedDetailDto
-import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftActionType
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
+import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.DetailParentType
 import java.time.LocalDate
 
 class NotificationTest {
@@ -18,8 +18,8 @@ class NotificationTest {
         val taskStart = shiftDate.atStartOfDay().plusSeconds(123L)
         val taskEnd = shiftDate.atStartOfDay().plusSeconds(456L)
         val task = "Any Activity"
-        val shiftType = ShiftType.SHIFT
-        val actionType = ShiftActionType.ADD
+        val shiftType = DetailParentType.SHIFT
+        val actionType = DetailModificationType.ADD
         val processed = false
 
         val notification = Notification(
@@ -53,8 +53,8 @@ class NotificationTest {
         val taskStart = shiftDate.atStartOfDay().plusSeconds(123L)
         val taskEnd = shiftDate.atStartOfDay().plusSeconds(456L)
         val task = "Any Activity"
-        val shiftType = ShiftType.SHIFT
-        val actionType = ShiftActionType.ADD
+        val shiftType = DetailParentType.SHIFT
+        val actionType = DetailModificationType.ADD
         val processed = false
 
         val shiftNotificationDto = CsrModifiedDetailDto(
@@ -88,8 +88,8 @@ class NotificationTest {
         val taskStart = shiftDate.atStartOfDay().plusSeconds(123L)
         val taskEnd = shiftDate.atStartOfDay().plusSeconds(456L)
         val task = "Any Activity"
-        val shiftType = ShiftType.SHIFT
-        val actionType = ShiftActionType.ADD
+        val shiftType = DetailParentType.SHIFT
+        val actionType = DetailModificationType.ADD
         val processed = false
 
         val shiftNotificationDto = CsrModifiedDetailDto(

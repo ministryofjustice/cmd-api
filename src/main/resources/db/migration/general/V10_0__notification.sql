@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS notification
     detail_start   TIMESTAMP             NOT NULL,
     detail_end     TIMESTAMP             NOT NULL,
     activity       VARCHAR,
-    shift_type     VARCHAR               NOT NULL,
+    parent_type    VARCHAR               NOT NULL,
     action_type    VARCHAR               NOT NULL,
     processed      BOOLEAN DEFAULT FALSE NOT NULL
 );

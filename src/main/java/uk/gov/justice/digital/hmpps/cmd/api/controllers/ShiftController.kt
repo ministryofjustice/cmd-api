@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import uk.gov.justice.digital.hmpps.cmd.api.dto.DetailDto
+import uk.gov.justice.digital.hmpps.cmd.api.dto.ShiftDto
 import uk.gov.justice.digital.hmpps.cmd.api.service.ShiftService
 import java.time.LocalDate
 import java.util.*
@@ -25,10 +25,10 @@ class ShiftController(private val shiftService: ShiftService) {
     @ApiResponses(value = [
         ApiResponse(code = 200, message = "OK")
     ])
-    @GetMapping("/user/detail")
+    @GetMapping("/user/details")
     fun getShifts(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) from: Optional<LocalDate>,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: Optional<LocalDate>): ResponseEntity<Collection<DetailDto>> {
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: Optional<LocalDate>): ResponseEntity<Collection<ShiftDto>> {
         val result = shiftService.getDetailsForUser(from, to)
         return ResponseEntity.ok(result)
     }
