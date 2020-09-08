@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.cmd.api.model
 
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
+import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import java.time.LocalDate
 
 class UserPreferenceTest {
@@ -12,7 +13,7 @@ class UserPreferenceTest {
         val date = LocalDate.now()
         val email = "email"
         val sms = "sms"
-        val preference = "EMAIL"
+        val preference = CommunicationPreference.EMAIL
         val userPref = UserPreference(quantumId, date, email, sms, preference)
 
         Assertions.assertThat(userPref.quantumId).isEqualTo(quantumId)

@@ -39,7 +39,7 @@ class NotificationTest {
         Assertions.assertThat(notification.detailStart).isEqualTo(taskStart)
         Assertions.assertThat(notification.detailEnd).isEqualTo(taskEnd)
         Assertions.assertThat(notification.activity).isEqualTo(task)
-        Assertions.assertThat(notification.shiftType).isEqualTo(shiftType)
+        Assertions.assertThat(notification.parentType).isEqualTo(shiftType)
         Assertions.assertThat(notification.actionType).isEqualTo(actionType)
         Assertions.assertThat(notification.processed).isEqualTo(processed)
     }
@@ -74,7 +74,7 @@ class NotificationTest {
         Assertions.assertThat(shiftNotification.detailStart).isEqualTo(taskStart)
         Assertions.assertThat(shiftNotification.detailEnd).isEqualTo(taskEnd)
         Assertions.assertThat(shiftNotification.activity).isEqualTo(task)
-        Assertions.assertThat(shiftNotification.shiftType).isEqualTo(shiftType)
+        Assertions.assertThat(shiftNotification.parentType).isEqualTo(shiftType)
         Assertions.assertThat(shiftNotification.actionType).isEqualTo(actionType)
         Assertions.assertThat(shiftNotification.processed).isEqualTo(processed)
     }
@@ -112,7 +112,7 @@ class NotificationTest {
         Assertions.assertThat(shiftNotification.detailStart).isEqualTo(taskStart)
         Assertions.assertThat(shiftNotification.detailEnd).isEqualTo(taskEnd)
         Assertions.assertThat(shiftNotification.activity).isEqualTo(task)
-        Assertions.assertThat(shiftNotification.shiftType).isEqualTo(shiftType)
+        Assertions.assertThat(shiftNotification.parentType).isEqualTo(shiftType)
         Assertions.assertThat(shiftNotification.actionType).isEqualTo(actionType)
         Assertions.assertThat(shiftNotification.processed).isEqualTo(processed)
     }

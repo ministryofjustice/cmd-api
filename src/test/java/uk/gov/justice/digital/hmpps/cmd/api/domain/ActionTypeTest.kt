@@ -26,22 +26,4 @@ class DetailModificationTypeTest {
         }
     }
 
-    @Nested
-    @DisplayName("Case Insensitive Equals")
-    inner class CaseInsensitiveEquals {
-        @Test
-        fun `It should match case insensitive lower`() {
-            assertThat(DetailModificationType.EDIT.equalsValue("edit")).isTrue()
-        }
-
-        @Test
-        fun `It should match case insensitive upper`() {
-            assertThat(DetailModificationType.EDIT.equalsValue("EDIT")).isTrue()
-        }
-
-        @Test
-        fun `It should match case insensitive mixed`() {
-            assertThat(DetailModificationType.EDIT.equalsValue("eDIt")).isTrue()        }
-    }
-
 }

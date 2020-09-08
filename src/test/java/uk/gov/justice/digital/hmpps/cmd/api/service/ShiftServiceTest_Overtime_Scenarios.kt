@@ -25,6 +25,9 @@ internal class ShiftServiceTest_Overtime_Scenarios {
     private val clock = Clock.fixed(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
     private val service = ShiftService(prisonService, csrApiClient, clock)
 
+    private val day1 = LocalDate.now(clock)
+    private val day2 =  day1.plusDays(1)
+
     @BeforeEach
     fun resetAllMocks() {
         clearMocks(csrApiClient)
@@ -43,7 +46,7 @@ internal class ShiftServiceTest_Overtime_Scenarios {
 
         @Test
         fun `Should return a basic day shift with overtime after`() {
-            val day1 = LocalDate.now(clock)
+
             val dayShift = listOf(
                     CsrDetailDto( DetailParentType.SHIFT, day1.atTime(LocalTime.of(7,15)), day1.atTime(LocalTime.of(12,30)), "Present", DetailType.UNSPECIFIC),
                     CsrDetailDto( DetailParentType.SHIFT, day1.atTime(LocalTime.of(12,30)), day1.atTime(LocalTime.of(13,30)), "Break (Unpaid)", DetailType.BREAK),
@@ -93,7 +96,7 @@ internal class ShiftServiceTest_Overtime_Scenarios {
 
         @Test
         fun `Should return a basic day shift with overtime before`() {
-            val day1 = LocalDate.now(clock)
+
             val dayShift = listOf(
                     CsrDetailDto( DetailParentType.SHIFT, day1.atTime(LocalTime.of(17,15)), day1.atTime(LocalTime.of(18,30)), "Present", DetailType.UNSPECIFIC),
                     CsrDetailDto( DetailParentType.SHIFT, day1.atTime(LocalTime.of(18,30)), day1.atTime(LocalTime.of(19,30)), "Break (Unpaid)", DetailType.BREAK),
@@ -142,8 +145,6 @@ internal class ShiftServiceTest_Overtime_Scenarios {
 
         @Test
         fun `Should return a basic night shift with overtime after`() {
-            val day1 = LocalDate.now(clock)
-            val day2 = day1.plusDays(1)
 
             val nightShift = listOf(
                     CsrDetailDto( DetailParentType.SHIFT, day1.atTime(LocalTime.of(20,45)), day2.atTime(LocalTime.of(7,45)), "Night OSG", DetailType.UNSPECIFIC)
@@ -196,9 +197,6 @@ internal class ShiftServiceTest_Overtime_Scenarios {
 
         @Test
         fun `Should return a basic night shift with overtime before`() {
-            val day1 = LocalDate.now(clock)
-            val day2 = day1.plusDays(1)
-
             val nightShift = listOf(
                     CsrDetailDto( DetailParentType.SHIFT, day1.atTime(LocalTime.of(20,45)), day2.atTime(LocalTime.of(7,45)), "Night OSG", DetailType.UNSPECIFIC)
             )

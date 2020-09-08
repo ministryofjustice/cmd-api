@@ -25,6 +25,9 @@ internal class ShiftServiceTest {
     private val clock = Clock.fixed(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
     private val service = ShiftService(prisonService, csrApiClient, clock)
 
+    private val day1 = LocalDate.now(clock)
+    private val day2 =  day1.plusDays(1)
+    
     @BeforeEach
     fun resetAllMocks() {
         clearMocks(csrApiClient)
@@ -43,7 +46,7 @@ internal class ShiftServiceTest {
 
         @Test
         fun `Should default to today if no dates`() {
-            val day1 = LocalDate.now(clock)
+            
             val shifts = listOf(
                     CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(7,15)), day1.atTime(LocalTime.of(12,30)), "Present", DetailType.UNSPECIFIC),
                     CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(12,30)), day1.atTime(LocalTime.of(13,30)), "Break (Unpaid)", DetailType.BREAK),
@@ -64,7 +67,7 @@ internal class ShiftServiceTest {
 
         @Test
         fun `Should not modify passed in dates`() {
-            val day1 = LocalDate.now(clock)
+            
             val day2 = day1.plusDays(1)
             val shifts = listOf(
                     CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(7,15)), day1.atTime(LocalTime.of(12,30)), "Present", DetailType.UNSPECIFIC),
@@ -86,7 +89,7 @@ internal class ShiftServiceTest {
 
         @Test
         fun `Should return 'no day' for no task data`() {
-            val day1 = LocalDate.now(clock)
+            
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
             every { csrApiClient.getDetailsForUser(day1, day1, 1) } returns listOf()
@@ -106,7 +109,7 @@ internal class ShiftServiceTest {
 
         @Test
         fun `Should return 'shift' for shift data`() {
-            val day1 = LocalDate.now(clock)
+            
             val shifts = listOf(
                     CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(7,15)), day1.atTime(LocalTime.of(12,30)), "Present", DetailType.UNSPECIFIC),
                     CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(12,30)), day1.atTime(LocalTime.of(13,30)), "Break (Unpaid)", DetailType.BREAK),
@@ -130,7 +133,7 @@ internal class ShiftServiceTest {
 
         @Test
         fun `Should return 'shift' for overtime data`() {
-            val day1 = LocalDate.now(clock)
+            
             val shifts = listOf(
                     CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(7,15)), day1.atTime(LocalTime.of(12,30)), "Present", DetailType.UNSPECIFIC),
                     CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(12,30)), day1.atTime(LocalTime.of(13,30)), "Break (Unpaid)", DetailType.BREAK),
@@ -154,7 +157,7 @@ internal class ShiftServiceTest {
 
         @Test
         fun `Should not return things for a different dates`() {
-            val day1 = LocalDate.now(clock)
+            
             val day2 = day1.plusDays(1)
             val shifts = listOf(
                     CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(7,15)), day1.atTime(LocalTime.of(12,30)), "Present", DetailType.UNSPECIFIC),
@@ -181,7 +184,7 @@ internal class ShiftServiceTest {
 
         @Test
         fun `Should identify Shift start`() {
-            val day1 = LocalDate.now(clock)
+            
             val shifts = listOf(
                     CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(7,15)), day1.atTime(LocalTime.of(12,30)), "Present", DetailType.UNSPECIFIC),
                     CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(12,30)), day1.atTime(LocalTime.of(13,30)), "Break (Unpaid)", DetailType.BREAK),
@@ -210,7 +213,7 @@ internal class ShiftServiceTest {
 
         @Test
         fun `Should identify Shift end`() {
-            val day1 = LocalDate.now(clock)
+            
             val shifts = listOf(
                     CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(7,15)), day1.atTime(LocalTime.of(12,30)), "Present", DetailType.UNSPECIFIC),
                     CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(12,30)), day1.atTime(LocalTime.of(13,30)), "Break (Unpaid)", DetailType.BREAK),
@@ -239,7 +242,7 @@ internal class ShiftServiceTest {
 
         @Test
         fun `Should identify Overtime Shift start`() {
-            val day1 = LocalDate.now(clock)
+            
             val shifts = listOf(
                     CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(7,15)), day1.atTime(LocalTime.of(12,30)), "Present", DetailType.UNSPECIFIC),
                     CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(12,30)), day1.atTime(LocalTime.of(13,30)), "Break (Unpaid)", DetailType.BREAK),
@@ -268,7 +271,7 @@ internal class ShiftServiceTest {
 
         @Test
         fun `Should identify Overtime Shift end`() {
-            val day1 = LocalDate.now(clock)
+            
             val shifts = listOf(
                     CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(7,15)), day1.atTime(LocalTime.of(12,30)), "Present", DetailType.UNSPECIFIC),
                     CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(12,30)), day1.atTime(LocalTime.of(13,30)), "Break (Unpaid)", DetailType.BREAK),
@@ -297,7 +300,7 @@ internal class ShiftServiceTest {
 
         @Test
         fun `Should identify Night Shift start`() {
-            val day1 = LocalDate.now(clock)
+            
             val day2 = day1.plusDays(1)
             val shifts = listOf(
                     CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(20,15)), day2.atTime(LocalTime.of(12,30)), "Night OSG", DetailType.UNSPECIFIC)
@@ -325,7 +328,7 @@ internal class ShiftServiceTest {
 
         @Test
         fun `Should identify Night Shift end`() {
-            val day1 = LocalDate.now(clock)
+            
             val day2 = day1.plusDays(1)
             val shifts = listOf(
                     CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(20,15)), day2.atTime(LocalTime.of(12,30)), "Night OSG", DetailType.UNSPECIFIC)
@@ -353,7 +356,7 @@ internal class ShiftServiceTest {
 
         @Test
         fun `Should identify Overtime Night Shift start`() {
-            val day1 = LocalDate.now(clock)
+            
             val day2 = day1.plusDays(1)
             val shifts = listOf(
                     CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(20,15)), day2.atTime(LocalTime.of(12,30)), "Night OSG", DetailType.UNSPECIFIC)
@@ -381,7 +384,7 @@ internal class ShiftServiceTest {
 
         @Test
         fun `Should identify Overtime Night Shift end`() {
-            val day1 = LocalDate.now(clock)
+            
             val day2 = day1.plusDays(1)
             val shifts = listOf(
                     CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(20,15)), day2.atTime(LocalTime.of(12,30)), "Night OSG", DetailType.UNSPECIFIC)

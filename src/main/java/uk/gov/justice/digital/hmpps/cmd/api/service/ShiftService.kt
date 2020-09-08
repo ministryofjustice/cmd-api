@@ -23,22 +23,9 @@ class ShiftService(private val prisonService: PrisonService,
     fun getDetailsForUser(fromParam: Optional<LocalDate>, toParam: Optional<LocalDate>): Collection<ShiftDto> {
         val start = fromParam.orElse(LocalDate.now(clock))
         val end = toParam.orElse(LocalDate.now(clock))
-        //val region = prisonService.getPrisonForUser()?.region
+        val region = prisonService.getPrisonForUser()?.region
 
-        //val details = csrClient.getDetailsForUser(start, end, region)
-        //TODO: This is test data.
-        val details = listOf(
-            CsrDetailDto( DetailParentType.SHIFT, LocalDateTime.of(start, LocalTime.of(12,45)), LocalDateTime.of(start, LocalTime.of(14,0)), "Bed Watch", DetailType.UNSPECIFIC),
-            CsrDetailDto( DetailParentType.OVERTIME, LocalDateTime.of(start, LocalTime.of(15,45)), LocalDateTime.of(start, LocalTime.of(19,0)), "Bed Watch", DetailType.UNSPECIFIC),
-            CsrDetailDto( DetailParentType.OVERTIME, LocalDateTime.of(start.plusDays(1), LocalTime.of(12,45)), LocalDateTime.of(start.plusDays(1), LocalTime.of(14,0)), "Bed Watch", DetailType.UNSPECIFIC),
-            CsrDetailDto( DetailParentType.SHIFT, LocalDateTime.of(start.plusDays(1), LocalTime.of(15,45)), LocalDateTime.of(start.plusDays(1), LocalTime.of(19,0)), "Bed Watch", DetailType.UNSPECIFIC),
-            CsrDetailDto( DetailParentType.SHIFT, LocalDateTime.of(start.plusDays(2), LocalTime.of(20,45)), LocalDateTime.of(start.plusDays(3), LocalTime.of(7,0)), "Bed Watch", DetailType.UNSPECIFIC),
-            CsrDetailDto( DetailParentType.OVERTIME, LocalDateTime.of(start.plusDays(3), LocalTime.of(20,45)), LocalDateTime.of(start.plusDays(3), LocalTime.of(22,0)), "Bed Watch", DetailType.UNSPECIFIC),
-            CsrDetailDto( DetailParentType.SHIFT, LocalDateTime.of(start.plusDays(4), LocalTime.of(0,0)), LocalDateTime.of(start.plusDays(4), LocalTime.of(0,0)), "Rest Day", DetailType.REST_DAY),
-            CsrDetailDto( DetailParentType.OVERTIME, LocalDateTime.of(start.plusDays(5), LocalTime.of(7,45)), LocalDateTime.of(start.plusDays(5), LocalTime.of(20,0)), "Bed Watch", DetailType.UNSPECIFIC),
-            CsrDetailDto( DetailParentType.SHIFT, LocalDateTime.of(start.plusDays(5), LocalTime.of(20,45)), LocalDateTime.of(start.plusDays(6), LocalTime.of(7,0)), "Bed Watch", DetailType.UNSPECIFIC)
-
-            )
+        val details = csrClient.getDetailsForUser(start, end, region)
         val detailsByDate = groupDetailsByDate(details)
 
         return start.datesUntil(end.plusDays(1)).map { date ->
@@ -76,6 +63,8 @@ class ShiftService(private val prisonService: PrisonService,
                 } else if (detail == DetailType.ILLNESS ||
                         detail == DetailType.HOLIDAY && isFullDay ||
                         detail == DetailType.HOLIDAY && tasks.none { task -> task.detailType == DetailType.UNSPECIFIC }) {
+                    return detail.description
+                } else if(detail == DetailType.REST_DAY) {
                     return detail.description
                 }
             }
@@ -192,7 +181,13 @@ class ShiftService(private val prisonService: PrisonService,
                         }
                     },
                     it.detailEnd,
-                    calculateShiftDuration(nightShiftDetails))
+                    /*
+                     Nightshift finishes work differently,
+                     we need to calculate the duration between
+                     nightshift_start and nightshift_finish only.
+                     because the collection has multiple day's data in it.
+                     */
+                    calculateSingleDuration(it.detailStart, it.detailEnd))
         }
 
         return listOfNotNull(nightShiftEnd, nightShiftStart, dayShiftStart, dayShiftEnd)
@@ -206,6 +201,17 @@ class ShiftService(private val prisonService: PrisonService,
                 detail.detailStart,
                 detail.detailEnd).toSeconds()
         }.sum()
+        return formatToHoursMins(sum)
+    }
+
+    private fun calculateSingleDuration(start: LocalDateTime, end: LocalDateTime) : String {
+        val sum = Duration.between(
+                start,
+                end).toSeconds()
+        return formatToHoursMins(sum)
+    }
+
+    private fun formatToHoursMins(sum : Long) : String {
         return String.format("%dh %02dm", sum / 3600, (sum % 3600) / 60)
     }
 

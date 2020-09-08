@@ -95,7 +95,7 @@ class NotificationRepositoryTest(
         fun `Should return count of 0 matches`() {
             val date = now.plusDays(3).atStartOfDay()
 
-            val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndDetailParentTypeAndShiftModified(
+            val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
                     "XYZ",
                     date,
                     DetailParentType.SHIFT,
@@ -109,7 +109,7 @@ class NotificationRepositoryTest(
             val notification = getValidNotification(date, date)
             repository.save(notification)
 
-            val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndDetailParentTypeAndShiftModified(
+            val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
                     "XyZ",
                     date,
                     DetailParentType.SHIFT,
@@ -124,7 +124,7 @@ class NotificationRepositoryTest(
             val notification = getValidNotification(date, date)
             repository.save(notification)
 
-            val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndDetailParentTypeAndShiftModified(
+            val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
                     "XYZ",
                     date,
                     DetailParentType.SHIFT,
@@ -139,7 +139,7 @@ class NotificationRepositoryTest(
             val notification = getValidNotification(date, date)
             repository.saveAll(listOf(notification, notification))
 
-            val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndDetailParentTypeAndShiftModified(
+            val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
                     "XYZ",
                     date,
                     DetailParentType.SHIFT,
@@ -151,7 +151,7 @@ class NotificationRepositoryTest(
         fun `Add Type Check Should return count of 0 matches`() {
             val date = now.plusDays(3).atStartOfDay()
 
-            val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndDetailParentTypeAndActionType(
+            val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndActionType(
                     "XYZ",
                     date,
                     DetailParentType.SHIFT,
@@ -165,7 +165,7 @@ class NotificationRepositoryTest(
             val notification = getValidNotification(date, date)
             repository.save(notification)
 
-            val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndDetailParentTypeAndActionType(
+            val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndActionType(
                     "XYZ",
                     date,
                     DetailParentType.SHIFT,
@@ -180,7 +180,7 @@ class NotificationRepositoryTest(
             val notification = getValidNotification(date, date)
             repository.saveAll(listOf(notification, notification))
 
-            val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndDetailParentTypeAndActionType(
+            val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndActionType(
                     "XYZ",
                     date,
                     DetailParentType.SHIFT,
