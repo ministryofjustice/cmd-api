@@ -6,7 +6,7 @@ enum class DetailType(val description: String) {
     UNSPECIFIC("Unspecific"),
     BREAK("Break"),
     ILLNESS("Illness"),
-    HOLIDAY("Holiday"),
+    HOLIDAY("Annual Leave"),
     ABSENCE("Absence"),
     MEETING("Meeting"),
     ONCALL("On Call"),
@@ -19,7 +19,7 @@ enum class DetailType(val description: String) {
     companion object {
         fun from(value: String): DetailType {
             return Arrays.stream(values())
-                    .filter { type -> type.description.equals(value, true) }
+                    .filter { type -> value.contains(type.description, true) }
                     .findFirst().orElse(NONE)
         }
     }

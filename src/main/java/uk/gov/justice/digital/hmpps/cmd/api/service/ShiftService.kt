@@ -24,7 +24,7 @@ class ShiftService(private val prisonService: PrisonService,
         val start = fromParam.orElse(LocalDate.now(clock))
         val end = toParam.orElse(LocalDate.now(clock))
         val region = prisonService.getPrisonForUser()?.region
-
+        //val region = 1
         val details = csrClient.getDetailsForUser(start, end, region)
         val detailsByDate = groupDetailsByDate(details)
 
@@ -48,30 +48,29 @@ class ShiftService(private val prisonService: PrisonService,
                 }
     }
 
-    private fun calculateFullDayType(tasks: Collection<CsrDetailDto>): String {
+    private fun calculateFullDayType(tasks: Collection<CsrDetailDto>): DetailType {
         if (tasks.any()) {
             val isFullDay = tasks.minBy { it.detailStart }?.detailStart?.toLocalTime() == LocalTime.MIDNIGHT
             tasks.forEach {
-                val detail = it.detailType
                 val activity = DetailType.from(it.activity)
 
-                if ((detail == DetailType.UNSPECIFIC && isFullDay) ||
-                        detail == DetailType.ABSENCE ||
-                        activity == DetailType.TRAINING_INTERNAL ||
-                        activity == DetailType.TRAINING_EXTERNAL) {
-                    return it.activity
-                } else if (detail == DetailType.ILLNESS ||
-                        detail == DetailType.HOLIDAY && isFullDay ||
-                        detail == DetailType.HOLIDAY && tasks.none { task -> task.detailType == DetailType.UNSPECIFIC }) {
-                    return detail.description
-                } else if(detail == DetailType.REST_DAY) {
-                    return detail.description
+                if ((activity == DetailType.UNSPECIFIC && isFullDay) ||
+                   (activity == DetailType.REST_DAY && isFullDay)  ||
+                        //TODO: Partial Rest day
+                   (activity == DetailType.ABSENCE && isFullDay) ||
+                   (activity == DetailType.TRAINING_INTERNAL) ||
+                   (activity == DetailType.TRAINING_EXTERNAL) ||
+                   (activity == DetailType.ILLNESS) ||
+                   (activity == DetailType.HOLIDAY && isFullDay) ||
+                   (activity == DetailType.HOLIDAY && tasks.none { task -> DetailType.from(task.activity) != DetailType.HOLIDAY })
+                   ) {
+                    return activity
                 }
             }
-            return DetailType.SHIFT.description
+            return DetailType.SHIFT
 
         } else {
-            return DetailType.NONE.description
+            return DetailType.NONE
         }
     }
 
@@ -195,7 +194,7 @@ class ShiftService(private val prisonService: PrisonService,
 
     private fun calculateShiftDuration(details: Collection<CsrDetailDto>): String {
         // We have to exclude unpaid breaks
-        val sum = details.filter { detail -> detail.detailType != DetailType.BREAK }.map {
+        val sum = details.filter { detail -> DetailType.from(detail.activity) != DetailType.BREAK }.map {
             detail ->
                 Duration.between(
                 detail.detailStart,

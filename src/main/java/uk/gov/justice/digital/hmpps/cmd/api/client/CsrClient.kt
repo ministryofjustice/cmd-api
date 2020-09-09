@@ -10,7 +10,6 @@ import org.springframework.web.reactive.function.client.WebClient
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.DetailParentType
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.DetailType
 import uk.gov.justice.digital.hmpps.cmd.api.utils.region.Regions
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -80,10 +79,7 @@ data class CsrDetailDto @JsonCreator constructor(
         var detailEnd: LocalDateTime,
 
         @JsonProperty("activity")
-        var activity: String,
-
-        @JsonProperty("detailType")
-        var detailType: DetailType
+        var activity: String
 )
 
 data class CsrModifiedDetailDto @JsonCreator constructor(

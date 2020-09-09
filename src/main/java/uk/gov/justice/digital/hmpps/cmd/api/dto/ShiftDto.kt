@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.annotations.ApiModel
 import io.swagger.annotations.ApiModelProperty
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.DetailType
 import java.time.LocalDate
 
 @ApiModel(description = "Shift")
@@ -12,9 +13,9 @@ data class ShiftDto @JsonCreator constructor(
         @JsonProperty("date")
         val date : LocalDate,
 
-        @ApiModelProperty(value = "The type of the full day", example = "Absent")
+        @ApiModelProperty(value = "The type of the full day", example = "ABSENCE")
         @JsonProperty("fullDayType")
-        val shiftType : String,
+        val shiftType : DetailType,
 
         @ApiModelProperty(value = "A collection of details that make up the shift")
         @JsonProperty("details")
