@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.cmd.api.client.CsrDetailDto
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailDisplayType
 import uk.gov.justice.digital.hmpps.cmd.api.dto.DetailDto
 import uk.gov.justice.digital.hmpps.cmd.api.dto.ShiftDto
+import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.DetailParentType
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.DetailType
 import java.time.*
@@ -18,14 +19,14 @@ import java.util.stream.Collectors
 @Transactional
 class ShiftService(private val prisonService: PrisonService,
                    private val csrClient: CsrClient,
-                   private val clock: Clock) {
+                   private val clock: Clock,
+                   private val authenticationFacade : AuthenticationFacade) {
 
     fun getDetailsForUser(fromParam: Optional<LocalDate>, toParam: Optional<LocalDate>): Collection<ShiftDto> {
         val start = fromParam.orElse(LocalDate.now(clock))
         val end = toParam.orElse(LocalDate.now(clock))
         val region = prisonService.getPrisonForUser()?.region
-        //val region = 1
-        val details = csrClient.getDetailsForUser(start, end, region)
+        val details = csrClient.getDetailsForUser(start, end, region, authenticationFacade.currentUsername)
         val detailsByDate = groupDetailsByDate(details)
 
         return start.datesUntil(end.plusDays(1)).map { date ->

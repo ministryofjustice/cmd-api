@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.cmd.api.client.CsrClient
 import uk.gov.justice.digital.hmpps.cmd.api.client.CsrDetailDto
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailDisplayType
 import uk.gov.justice.digital.hmpps.cmd.api.model.Prison
+import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.DetailParentType
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.DetailType
 import java.time.Clock
@@ -22,8 +23,9 @@ import java.util.*
 internal class ShiftServiceTest {
     private val csrApiClient: CsrClient = mockk(relaxUnitFun = true)
     private val prisonService: PrisonService = mockk(relaxUnitFun = true)
+    private val authenticationFacade: AuthenticationFacade = mockk(relaxUnitFun = true)
     private val clock = Clock.fixed(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
-    private val service = ShiftService(prisonService, csrApiClient, clock)
+    private val service = ShiftService(prisonService, csrApiClient, clock, authenticationFacade)
 
     private val day1 = LocalDate.now(clock)
 
@@ -31,6 +33,8 @@ internal class ShiftServiceTest {
     fun resetAllMocks() {
         clearMocks(csrApiClient)
         clearMocks(prisonService)
+
+        every { authenticationFacade.currentUsername } returns "xyz"
     }
 
     @AfterEach
@@ -53,12 +57,12 @@ internal class ShiftServiceTest {
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
-            every { csrApiClient.getDetailsForUser(day1, day1, 1) } returns shifts
+            every { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") } returns shifts
 
             val dayModelList = service.getDetailsForUser(Optional.empty(), Optional.empty())
 
             verify { prisonService.getPrisonForUser()}
-            verify { csrApiClient.getDetailsForUser(day1, day1, 1) }
+            verify { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") }
 
             assertThat(dayModelList).hasSize(1)
 
@@ -75,12 +79,12 @@ internal class ShiftServiceTest {
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
-            every { csrApiClient.getDetailsForUser(day1, day2, 1) } returns shifts
+            every { csrApiClient.getDetailsForUser(day1, day2, 1, "xyz") } returns shifts
 
             val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day2))
 
             verify { prisonService.getPrisonForUser()}
-            verify { csrApiClient.getDetailsForUser(day1, day2, 1) }
+            verify { csrApiClient.getDetailsForUser(day1, day2, 1, "xyz") }
 
             assertThat(dayModelList).hasSize(2)
 
@@ -91,12 +95,12 @@ internal class ShiftServiceTest {
             
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
-            every { csrApiClient.getDetailsForUser(day1, day1, 1) } returns listOf()
+            every { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") } returns listOf()
 
             val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
             verify { prisonService.getPrisonForUser()}
-            verify { csrApiClient.getDetailsForUser(day1, day1, 1) }
+            verify { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") }
 
             assertThat(dayModelList).hasSize(1)
 
@@ -116,12 +120,12 @@ internal class ShiftServiceTest {
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
-            every { csrApiClient.getDetailsForUser(day1, day1, 1) } returns shifts
+            every { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") } returns shifts
 
             val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
             verify { prisonService.getPrisonForUser()}
-            verify { csrApiClient.getDetailsForUser(day1, day1, 1) }
+            verify { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") }
 
             assertThat(dayModelList).hasSize(1)
 
@@ -140,12 +144,12 @@ internal class ShiftServiceTest {
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
-            every { csrApiClient.getDetailsForUser(day1, day1, 1) } returns shifts
+            every { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") } returns shifts
 
             val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
             verify { prisonService.getPrisonForUser()}
-            verify { csrApiClient.getDetailsForUser(day1, day1, 1) }
+            verify { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") }
 
             assertThat(dayModelList).hasSize(1)
 
@@ -165,12 +169,12 @@ internal class ShiftServiceTest {
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
-            every { csrApiClient.getDetailsForUser(day2, day2, 1) } returns shifts
+            every { csrApiClient.getDetailsForUser(day2, day2, 1, "xyz") } returns shifts
 
             val dayModelList = service.getDetailsForUser(Optional.of(day2), Optional.of(day2))
 
             verify { prisonService.getPrisonForUser()}
-            verify { csrApiClient.getDetailsForUser(day2, day2, 1) }
+            verify { csrApiClient.getDetailsForUser(day2, day2, 1, "xyz") }
 
             assertThat(dayModelList).hasSize(1)
 
@@ -191,13 +195,13 @@ internal class ShiftServiceTest {
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
-            every { csrApiClient.getDetailsForUser(day1, day1, 1) } returns shifts
+            every { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") } returns shifts
 
             val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
             
             verify { prisonService.getPrisonForUser()}
-            verify { csrApiClient.getDetailsForUser(day1, day1, 1) }
+            verify { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") }
 
             assertThat(dayModelList).hasSize(1)
 
@@ -220,13 +224,13 @@ internal class ShiftServiceTest {
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
-            every { csrApiClient.getDetailsForUser(day1, day1, 1) } returns shifts
+            every { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") } returns shifts
 
             val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
             
             verify { prisonService.getPrisonForUser()}
-            verify { csrApiClient.getDetailsForUser(day1, day1, 1) }
+            verify { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") }
 
             assertThat(dayModelList).hasSize(1)
 
@@ -249,13 +253,13 @@ internal class ShiftServiceTest {
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
-            every { csrApiClient.getDetailsForUser(day1, day1, 1) } returns shifts
+            every { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") } returns shifts
 
             val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
             
             verify { prisonService.getPrisonForUser()}
-            verify { csrApiClient.getDetailsForUser(day1, day1, 1) }
+            verify { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") }
 
             assertThat(dayModelList).hasSize(1)
 
@@ -278,13 +282,13 @@ internal class ShiftServiceTest {
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
-            every { csrApiClient.getDetailsForUser(day1, day1, 1) } returns shifts
+            every { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") } returns shifts
 
             val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
             
             verify { prisonService.getPrisonForUser()}
-            verify { csrApiClient.getDetailsForUser(day1, day1, 1) }
+            verify { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") }
 
             assertThat(dayModelList).hasSize(1)
 
@@ -306,13 +310,13 @@ internal class ShiftServiceTest {
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
-            every { csrApiClient.getDetailsForUser(day1, day2, 1) } returns shifts
+            every { csrApiClient.getDetailsForUser(day1, day2, 1, "xyz") } returns shifts
 
             val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day2))
 
             
             verify { prisonService.getPrisonForUser()}
-            verify { csrApiClient.getDetailsForUser(day1, day2, 1) }
+            verify { csrApiClient.getDetailsForUser(day1, day2, 1, "xyz") }
 
             assertThat(dayModelList).hasSize(2)
 
@@ -334,13 +338,13 @@ internal class ShiftServiceTest {
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
-            every { csrApiClient.getDetailsForUser(day1, day2, 1) } returns shifts
+            every { csrApiClient.getDetailsForUser(day1, day2, 1, "xyz") } returns shifts
 
             val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day2))
 
             
             verify { prisonService.getPrisonForUser()}
-            verify { csrApiClient.getDetailsForUser(day1, day2, 1) }
+            verify { csrApiClient.getDetailsForUser(day1, day2, 1, "xyz") }
 
             assertThat(dayModelList).hasSize(2)
 
@@ -362,13 +366,13 @@ internal class ShiftServiceTest {
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
-            every { csrApiClient.getDetailsForUser(day1, day2, 1) } returns shifts
+            every { csrApiClient.getDetailsForUser(day1, day2, 1, "xyz") } returns shifts
 
             val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day2))
 
             
             verify { prisonService.getPrisonForUser()}
-            verify { csrApiClient.getDetailsForUser(day1, day2, 1) }
+            verify { csrApiClient.getDetailsForUser(day1, day2, 1, "xyz") }
 
             assertThat(dayModelList).hasSize(2)
 
@@ -390,13 +394,13 @@ internal class ShiftServiceTest {
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
-            every { csrApiClient.getDetailsForUser(day1, day2, 1) } returns shifts
+            every { csrApiClient.getDetailsForUser(day1, day2, 1, "xyz") } returns shifts
 
             val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day2))
 
             
             verify { prisonService.getPrisonForUser()}
-            verify { csrApiClient.getDetailsForUser(day1, day2, 1) }
+            verify { csrApiClient.getDetailsForUser(day1, day2, 1, "xyz") }
 
             assertThat(dayModelList).hasSize(2)
 

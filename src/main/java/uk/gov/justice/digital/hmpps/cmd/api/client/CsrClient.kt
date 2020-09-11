@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
@@ -17,7 +18,8 @@ import java.time.LocalDateTime
 @Component
 class CsrClient(@Qualifier("csrApiWebClient") val csrClient: WebClient, val authenticationFacade: AuthenticationFacade, val regionData: Regions) {
 
-    fun getDetailsForUser(from: LocalDate, to: LocalDate, region: Int?) : Collection<CsrDetailDto> {
+    @Cacheable(value = ["userDetails"], unless = "#result.size() == 0", key = "{ #from.toEpochDay().toString(), #to.toEpochDay().toString(), #quantumId }")
+    fun getDetailsForUser(from: LocalDate, to: LocalDate, region: Int?, quantumId: String) : Collection<CsrDetailDto> {
         if(region != null) {
              return getDetails(from, to, region.toString())
         } else {

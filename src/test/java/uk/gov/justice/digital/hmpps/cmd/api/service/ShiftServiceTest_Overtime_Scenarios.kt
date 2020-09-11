@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.cmd.api.client.CsrClient
 import uk.gov.justice.digital.hmpps.cmd.api.client.CsrDetailDto
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailDisplayType
 import uk.gov.justice.digital.hmpps.cmd.api.model.Prison
+import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.DetailParentType
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.DetailType
 import java.time.Clock
@@ -22,8 +23,9 @@ import java.util.*
 internal class ShiftServiceTest_Overtime_Scenarios {
     private val csrApiClient: CsrClient = mockk(relaxUnitFun = true)
     private val prisonService: PrisonService = mockk(relaxUnitFun = true)
+    private val authenticationFacade: AuthenticationFacade = mockk(relaxUnitFun = true)
     private val clock = Clock.fixed(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
-    private val service = ShiftService(prisonService, csrApiClient, clock)
+    private val service = ShiftService(prisonService, csrApiClient, clock, authenticationFacade)
 
     private val day1 = LocalDate.now(clock)
     private val day2 =  day1.plusDays(1)
@@ -32,6 +34,8 @@ internal class ShiftServiceTest_Overtime_Scenarios {
     fun resetAllMocks() {
         clearMocks(csrApiClient)
         clearMocks(prisonService)
+
+        every { authenticationFacade.currentUsername } returns "xyz"
     }
 
     @AfterEach
@@ -60,12 +64,12 @@ internal class ShiftServiceTest_Overtime_Scenarios {
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
-            every { csrApiClient.getDetailsForUser(day1, day1, 1) } returns dayShift + overtime
+            every { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") } returns dayShift + overtime
 
             val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
             verify { prisonService.getPrisonForUser()}
-            verify { csrApiClient.getDetailsForUser(day1, day1, 1) }
+            verify { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") }
 
             assertThat(dayModelList).hasSize(1)
 
@@ -110,12 +114,12 @@ internal class ShiftServiceTest_Overtime_Scenarios {
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
-            every { csrApiClient.getDetailsForUser(day1, day1, 1) } returns dayShift + overtime
+            every { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") } returns dayShift + overtime
 
             val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
             verify { prisonService.getPrisonForUser()}
-            verify { csrApiClient.getDetailsForUser(day1, day1, 1) }
+            verify { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") }
 
             assertThat(dayModelList).hasSize(1)
 
@@ -157,12 +161,12 @@ internal class ShiftServiceTest_Overtime_Scenarios {
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
-            every { csrApiClient.getDetailsForUser(day1, day2, 1) } returns nightShift + overtime
+            every { csrApiClient.getDetailsForUser(day1, day2, 1, "xyz") } returns nightShift + overtime
 
             val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day2))
 
             verify { prisonService.getPrisonForUser()}
-            verify { csrApiClient.getDetailsForUser(day1, day2, 1) }
+            verify { csrApiClient.getDetailsForUser(day1, day2, 1, "xyz") }
 
             assertThat(dayModelList).hasSize(2)
 
@@ -208,12 +212,12 @@ internal class ShiftServiceTest_Overtime_Scenarios {
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
-            every { csrApiClient.getDetailsForUser(day1, day2, 1) } returns nightShift + overtime
+            every { csrApiClient.getDetailsForUser(day1, day2, 1, "xyz") } returns nightShift + overtime
 
             val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day2))
 
             verify { prisonService.getPrisonForUser()}
-            verify { csrApiClient.getDetailsForUser(day1, day2, 1) }
+            verify { csrApiClient.getDetailsForUser(day1, day2, 1, "xyz") }
 
             assertThat(dayModelList).hasSize(2)
 

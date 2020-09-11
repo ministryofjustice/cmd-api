@@ -20,6 +20,9 @@ spring:
     password: dummy
     initialization-mode: always
 
+  cache:
+    type: NONE
+
 graceful:
   shutdown.enabled: false
 
