@@ -32,7 +32,7 @@ create table "UserAuthentication"
 );
 
 
-create table "Notification"
+create table "ShiftNotification"
 (
     "QuantumId"                     varchar(50)              not null,
     "DateTime"                      timestamp with time zone not null,
