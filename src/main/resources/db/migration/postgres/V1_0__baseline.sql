@@ -29,10 +29,10 @@ create table "UserAuthentication"
 );
 
 
-create table "Notification"
+create table "ShiftNotification"
 (
     "QuantumId"                     varchar(50)              not null
-        constraint "Notification_QuantumId_UserAuthentication_QuantumId"
+        constraint "ShiftNotification_QuantumId_UserAuthentication_QuantumId"
             references "UserAuthentication",
     "DateTime"                      timestamp with time zone not null,
     "Description"                   varchar(500),
@@ -42,7 +42,7 @@ create table "Notification"
     "SentSms"                       boolean default false    not null,
     "SentEmail"                     boolean default false    not null,
     "LastModifiedDateTimeInSeconds" bigint                   not null,
-    constraint "Notification_QuantumId_LastModifiedDateTime_ShiftDate"
+    constraint "ShiftNotification_QuantumId_LastModifiedDateTime_ShiftDate"
         primary key ("QuantumId", "LastModifiedDateTime", "ShiftDate")
 );
 
@@ -50,7 +50,7 @@ create table "Notification"
 create table "ShiftTaskNotification"
 (
     "QuantumId"                     varchar(50)              not null
-        constraint "Notification_QuantumId_UserAuthentication_QuantumId"
+        constraint "ShiftNotification_QuantumId_UserAuthentication_QuantumId"
             references "UserAuthentication",
     "DateTime"                      timestamp with time zone not null,
     "Description"                   varchar(500),
@@ -63,7 +63,7 @@ create table "ShiftTaskNotification"
     "SentSms"                       boolean default false    not null,
     "SentEmail"                     boolean default false    not null,
     "LastModifiedDateTimeInSeconds" bigint                   not null,
-    constraint "Notification_QuantumId_LastModifiedDateTime_TaskDate_TaskS"
+    constraint "ShiftNotification_QuantumId_LastModifiedDateTime_TaskDate_TaskS"
         primary key ("QuantumId", "LastModifiedDateTime", "TaskDate", "TaskStartTimeInSeconds")
 );
 
