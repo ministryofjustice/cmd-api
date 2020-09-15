@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.utils.region
+package uk.gov.justice.digital.hmpps.cmd.api.utils.region
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Configuration

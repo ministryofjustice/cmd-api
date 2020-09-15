@@ -2,11 +2,11 @@ package uk.gov.justice.digital.hmpps.cmd.api.service
 
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import uk.gov.justice.digital.hmpps.cmd.api.dto.UserPreferenceDto
 import uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
 import uk.gov.justice.digital.hmpps.cmd.api.repository.UserPreferenceRepository
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import java.time.LocalDate
 
 @Service
@@ -29,7 +29,7 @@ class UserPreferenceService(val repository: UserPreferenceRepository, val authen
         log.debug("Updating notification preference for user ${userPreferences.quantumId} to email: $email, sms: $sms, preference: $communicationPreference")
         userPreferences.email = email
         userPreferences.sms = sms
-        userPreferences.commPref = communicationPreference.value
+        userPreferences.commPref = communicationPreference
         log.info("Updated snooze preference for user ${userPreferences.quantumId}")
         repository.save(userPreferences)
     }

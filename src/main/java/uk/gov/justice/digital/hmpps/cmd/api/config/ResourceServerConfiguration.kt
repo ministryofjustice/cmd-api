@@ -36,7 +36,8 @@ class ResourceServerConfiguration : WebSecurityConfigurerAdapter() {
                                     "/swagger-ui.html",
                                     "/swagger-resources",
                                     "/swagger-resources/configuration/ui",
-                                    "/swagger-resources/configuration/security")
+                                    "/swagger-resources/configuration/security",
+                                    "/shifts")
                             .permitAll()
                             .anyRequest()
                             .authenticated()

@@ -7,6 +7,6 @@ import java.time.LocalDate
 
 @ApiModel(description = "Update 'notification snooze until' date request")
 data class UpdateSnoozeUntilRequest(
-        @ApiModelProperty(required = true, value = "Date to snooze notifications until", position = 1, example = "2020-08-27")
+        @ApiModelProperty(required = true, value = "Date to snooze notifications until", example = "2020-08-27")
         @JsonProperty("snoozeUntil")
         val snoozeUntil: LocalDate)

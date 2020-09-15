@@ -17,8 +17,8 @@ import org.springframework.test.context.jdbc.SqlConfig
 import org.springframework.test.context.jdbc.SqlGroup
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import uk.gov.justice.digital.hmpps.cmd.api.dto.UpdateSnoozeUntilRequest
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.dto.UpdateNotificationDetailsRequest
+import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
+import uk.gov.justice.digital.hmpps.cmd.api.dto.UpdateNotificationDetailsRequest
 import java.time.LocalDate
 
 @ExtendWith(SpringExtension::class)

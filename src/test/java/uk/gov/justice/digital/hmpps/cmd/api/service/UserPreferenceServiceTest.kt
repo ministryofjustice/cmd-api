@@ -11,7 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
 import uk.gov.justice.digital.hmpps.cmd.api.repository.UserPreferenceRepository
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
+import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import java.time.LocalDate
 
 @ExtendWith(MockKExtension::class)
@@ -39,7 +39,7 @@ internal class UserPreferenceServiceTest {
                     now.plusDays(1),
                     "Any Email",
                     "Any Sms",
-                    CommunicationPreference.EMAIL.value)
+                    CommunicationPreference.EMAIL)
             every { repository.findByQuantumIdIgnoreCase(any()) } returns userPref
             every { authenticationFacade.currentUsername } returns quantumId
 
@@ -88,7 +88,7 @@ internal class UserPreferenceServiceTest {
             assertThat(returnValue.snoozeUntil).isNull()
             assertThat(returnValue.email).isNull()
             assertThat(returnValue.sms).isNull()
-            assertThat(returnValue.commPref).isEqualTo(CommunicationPreference.NONE.value)
+            assertThat(returnValue.commPref).isEqualTo(CommunicationPreference.NONE)
 
         }
 
@@ -193,7 +193,7 @@ internal class UserPreferenceServiceTest {
                     now.plusDays(1),
                     "Any Email",
                     "Any Sms",
-                    CommunicationPreference.EMAIL.value)
+                    CommunicationPreference.EMAIL)
 
             every { repository.findByQuantumIdIgnoreCase(any()) } returns userPref
             every { repository.save(userPref)} returns userPref

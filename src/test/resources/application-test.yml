@@ -20,6 +20,9 @@ spring:
     password: dummy
     initialization-mode: always
 
+  cache:
+    type: NONE
+
 graceful:
   shutdown.enabled: false
 
@@ -37,6 +40,12 @@ jwt:
 application:
   notify:
     key: aaaaaaaaaa-11111111-1111-1111-1111-111111111111-11111111-1111-1111-aaaa-aaaaaaaaaaaa
+
+csr:
+  endpoint.url: http://localhost:8081
+
+elite2api:
+  endpoint.url: http://localhost:8082
 
 oauth:
   api.base.url: http://localhost:8998/auth

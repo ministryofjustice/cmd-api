@@ -1,7 +1,7 @@
 drop table if exists "NotificationConfiguration";
 drop table if exists "UserNotificationSetting";
 drop table if exists "ShiftTaskNotification";
-drop table if exists "ShiftNotification";
+drop table if exists "Notification";
 drop table if exists "UserAuthentication";
 drop table if exists "Prison";
 
@@ -32,7 +32,7 @@ create table "UserAuthentication"
 );
 
 
-create table "ShiftNotification"
+create table "Notification"
 (
     "QuantumId"                     varchar(50)              not null,
     "DateTime"                      timestamp with time zone not null,

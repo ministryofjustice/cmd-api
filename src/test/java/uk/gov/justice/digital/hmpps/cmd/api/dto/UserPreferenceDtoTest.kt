@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.cmd.api.dto
 
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
+import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
 import java.time.LocalDate
 
@@ -13,7 +14,7 @@ class UserPreferenceDtoTest {
         val date = LocalDate.now()
         val email = "email"
         val sms = "sms"
-        val pref = "EMAIL"
+        val pref = CommunicationPreference.EMAIL
         val userPreference = UserPreference(quantumId, date, email, sms, pref)
 
         val userPreferenceDto = UserPreferenceDto.from(userPreference)

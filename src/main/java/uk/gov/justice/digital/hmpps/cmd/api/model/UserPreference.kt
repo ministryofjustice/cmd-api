@@ -1,11 +1,8 @@
 package uk.gov.justice.digital.hmpps.cmd.api.model
 
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
+import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import java.time.LocalDate
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.Table
+import javax.persistence.*
 
 @Entity
 @Table(name = "user_preference")
@@ -23,6 +20,7 @@ data class UserPreference(
         @Column
         var sms: String? = null,
 
+        @Enumerated(EnumType.STRING)
         @Column
-        var commPref: String = CommunicationPreference.NONE.value
+        var commPref: CommunicationPreference = CommunicationPreference.NONE
 )
