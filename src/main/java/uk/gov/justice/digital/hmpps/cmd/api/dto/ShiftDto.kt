@@ -17,6 +17,10 @@ data class ShiftDto @JsonCreator constructor(
         @JsonProperty("fullDayType")
         val shiftType : DetailType,
 
+        @ApiModelProperty(value = "The human readable type of the full day", example = "Absence")
+        @JsonProperty("fullDayTypeDescription")
+        val shiftTypeDescription : String,
+
         @ApiModelProperty(value = "A collection of details that make up the shift")
         @JsonProperty("details")
         val details : Collection<DetailDto>

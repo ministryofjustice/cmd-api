@@ -34,8 +34,8 @@ data class DetailDto @JsonCreator constructor(
         @JsonProperty("displayTypeTime")
         var displayTypeTime: LocalDateTime? = null,
 
-        @ApiModelProperty(value = "If the type is a 'finish' we include the duration of the whole shift", example = "3h 24m")
+        @ApiModelProperty(value = "If the type is a 'finish' we include the duration of the whole shift in seconds", example = "54321")
         @JsonProperty("finishDuration")
-        var finishDuration: String? = null
+        var finishDuration: Long? = null
 
 )

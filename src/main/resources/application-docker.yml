@@ -35,3 +35,6 @@ csr:
 
 elite2api:
   endpoint.url: http://localhost:8082
+
+  cache:
+    type: NONE

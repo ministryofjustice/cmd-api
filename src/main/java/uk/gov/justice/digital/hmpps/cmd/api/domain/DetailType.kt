@@ -5,16 +5,18 @@ import java.util.*
 enum class DetailType(val description: String) {
     UNSPECIFIC("Unspecific"),
     BREAK("Break"),
-    ILLNESS("Illness"),
+
+    REST_DAY("Rest Day"),
     HOLIDAY("Annual Leave"),
+    ILLNESS("Illness"),
     ABSENCE("Absence"),
-    MEETING("Meeting"),
-    ONCALL("On Call"),
+    TU_OFFICIALS_LEAVE_DAYS("TU Officials Leave Days"),
+    TU_OFFICIALS_LEAVE_HOURS("TU Officials Leave Hours"),
+    TRAINING_EXTERNAL("Training - External"),
+    TRAINING_INTERNAL("Training - Internal"),
     NONE("None"),
     SHIFT("Shift"),
-    REST_DAY("Rest Day"),
-    TRAINING_EXTERNAL("Training - External"),
-    TRAINING_INTERNAL("Training - Internal");
+;
 
     companion object {
         fun from(value: String): DetailType {

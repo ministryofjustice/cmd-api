@@ -25,15 +25,18 @@ class ShiftService(private val prisonService: PrisonService,
     fun getDetailsForUser(fromParam: Optional<LocalDate>, toParam: Optional<LocalDate>): Collection<ShiftDto> {
         val start = fromParam.orElse(LocalDate.now(clock))
         val end = toParam.orElse(LocalDate.now(clock))
-        val region = prisonService.getPrisonForUser()?.region
+        //val region = prisonService.getPrisonForUser()?.region
+        val region = 1
         val details = csrClient.getDetailsForUser(start, end, region, authenticationFacade.currentUsername)
         val detailsByDate = groupDetailsByDate(details)
 
         return start.datesUntil(end.plusDays(1)).map { date ->
             val detailsForDate = detailsByDate.getOrDefault(date, listOf())
+            val fullDayType = calculateFullDayType(detailsForDate)
             ShiftDto(
                     date,
-                    calculateFullDayType(detailsForDate),
+                    fullDayType,
+                    fullDayType.description,
                     getAllEvents(date, detailsForDate.distinct())
             )
         }.collect(Collectors.toList())
@@ -54,17 +57,17 @@ class ShiftService(private val prisonService: PrisonService,
             val isFullDay = tasks.minBy { it.detailStart }?.detailStart?.toLocalTime() == LocalTime.MIDNIGHT
             tasks.forEach {
                 val activity = DetailType.from(it.activity)
-
-                if ((activity == DetailType.UNSPECIFIC && isFullDay) ||
-                   (activity == DetailType.REST_DAY && isFullDay)  ||
-                        //TODO: Partial Rest day
-                   (activity == DetailType.ABSENCE && isFullDay) ||
-                   (activity == DetailType.TRAINING_INTERNAL) ||
-                   (activity == DetailType.TRAINING_EXTERNAL) ||
-                   (activity == DetailType.ILLNESS) ||
+                //TODO: Partial Rest day
+                if ((activity == DetailType.REST_DAY && (isFullDay || tasks.none { task -> !listOf(DetailType.REST_DAY, DetailType.BREAK).contains(DetailType.from(task.activity))  } ))  ||
                    (activity == DetailType.HOLIDAY && isFullDay) ||
-                   (activity == DetailType.HOLIDAY && tasks.none { task -> DetailType.from(task.activity) != DetailType.HOLIDAY })
-                   ) {
+                   (activity == DetailType.HOLIDAY && tasks.none { task -> !listOf(DetailType.HOLIDAY, DetailType.BREAK).contains(DetailType.from(task.activity))  } )||
+                   (activity == DetailType.ILLNESS) ||
+                   (activity == DetailType.ABSENCE && isFullDay) ||
+                   (activity == DetailType.TU_OFFICIALS_LEAVE_DAYS) ||
+                   (activity == DetailType.TU_OFFICIALS_LEAVE_HOURS) ||
+                   (activity == DetailType.TRAINING_INTERNAL) ||
+                   (activity == DetailType.TRAINING_EXTERNAL)
+                ) {
                     return activity
                 }
             }
@@ -193,7 +196,7 @@ class ShiftService(private val prisonService: PrisonService,
         return listOfNotNull(nightShiftEnd, nightShiftStart, dayShiftStart, dayShiftEnd)
     }
 
-    private fun calculateShiftDuration(details: Collection<CsrDetailDto>): String {
+    private fun calculateShiftDuration(details: Collection<CsrDetailDto>): Long {
         // We have to exclude unpaid breaks
         val sum = details.filter { detail -> DetailType.from(detail.activity) != DetailType.BREAK }.map {
             detail ->
@@ -201,18 +204,14 @@ class ShiftService(private val prisonService: PrisonService,
                 detail.detailStart,
                 detail.detailEnd).toSeconds()
         }.sum()
-        return formatToHoursMins(sum)
+        return sum
     }
 
-    private fun calculateSingleDuration(start: LocalDateTime, end: LocalDateTime) : String {
+    private fun calculateSingleDuration(start: LocalDateTime, end: LocalDateTime) : Long {
         val sum = Duration.between(
                 start,
                 end).toSeconds()
-        return formatToHoursMins(sum)
-    }
-
-    private fun formatToHoursMins(sum : Long) : String {
-        return String.format("%dh %02dm", sum / 3600, (sum % 3600) / 60)
+        return sum
     }
 
     companion object {
