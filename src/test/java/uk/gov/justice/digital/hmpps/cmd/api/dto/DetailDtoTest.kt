@@ -17,7 +17,7 @@ class DetailDtoTest {
         val entityType = DetailParentType.SHIFT
         val displayType = DetailDisplayType.DAY_START
         val eventTime = LocalDateTime.of(4,5,6,6,4,5)
-        val finish = "Five hours or so"
+        val finish = 123456L
 
         val day = DetailDto(
             label,

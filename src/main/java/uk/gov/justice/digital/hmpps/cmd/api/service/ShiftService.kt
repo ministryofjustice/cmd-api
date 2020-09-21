@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.cmd.api.service
 
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.cmd.api.client.CsrClient
 import uk.gov.justice.digital.hmpps.cmd.api.client.CsrDetailDto
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailDisplayType
@@ -10,13 +9,12 @@ import uk.gov.justice.digital.hmpps.cmd.api.dto.DetailDto
 import uk.gov.justice.digital.hmpps.cmd.api.dto.ShiftDto
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.DetailParentType
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.DetailType
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.FullDayActivityType
 import java.time.*
 import java.util.*
 import java.util.stream.Collectors
 
 @Service
-@Transactional
 class ShiftService(private val prisonService: PrisonService,
                    private val csrClient: CsrClient,
                    private val clock: Clock,
@@ -27,65 +25,83 @@ class ShiftService(private val prisonService: PrisonService,
         val end = toParam.orElse(LocalDate.now(clock))
         //val region = prisonService.getPrisonForUser()?.region
         val region = 1
-        val details = csrClient.getDetailsForUser(start, end, region, authenticationFacade.currentUsername)
-        val detailsByDate = groupDetailsByDate(details)
+        val detailsByDate = groupDetailsByDate(start, end, region)
 
         return start.datesUntil(end.plusDays(1)).map { date ->
-            val detailsForDate = detailsByDate.getOrDefault(date, listOf())
-            val fullDayType = calculateFullDayType(detailsForDate)
+            val details = detailsByDate.getOrDefault(date, listOf())
+            val (shiftDetails, overtimeDetails) = details.partition { it.shiftType == DetailParentType.SHIFT }
+            val startAndFinishDetails = (getStartAndFinishDetails(date, shiftDetails) + getStartAndFinishDetails(date, overtimeDetails))
+            val middleDetails = getMiddleDetails(details, startAndFinishDetails)
+            val fullDayActivity = calculateFullDayActivity(startAndFinishDetails + middleDetails)
             ShiftDto(
                     date,
-                    fullDayType,
-                    fullDayType.description,
-                    getAllEvents(date, detailsForDate.distinct())
+                    FullDayActivityType.from(fullDayActivity), // This value can be different from the value below where we don't care about the activity e.g DetailType.SHIFT & "Secondment" rather than REST_DAY & "rest day"
+                    fullDayActivity,
+                    startAndFinishDetails + middleDetails
             )
         }.collect(Collectors.toList())
     }
 
-    private fun groupDetailsByDate(details : Collection<CsrDetailDto>): Map<LocalDate, Collection<CsrDetailDto>> {
+    /*
+    Group the details by date, both by start and end date.
+    A night shift will be in two buckets.
+     */
+    private fun groupDetailsByDate(start: LocalDate, end: LocalDate, region: Int): Map<LocalDate, Collection<CsrDetailDto>> {
+        val details = csrClient.getDetailsForUser(start, end, region, authenticationFacade.currentUsername)
         val detailStartGroup = details.groupBy { it.detailStart.toLocalDate() }
         val detailEndGroup = details.groupBy { it.detailEnd.toLocalDate() }
         return (detailStartGroup.keys + detailEndGroup.keys)
                 .associateWith {
-                    detailStartGroup.getOrDefault(it, listOf()) +
-                            detailEndGroup.getOrDefault(it, listOf())
+                    (detailStartGroup.getOrDefault(it, listOf()) +
+                            detailEndGroup.getOrDefault(it, listOf())).distinct()
                 }
     }
 
-    private fun calculateFullDayType(tasks: Collection<CsrDetailDto>): DetailType {
-        if (tasks.any()) {
-            val isFullDay = tasks.minBy { it.detailStart }?.detailStart?.toLocalTime() == LocalTime.MIDNIGHT
-            tasks.forEach {
-                val activity = DetailType.from(it.activity)
-                //TODO: Partial Rest day
-                if ((activity == DetailType.REST_DAY && (isFullDay || tasks.none { task -> !listOf(DetailType.REST_DAY, DetailType.BREAK).contains(DetailType.from(task.activity))  } ))  ||
-                   (activity == DetailType.HOLIDAY && isFullDay) ||
-                   (activity == DetailType.HOLIDAY && tasks.none { task -> !listOf(DetailType.HOLIDAY, DetailType.BREAK).contains(DetailType.from(task.activity))  } )||
-                   (activity == DetailType.ILLNESS) ||
-                   (activity == DetailType.ABSENCE && isFullDay) ||
-                   (activity == DetailType.TU_OFFICIALS_LEAVE_DAYS) ||
-                   (activity == DetailType.TU_OFFICIALS_LEAVE_HOURS) ||
-                   (activity == DetailType.TRAINING_INTERNAL) ||
-                   (activity == DetailType.TRAINING_EXTERNAL)
+    /*
+    We're not convinced this logic is correct, but it replicates the behaviour of the legacy service.
+     */
+    private fun calculateFullDayActivity(tasks: Collection<DetailDto>): String {
+        val shiftTasks = tasks.filter { it.detail == DetailParentType.SHIFT }
+        if (shiftTasks.any()) {
+            shiftTasks.forEach {
+                val activity = FullDayActivityType.from(it.activity!!)
+                if (
+                   (activity == FullDayActivityType.REST_DAY && onlyHasBreaksOrNightShiftFinish(shiftTasks, FullDayActivityType.REST_DAY)) ||
+                   (activity == FullDayActivityType.HOLIDAY && onlyHasBreaksOrNightShiftFinish(shiftTasks, FullDayActivityType.HOLIDAY)) ||
+                   (activity == FullDayActivityType.ILLNESS) ||
+                   (activity == FullDayActivityType.ABSENCE && onlyHasBreaksOrNightShiftFinish(shiftTasks, FullDayActivityType.ABSENCE)) ||
+                   (activity == FullDayActivityType.TU_OFFICIALS_LEAVE_DAYS) ||
+                   (activity == FullDayActivityType.TU_OFFICIALS_LEAVE_HOURS) ||
+                   (activity == FullDayActivityType.TOIL && (it.displayType == DetailDisplayType.DAY_START || it.displayType == DetailDisplayType.NIGHT_START)) ||
+                   (activity == FullDayActivityType.SECONDMENT && (it.displayType == DetailDisplayType.DAY_START || it.displayType == DetailDisplayType.NIGHT_START)) ||
+                   (activity == FullDayActivityType.TRAINING_INTERNAL && (it.displayType == DetailDisplayType.DAY_START || it.displayType == DetailDisplayType.NIGHT_START)) ||
+                   (activity == FullDayActivityType.TRAINING_EXTERNAL && (it.displayType == DetailDisplayType.DAY_START || it.displayType == DetailDisplayType.NIGHT_START))
                 ) {
-                    return activity
+                    return activity.description
                 }
             }
-            return DetailType.SHIFT
+            return shiftTasks.firstOrNull { !FullDayActivityType.values().contains(FullDayActivityType.from(it.activity!!))  }?.activity ?: ""
 
         } else {
-            return DetailType.NONE
+            return FullDayActivityType.NONE.description
         }
     }
 
-    private fun getAllEvents(date: LocalDate, csrDetails: Collection<CsrDetailDto>): Collection<DetailDto> {
-        val (shiftDetails, overtimeDetails) = csrDetails.partition { it.shiftType == DetailParentType.SHIFT }
+    private fun onlyHasBreaksOrNightShiftFinish(tasks: Collection<DetailDto>, type : FullDayActivityType) : Boolean {
+        val none = tasks.none {
+            it.displayType != DetailDisplayType.NIGHT_FINISH &&
+            FullDayActivityType.from(it.activity!!) != type &&
+            FullDayActivityType.from(it.activity) != FullDayActivityType.BREAK
+        }
+        return none
+    }
 
-        val shiftStartAndFinishEvents = getStartAndFinishEvents(date, shiftDetails)
-        val overtimeStartAndFinishEvents = getStartAndFinishEvents(date, overtimeDetails)
-        val startAndFinishEvents = (shiftStartAndFinishEvents + overtimeStartAndFinishEvents)
+    private fun getMiddleDetails(details : Collection<CsrDetailDto>, startAndFinishEvents : Collection<DetailDto>): Collection<DetailDto> {
 
-        val middleEvents = csrDetails
+        return details
+                .filter { event ->
+                    startAndFinishEvents.all { sfe -> event.detailStart != sfe.start && event.detailEnd != sfe.end }
+                }
                 .map {
                     DetailDto(
                             it.activity,
@@ -94,11 +110,7 @@ class ShiftService(private val prisonService: PrisonService,
                             it.shiftType,
                             null
                     )
-                }.filter { event ->
-                    startAndFinishEvents
-                            .all { sfe -> event.start != sfe.start && event.end != sfe.end }
                 }
-        return startAndFinishEvents + middleEvents
     }
 
     /* For each day we are looking for :
@@ -107,11 +119,13 @@ class ShiftService(private val prisonService: PrisonService,
      * 3) the latest start date, if the end date is on a different day we have a night shift start.
      * 4) the earliest finish date, if the start date is a different day we have a night shift end.
      */
-    private fun getStartAndFinishEvents(date: LocalDate, csrDetails: Collection<CsrDetailDto>): Collection<DetailDto> {
+    private fun getStartAndFinishDetails(date: LocalDate, csrDetails: Collection<CsrDetailDto>): Collection<DetailDto> {
 
         val (dayShiftDetails, nightShiftDetails) = csrDetails
+                // filter out full day events
                 .filter { it.detailStart.toLocalTime() != LocalTime.MIDNIGHT }
-                .partition { it.detailStart.toLocalTime() < it.detailEnd.toLocalTime()}
+                .filter { it.detailEnd.toLocalTime() != LocalTime.MIDNIGHT }
+                .partition { it.detailStart.toLocalTime() < it.detailEnd.toLocalTime() && it.detailStart.toLocalDate() == it.detailEnd.toLocalDate()}
 
         // Identify a Day Shift Starting
         val dayShiftStart = dayShiftDetails.filter { it.detailStart.toLocalDate() == date }.minBy { it.detailStart }?.let {
@@ -198,24 +212,19 @@ class ShiftService(private val prisonService: PrisonService,
 
     private fun calculateShiftDuration(details: Collection<CsrDetailDto>): Long {
         // We have to exclude unpaid breaks
-        val sum = details.filter { detail -> DetailType.from(detail.activity) != DetailType.BREAK }.map {
+        return details.filter { detail -> FullDayActivityType.from(detail.activity) != FullDayActivityType.BREAK }.map {
             detail ->
                 Duration.between(
                 detail.detailStart,
                 detail.detailEnd).toSeconds()
         }.sum()
-        return sum
     }
 
     private fun calculateSingleDuration(start: LocalDateTime, end: LocalDateTime) : Long {
-        val sum = Duration.between(
-                start,
-                end).toSeconds()
-        return sum
+        return Duration.between(start, end).toSeconds()
     }
 
     companion object {
-
         private val log = LoggerFactory.getLogger(ShiftService::class.java)
     }
 }

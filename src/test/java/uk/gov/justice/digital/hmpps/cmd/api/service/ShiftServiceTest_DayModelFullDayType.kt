@@ -10,7 +10,7 @@ import uk.gov.justice.digital.hmpps.cmd.api.client.CsrDetailDto
 import uk.gov.justice.digital.hmpps.cmd.api.model.Prison
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.DetailParentType
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.DetailType
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.FullDayActivityType
 import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalTime
@@ -65,7 +65,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
 
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
-            assertThat(dayModel.shiftType).isEqualTo(DetailType.SHIFT)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.SHIFT)
         }
 
         @Test
@@ -87,7 +87,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
 
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
-            assertThat(dayModel.shiftType).isEqualTo(DetailType.TRAINING_INTERNAL)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.TRAINING_INTERNAL)
         }
 
         @Test
@@ -109,7 +109,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
 
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
-            assertThat(dayModel.shiftType).isEqualTo(DetailType.TRAINING_EXTERNAL)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.TRAINING_EXTERNAL)
         }
 
         @Test
@@ -131,7 +131,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
 
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
-            assertThat(dayModel.shiftType).isEqualTo(DetailType.ABSENCE)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.ABSENCE)
         }
 
         @Test
@@ -153,7 +153,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
 
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
-            assertThat(dayModel.shiftType).isEqualTo(DetailType.HOLIDAY)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.HOLIDAY)
         }
 
         @Test
@@ -175,7 +175,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
 
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
-            assertThat(dayModel.shiftType).isEqualTo(DetailType.HOLIDAY)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.HOLIDAY)
         }
 
         @Test
@@ -198,7 +198,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
 
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
-            assertThat(dayModel.shiftType).isEqualTo(DetailType.SHIFT)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.SHIFT)
         }
 
         @Test
@@ -220,7 +220,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
 
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
-            assertThat(dayModel.shiftType).isEqualTo(DetailType.ILLNESS)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.ILLNESS)
         }
 
         @Test
@@ -242,7 +242,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
 
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
-            assertThat(dayModel.shiftType).isEqualTo(DetailType.SHIFT)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.SHIFT)
         }
 
         @Test
@@ -264,7 +264,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
 
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
-            assertThat(dayModel.shiftType).isEqualTo(DetailType.SHIFT)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.SHIFT)
         }
 
         @Test
@@ -286,7 +286,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
 
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
-            assertThat(dayModel.shiftType).isEqualTo(DetailType.TRAINING_INTERNAL)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.TRAINING_INTERNAL)
         }
 
         @Test
@@ -308,7 +308,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
 
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
-            assertThat(dayModel.shiftType).isEqualTo(DetailType.TRAINING_EXTERNAL)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.TRAINING_EXTERNAL)
         }
 
         @Test
@@ -330,7 +330,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
 
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
-            assertThat(dayModel.shiftType).isEqualTo(DetailType.ABSENCE)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.ABSENCE)
         }
 
         @Test
@@ -352,7 +352,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
 
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
-            assertThat(dayModel.shiftType).isEqualTo(DetailType.HOLIDAY)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.HOLIDAY)
         }
 
         @Test
@@ -374,7 +374,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
 
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
-            assertThat(dayModel.shiftType).isEqualTo(DetailType.HOLIDAY)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.HOLIDAY)
         }
 
         @Test
@@ -397,7 +397,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
 
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
-            assertThat(dayModel.shiftType).isEqualTo(DetailType.SHIFT)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.SHIFT)
         }
 
         @Test
@@ -419,7 +419,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
 
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
-            assertThat(dayModel.shiftType).isEqualTo(DetailType.ILLNESS)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.ILLNESS)
         }
 
         @Test
@@ -441,7 +441,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
 
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
-            assertThat(dayModel.shiftType).isEqualTo(DetailType.SHIFT)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.SHIFT)
         }
 
     }
