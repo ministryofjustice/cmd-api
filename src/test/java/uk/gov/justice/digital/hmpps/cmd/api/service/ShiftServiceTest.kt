@@ -240,7 +240,7 @@ internal class ShiftServiceTest {
 
             val overtimeStartTask = dayModel.details.first{ it.displayType == DetailDisplayType.OVERTIME_DAY_FINISH}
             assertThat(overtimeStartTask.displayTypeTime).isEqualTo(day1.atTime(LocalTime.of(17,0)))
-            assertThat(overtimeStartTask.finishDuration).isEqualTo("8h 45m")
+            assertThat(overtimeStartTask.finishDuration).isEqualTo(31500L)
         }
 
         @Test
@@ -298,7 +298,7 @@ internal class ShiftServiceTest {
 
             val overtimeStartTask = dayModel.details.first{ it.displayType == DetailDisplayType.OVERTIME_DAY_FINISH}
             assertThat(overtimeStartTask.displayTypeTime).isEqualTo(day1.atTime(LocalTime.of(17,0)))
-            assertThat(overtimeStartTask.finishDuration).isEqualTo("8h 45m")
+            assertThat(overtimeStartTask.finishDuration).isEqualTo(31500L)
         }
 
         @Test
@@ -354,7 +354,7 @@ internal class ShiftServiceTest {
 
             val overtimeStartTask = dayModel.details.first{ it.displayType == DetailDisplayType.OVERTIME_NIGHT_FINISH}
             assertThat(overtimeStartTask.displayTypeTime).isEqualTo(day2.atTime(LocalTime.of(12,30)))
-            assertThat(overtimeStartTask.finishDuration).isEqualTo("16h 15m")
+            assertThat(overtimeStartTask.finishDuration).isEqualTo(58500L)
         }
 
         @Test
@@ -410,7 +410,7 @@ internal class ShiftServiceTest {
 
             val overtimeStartTask = dayModel.details.first{ it.displayType == DetailDisplayType.OVERTIME_NIGHT_FINISH}
             assertThat(overtimeStartTask.displayTypeTime).isEqualTo(day2.atTime(LocalTime.of(12,30)))
-            assertThat(overtimeStartTask.finishDuration).isEqualTo("16h 15m")
+            assertThat(overtimeStartTask.finishDuration).isEqualTo(90900L)
         }
 
         @Test
@@ -466,7 +466,7 @@ internal class ShiftServiceTest {
 
             val overtimeStartTask = dayModel.details.first{ it.displayType == DetailDisplayType.OVERTIME_NIGHT_FINISH}
             assertThat(overtimeStartTask.displayTypeTime).isEqualTo(day2.atTime(LocalTime.of(12,30)))
-            assertThat(overtimeStartTask.finishDuration).isEqualTo("16h 15m")
+            assertThat(overtimeStartTask.finishDuration).isEqualTo(58500L)
         }
     }
 }

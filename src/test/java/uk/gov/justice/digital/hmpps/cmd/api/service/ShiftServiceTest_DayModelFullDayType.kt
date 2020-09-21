@@ -205,7 +205,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
         fun `Should return Illness as Full Day Type for Illness`() {
             
             val shifts = listOf(
-                    CsrDetailDto(DetailParentType.SHIFT, day1.atTime(LocalTime.of(7,0)), day1.atTime(LocalTime.of(10,0)), "ILLNESS")
+                    CsrDetailDto(DetailParentType.SHIFT, day1.atTime(LocalTime.of(7,0)), day1.atTime(LocalTime.of(10,0)), "Sick")
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
@@ -246,7 +246,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
         }
 
         @Test
-        fun `Overtime - Should return activity as Full Day Type for full day SHIFT`() {
+        fun `Overtime - Should return SHIFT as Full Day Type for full day SHIFT`() {
             
             val shifts = listOf(
                     CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(0,0)), day1.atTime(LocalTime.of(23,59,59)), "My Activity")
@@ -268,7 +268,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
         }
 
         @Test
-        fun `Overtime - Should return type as Full Day Type for Training Internal`() {
+        fun `Overtime - Should return SHIFT as Full Day Type for Training Internal`() {
             
             val shifts = listOf(
                     CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(7,15)), day1.atTime(LocalTime.of(12,30)), "Training - Internal")
@@ -286,11 +286,11 @@ internal class ShiftServiceTest_DayModelFullDayType {
 
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
-            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.TRAINING_INTERNAL)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.SHIFT)
         }
 
         @Test
-        fun `Overtime Should return type as Full Day Type for Training external`() {
+        fun `Overtime Should return SHIFT as Full Day Type for Training external`() {
             
             val shifts = listOf(
                     CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(7,15)), day1.atTime(LocalTime.of(12,30)), "Training - External")
@@ -308,11 +308,11 @@ internal class ShiftServiceTest_DayModelFullDayType {
 
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
-            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.TRAINING_EXTERNAL)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.SHIFT)
         }
 
         @Test
-        fun `Overtime - Should return activity as Full Day Type for Absence`() {
+        fun `Overtime - Should return SHIFT as Full Day Type for Absence`() {
             
             val shifts = listOf(
                     CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(0,0)), day1.atTime(LocalTime.of(23,59,59)), "Absence")
@@ -330,11 +330,11 @@ internal class ShiftServiceTest_DayModelFullDayType {
 
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
-            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.ABSENCE)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.SHIFT)
         }
 
         @Test
-        fun `Overtime - Should return Holiday as Full Day Type for full day Holiday`() {
+        fun `Overtime - Should return SHIFT as Full Day Type for full day Holiday`() {
             
             val shifts = listOf(
                     CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(0,0)), day1.atTime(LocalTime.of(23,59,59)), "Annual Leave")
@@ -352,11 +352,11 @@ internal class ShiftServiceTest_DayModelFullDayType {
 
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
-            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.HOLIDAY)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.SHIFT)
         }
 
         @Test
-        fun `Overtime - Should return Holiday as Full Day Type for Holiday with not other Unspecific tasks`() {
+        fun `Overtime - Should return SHIFT as Full Day Type for Holiday with not other Unspecific tasks`() {
             
             val shifts = listOf(
                     CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(7,0)), day1.atTime(LocalTime.of(10,0)), "Annual Leave")
@@ -374,11 +374,11 @@ internal class ShiftServiceTest_DayModelFullDayType {
 
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
-            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.HOLIDAY)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.SHIFT)
         }
 
         @Test
-        fun `Overtime - Should return Shift as Full Day Type for Holiday with other Unspecific tasks`() {
+        fun `Overtime - Should return SHIFT as Full Day Type for Holiday with other Unspecific tasks`() {
             
             val shifts = listOf(
                     CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(7,0)), day1.atTime(LocalTime.of(10,0)), "Annual Leave"),
@@ -401,10 +401,10 @@ internal class ShiftServiceTest_DayModelFullDayType {
         }
 
         @Test
-        fun `Overtime - Should return Illness as Full Day Type for Illness`() {
+        fun `Overtime - Should return SHIFT as Full Day Type for Illness`() {
             
             val shifts = listOf(
-                    CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(7,0)), day1.atTime(LocalTime.of(10,0)), "ILLNESS")
+                    CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(7,0)), day1.atTime(LocalTime.of(10,0)), "Sick")
             )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
@@ -419,11 +419,11 @@ internal class ShiftServiceTest_DayModelFullDayType {
 
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
-            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.ILLNESS)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.SHIFT)
         }
 
         @Test
-        fun `Overtime - Should return Shift as Full Day Type if no rules met`() {
+        fun `Overtime - Should return SHIFT as Full Day Type if no rules met`() {
             
             val shifts = listOf(
                     CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(7,0)), day1.atTime(LocalTime.of(10,0)), "On Call")

@@ -23,8 +23,8 @@ class ShiftService(private val prisonService: PrisonService,
     fun getDetailsForUser(fromParam: Optional<LocalDate>, toParam: Optional<LocalDate>): Collection<ShiftDto> {
         val start = fromParam.orElse(LocalDate.now(clock))
         val end = toParam.orElse(LocalDate.now(clock))
-        //val region = prisonService.getPrisonForUser()?.region
-        val region = 1
+        val region = prisonService.getPrisonForUser()?.region
+        //val region = 1
         val detailsByDate = groupDetailsByDate(start, end, region)
 
         return start.datesUntil(end.plusDays(1)).map { date ->
@@ -46,7 +46,7 @@ class ShiftService(private val prisonService: PrisonService,
     Group the details by date, both by start and end date.
     A night shift will be in two buckets.
      */
-    private fun groupDetailsByDate(start: LocalDate, end: LocalDate, region: Int): Map<LocalDate, Collection<CsrDetailDto>> {
+    private fun groupDetailsByDate(start: LocalDate, end: LocalDate, region: Int?): Map<LocalDate, Collection<CsrDetailDto>> {
         val details = csrClient.getDetailsForUser(start, end, region, authenticationFacade.currentUsername)
         val detailStartGroup = details.groupBy { it.detailStart.toLocalDate() }
         val detailEndGroup = details.groupBy { it.detailEnd.toLocalDate() }
@@ -61,8 +61,11 @@ class ShiftService(private val prisonService: PrisonService,
     We're not convinced this logic is correct, but it replicates the behaviour of the legacy service.
      */
     private fun calculateFullDayActivity(tasks: Collection<DetailDto>): String {
-        val shiftTasks = tasks.filter { it.detail == DetailParentType.SHIFT }
-        if (shiftTasks.any()) {
+        // tasks here is on purpose,
+        // we want to discount overtime,
+        // but if there are only overtime values the activity isn't 'NONE'
+        if (tasks.any()) {
+            val shiftTasks = tasks.filter { it.detail == DetailParentType.SHIFT }
             shiftTasks.forEach {
                 val activity = FullDayActivityType.from(it.activity!!)
                 if (
