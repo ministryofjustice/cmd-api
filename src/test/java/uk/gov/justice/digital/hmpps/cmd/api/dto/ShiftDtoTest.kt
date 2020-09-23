@@ -23,6 +23,7 @@ class ShiftDtoTest {
 
         Assertions.assertThat(day.date).isEqualTo(date)
         Assertions.assertThat(day.shiftType).isEqualTo(type)
+        Assertions.assertThat(day.shiftTypeDescription).isEqualTo(type.description)
         Assertions.assertThat(day.details).isEqualTo(details)
     }
 

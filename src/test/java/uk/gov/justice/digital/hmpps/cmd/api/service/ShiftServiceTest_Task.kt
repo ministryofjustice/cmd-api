@@ -28,6 +28,16 @@ internal class ShiftServiceTest_Task {
     private val service = ShiftService(prisonService, csrApiClient, clock, authenticationFacade)
 
     private val day1 = LocalDate.now(clock)
+    private val day2 = day1.plusDays(1)
+    private val validNightShifts = listOf(
+            CsrDetailDto(DetailParentType.SHIFT, day1.atTime(LocalTime.of(20,15)), day2.atTime(LocalTime.of(12,30)), "Nights OSG")
+    )
+    private val validShifts = listOf(
+            CsrDetailDto(DetailParentType.SHIFT, day1.atTime(LocalTime.of(7,15)), day1.atTime(LocalTime.of(12,30)), "Present"),
+            CsrDetailDto(DetailParentType.SHIFT, day1.atTime(LocalTime.of(12,30)), day1.atTime(LocalTime.of(13,30)), "Break (Unpaid)"),
+            CsrDetailDto(DetailParentType.SHIFT, day1.atTime(LocalTime.of(13,30)), day1.atTime(LocalTime.of(17,0)), "Present")
+    )
+
 
     @BeforeEach
     fun resetAllMocks() {
@@ -35,6 +45,7 @@ internal class ShiftServiceTest_Task {
         clearMocks(prisonService)
 
         every { authenticationFacade.currentUsername } returns "xyz"
+        every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
     }
 
     @AfterEach
@@ -49,15 +60,7 @@ internal class ShiftServiceTest_Task {
 
         @Test
         fun `Should default to today if no dates`() {
-            
-            val shifts = listOf(
-                    CsrDetailDto(DetailParentType.SHIFT, day1.atTime(LocalTime.of(7,15)), day1.atTime(LocalTime.of(12,30)), "Present"),
-                    CsrDetailDto(DetailParentType.SHIFT, day1.atTime(LocalTime.of(12,30)), day1.atTime(LocalTime.of(13,30)), "Break (Unpaid)"),
-                    CsrDetailDto(DetailParentType.SHIFT, day1.atTime(LocalTime.of(13,30)), day1.atTime(LocalTime.of(17,0)), "Present")
-            )
-
-            every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
-            every { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") } returns shifts
+            every { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") } returns validShifts
 
             val dayModel = service.getDetailsForUser(Optional.empty(), Optional.empty())
 
@@ -69,15 +72,9 @@ internal class ShiftServiceTest_Task {
 
         @Test
         fun `Should not modify passed in dates`() {
-            
-            val shifts = listOf(
-                    CsrDetailDto(DetailParentType.SHIFT, day1.atTime(LocalTime.of(7,15)), day1.atTime(LocalTime.of(12,30)), "Present"),
-                    CsrDetailDto(DetailParentType.SHIFT, day1.atTime(LocalTime.of(12,30)), day1.atTime(LocalTime.of(13,30)), "Break (Unpaid)"),
-                    CsrDetailDto(DetailParentType.SHIFT, day1.atTime(LocalTime.of(13,30)), day1.atTime(LocalTime.of(17,0)), "Present")
-            )
 
             every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
-            every { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") } returns shifts
+            every { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") } returns validShifts
             
             val dayModel = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
@@ -90,9 +87,7 @@ internal class ShiftServiceTest_Task {
 
         @Test
         fun `Should return 'no day' for no task data`() {
-            
 
-            every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
             every { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") } returns listOf()
             
             val dayModel = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
@@ -107,15 +102,8 @@ internal class ShiftServiceTest_Task {
 
         @Test
         fun `Should return 'shift' for shift data`() {
-            
-            val shifts = listOf(
-                    CsrDetailDto(DetailParentType.SHIFT, day1.atTime(LocalTime.of(7,15)), day1.atTime(LocalTime.of(12,30)), "Present"),
-                    CsrDetailDto(DetailParentType.SHIFT, day1.atTime(LocalTime.of(12,30)), day1.atTime(LocalTime.of(13,30)), "Break (Unpaid)"),
-                    CsrDetailDto(DetailParentType.SHIFT, day1.atTime(LocalTime.of(13,30)), day1.atTime(LocalTime.of(17,0)), "Present")
-            )
 
-            every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
-            every { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") } returns shifts
+            every { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") } returns validShifts
 
             val dayModel = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
@@ -130,12 +118,11 @@ internal class ShiftServiceTest_Task {
         fun `Should return 'shift' for overtime data`() {
             
             val shifts = listOf(
-                    CsrDetailDto(DetailParentType.SHIFT, day1.atTime(LocalTime.of(7,15)), day1.atTime(LocalTime.of(12,30)), "Present"),
-                    CsrDetailDto(DetailParentType.SHIFT, day1.atTime(LocalTime.of(12,30)), day1.atTime(LocalTime.of(13,30)), "Break (Unpaid)"),
-                    CsrDetailDto(DetailParentType.SHIFT, day1.atTime(LocalTime.of(13,30)), day1.atTime(LocalTime.of(17,0)), "Present")
+                    CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(7,15)), day1.atTime(LocalTime.of(12,30)), "Present"),
+                    CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(12,30)), day1.atTime(LocalTime.of(13,30)), "Break (Unpaid)"),
+                    CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(13,30)), day1.atTime(LocalTime.of(17,0)), "Present")
             )
 
-            every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
             every { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") } returns shifts
 
             val dayModel = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
@@ -149,16 +136,8 @@ internal class ShiftServiceTest_Task {
 
         @Test
         fun `Should not return things for a different dates`() {
-            
-            val day2 = day1.plusDays(1)
-            val shifts = listOf(
-                    CsrDetailDto(DetailParentType.SHIFT, day1.atTime(LocalTime.of(7,15)), day1.atTime(LocalTime.of(12,30)), "Present"),
-                    CsrDetailDto(DetailParentType.SHIFT, day1.atTime(LocalTime.of(12,30)), day1.atTime(LocalTime.of(13,30)), "Break (Unpaid)"),
-                    CsrDetailDto(DetailParentType.SHIFT, day1.atTime(LocalTime.of(13,30)), day1.atTime(LocalTime.of(17,0)), "Present")
-            )
 
-            every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
-            every { csrApiClient.getDetailsForUser(day2, day2, 1, "xyz") } returns shifts
+            every { csrApiClient.getDetailsForUser(day2, day2, 1, "xyz") } returns validShifts
 
             val dayModel = service.getDetailsForUser(Optional.of(day2), Optional.of(day2))
 
@@ -173,15 +152,8 @@ internal class ShiftServiceTest_Task {
 
         @Test
         fun `Should identify Shift start`() {
-            
-            val shifts = listOf(
-                    CsrDetailDto(DetailParentType.SHIFT, day1.atTime(LocalTime.of(7,15)), day1.atTime(LocalTime.of(12,30)), "Present"),
-                    CsrDetailDto(DetailParentType.SHIFT, day1.atTime(LocalTime.of(12,30)), day1.atTime(LocalTime.of(13,30)), "Break (Unpaid)"),
-                    CsrDetailDto(DetailParentType.SHIFT, day1.atTime(LocalTime.of(13,30)), day1.atTime(LocalTime.of(17,0)), "Present")
-            )
 
-            every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
-            every { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") } returns shifts
+            every { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") } returns validShifts
 
             val dayModel = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
@@ -200,15 +172,8 @@ internal class ShiftServiceTest_Task {
 
         @Test
         fun `Should identify Shift end`() {
-            
-            val shifts = listOf(
-                    CsrDetailDto(DetailParentType.SHIFT, day1.atTime(LocalTime.of(7,15)), day1.atTime(LocalTime.of(12,30)), "Present"),
-                    CsrDetailDto(DetailParentType.SHIFT, day1.atTime(LocalTime.of(12,30)), day1.atTime(LocalTime.of(13,30)), "Break (Unpaid)"),
-                    CsrDetailDto(DetailParentType.SHIFT, day1.atTime(LocalTime.of(13,30)), day1.atTime(LocalTime.of(17,0)), "Present")
-            )
 
-            every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
-            every { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") } returns shifts
+            every { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") } returns validShifts
 
             val dayModel = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
@@ -227,14 +192,8 @@ internal class ShiftServiceTest_Task {
 
         @Test
         fun `Should identify Night Shift start`() {
-            
-            val day2 = day1.plusDays(1)
-            val shifts = listOf(
-                    CsrDetailDto(DetailParentType.SHIFT, day1.atTime(LocalTime.of(20,15)), day2.atTime(LocalTime.of(12,30)), "Nights OSG")
-            )
 
-            every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
-            every { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") } returns shifts
+            every { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") } returns validNightShifts
 
             val dayModel = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
@@ -254,14 +213,8 @@ internal class ShiftServiceTest_Task {
 
         @Test
         fun `Should identify Night Shift end`() {
-            
-            val day2 = day1.plusDays(1)
-            val shifts = listOf(
-                    CsrDetailDto(DetailParentType.SHIFT, day1.atTime(LocalTime.of(20,15)), day2.atTime(LocalTime.of(12,30)), "Nights OSG")
-            )
 
-            every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
-            every { csrApiClient.getDetailsForUser(day2, day2, 1, "xyz") } returns shifts
+            every { csrApiClient.getDetailsForUser(day2, day2, 1, "xyz") } returns validNightShifts
 
             val dayModel = service.getDetailsForUser(Optional.of(day2), Optional.of(day2))
 
@@ -280,14 +233,11 @@ internal class ShiftServiceTest_Task {
 
         @Test
         fun `Should identify Overtime Night Shift start`() {
-            
-            val day2 = day1.plusDays(1)
 
-            val shifts = listOf(
+            val shifts =  listOf(
                     CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(20,15)), day2.atTime(LocalTime.of(12,30)), "Nights OSG")
             )
 
-            every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
             every { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") } returns shifts
 
             val dayModel = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
@@ -307,13 +257,10 @@ internal class ShiftServiceTest_Task {
 
         @Test
         fun `Should identify Overtime Night Shift end`() {
-            
-            val day2 = day1.plusDays(1)
-            val shifts = listOf(
+
+            val shifts =  listOf(
                     CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(20,15)), day2.atTime(LocalTime.of(12,30)), "Nights OSG")
             )
-
-            every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
             every { csrApiClient.getDetailsForUser(day2, day2, 1, "xyz") } returns shifts
 
             val dayModel = service.getDetailsForUser(Optional.of(day2), Optional.of(day2))

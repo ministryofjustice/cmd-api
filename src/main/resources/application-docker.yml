@@ -4,6 +4,9 @@ spring:
     locations: classpath:db/migration/postgres,classpath:db/migration/general,classpath:db/migration/docker
     schemas: check-my-diary
 
+  jpa:
+    show-sql: true
+
   datasource:
     url: 'jdbc:postgresql://${DATABASE_ENDPOINT:localhost:5432}/${DATABASE_NAME:check-my-diary}'
     username: '${DATABASE_USERNAME:check-my-diary}'
@@ -20,7 +23,7 @@ oauth:
     url: https://sign-in-dev.hmpps.service.justice.gov.uk/auth
   client:
     id: my-diary
-    secret: kJwGCYAhn4AYRQF9
+    secret: clientsecret
 
 logging:
   level:
@@ -36,5 +39,5 @@ csr:
 elite2api:
   endpoint.url: http://localhost:8082
 
-  cache:
-    type: NONE
+server:
+  shutdown: immediate

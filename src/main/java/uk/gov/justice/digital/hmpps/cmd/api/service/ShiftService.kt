@@ -24,7 +24,6 @@ class ShiftService(private val prisonService: PrisonService,
         val start = fromParam.orElse(LocalDate.now(clock))
         val end = toParam.orElse(LocalDate.now(clock))
         val region = prisonService.getPrisonForUser()?.region
-        //val region = 1
         val detailsByDate = groupDetailsByDate(start, end, region)
 
         return start.datesUntil(end.plusDays(1)).map { date ->
@@ -91,12 +90,11 @@ class ShiftService(private val prisonService: PrisonService,
     }
 
     private fun onlyHasBreaksOrNightShiftFinish(tasks: Collection<DetailDto>, type : FullDayActivityType) : Boolean {
-        val none = tasks.none {
+        return tasks.none {
             it.displayType != DetailDisplayType.NIGHT_FINISH &&
             FullDayActivityType.from(it.activity!!) != type &&
             FullDayActivityType.from(it.activity) != FullDayActivityType.BREAK
         }
-        return none
     }
 
     private fun getMiddleDetails(details : Collection<CsrDetailDto>, startAndFinishEvents : Collection<DetailDto>): Collection<DetailDto> {
