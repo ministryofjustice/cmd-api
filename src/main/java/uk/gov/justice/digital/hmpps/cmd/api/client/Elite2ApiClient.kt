@@ -9,8 +9,12 @@ import org.springframework.web.reactive.function.client.WebClient
 class Elite2ApiClient(@Qualifier("elite2ApiWebClient") private val webClient: WebClient) {
 
     fun getCurrentPrisonIdForUser() : String {
+        val me = "me"
+        // in webClient, unless we pass in a param
+        // the uri overwrites the base uri
+
         return webClient.get()
-                .uri("/api/users/me")
+                .uri("/api/users/$me")
                 .retrieve()
                 .bodyToMono(CaseLoad::class.java)
                 .block()?.activeCaseLoadId ?: ""
