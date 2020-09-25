@@ -49,7 +49,7 @@ class ShiftService(private val prisonService: PrisonService,
     A night shift will be in two buckets.
      */
     private fun getDetailsGroupedByDate(start: LocalDate, end: LocalDate): Map<LocalDate, Collection<CsrDetailDto>> {
-        val region = 1//prisonService.getPrisonForUser()?.region
+        val region = prisonService.getPrisonForUser()?.region
         val details = csrClient.getDetailsForUser(start, end, region, authenticationFacade.currentUsername)
         val detailStartGroup = details.groupBy { it.detailStart.toLocalDate() }
         val detailEndGroup = details.groupBy { it.detailEnd.toLocalDate() }
