@@ -45,6 +45,55 @@ internal class PrisonServiceTest {
         }
     }
 
+    @Nested
+    @DisplayName("Get Prison for User tests")
+    inner class GetPrisonForUserTest {
+
+        @Test
+        fun `Should get Prison`() {
+            val prisonId = "AKA"
+
+            every { prisonRepository.findByPrisonId(prisonId)} returns prison1
+
+            val prison = service.getPrisonForUser()
+
+            verify { prisonRepository.findByPrisonId(prisonId) }
+            confirmVerified(prisonRepository)
+
+            assertThat(prison).isEqualTo(prison1)
+        }
+
+        @Test
+        fun `Should get Prison not found`() {
+            val prisonId = "AKA"
+
+            every { elite2Client.getCurrentPrisonIdForUser()} returns prisonId
+            every { prisonRepository.findByPrisonId(prisonId)} returns null
+
+            val prison = service.getPrisonForUser()
+
+            verify { prisonRepository.findByPrisonId(prisonId) }
+            confirmVerified(prisonRepository)
+
+            assertThat(prison).isEqualTo(null)
+        }
+
+        @Test
+        fun `Should not get Prison magic number `() {
+            val prisonId = "AKA"
+
+            every { elite2Client.getCurrentPrisonIdForUser()} returns prisonId
+            every { prisonRepository.findByPrisonId(prisonId)} returns null
+
+            val prison = service.getPrisonForUser()
+
+            verify { prisonRepository.findByPrisonId(prisonId) }
+            confirmVerified(prisonRepository)
+
+            assertThat(prison).isEqualTo(null)
+        }
+    }
+
 
     companion object {
         val prison1 = Prison("AKA", "Big plan", "Arkham Asylum", 5)
