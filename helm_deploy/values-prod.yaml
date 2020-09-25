@@ -14,7 +14,7 @@ env:
   SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "https://sign-in.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json"
   OAUTH_ROOT_URL: "https://sign-in.hmpps.service.justice.gov.uk/auth"
   ELITE2API_ENDPOINT_URL: "https://api.prison.service.justice.gov.uk"
-  CSR_ENDPOINT_URL: "csr-api.aks-live-1.studio-hosting.service.justice.gov.uk"
+  CSR_ENDPOINT_URL: "https://csr-api.aks-live-1.studio-hosting.service.justice.gov.uk"
 
 
 cron:
