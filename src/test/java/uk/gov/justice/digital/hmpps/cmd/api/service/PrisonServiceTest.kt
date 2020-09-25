@@ -77,21 +77,6 @@ internal class PrisonServiceTest {
 
             assertThat(prison).isEqualTo(null)
         }
-
-        @Test
-        fun `Should not get Prison magic number `() {
-            val prisonId = "AKA"
-
-            every { elite2Client.getCurrentPrisonIdForUser()} returns prisonId
-            every { prisonRepository.findByPrisonId(prisonId)} returns null
-
-            val prison = service.getPrisonForUser()
-
-            verify { prisonRepository.findByPrisonId(prisonId) }
-            confirmVerified(prisonRepository)
-
-            assertThat(prison).isEqualTo(null)
-        }
     }
 
 
