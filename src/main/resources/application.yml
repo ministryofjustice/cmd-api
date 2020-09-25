@@ -24,7 +24,7 @@ spring:
 
   datasource:
     hikari:
-      maximum-pool-size: 15
+      maximum-pool-size: 25
 
   cache:
     cache-names: userDetails

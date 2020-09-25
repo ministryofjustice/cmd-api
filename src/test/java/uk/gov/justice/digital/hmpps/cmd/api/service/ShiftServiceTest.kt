@@ -11,7 +11,7 @@ import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailDisplayType
 import uk.gov.justice.digital.hmpps.cmd.api.model.Prison
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.DetailParentType
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.DetailType
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.FullDayActivityType
 import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalTime
@@ -106,7 +106,7 @@ internal class ShiftServiceTest {
 
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
-            assertThat(dayModel.shiftType).isEqualTo(DetailType.NONE)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.NONE)
 
         }
 
@@ -131,7 +131,7 @@ internal class ShiftServiceTest {
 
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
-            assertThat(dayModel.shiftType).isEqualTo(DetailType.SHIFT)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.SHIFT)
         }
 
         @Test
@@ -155,7 +155,7 @@ internal class ShiftServiceTest {
 
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
-            assertThat(dayModel.shiftType).isEqualTo(DetailType.SHIFT)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.SHIFT)
         }
 
         @Test
@@ -180,7 +180,7 @@ internal class ShiftServiceTest {
 
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day2)
-            assertThat(dayModel.shiftType).isEqualTo(DetailType.NONE)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.NONE)
             assertThat(dayModel.details).hasSize(0)
 
         }
@@ -207,7 +207,7 @@ internal class ShiftServiceTest {
 
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
-            assertThat(dayModel.shiftType).isEqualTo(DetailType.SHIFT)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.SHIFT)
 
             val overtimeStartTask = dayModel.details.first{ it.displayType == DetailDisplayType.OVERTIME_DAY_START}
             assertThat(overtimeStartTask.displayTypeTime).isEqualTo(day1.atTime(LocalTime.of(7,15)))
@@ -236,11 +236,11 @@ internal class ShiftServiceTest {
 
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
-            assertThat(dayModel.shiftType).isEqualTo(DetailType.SHIFT)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.SHIFT)
 
             val overtimeStartTask = dayModel.details.first{ it.displayType == DetailDisplayType.OVERTIME_DAY_FINISH}
             assertThat(overtimeStartTask.displayTypeTime).isEqualTo(day1.atTime(LocalTime.of(17,0)))
-            assertThat(overtimeStartTask.finishDuration).isEqualTo("8h 45m")
+            assertThat(overtimeStartTask.finishDuration).isEqualTo(31500L)
         }
 
         @Test
@@ -265,7 +265,7 @@ internal class ShiftServiceTest {
 
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
-            assertThat(dayModel.shiftType).isEqualTo(DetailType.SHIFT)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.SHIFT)
 
             val overtimeStartTask = dayModel.details.first{ it.displayType == DetailDisplayType.OVERTIME_DAY_START}
             assertThat(overtimeStartTask.displayTypeTime).isEqualTo(day1.atTime(LocalTime.of(7,15)))
@@ -294,11 +294,11 @@ internal class ShiftServiceTest {
 
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
-            assertThat(dayModel.shiftType).isEqualTo(DetailType.SHIFT)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.SHIFT)
 
             val overtimeStartTask = dayModel.details.first{ it.displayType == DetailDisplayType.OVERTIME_DAY_FINISH}
             assertThat(overtimeStartTask.displayTypeTime).isEqualTo(day1.atTime(LocalTime.of(17,0)))
-            assertThat(overtimeStartTask.finishDuration).isEqualTo("8h 45m")
+            assertThat(overtimeStartTask.finishDuration).isEqualTo(31500L)
         }
 
         @Test
@@ -322,7 +322,7 @@ internal class ShiftServiceTest {
 
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
-            assertThat(dayModel.shiftType).isEqualTo(DetailType.SHIFT)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.SHIFT)
 
             val overtimeStartTask = dayModel.details.first{ it.displayType == DetailDisplayType.OVERTIME_NIGHT_START}
             assertThat(overtimeStartTask.displayTypeTime).isEqualTo(day1.atTime(LocalTime.of(20,15)))
@@ -350,11 +350,67 @@ internal class ShiftServiceTest {
 
             val dayModel = dayModelList.last()
             assertThat(dayModel.date).isEqualTo(day2)
-            assertThat(dayModel.shiftType).isEqualTo(DetailType.SHIFT)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.SHIFT)
 
             val overtimeStartTask = dayModel.details.first{ it.displayType == DetailDisplayType.OVERTIME_NIGHT_FINISH}
             assertThat(overtimeStartTask.displayTypeTime).isEqualTo(day2.atTime(LocalTime.of(12,30)))
-            assertThat(overtimeStartTask.finishDuration).isEqualTo("16h 15m")
+            assertThat(overtimeStartTask.finishDuration).isEqualTo(58500L)
+        }
+
+        @Test
+        fun `Should identify Night Shift start with a finish time later than the start time (atypical)`() {
+
+            val day2 = day1.plusDays(1)
+            val shifts = listOf(
+                    CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(11,15)), day2.atTime(LocalTime.of(12,30)), "Night OSG")
+            )
+
+            every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
+            every { csrApiClient.getDetailsForUser(day1, day2, 1, "xyz") } returns shifts
+
+            val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day2))
+
+
+            verify { prisonService.getPrisonForUser()}
+            verify { csrApiClient.getDetailsForUser(day1, day2, 1, "xyz") }
+
+            assertThat(dayModelList).hasSize(2)
+
+            val dayModel = dayModelList.first()
+            assertThat(dayModel.date).isEqualTo(day1)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.SHIFT)
+
+            val overtimeStartTask = dayModel.details.first{ it.displayType == DetailDisplayType.OVERTIME_NIGHT_START}
+            assertThat(overtimeStartTask.displayTypeTime).isEqualTo(day1.atTime(LocalTime.of(11,15)))
+            assertThat(overtimeStartTask.finishDuration).isNull()
+        }
+
+        @Test
+        fun `Should identify Night Shift end with a finish time later than the start time (atypical)`() {
+
+            val day2 = day1.plusDays(1)
+            val shifts = listOf(
+                    CsrDetailDto(DetailParentType.OVERTIME, day1.atTime(LocalTime.of(11,15)), day2.atTime(LocalTime.of(12,30)), "Night OSG")
+            )
+
+            every { prisonService.getPrisonForUser()} returns Prison("prison", "", "", 1)
+            every { csrApiClient.getDetailsForUser(day1, day2, 1, "xyz") } returns shifts
+
+            val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day2))
+
+
+            verify { prisonService.getPrisonForUser()}
+            verify { csrApiClient.getDetailsForUser(day1, day2, 1, "xyz") }
+
+            assertThat(dayModelList).hasSize(2)
+
+            val dayModel = dayModelList.last()
+            assertThat(dayModel.date).isEqualTo(day2)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.SHIFT)
+
+            val overtimeStartTask = dayModel.details.first{ it.displayType == DetailDisplayType.OVERTIME_NIGHT_FINISH}
+            assertThat(overtimeStartTask.displayTypeTime).isEqualTo(day2.atTime(LocalTime.of(12,30)))
+            assertThat(overtimeStartTask.finishDuration).isEqualTo(90900L)
         }
 
         @Test
@@ -378,7 +434,7 @@ internal class ShiftServiceTest {
 
             val dayModel = dayModelList.first()
             assertThat(dayModel.date).isEqualTo(day1)
-            assertThat(dayModel.shiftType).isEqualTo(DetailType.SHIFT)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.SHIFT)
 
             val overtimeStartTask = dayModel.details.first{ it.displayType == DetailDisplayType.OVERTIME_NIGHT_START}
             assertThat(overtimeStartTask.displayTypeTime).isEqualTo(day1.atTime(LocalTime.of(20,15)))
@@ -406,11 +462,11 @@ internal class ShiftServiceTest {
 
             val dayModel = dayModelList.last()
             assertThat(dayModel.date).isEqualTo(day2)
-            assertThat(dayModel.shiftType).isEqualTo(DetailType.SHIFT)
+            assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.SHIFT)
 
             val overtimeStartTask = dayModel.details.first{ it.displayType == DetailDisplayType.OVERTIME_NIGHT_FINISH}
             assertThat(overtimeStartTask.displayTypeTime).isEqualTo(day2.atTime(LocalTime.of(12,30)))
-            assertThat(overtimeStartTask.finishDuration).isEqualTo("16h 15m")
+            assertThat(overtimeStartTask.finishDuration).isEqualTo(58500L)
         }
     }
 }
