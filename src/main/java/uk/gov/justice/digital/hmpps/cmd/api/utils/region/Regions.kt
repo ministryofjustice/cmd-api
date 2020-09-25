@@ -12,5 +12,4 @@ class Regions {
 
 class Region {
     lateinit var name: String
-    lateinit var url: String
 }
