@@ -70,6 +70,6 @@ env:
          name: check-my-diary
          key: API_CLIENT_SECRET
 
-  - name: OAUTH_ENDPOINT.URL
+  - name: OAUTH_ENDPOINT_URL
     value: "{{ .Values.env.OAUTH_ROOT_URL }}"
 {{- end -}}
