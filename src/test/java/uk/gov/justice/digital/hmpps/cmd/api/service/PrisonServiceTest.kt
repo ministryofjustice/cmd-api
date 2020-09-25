@@ -54,7 +54,6 @@ internal class PrisonServiceTest {
             val prisonId = "AKA"
 
             every { elite2Client.getCurrentPrisonIdForUser()} returns prisonId
-
             every { prisonRepository.findByPrisonId(prisonId)} returns prison1
 
             val prison = service.getPrisonForUser()
@@ -79,7 +78,6 @@ internal class PrisonServiceTest {
 
             assertThat(prison).isEqualTo(null)
         }
-
     }
 
 
