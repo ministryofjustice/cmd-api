@@ -53,6 +53,7 @@ internal class PrisonServiceTest {
         fun `Should get Prison`() {
             val prisonId = "AKA"
 
+            every { elite2Client.getCurrentPrisonIdForUser()} returns prisonId
             every { prisonRepository.findByPrisonId(prisonId)} returns prison1
 
             val prison = service.getPrisonForUser()
