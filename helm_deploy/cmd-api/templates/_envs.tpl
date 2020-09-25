@@ -58,10 +58,18 @@ env:
         name: {{ template "app.name" . }}
         key: APPINSIGHTS_INSTRUMENTATIONKEY
 
-  - name: JWT_SECRET_KEY
+  - name: OAUTH_CLIENT_ID
     valueFrom:
       secretKeyRef:
-         name: {{ template "app.name" . }}
-         key: JWT_SECRET_KEY
+         name: check-my-diary
+         key: API_CLIENT_ID
 
+  - name: OAUTH_CLIENT_SECRET
+    valueFrom:
+      secretKeyRef:
+         name: check-my-diary
+         key: API_CLIENT_SECRET
+
+  - name: OAUTH_ENDPOINT.URL
+    value: "{{ .Values.env.OAUTH_ROOT_URL }}"
 {{- end -}}
