@@ -3,6 +3,8 @@ apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: "send-shift-changes"
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
 spec:
   schedule: "0 9,18 * * *"
   concurrencyPolicy: Allow

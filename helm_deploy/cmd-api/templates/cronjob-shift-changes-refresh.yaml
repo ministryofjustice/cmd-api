@@ -3,6 +3,8 @@ apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: "refresh-shift-changes"
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
 spec:
   schedule: "30 */3 * * *"
   concurrencyPolicy: Allow
