@@ -70,9 +70,9 @@ class NotificationService(
         log.info("Finished sending notifications")
     }
 
-    fun refreshNotifications() {
-        log.info("Refreshing notifications")
-        val allPrisons = prisonService.getAllPrisons().distinctBy { it.csrPlanUnit }
+    fun refreshNotifications(region : Int) {
+        log.info("Refreshing notifications for region: $region")
+        val allPrisons = prisonService.getAllPrisons().filter{ it.region == region }.distinctBy { it.csrPlanUnit }
         val newNotifications = allPrisons
                 .flatMap { prison ->
                     csrClient.getModifiedDetails(prison.csrPlanUnit, prison.region)
@@ -168,7 +168,7 @@ class NotificationService(
         // Only send the latest notification for a shift if there are multiple
         val mostRecentNotifications = notificationGroup
                 .groupBy { it.toKeyDuplicates() }
-                .map { (_, value) -> value.maxBy { it.shiftModified } }
+                .map { (_, value) -> value.maxByOrNull { it.shiftModified } }
                 .filterNotNull()
 
         if (shouldSend(userPreference)) {
@@ -208,7 +208,7 @@ class NotificationService(
     private fun generateTemplateValues(chunk: List<Notification>, communicationPreference: CommunicationPreference): MutableMap<String, String?> {
         val personalisation = mutableMapOf<String, String?>()
         // Get the oldest modified date "Changes since"
-        personalisation["title"] = chunk.minBy { it.shiftModified }?.shiftModified?.let { "Changes since ${it.getDateTimeFormattedForTemplate()}" }
+        personalisation["title"] = chunk.minByOrNull { it.shiftModified }?.shiftModified?.let { "Changes since ${it.getDateTimeFormattedForTemplate()}" }
         // Map each notification onto an predefined key
         personalisation.putAll(
                 notificationKeys
