@@ -23,7 +23,7 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
     fun notificationRefreshJobR1(): JobDetailFactoryBean {
         val jobDetailFactory = JobDetailFactoryBean()
         jobDetailFactory.setJobClass(NotificationRefreshQuartzJobR1::class.java)
-        jobDetailFactory.setDescription("Invoke Notification Refresh Job...")
+        jobDetailFactory.setDescription("Invoke Notification Refresh Job Region 1...")
         jobDetailFactory.setDurability(true)
         return jobDetailFactory
     }
@@ -32,8 +32,8 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
     fun notificationRefreshTriggerR1(@Qualifier("notificationRefreshJobR1") job: JobDetail): CronTriggerFactoryBean {
         val trigger = CronTriggerFactoryBean()
         trigger.setJobDetail(job)
-        trigger.setCronExpression("2 * * ? * *")
-        //trigger.setCronExpression("0 5 */3 ? * *")
+        trigger.setCronExpression("0 5 */3 ? * *")
+        trigger.setMisfireInstruction(2) // Do Nothing
         return trigger
     }
 
@@ -41,7 +41,7 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
     fun notificationRefreshJobR2(): JobDetailFactoryBean {
         val jobDetailFactory = JobDetailFactoryBean()
         jobDetailFactory.setJobClass(NotificationRefreshQuartzJobR2::class.java)
-        jobDetailFactory.setDescription("Invoke Notification Refresh Job...")
+        jobDetailFactory.setDescription("Invoke Notification Refresh Job Region 2...")
         jobDetailFactory.setDurability(true)
         return jobDetailFactory
     }
@@ -51,6 +51,7 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
         val trigger = CronTriggerFactoryBean()
         trigger.setJobDetail(job)
         trigger.setCronExpression("0 10 */3 ? * *")
+        trigger.setMisfireInstruction(2) // Do Nothing
         return trigger
     }
 
@@ -58,7 +59,7 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
     fun notificationRefreshJobR3(): JobDetailFactoryBean {
         val jobDetailFactory = JobDetailFactoryBean()
         jobDetailFactory.setJobClass(NotificationRefreshQuartzJobR3::class.java)
-        jobDetailFactory.setDescription("Invoke Notification Refresh Job...")
+        jobDetailFactory.setDescription("Invoke Notification Refresh Job Region 3...")
         jobDetailFactory.setDurability(true)
         return jobDetailFactory
     }
@@ -68,6 +69,7 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
         val trigger = CronTriggerFactoryBean()
         trigger.setJobDetail(job)
         trigger.setCronExpression("0 15 */3 ? * *")
+        trigger.setMisfireInstruction(2) // Do Nothing
         return trigger
     }
 
@@ -75,7 +77,7 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
     fun notificationRefreshJobR4(): JobDetailFactoryBean {
         val jobDetailFactory = JobDetailFactoryBean()
         jobDetailFactory.setJobClass(NotificationRefreshQuartzJobR4::class.java)
-        jobDetailFactory.setDescription("Invoke Notification Refresh Job...")
+        jobDetailFactory.setDescription("Invoke Notification Refresh Job Region 4...")
         jobDetailFactory.setDurability(true)
         return jobDetailFactory
     }
@@ -85,6 +87,7 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
         val trigger = CronTriggerFactoryBean()
         trigger.setJobDetail(job)
         trigger.setCronExpression("0 20 */3 ? * *")
+        trigger.setMisfireInstruction(2) // Do Nothing
         return trigger
     }
 
@@ -92,7 +95,7 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
     fun notificationRefreshJobR5(): JobDetailFactoryBean {
         val jobDetailFactory = JobDetailFactoryBean()
         jobDetailFactory.setJobClass(NotificationRefreshQuartzJobR5::class.java)
-        jobDetailFactory.setDescription("Invoke Notification Refresh Job...")
+        jobDetailFactory.setDescription("Invoke Notification Refresh Job Region 5...")
         jobDetailFactory.setDurability(true)
         return jobDetailFactory
     }
@@ -102,6 +105,7 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
         val trigger = CronTriggerFactoryBean()
         trigger.setJobDetail(job)
         trigger.setCronExpression("0 25 */3 ? * *")
+        trigger.setMisfireInstruction(2) // Do Nothing
         return trigger
     }
 
@@ -109,7 +113,7 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
     fun notificationRefreshJobR6(): JobDetailFactoryBean {
         val jobDetailFactory = JobDetailFactoryBean()
         jobDetailFactory.setJobClass(NotificationRefreshQuartzJobR6::class.java)
-        jobDetailFactory.setDescription("Invoke Notification Refresh Job...")
+        jobDetailFactory.setDescription("Invoke Notification Refresh Job Region 6...")
         jobDetailFactory.setDurability(true)
         return jobDetailFactory
     }
@@ -119,6 +123,7 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
         val trigger = CronTriggerFactoryBean()
         trigger.setJobDetail(job)
         trigger.setCronExpression("0 30 */3 ? * *")
+        trigger.setMisfireInstruction(2) // Do Nothing
         return trigger
     }
 
@@ -202,6 +207,7 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
         val trigger = CronTriggerFactoryBean()
         trigger.setJobDetail(job)
         trigger.setCronExpression("0 0 9,18,21 ? * *")
+        trigger.setMisfireInstruction(1) // Fire Again
         return trigger
     }
 
