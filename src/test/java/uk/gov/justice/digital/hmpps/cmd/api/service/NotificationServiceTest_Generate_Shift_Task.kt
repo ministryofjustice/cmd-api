@@ -87,7 +87,7 @@ internal class NotificationServiceTest_Generate_Shift_Task {
             val results = mutableListOf<Collection<Notification>>()
             every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
 
-            service.refreshNotifications()
+            service.refreshNotifications(1)
 
             assertThat(results[0]).isEqualTo(listOf<Notification>())
         }
@@ -136,7 +136,7 @@ internal class NotificationServiceTest_Generate_Shift_Task {
             val results = mutableListOf<Collection<Notification>>()
             every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
 
-            service.refreshNotifications()
+            service.refreshNotifications(1)
             val notification1 = Notification(null, quantumId, today.atStartOfDay(), start.plusDays(1), end, task, DetailParentType.SHIFT, DetailModificationType.EDIT, false)
             val notification2 = Notification(null, quantumId, today.atStartOfDay(), start.plusDays(2), end, task, DetailParentType.SHIFT, DetailModificationType.EDIT, false)
             val notification3 = Notification(null, quantumId, today.atStartOfDay(), start.plusDays(3), end, task, DetailParentType.SHIFT, DetailModificationType.EDIT, false)
@@ -187,7 +187,7 @@ internal class NotificationServiceTest_Generate_Shift_Task {
             val results = mutableListOf<Collection<Notification>>()
             every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
 
-            service.refreshNotifications()
+            service.refreshNotifications(1)
             val notification1 = Notification(null, quantumId, today.atStartOfDay(), start, end, task, DetailParentType.SHIFT, DetailModificationType.ADD, false)
             assertThat(results[0]).isEqualTo(listOf(notification1))
         }
@@ -236,7 +236,7 @@ internal class NotificationServiceTest_Generate_Shift_Task {
             val results = mutableListOf<Collection<Notification>>()
             every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
 
-            service.refreshNotifications()
+            service.refreshNotifications(1)
             val notification1 = Notification(null, quantumId, today.atStartOfDay(), start, end, task, DetailParentType.OVERTIME, DetailModificationType.EDIT, false)
             val notification2 = Notification(null, quantumId, today.atStartOfDay(), start, end, task, DetailParentType.SHIFT, DetailModificationType.EDIT, false)
             assertThat(results[0]).isEqualTo(listOf(notification1, notification2))
@@ -288,7 +288,7 @@ internal class NotificationServiceTest_Generate_Shift_Task {
             val results = mutableListOf<Collection<Notification>>()
             every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
 
-            service.refreshNotifications()
+            service.refreshNotifications(1)
             val notification1 = Notification(null, quantumId, today.atStartOfDay(), start, end, task, DetailParentType.SHIFT, DetailModificationType.ADD, false)
             val notification2 = Notification(null, quantumId, today.atStartOfDay().plusSeconds(5), start, end, task, DetailParentType.SHIFT, DetailModificationType.ADD, false)
             val notification3 = Notification(null, quantumId, today.atStartOfDay().plusSeconds(10), start, end, task, DetailParentType.SHIFT, DetailModificationType.ADD, false)
@@ -321,7 +321,7 @@ internal class NotificationServiceTest_Generate_Shift_Task {
             val results = mutableListOf<Collection<Notification>>()
             every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
 
-            service.refreshNotifications()
+            service.refreshNotifications(1)
             val expected = Notification(null, quantumId, today.atStartOfDay(), start, end, task, DetailParentType.SHIFT, DetailModificationType.EDIT, false)
             assertThat(results[0]).isEqualTo(listOf(expected))
         }
@@ -350,7 +350,7 @@ internal class NotificationServiceTest_Generate_Shift_Task {
             val results = mutableListOf<Collection<Notification>>()
             every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
 
-            service.refreshNotifications()
+            service.refreshNotifications(1)
 
             val expected = Notification(null, quantumId, today.atStartOfDay(), start, end, task, DetailParentType.SHIFT, DetailModificationType.ADD, false)
             assertThat(results[0]).isEqualTo(listOf(expected))
@@ -381,7 +381,7 @@ internal class NotificationServiceTest_Generate_Shift_Task {
             val results = mutableListOf<Collection<Notification>>()
             every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
 
-            service.refreshNotifications()
+            service.refreshNotifications(1)
 
             val expected = Notification(null, quantumId, today.atStartOfDay(), start, end, task, DetailParentType.SHIFT, DetailModificationType.DELETE, false)
             assertThat(results[0]).isEqualTo(listOf(expected))
@@ -411,7 +411,7 @@ internal class NotificationServiceTest_Generate_Shift_Task {
             val results = mutableListOf<Collection<Notification>>()
             every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
 
-            service.refreshNotifications()
+            service.refreshNotifications(1)
 
             assertThat(results[0]).isEqualTo(listOf<Notification>())
         }
@@ -423,7 +423,7 @@ internal class NotificationServiceTest_Generate_Shift_Task {
             val results = mutableListOf<Collection<Notification>>()
             every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
 
-            service.refreshNotifications()
+            service.refreshNotifications(1)
 
             assertThat(results[0]).hasSize(0)
         }

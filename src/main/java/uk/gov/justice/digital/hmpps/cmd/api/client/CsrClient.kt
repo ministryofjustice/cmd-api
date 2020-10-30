@@ -16,7 +16,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Component
-class CsrClient(@Qualifier("csrApiWebClient") val csrClient: WebClient, val authenticationFacade: AuthenticationFacade, val regionData: Regions) {
+class CsrClient(@Qualifier("csrApiWebClient") private val csrClient: WebClient, @Qualifier("csrAPIWebClientAppScope") private val csrApiServiceAccountWebClient: WebClient, val authenticationFacade: AuthenticationFacade, private val regionData: Regions) {
 
     @Cacheable(value = ["userDetails"], unless = "#result.size() == 0", key = "{ #from.toEpochDay().toString(), #to.toEpochDay().toString(), #quantumId }")
     fun getDetailsForUser(from: LocalDate, to: LocalDate, region: Int?, quantumId: String) : Collection<CsrDetailDto> {
@@ -37,7 +37,7 @@ class CsrClient(@Qualifier("csrApiWebClient") val csrClient: WebClient, val auth
     fun getModifiedDetails(planUnit: String, region: Int): Collection<CsrModifiedDetailDto> {
         log.info("Finding shift notifications, PlanUnit $planUnit, Region $region")
         val responseType = object : ParameterizedTypeReference<Collection<CsrModifiedDetailDto>>() {}
-        val csrModifiedDetails : Collection<CsrModifiedDetailDto> = csrClient
+        val csrModifiedDetails : Collection<CsrModifiedDetailDto> = csrApiServiceAccountWebClient
                 .get()
                 .uri("/planUnit/${planUnit}/details/modified")
                 .header("X-Region", region.toString())

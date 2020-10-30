@@ -10,7 +10,9 @@ import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
 import java.time.LocalDate
 
 @Service
-class UserPreferenceService(val repository: UserPreferenceRepository, val authenticationFacade: AuthenticationFacade) {
+class UserPreferenceService(
+        private val repository: UserPreferenceRepository,
+        val authenticationFacade: AuthenticationFacade) {
 
     fun getUserPreference(): UserPreferenceDto {
         return UserPreferenceDto.from(getOrCreateUserPreference())

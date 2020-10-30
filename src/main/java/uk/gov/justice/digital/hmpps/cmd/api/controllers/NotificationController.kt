@@ -33,17 +33,5 @@ class NotificationController(val notificationService: NotificationService) {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: Optional<LocalDate>): ResponseEntity<Collection<NotificationDto>> {
         return ResponseEntity.ok(notificationService.getNotifications(processOnRead, unprocessedOnly, from, to))
     }
-
-    @GetMapping("/notifications/refresh")
-    fun refreshNotifications(): ResponseEntity<Unit> {
-        notificationService.refreshNotifications()
-        return ResponseEntity.ok().build()
-    }
-
-    @GetMapping("/notifications/send")
-    fun sendNotifications(): ResponseEntity<Unit> {
-        notificationService.sendNotifications()
-        return ResponseEntity.ok().build()
-    }
 }
 
