@@ -2,11 +2,11 @@ package uk.gov.justice.digital.hmpps.cmd.api.config;
 
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
+import io.netty.handler.timeout.WriteTimeoutHandler;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.client.reactive.ClientHttpConnector;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
@@ -20,6 +20,7 @@ import org.springframework.security.oauth2.client.web.reactive.function.client.S
 import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
+import reactor.netty.tcp.TcpClient;
 import uk.gov.justice.digital.hmpps.cmd.api.utils.UserContext;
 
 @Configuration
@@ -71,16 +72,13 @@ public class WebClientConfiguration {
 
     @Bean
     public WebClient csrAPIWebClientAppScope(@Qualifier(value = "authorizedClientManagerAppScope") final OAuth2AuthorizedClientManager authorizedClientManager, final WebClient.Builder builder) {
-        HttpClient httpClient = HttpClient.create()
-                .tcpConfiguration(tcpClient -> {
-                    tcpClient = tcpClient.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 60_000)
-                    .doOnConnected(connection ->
-                            connection
-                            .addHandlerLast(new ReadTimeoutHandler(3600))
-                    );
-                    return tcpClient;
-                });
-        builder.clientConnector(new ReactorClientHttpConnector(httpClient));
+
+        TcpClient tcpClient = TcpClient.create()
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 60000)
+                .doOnConnected(connection ->
+                        connection.addHandlerLast(new ReadTimeoutHandler(3600))
+                                .addHandlerLast(new WriteTimeoutHandler(3600)));
+        builder.clientConnector(new ReactorClientHttpConnector(HttpClient.from(tcpClient)));
         return getOAuthWebClient(authorizedClientManager, builder, csrRootUri);
     }
 
