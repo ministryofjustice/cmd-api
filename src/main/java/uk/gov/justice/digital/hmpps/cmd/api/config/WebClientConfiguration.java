@@ -41,7 +41,7 @@ public class WebClientConfiguration {
     public WebClient elite2ApiWebClient(final ClientRegistrationRepository clientRegistrationRepository,
                                      final OAuth2AuthorizedClientRepository authorizedClientRepository,
                                      final WebClient.Builder builder) {
-        
+
         return getOAuthWebClient(authorizedClientManager(clientRegistrationRepository, authorizedClientRepository), builder, elite2ApiRootUri);
     }
 
@@ -73,7 +73,11 @@ public class WebClientConfiguration {
     public WebClient csrAPIWebClientAppScope(@Qualifier(value = "authorizedClientManagerAppScope") final OAuth2AuthorizedClientManager authorizedClientManager, final WebClient.Builder builder) {
         HttpClient httpClient = HttpClient.create()
                 .tcpConfiguration(tcpClient -> {
-                    tcpClient = tcpClient.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 3_600_000);
+                    tcpClient = tcpClient.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 60_000)
+                    .doOnConnected(connection ->
+                            connection
+                            .addHandlerLast(new ReadTimeoutHandler(3600))
+                    );
                     return tcpClient;
                 });
         builder.clientConnector(new ReactorClientHttpConnector(httpClient));
