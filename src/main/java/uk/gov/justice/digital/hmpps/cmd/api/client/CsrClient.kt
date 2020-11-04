@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.DetailParentType
 import uk.gov.justice.digital.hmpps.cmd.api.utils.region.Regions
+import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -43,6 +44,7 @@ class CsrClient(@Qualifier("csrApiWebClient") private val csrClient: WebClient, 
                 .header("X-Region", region.toString())
                 .retrieve()
                 .bodyToMono(responseType)
+                .timeout(Duration.ofHours(1))
                 .block() ?: listOf()
         log.info("Found ${csrModifiedDetails.size} shift notifications, PlanUnit $planUnit, Region $region")
 
