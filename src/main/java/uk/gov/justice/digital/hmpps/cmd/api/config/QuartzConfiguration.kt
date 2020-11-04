@@ -34,7 +34,7 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
     fun notificationRefreshTriggerR1(@Qualifier("notificationRefreshJobR1") job: JobDetail): CronTriggerFactoryBean {
         val trigger = CronTriggerFactoryBean()
         trigger.setJobDetail(job)
-        trigger.setCronExpression("0 0/5 20-23 * * ?")
+        trigger.setCronExpression("0 5 */3 ? * *")
         trigger.setMisfireInstruction(2) // Do Nothing
         return trigger
     }
