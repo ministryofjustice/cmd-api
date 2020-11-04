@@ -23,6 +23,8 @@ import reactor.netty.http.client.HttpClient;
 import reactor.netty.tcp.TcpClient;
 import uk.gov.justice.digital.hmpps.cmd.api.utils.UserContext;
 
+import java.time.Duration;
+
 @Configuration
 public class WebClientConfiguration {
 
@@ -73,12 +75,8 @@ public class WebClientConfiguration {
     @Bean
     public WebClient csrAPIWebClientAppScope(@Qualifier(value = "authorizedClientManagerAppScope") final OAuth2AuthorizedClientManager authorizedClientManager, final WebClient.Builder builder) {
 
-        TcpClient tcpClient = TcpClient.create()
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 60000)
-                .doOnConnected(connection ->
-                        connection.addHandlerLast(new ReadTimeoutHandler(3600))
-                                .addHandlerLast(new WriteTimeoutHandler(3600)));
-        builder.clientConnector(new ReactorClientHttpConnector(HttpClient.from(tcpClient)));
+        HttpClient httpClient = HttpClient.create().responseTimeout(Duration.ofHours(1));
+        builder.clientConnector(new ReactorClientHttpConnector(httpClient));
         return getOAuthWebClient(authorizedClientManager, builder, csrRootUri);
     }
 
