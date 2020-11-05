@@ -75,7 +75,12 @@ public class WebClientConfiguration {
     @Bean
     public WebClient csrAPIWebClientAppScope(@Qualifier(value = "authorizedClientManagerAppScope") final OAuth2AuthorizedClientManager authorizedClientManager, final WebClient.Builder builder) {
 
-        HttpClient httpClient = HttpClient.create().responseTimeout(Duration.ofHours(1));
+        HttpClient httpClient = HttpClient.create().responseTimeout(Duration.ofHours(1))
+            .tcpConfiguration(client ->
+                        client.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 3_600_000)
+                                .doOnConnected(conn -> conn
+                                        .addHandlerLast(new ReadTimeoutHandler(3600))
+                                        .addHandlerLast(new WriteTimeoutHandler(3600))));
         builder.clientConnector(new ReactorClientHttpConnector(httpClient));
         return getOAuthWebClient(authorizedClientManager, builder, csrRootUri);
     }

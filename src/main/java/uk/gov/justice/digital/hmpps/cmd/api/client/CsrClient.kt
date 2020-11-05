@@ -36,7 +36,7 @@ class CsrClient(@Qualifier("csrApiWebClient") private val csrClient: WebClient, 
     }
 
     fun getModifiedDetails(planUnit: String, region: Int): Collection<CsrModifiedDetailDto> {
-        log.info("Finding shift notifications, PlanUnit $planUnit, Region $region")
+        log.info("Modified Details: finding PlanUnit $planUnit, Region $region")
         val responseType = object : ParameterizedTypeReference<Collection<CsrModifiedDetailDto>>() {}
         val csrModifiedDetails : Collection<CsrModifiedDetailDto> = csrApiServiceAccountWebClient
                 .get()
@@ -46,13 +46,13 @@ class CsrClient(@Qualifier("csrApiWebClient") private val csrClient: WebClient, 
                 .bodyToMono(responseType)
                 .timeout(Duration.ofHours(1))
                 .block() ?: listOf()
-        log.info("Found ${csrModifiedDetails.size} shift notifications, PlanUnit $planUnit, Region $region")
+        log.info("Modified Details: found ${csrModifiedDetails.size}, PlanUnit $planUnit, Region $region")
 
         return csrModifiedDetails
     }
 
     private fun getDetails(from: LocalDate, to: LocalDate, region: String) : Collection<CsrDetailDto> {
-        log.debug("Finding details for ${authenticationFacade.currentUsername}, Region $region")
+        log.debug("User Details: finding User ${authenticationFacade.currentUsername}, Region $region")
         val responseType = object : ParameterizedTypeReference<Collection<CsrDetailDto>>() {}
         val csrDetails : Collection<CsrDetailDto> = csrClient
                 .get()
@@ -61,7 +61,7 @@ class CsrClient(@Qualifier("csrApiWebClient") private val csrClient: WebClient, 
                 .retrieve()
                 .bodyToMono(responseType)
                 .block() ?: listOf()
-        log.info("Found ${csrDetails.size} details for ${authenticationFacade.currentUsername}, Region $region")
+        log.info("User Details: found ${csrDetails.size}, User ${authenticationFacade.currentUsername}, Region $region")
 
         return csrDetails
     }
