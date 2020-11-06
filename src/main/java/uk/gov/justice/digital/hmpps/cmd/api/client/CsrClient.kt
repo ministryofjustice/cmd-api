@@ -44,7 +44,7 @@ class CsrClient(@Qualifier("csrApiWebClient") private val csrClient: WebClient, 
                 .header("X-Region", region.toString())
                 .retrieve()
                 .bodyToMono(responseType)
-                .timeout(Duration.ofHours(1))
+                .timeout(Duration.ofMinutes(10))
                 .block() ?: listOf()
         log.info("Modified Details: found ${csrModifiedDetails.size}, PlanUnit $planUnit, Region $region")
 
