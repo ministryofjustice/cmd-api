@@ -130,6 +130,24 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
     }
 
     @Bean
+    fun notificationTidyUpJob(): JobDetailFactoryBean {
+        val jobDetailFactory = JobDetailFactoryBean()
+        jobDetailFactory.setJobClass(NotificationTidyUpQuartzJob::class.java)
+        jobDetailFactory.setDescription("Invoke Notification Tidy Up Job..")
+        jobDetailFactory.setDurability(true)
+        return jobDetailFactory
+    }
+
+    @Bean
+    fun notificationTidyUpTrigger(@Qualifier("notificationTidyUpJob") job: JobDetail): CronTriggerFactoryBean {
+        val trigger = CronTriggerFactoryBean()
+        trigger.setJobDetail(job)
+        trigger.setCronExpression("0 4 0 ? * *")
+        trigger.setMisfireInstruction(2) // Do Nothing
+        return trigger
+    }
+
+    @Bean
     fun notificationRefreshSchedulerR1(@Qualifier("notificationRefreshTriggerR1") trigger: Trigger, @Qualifier("notificationRefreshJobR1") job: JobDetail, quartzDataSource: DataSource): SchedulerFactoryBean? {
         val schedulerFactory = SchedulerFactoryBean()
         schedulerFactory.setConfigLocation(ClassPathResource("quartz.properties"))
@@ -186,6 +204,17 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
 
     @Bean
     fun notificationRefreshSchedulerR6(@Qualifier("notificationRefreshTriggerR6") trigger: Trigger, @Qualifier("notificationRefreshJobR6") job: JobDetail, quartzDataSource: DataSource): SchedulerFactoryBean? {
+        val schedulerFactory = SchedulerFactoryBean()
+        schedulerFactory.setConfigLocation(ClassPathResource("quartz.properties"))
+        schedulerFactory.setJobFactory(springBeanJobFactory())
+        schedulerFactory.setJobDetails(job)
+        schedulerFactory.setTriggers(trigger)
+        schedulerFactory.setDataSource(quartzDataSource)
+        return schedulerFactory
+    }
+
+    @Bean
+    fun notificationTidyUpScheduler(@Qualifier("notificationTidyUpTrigger") trigger: Trigger, @Qualifier("notificationTidyUpJob") job: JobDetail, quartzDataSource: DataSource): SchedulerFactoryBean? {
         val schedulerFactory = SchedulerFactoryBean()
         schedulerFactory.setConfigLocation(ClassPathResource("quartz.properties"))
         schedulerFactory.setJobFactory(springBeanJobFactory())

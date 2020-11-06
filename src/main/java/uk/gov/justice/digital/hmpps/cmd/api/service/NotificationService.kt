@@ -96,6 +96,14 @@ class NotificationService(
         log.info("Completed Refreshing modified details for region: $region")
     }
 
+    fun tidyNotification() {
+        // Only hold on to 3 months of this temporary data.
+        var startOfDay = LocalDate.now(clock).atStartOfDay().minusMonths(3)
+        log.info("Removing old notifications (before $startOfDay)")
+        shiftNotificationRepository.deleteAllByShiftModifiedBefore(startOfDay)
+        log.info("Removed old notifications (before $startOfDay)")
+    }
+
     private fun getNotifications(quantumId: String, start: LocalDateTime, end: LocalDateTime, unprocessedOnly: Boolean): Collection<Notification> {
         return shiftNotificationRepository.findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(
                 quantumId,
