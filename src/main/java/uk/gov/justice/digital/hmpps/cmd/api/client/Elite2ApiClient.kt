@@ -20,5 +20,5 @@ class Elite2ApiClient(@Qualifier("elite2ApiWebClient") private val webClient: We
 
 data class CaseLoad(
         @JsonProperty("activeCaseLoadId")
-        val activeCaseLoadId : String
+        val activeCaseLoadId : String?
 ) 

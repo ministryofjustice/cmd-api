@@ -13,7 +13,7 @@ class PrisonService(private val repository: PrisonRepository,
     fun getAllPrisons(): Collection<Prison> {
         log.debug("Finding all prisons")
         val prisons = repository.findAll()
-        log.info("Found ${prisons.size} prisons")
+        log.debug("Found ${prisons.size} prisons")
         return prisons
     }
 
@@ -22,7 +22,7 @@ class PrisonService(private val repository: PrisonRepository,
         log.debug("Finding prison by id $prisonId")
         val prison = repository.findByPrisonId(prisonId)
         if (prison != null) {
-            log.info("Found prison ${prison.prisonName} by id $prisonId")
+            log.debug("Found prison ${prison.prisonName} by id $prisonId")
         } else {
             log.warn("No prison found for id $prisonId")
         }

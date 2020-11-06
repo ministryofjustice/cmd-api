@@ -1,9 +1,13 @@
 package uk.gov.justice.digital.hmpps.cmd.api.config;
 
+import io.netty.channel.ChannelOption;
+import io.netty.handler.timeout.ReadTimeoutHandler;
+import io.netty.handler.timeout.WriteTimeoutHandler;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder;
@@ -15,7 +19,11 @@ import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepo
 import org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction;
 import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.netty.http.client.HttpClient;
+import reactor.netty.tcp.TcpClient;
 import uk.gov.justice.digital.hmpps.cmd.api.utils.UserContext;
+
+import java.time.Duration;
 
 @Configuration
 public class WebClientConfiguration {
@@ -36,6 +44,7 @@ public class WebClientConfiguration {
     public WebClient elite2ApiWebClient(final ClientRegistrationRepository clientRegistrationRepository,
                                      final OAuth2AuthorizedClientRepository authorizedClientRepository,
                                      final WebClient.Builder builder) {
+
         return getOAuthWebClient(authorizedClientManager(clientRegistrationRepository, authorizedClientRepository), builder, elite2ApiRootUri);
     }
 
@@ -44,7 +53,6 @@ public class WebClientConfiguration {
     public WebClient csrApiWebClient(final ClientRegistrationRepository clientRegistrationRepository,
                                        final OAuth2AuthorizedClientRepository authorizedClientRepository,
                                        final WebClient.Builder builder) {
-
         return getOAuthWebClient(authorizedClientManager(clientRegistrationRepository, authorizedClientRepository), builder, csrRootUri);
     }
 

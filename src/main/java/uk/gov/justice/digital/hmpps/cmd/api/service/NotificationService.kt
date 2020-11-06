@@ -38,9 +38,9 @@ class NotificationService(
         val to = calculateEndDateTime(toParam, from)
         val unprocessedOnly = unprocessedOnlyParam.orElse(false)
         val processOnRead = processOnReadParam.orElse(true)
-        log.debug("Finding unprocessedOnly: $unprocessedOnly notifications between $from and $to for $quantumId")
+        log.debug("User Notifications: finding user $quantumId, unprocessedOnly: $unprocessedOnly")
         val notifications = getNotifications(quantumId, from, to, unprocessedOnly)
-        log.info("Found ${notifications.size} unprocessedOnly: $unprocessedOnly notifications between $from and $to for $quantumId")
+        log.info("User Notifications: found ${notifications.size} user $quantumId, unprocessedOnly: $unprocessedOnly")
 
         val notificationDtos = notifications.map {
             NotificationDto.from(it, CommunicationPreference.NONE)
@@ -71,7 +71,7 @@ class NotificationService(
     }
 
     fun refreshNotifications(region : Int) {
-        log.info("Refreshing notifications for region: $region")
+        log.info("Refreshing modified details for region: $region")
         val allPrisons = prisonService.getAllPrisons().filter{ it.region == region }.distinctBy { it.csrPlanUnit }
         val newNotifications = allPrisons
                 .flatMap { prison ->
@@ -93,6 +93,7 @@ class NotificationService(
                         checkIfNotificationsExist(it.quantumId, it.detailStart, it.shiftType, it.shiftModified)
                 }
         shiftNotificationRepository.saveAll(Notification.fromDto(allNotifications))
+        log.info("Completed Refreshing modified details for region: $region")
     }
 
     private fun getNotifications(quantumId: String, start: LocalDateTime, end: LocalDateTime, unprocessedOnly: Boolean): Collection<Notification> {
