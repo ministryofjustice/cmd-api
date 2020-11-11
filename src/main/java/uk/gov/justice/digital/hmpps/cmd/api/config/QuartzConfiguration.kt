@@ -142,7 +142,7 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
     fun notificationTidyUpTrigger(@Qualifier("notificationTidyUpJob") job: JobDetail): CronTriggerFactoryBean {
         val trigger = CronTriggerFactoryBean()
         trigger.setJobDetail(job)
-        trigger.setCronExpression("0 4 0 ? * *")
+        trigger.setCronExpression("0 0 4 * * ?")
         trigger.setMisfireInstruction(2) // Do Nothing
         return trigger
     }
