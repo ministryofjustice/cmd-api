@@ -97,8 +97,8 @@ class NotificationService(
     }
 
     fun tidyNotification() {
-        // Only hold on to 3 months of this temporary data.
-        var startOfDay = LocalDate.now(clock).atStartOfDay().minusMonths(3)
+        // Only hold on to 1 week of this temporary data.
+        val startOfDay = LocalDate.now(clock).atStartOfDay().minusWeeks(1)
         log.info("Removing old notifications (before $startOfDay)")
         shiftNotificationRepository.deleteAllByShiftModifiedBefore(startOfDay)
         log.info("Removed old notifications (before $startOfDay)")
