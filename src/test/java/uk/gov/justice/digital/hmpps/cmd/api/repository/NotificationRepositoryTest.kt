@@ -32,29 +32,13 @@ class NotificationRepositoryTest(
     inner class GetNotificationTests {
 
         @Test
-        fun `Should return a notification between the dates case insensitive quantum_id`() {
-            val quantumId = "XyZ"
-            val date = now.atStartOfDay()
-            val notification = getValidNotification(date, date)
-            repository.save(notification)
-
-            val notifications = repository.findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(
-                    quantumId,
-                    now.minusDays(1).atStartOfDay(),
-                    now.plusDays(1).atStartOfDay())
-            assertThat(notifications).isNotEmpty
-
-            assertThat(notifications.contains(notification))
-        }
-
-        @Test
         fun `Should return a notification between the dates`() {
             val quantumId = "XYZ"
             val date = now.atStartOfDay()
             val notification = getValidNotification(date, date)
             repository.save(notification)
 
-            val notifications = repository.findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(
+            val notifications = repository.findAllByQuantumIdAndShiftModifiedIsBetween(
                     quantumId,
                     now.minusDays(1).atStartOfDay(),
                     now.plusDays(1).atStartOfDay())
@@ -70,7 +54,7 @@ class NotificationRepositoryTest(
             val notification = getValidNotification(date, date)
             repository.save(notification)
 
-            val notifications = repository.findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(
+            val notifications = repository.findAllByQuantumIdAndShiftModifiedIsBetween(
                     quantumId,
                     now.minusDays(1).atStartOfDay(),
                     now.plusDays(1).atStartOfDay())
@@ -84,7 +68,7 @@ class NotificationRepositoryTest(
             val notification = getValidNotification(date, date)
             repository.save(notification)
 
-            val notifications = repository.findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(
+            val notifications = repository.findAllByQuantumIdAndShiftModifiedIsBetween(
                     quantumId,
                     now.minusDays(1).atStartOfDay(),
                     now.plusDays(1).atStartOfDay())
@@ -95,7 +79,7 @@ class NotificationRepositoryTest(
         fun `Should return count of 0 matches`() {
             val date = now.plusDays(3).atStartOfDay()
 
-            val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
+            val notifications = repository.countAllByQuantumIdAndDetailStartAndParentTypeAndShiftModified(
                     "XYZ",
                     date,
                     DetailParentType.SHIFT,
@@ -104,27 +88,12 @@ class NotificationRepositoryTest(
         }
 
         @Test
-        fun `Should return count if 1 matches case insensitive quantum_id`() {
-            val date = now.plusDays(3).atStartOfDay()
-            val notification = getValidNotification(date, date)
-            repository.save(notification)
-
-            val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
-                    "XyZ",
-                    date,
-                    DetailParentType.SHIFT,
-                    date)
-            assertThat(notifications).isEqualTo(1)
-        }
-
-
-        @Test
         fun `Should return count if 1 matches`() {
             val date = now.plusDays(3).atStartOfDay()
             val notification = getValidNotification(date, date)
             repository.save(notification)
 
-            val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
+            val notifications = repository.countAllByQuantumIdAndDetailStartAndParentTypeAndShiftModified(
                     "XYZ",
                     date,
                     DetailParentType.SHIFT,
@@ -139,7 +108,7 @@ class NotificationRepositoryTest(
             val notification = getValidNotification(date, date)
             repository.saveAll(listOf(notification, notification))
 
-            val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
+            val notifications = repository.countAllByQuantumIdAndDetailStartAndParentTypeAndShiftModified(
                     "XYZ",
                     date,
                     DetailParentType.SHIFT,
@@ -151,7 +120,7 @@ class NotificationRepositoryTest(
         fun `Add Type Check Should return count of 0 matches`() {
             val date = now.plusDays(3).atStartOfDay()
 
-            val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndActionType(
+            val notifications = repository.countAllByQuantumIdAndDetailStartAndParentTypeAndActionType(
                     "XYZ",
                     date,
                     DetailParentType.SHIFT,
@@ -165,7 +134,7 @@ class NotificationRepositoryTest(
             val notification = getValidNotification(date, date)
             repository.save(notification)
 
-            val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndActionType(
+            val notifications = repository.countAllByQuantumIdAndDetailStartAndParentTypeAndActionType(
                     "XYZ",
                     date,
                     DetailParentType.SHIFT,
@@ -180,7 +149,7 @@ class NotificationRepositoryTest(
             val notification = getValidNotification(date, date)
             repository.saveAll(listOf(notification, notification))
 
-            val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndActionType(
+            val notifications = repository.countAllByQuantumIdAndDetailStartAndParentTypeAndActionType(
                     "XYZ",
                     date,
                     DetailParentType.SHIFT,

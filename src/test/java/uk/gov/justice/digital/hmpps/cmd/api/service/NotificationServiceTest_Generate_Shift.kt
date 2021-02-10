@@ -87,7 +87,7 @@ internal class NotificationServiceTest_Generate_Shift {
 
             every { csrClient.getModifiedDetails(any(), any()) } returns listOf(dto1)
 
-            every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(quantumId, start, shiftType, today) } returns 1
+            every { shiftNotificationRepository.countAllByQuantumIdAndDetailStartAndParentTypeAndShiftModified(quantumId, start, shiftType, today) } returns 1
 
             val results = mutableListOf<Collection<Notification>>()
             every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
@@ -137,7 +137,7 @@ internal class NotificationServiceTest_Generate_Shift {
 
             every { csrClient.getModifiedDetails(any(), any()) } returns listOf(dto1, dto2, dto3)
 
-            every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(quantumId, any(), shiftType, today) } returns 0
+            every { shiftNotificationRepository.countAllByQuantumIdAndDetailStartAndParentTypeAndShiftModified(quantumId, any(), shiftType, today) } returns 0
 
             val results = mutableListOf<Collection<Notification>>()
             every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
@@ -189,7 +189,7 @@ internal class NotificationServiceTest_Generate_Shift {
 
             every { csrClient.getModifiedDetails(any(), any()) } returns listOf(dto1, dto2, dto3)
 
-            every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(quantumId, any(), shiftType, today) } returns 0
+            every { shiftNotificationRepository.countAllByQuantumIdAndDetailStartAndParentTypeAndShiftModified(quantumId, any(), shiftType, today) } returns 0
 
             val results = mutableListOf<Collection<Notification>>()
             every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
@@ -239,9 +239,9 @@ internal class NotificationServiceTest_Generate_Shift {
 
             every { csrClient.getModifiedDetails(any(), any()) } returns listOf(dto1, dto2, dto3)
 
-            every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(quantumId, any(), shiftType, today) } returns 0
-            every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(quantumId, any(), shiftType, today.plusSeconds(5)) } returns 0
-            every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(quantumId, any(), shiftType, today.plusSeconds(10)) } returns 0
+            every { shiftNotificationRepository.countAllByQuantumIdAndDetailStartAndParentTypeAndShiftModified(quantumId, any(), shiftType, today) } returns 0
+            every { shiftNotificationRepository.countAllByQuantumIdAndDetailStartAndParentTypeAndShiftModified(quantumId, any(), shiftType, today.plusSeconds(5)) } returns 0
+            every { shiftNotificationRepository.countAllByQuantumIdAndDetailStartAndParentTypeAndShiftModified(quantumId, any(), shiftType, today.plusSeconds(10)) } returns 0
 
             val results = mutableListOf<Collection<Notification>>()
             every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
@@ -271,8 +271,8 @@ internal class NotificationServiceTest_Generate_Shift {
 
             every { csrClient.getModifiedDetails(any(), any()) } returns listOf(dto1)
 
-            every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndActionType(quantumId, today, shiftType, DetailModificationType.ADD) } returns 1
-            every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(quantumId, today, shiftType, today) } returns 0
+            every { shiftNotificationRepository.countAllByQuantumIdAndDetailStartAndParentTypeAndActionType(quantumId, today, shiftType, DetailModificationType.ADD) } returns 1
+            every { shiftNotificationRepository.countAllByQuantumIdAndDetailStartAndParentTypeAndShiftModified(quantumId, today, shiftType, today) } returns 0
 
             val results = mutableListOf<Collection<Notification>>()
             every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
@@ -301,7 +301,7 @@ internal class NotificationServiceTest_Generate_Shift {
 
             every { csrClient.getModifiedDetails(any(), any()) } returns listOf(dto1)
 
-            every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(quantumId, today, shiftType, today) } returns 0
+            every { shiftNotificationRepository.countAllByQuantumIdAndDetailStartAndParentTypeAndShiftModified(quantumId, today, shiftType, today) } returns 0
 
             val results = mutableListOf<Collection<Notification>>()
             every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
@@ -328,7 +328,7 @@ internal class NotificationServiceTest_Generate_Shift {
 
             every { csrClient.getModifiedDetails(any(), any()) } returns listOf(dto1)
 
-            every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(quantumId, today, shiftType, today) } returns 0
+            every { shiftNotificationRepository.countAllByQuantumIdAndDetailStartAndParentTypeAndShiftModified(quantumId, today, shiftType, today) } returns 0
 
             val results = mutableListOf<Collection<Notification>>()
             every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
@@ -360,7 +360,7 @@ internal class NotificationServiceTest_Generate_Shift {
 
             every { csrClient.getModifiedDetails(any(), any()) } returns listOf(dto1)
 
-            every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(quantumId, start, shiftType, today) } returns 1
+            every { shiftNotificationRepository.countAllByQuantumIdAndDetailStartAndParentTypeAndShiftModified(quantumId, start, shiftType, today) } returns 1
 
             val results = mutableListOf<Collection<Notification>>()
             every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
@@ -400,8 +400,8 @@ internal class NotificationServiceTest_Generate_Shift {
 
             every { csrClient.getModifiedDetails(any(), any()) } returns listOf(dto1)
 
-            every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndActionType(quantumId, today, shiftType, DetailModificationType.ADD) } returns 0
-            every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(quantumId, today, shiftType, today) } returns 0
+            every { shiftNotificationRepository.countAllByQuantumIdAndDetailStartAndParentTypeAndActionType(quantumId, today, shiftType, DetailModificationType.ADD) } returns 0
+            every { shiftNotificationRepository.countAllByQuantumIdAndDetailStartAndParentTypeAndShiftModified(quantumId, today, shiftType, today) } returns 0
 
             val results = mutableListOf<Collection<Notification>>()
             every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()

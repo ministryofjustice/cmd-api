@@ -63,7 +63,7 @@ data class Notification(
 
                 fun fromDto(dtoCsr: CsrModifiedDetailDto): Notification {
                         return Notification(
-                                quantumId = dtoCsr.quantumId,
+                                quantumId = dtoCsr.quantumId.toUpperCase(),
                                 shiftModified = dtoCsr.shiftModified,
                                 detailStart = dtoCsr.detailStart,
                                 detailEnd = dtoCsr.detailEnd,

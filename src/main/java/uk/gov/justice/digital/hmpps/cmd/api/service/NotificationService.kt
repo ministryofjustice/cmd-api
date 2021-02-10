@@ -105,24 +105,24 @@ class NotificationService(
     }
 
     private fun getNotifications(quantumId: String, start: LocalDateTime, end: LocalDateTime, unprocessedOnly: Boolean): Collection<Notification> {
-        return shiftNotificationRepository.findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(
-                quantumId,
+        return shiftNotificationRepository.findAllByQuantumIdAndShiftModifiedIsBetween(
+                quantumId.toUpperCase(),
                 start,
                 end)
                 .filter { !unprocessedOnly || (unprocessedOnly && !it.processed) }
     }
 
     private fun checkIfNotificationsExist(quantumId: String, detailStart: LocalDateTime, shiftType: DetailParentType, shiftModified: LocalDateTime): Boolean {
-        return shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
-                quantumId,
+        return shiftNotificationRepository.countAllByQuantumIdAndDetailStartAndParentTypeAndShiftModified(
+                quantumId.toUpperCase(),
                 detailStart,
                 shiftType,
                 shiftModified) > 0
     }
 
     private fun checkIfEditNotificationsHasCorrespondingAdd(quantumId: String, detailStart: LocalDateTime, shiftType: DetailParentType): Boolean{
-        return shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndActionType(
-                quantumId,
+        return shiftNotificationRepository.countAllByQuantumIdAndDetailStartAndParentTypeAndActionType(
+                quantumId.toUpperCase(),
                 detailStart,
                 shiftType,
                 DetailModificationType.ADD) > 0

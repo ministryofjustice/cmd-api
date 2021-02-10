@@ -40,12 +40,12 @@ internal class UserPreferenceServiceTest {
                     "Any Email",
                     "Any Sms",
                     CommunicationPreference.EMAIL)
-            every { repository.findByQuantumIdIgnoreCase(any()) } returns userPref
+            every { repository.findByQuantumId(any()) } returns userPref
             every { authenticationFacade.currentUsername } returns quantumId
 
             val returnValue = service.getOrCreateUserPreference()
 
-            verify { repository.findByQuantumIdIgnoreCase(quantumId) }
+            verify { repository.findByQuantumId(quantumId) }
             confirmVerified(repository)
 
             assertThat(returnValue).isNotNull
@@ -59,12 +59,12 @@ internal class UserPreferenceServiceTest {
         fun `Should get preference with today's date`() {
             val quantumId = "XYZ"
             val userPref = UserPreference(quantumId, now)
-            every { repository.findByQuantumIdIgnoreCase(any()) } returns userPref
+            every { repository.findByQuantumId(any()) } returns userPref
             every { authenticationFacade.currentUsername } returns quantumId
 
             val returnValue = service.getOrCreateUserPreference()
 
-            verify { repository.findByQuantumIdIgnoreCase(quantumId) }
+            verify { repository.findByQuantumId(quantumId) }
             confirmVerified(repository)
 
             assertThat(returnValue).isNotNull
@@ -74,13 +74,13 @@ internal class UserPreferenceServiceTest {
         @Test
         fun `Should handle preference not found by creating a new one`() {
             val quantumId = "XYZ"
-            every { repository.findByQuantumIdIgnoreCase(any()) } returns null
+            every { repository.findByQuantumId(any()) } returns null
             every { repository.save<UserPreference>(any()) } returns UserPreference(quantumId)
             every { authenticationFacade.currentUsername } returns quantumId
 
             val returnValue = service.getOrCreateUserPreference()
 
-            verify { repository.findByQuantumIdIgnoreCase(quantumId) }
+            verify { repository.findByQuantumId(quantumId) }
             verify { repository.save<UserPreference>(any()) }
             confirmVerified(repository)
 
@@ -90,22 +90,6 @@ internal class UserPreferenceServiceTest {
             assertThat(returnValue.sms).isNull()
             assertThat(returnValue.commPref).isEqualTo(CommunicationPreference.NONE)
 
-        }
-
-        @Test
-        fun `Should get preference case insensitive`() {
-            val quantumId = "XyZ"
-            val userPref = UserPreference(quantumId.toLowerCase(), now)
-            every { repository.findByQuantumIdIgnoreCase(any()) } returns userPref
-            every { authenticationFacade.currentUsername } returns quantumId
-
-            val returnValue = service.getOrCreateUserPreference()
-
-            verify { repository.findByQuantumIdIgnoreCase(quantumId) }
-            confirmVerified(repository)
-
-            assertThat(returnValue).isNotNull
-            assertThat(returnValue.snoozeUntil).isEqualTo(userPref.snoozeUntil)
         }
 
     }
@@ -120,13 +104,13 @@ internal class UserPreferenceServiceTest {
             val userPref = UserPreference(quantumId, now.plusDays(1))
             val newDate = now.plusDays(3)
 
-            every { repository.findByQuantumIdIgnoreCase(any()) } returns userPref
+            every { repository.findByQuantumId(any()) } returns userPref
             every { repository.save(userPref)} returns userPref
             every { authenticationFacade.currentUsername } returns quantumId
 
             service.updateSnoozePreference(newDate)
 
-            verify { repository.findByQuantumIdIgnoreCase(quantumId) }
+            verify { repository.findByQuantumId(quantumId) }
             verify { repository.save(userPref)}
             confirmVerified(repository)
         }
@@ -136,13 +120,13 @@ internal class UserPreferenceServiceTest {
             val quantumId = "XYZ"
             val userPref = UserPreference(quantumId, now.plusDays(1))
             val newDate = now.minusDays(3)
-            every { repository.findByQuantumIdIgnoreCase(any()) } returns userPref
+            every { repository.findByQuantumId(any()) } returns userPref
             every { repository.save(userPref)} returns userPref
             every { authenticationFacade.currentUsername } returns quantumId
 
             service.updateSnoozePreference(newDate)
 
-            verify { repository.findByQuantumIdIgnoreCase(quantumId) }
+            verify { repository.findByQuantumId(quantumId) }
             verify { repository.save(userPref)}
             confirmVerified(repository)
         }
@@ -151,14 +135,14 @@ internal class UserPreferenceServiceTest {
         fun `Should create a new preference with a future date`() {
             val quantumId = "XYZ"
             val newDate = now.plusDays(3)
-            every { repository.findByQuantumIdIgnoreCase(any()) } returns null
+            every { repository.findByQuantumId(any()) } returns null
             every { repository.save<UserPreference>(any()) } returns UserPreference(quantumId)
             every { authenticationFacade.currentUsername } returns quantumId
 
             service.updateSnoozePreference(newDate)
 
 
-            verify { repository.findByQuantumIdIgnoreCase(quantumId) }
+            verify { repository.findByQuantumId(quantumId) }
             verify { repository.save<UserPreference>(any()) }
             confirmVerified(repository)
         }
@@ -168,14 +152,14 @@ internal class UserPreferenceServiceTest {
             val quantumId = "XYZ"
             val newDate = now.minusDays(3)
 
-            every { repository.findByQuantumIdIgnoreCase(any()) } returns null
+            every { repository.findByQuantumId(any()) } returns null
             every { repository.save<UserPreference>(any()) } returns UserPreference(quantumId)
             every { authenticationFacade.currentUsername } returns quantumId
 
             service.updateSnoozePreference(newDate)
 
 
-            verify { repository.findByQuantumIdIgnoreCase(quantumId) }
+            verify { repository.findByQuantumId(quantumId) }
             verify { repository.save<UserPreference>(any()) }
             confirmVerified(repository)
         }
@@ -195,13 +179,13 @@ internal class UserPreferenceServiceTest {
                     "Any Sms",
                     CommunicationPreference.EMAIL)
 
-            every { repository.findByQuantumIdIgnoreCase(any()) } returns userPref
+            every { repository.findByQuantumId(any()) } returns userPref
             every { repository.save(userPref)} returns userPref
             every { authenticationFacade.currentUsername } returns quantumId
 
             service.updateNotificationDetails("new Email", "new Sms", CommunicationPreference.EMAIL)
 
-            verify { repository.findByQuantumIdIgnoreCase(quantumId) }
+            verify { repository.findByQuantumId(quantumId) }
             verify { repository.save(userPref)}
             confirmVerified(repository)
         }
@@ -209,13 +193,13 @@ internal class UserPreferenceServiceTest {
         @Test
         fun `Should create a new preference on update when one doesn't already exist`() {
             val quantumId = "XYZ"
-            every { repository.findByQuantumIdIgnoreCase(any()) } returns null
+            every { repository.findByQuantumId(any()) } returns null
             every { repository.save<UserPreference>(any()) } returns UserPreference(quantumId)
             every { authenticationFacade.currentUsername } returns quantumId
 
             service.updateNotificationDetails("new Email", "new Sms", CommunicationPreference.EMAIL)
 
-            verify { repository.findByQuantumIdIgnoreCase(quantumId) }
+            verify { repository.findByQuantumId(quantumId) }
             verify { repository.save<UserPreference>(any()) }
             confirmVerified(repository)
         }

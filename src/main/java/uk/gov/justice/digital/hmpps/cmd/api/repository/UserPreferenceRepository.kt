@@ -8,6 +8,6 @@ import java.util.*
 @Repository
 interface UserPreferenceRepository : CrudRepository<UserPreference, UUID> {
 
-    fun findByQuantumIdIgnoreCase(quantumId : String) : UserPreference?
+    fun findByQuantumId(quantumId : String) : UserPreference?
 
 }
