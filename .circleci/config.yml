@@ -74,7 +74,9 @@ workflows:
           name: deploy_prod
           env: "prod"
           slack_notification: true
-          context: check-my-diary-prod # we only need the kube override settings, the purpose of a context is to share across projects.
+          context:
+            - check-my-diary-prod # we only need the kube override settings, the purpose of a context is to share across projects.
+            - hmpps-common-vars
           requires:
             - request-prod-approval
 
