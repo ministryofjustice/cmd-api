@@ -1,7 +1,4 @@
 spring:
-  profiles:
-    include: stdout
-
   flyway:
     locations: classpath:db/migration/h2,classpath:db/migration/general
 

@@ -172,7 +172,7 @@ class NotificationService(
 
         data class Key(val shiftType: DetailParentType, val quantumId: String, val detailStart: LocalDateTime)
 
-        fun Notification.toKeyDuplicates() = Key(this.parentType, this.quantumId.toUpperCase(), this.detailStart)
+        fun Notification.toKeyDuplicates() = Key(this.parentType, this.quantumId.uppercase(), this.detailStart)
 
         // Only send the latest notification for a shift if there are multiple
         val mostRecentNotifications = notificationGroup

@@ -1,7 +1,7 @@
 plugins {
-    id("uk.gov.justice.hmpps.gradle-spring-boot") version "1.0.6"
-    kotlin("plugin.spring") version "1.4.10"
-    kotlin("plugin.jpa") version "1.4.10"
+    id("uk.gov.justice.hmpps.gradle-spring-boot") version "3.3.3"
+    kotlin("plugin.spring") version "1.5.20"
+    kotlin("plugin.jpa") version "1.5.20"
 }
 
 repositories {
@@ -31,17 +31,17 @@ dependencies {
     implementation("com.github.ben-manes.caffeine:caffeine")
 
     implementation("org.springframework:spring-webflux")
-    implementation("org.springframework.boot:spring-boot-starter-reactor-netty")
+    implementation("org.springframework.boot:spring-boot-starter-reactor-netty:2.5.2")
 
     implementation("io.springfox:springfox-swagger2:2.9.2")
     implementation("io.springfox:springfox-swagger-ui:2.9.2")
     implementation("org.apache.commons:commons-lang3:3.11")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.2")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.3")
 
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.11.2")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.3")
     implementation("com.nimbusds:nimbus-jose-jwt:8.19")
-    implementation("com.google.guava:guava:29.0-jre")
-    implementation("uk.gov.service.notify:notifications-java-client:3.17.0-RELEASE")
+    implementation("com.google.guava:guava:30.1.1-jre")
+    implementation("uk.gov.service.notify:notifications-java-client:3.17.2-RELEASE")
 
 
     testAnnotationProcessor("org.springframework.boot:spring-boot-configuration-processor")

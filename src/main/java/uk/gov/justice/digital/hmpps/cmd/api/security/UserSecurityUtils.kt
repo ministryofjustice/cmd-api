@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Component
 
 @Component
+@SuppressWarnings("ConstantConditions")
 class UserSecurityUtils : AuthenticationFacade {
     val authentication: Authentication
         get() = SecurityContextHolder.getContext().authentication
@@ -26,12 +27,8 @@ class UserSecurityUtils : AuthenticationFacade {
     }
 
     private val userPrincipal: Any?
-        get() {
-            var userPrincipal: Any? = null
-            val auth = authentication
-            if (auth != null) {
-                userPrincipal = auth.principal
-            }
-            return userPrincipal
-        }
+      get() {
+        val auth = authentication
+        return auth.principal
+      }
 }

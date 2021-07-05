@@ -45,7 +45,7 @@ class UserPreferenceService(
             userPreference
         } else {
             log.info("Creating new user preference for $quantumId")
-            repository.save(UserPreference(quantumId.toUpperCase()))
+            repository.save(UserPreference(quantumId.uppercase()))
         }
     }
 

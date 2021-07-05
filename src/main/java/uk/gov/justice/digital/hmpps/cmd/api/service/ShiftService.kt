@@ -142,7 +142,8 @@ class ShiftService(private val prisonService: PrisonService,
                     .partition { it.detailStart.toLocalTime() < it.detailEnd.toLocalTime() && it.detailStart.toLocalDate() == it.detailEnd.toLocalDate() }
 
             // Identify a Day Shift Starting
-            val dayShiftStart = dayShiftDetails.filter { it.detailStart.toLocalDate() == date }.minBy { it.detailStart }?.let {
+            val dayShiftStart = dayShiftDetails.filter { it.detailStart.toLocalDate() == date }
+              .minByOrNull { it.detailStart }?.let {
                 DetailDto(
                         it.activity,
                         it.detailStart,
@@ -160,7 +161,8 @@ class ShiftService(private val prisonService: PrisonService,
             }
 
             // Identify a Day Shift Finishing
-            val dayShiftEnd = dayShiftDetails.filter { it.detailEnd.toLocalDate() == date }.maxBy { it.detailEnd }?.let {
+            val dayShiftEnd = dayShiftDetails.filter { it.detailEnd.toLocalDate() == date }.maxByOrNull { it.detailEnd }
+              ?.let {
                 DetailDto(
                         it.activity,
                         it.detailStart,
@@ -179,7 +181,8 @@ class ShiftService(private val prisonService: PrisonService,
             }
 
             // Identify a Night Shift Starting
-            val nightShiftStart = nightShiftDetails.filter { it.detailStart.toLocalDate() == date }.maxBy { it.detailStart }?.let {
+            val nightShiftStart = nightShiftDetails.filter { it.detailStart.toLocalDate() == date }
+              .maxByOrNull { it.detailStart }?.let {
                 DetailDto(
                         it.activity,
                         it.detailStart,
@@ -197,7 +200,8 @@ class ShiftService(private val prisonService: PrisonService,
             }
 
             // Identify a Night Shift Finishing
-            val nightShiftEnd = nightShiftDetails.filter { it.detailEnd.toLocalDate() == date }.minBy { it.detailEnd }?.let {
+            val nightShiftEnd = nightShiftDetails.filter { it.detailEnd.toLocalDate() == date }
+              .minByOrNull { it.detailEnd }?.let {
                 DetailDto(
                         it.activity,
                         it.detailStart,

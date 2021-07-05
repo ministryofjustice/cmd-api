@@ -48,7 +48,8 @@ class ControllerAdvice {
         e.bindingResult.allErrors.forEach(Consumer { error: ObjectError ->
             val fieldName = (error as FieldError).field
             val errorMessage = error.getDefaultMessage()
-            errors[fieldName] = errorMessage
+            if (errorMessage != null)
+              errors[fieldName] = errorMessage
         })
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
