@@ -7,23 +7,22 @@ import org.junit.jupiter.api.Test
 
 class DetailModificationTypeTest {
 
-    @Nested
-    @DisplayName("Case Insensitive From")
-    inner class CaseInsensitiveFrom {
-        @Test
-        fun `It should match case insensitive lower`() {
-            assertThat(DetailModificationType.from("edit")).isEqualTo(DetailModificationType.EDIT)
-        }
-
-        @Test
-        fun `It should match case insensitive upper`() {
-            assertThat(DetailModificationType.from("EDIT")).isEqualTo(DetailModificationType.EDIT)
-        }
-
-        @Test
-        fun `It should match case insensitive mixed`() {
-            assertThat(DetailModificationType.from("eDIt")).isEqualTo(DetailModificationType.EDIT)
-        }
+  @Nested
+  @DisplayName("Case Insensitive From")
+  inner class CaseInsensitiveFrom {
+    @Test
+    fun `It should match case insensitive lower`() {
+      assertThat(DetailModificationType.from("edit")).isEqualTo(DetailModificationType.EDIT)
     }
 
+    @Test
+    fun `It should match case insensitive upper`() {
+      assertThat(DetailModificationType.from("EDIT")).isEqualTo(DetailModificationType.EDIT)
+    }
+
+    @Test
+    fun `It should match case insensitive mixed`() {
+      assertThat(DetailModificationType.from("eDIt")).isEqualTo(DetailModificationType.EDIT)
+    }
+  }
 }

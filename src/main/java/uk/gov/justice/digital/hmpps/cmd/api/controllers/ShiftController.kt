@@ -14,24 +14,25 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.cmd.api.dto.ShiftDto
 import uk.gov.justice.digital.hmpps.cmd.api.service.ShiftService
 import java.time.LocalDate
-import java.util.*
+import java.util.Optional
 
 @Api(tags = ["shift controller"])
 @RestController
 @RequestMapping(produces = [APPLICATION_JSON_VALUE])
 class ShiftController(private val shiftService: ShiftService) {
 
-    @ApiOperation(value = "Retrieve all details for a user between two dates")
-    @ApiResponses(value = [
-        ApiResponse(code = 200, message = "OK")
-    ])
-    @GetMapping("/user/details")
-    fun getShifts(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) from: Optional<LocalDate>,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: Optional<LocalDate>): ResponseEntity<Collection<ShiftDto>> {
-        val result = shiftService.getDetailsForUser(from, to)
-        return ResponseEntity.ok(result)
-    }
-
-
+  @ApiOperation(value = "Retrieve all details for a user between two dates")
+  @ApiResponses(
+    value = [
+      ApiResponse(code = 200, message = "OK")
+    ]
+  )
+  @GetMapping("/user/details")
+  fun getShifts(
+    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) from: Optional<LocalDate>,
+    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: Optional<LocalDate>
+  ): ResponseEntity<Collection<ShiftDto>> {
+    val result = shiftService.getDetailsForUser(from, to)
+    return ResponseEntity.ok(result)
+  }
 }

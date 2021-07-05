@@ -6,11 +6,11 @@ import java.time.LocalDate
 
 class UpdateSnoozeUntilRequestTest {
 
-    @Test
-    fun `Create Update Snooze Request`() {
-        val date = LocalDate.now()
-        val updateSnoozeRequest = UpdateSnoozeUntilRequest(date)
+  @Test
+  fun `Create Update Snooze Request`() {
+    val date = LocalDate.now()
+    val updateSnoozeRequest = UpdateSnoozeUntilRequest(date)
 
-        Assertions.assertThat(updateSnoozeRequest.snoozeUntil).isEqualTo(date)
-    }
+    Assertions.assertThat(updateSnoozeRequest.snoozeUntil).isEqualTo(date)
+  }
 }

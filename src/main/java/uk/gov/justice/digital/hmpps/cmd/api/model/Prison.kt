@@ -8,16 +8,16 @@ import javax.persistence.Table
 @Entity
 @Table(name = "prison")
 data class Prison(
-        @Id
-        @Column(nullable = false)
-        var prisonId: String,
+  @Id
+  @Column(nullable = false)
+  var prisonId: String,
 
-        @Column(nullable = false)
-        var csrPlanUnit: String,
+  @Column(nullable = false)
+  var csrPlanUnit: String,
 
-        @Column(nullable = false)
-        var prisonName: String,
+  @Column(nullable = false)
+  var prisonName: String,
 
-        @Column(nullable = false)
-        var region: Int
+  @Column(nullable = false)
+  var region: Int
 )

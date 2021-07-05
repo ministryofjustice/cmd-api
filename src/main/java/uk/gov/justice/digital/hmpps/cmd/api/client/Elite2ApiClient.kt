@@ -8,17 +8,17 @@ import org.springframework.web.reactive.function.client.WebClient
 @Component
 class Elite2ApiClient(@Qualifier("elite2ApiWebClient") private val webClient: WebClient) {
 
-    fun getCurrentPrisonIdForUser() : String {
-        return webClient
-                .get()
-                .uri("/api/users/me")
-                .retrieve()
-                .bodyToMono(CaseLoad::class.java)
-                .block()?.activeCaseLoadId ?: ""
-    }
+  fun getCurrentPrisonIdForUser(): String {
+    return webClient
+      .get()
+      .uri("/api/users/me")
+      .retrieve()
+      .bodyToMono(CaseLoad::class.java)
+      .block()?.activeCaseLoadId ?: ""
+  }
 }
 
 data class CaseLoad(
-        @JsonProperty("activeCaseLoadId")
-        val activeCaseLoadId : String?
-) 
+  @JsonProperty("activeCaseLoadId")
+  val activeCaseLoadId: String?
+)

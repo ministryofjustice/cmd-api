@@ -14,97 +14,92 @@ import java.time.LocalDate
 @ActiveProfiles("test")
 @DataJpaTest
 class UserPreferenceRepositoryTest(
-        @Autowired val repository: UserPreferenceRepository
+  @Autowired val repository: UserPreferenceRepository
 ) {
 
-    private val now: LocalDate = LocalDate.now()
+  private val now: LocalDate = LocalDate.now()
 
-    @BeforeEach
-    fun resetAllMocks() {
-        repository.deleteAll()
+  @BeforeEach
+  fun resetAllMocks() {
+    repository.deleteAll()
+  }
+
+  @Nested
+  @DisplayName("Get Snooze Preference tests")
+  inner class GetPreferenceTests {
+
+    @Test
+    fun `Should return a preference with a future date`() {
+      val quantumId = "XYZ"
+      repository.save(UserPreference(quantumId, now.plusDays(20)))
+
+      val pref = repository.findByQuantumIdIgnoreCase(quantumId)
+      assertThat(pref).isNotNull
+
+      assertThat(pref?.quantumId).isEqualTo(quantumId)
+      assertThat(pref?.snoozeUntil).isEqualTo(now.plusDays(20))
     }
 
-    @Nested
-    @DisplayName("Get Snooze Preference tests")
-    inner class GetPreferenceTests {
+    @Test
+    fun `Should return a preference with today's date`() {
+      val quantumId = "XYZ"
+      repository.save(UserPreference(quantumId, now))
 
-        @Test
-        fun `Should return a preference with a future date`() {
-            val quantumId = "XYZ"
-            repository.save(UserPreference(quantumId, now.plusDays(20)))
+      val pref = repository.findByQuantumIdIgnoreCase(quantumId)
+      assertThat(pref).isNotNull
 
-            val pref = repository.findByQuantumIdIgnoreCase(quantumId)
-            assertThat(pref).isNotNull
-
-            assertThat(pref?.quantumId).isEqualTo(quantumId)
-            assertThat(pref?.snoozeUntil).isEqualTo(now.plusDays(20))
-        }
-
-        @Test
-        fun `Should return a preference with today's date`() {
-            val quantumId = "XYZ"
-            repository.save(UserPreference(quantumId, now))
-
-            val pref = repository.findByQuantumIdIgnoreCase(quantumId)
-            assertThat(pref).isNotNull
-
-            assertThat(pref?.quantumId).isEqualTo(quantumId)
-            assertThat(pref?.snoozeUntil).isEqualTo(now)
-        }
-
-        @Test
-        fun `Should return a preference with a past date`() {
-            val quantumId = "XYZ"
-            repository.save(UserPreference(quantumId, now.minusDays(10)))
-
-            val pref = repository.findByQuantumIdIgnoreCase(quantumId)
-            assertThat(pref).isNotNull
-        }
-
+      assertThat(pref?.quantumId).isEqualTo(quantumId)
+      assertThat(pref?.snoozeUntil).isEqualTo(now)
     }
 
-    @Nested
-    @DisplayName("Update Snooze Preference tests")
-    inner class UpdatePreferenceTests {
+    @Test
+    fun `Should return a preference with a past date`() {
+      val quantumId = "XYZ"
+      repository.save(UserPreference(quantumId, now.minusDays(10)))
 
-        @Test
-        fun `Should get a preference with a future date`() {
-            val quantumId = "XYZ"
-            repository.save(UserPreference(quantumId, now.plusDays(20)))
+      val pref = repository.findByQuantumIdIgnoreCase(quantumId)
+      assertThat(pref).isNotNull
+    }
+  }
 
-            val result = repository.findByQuantumIdIgnoreCase(quantumId)
+  @Nested
+  @DisplayName("Update Snooze Preference tests")
+  inner class UpdatePreferenceTests {
 
-            assertThat(result).isNotNull
-            assertThat(result?.quantumId).isEqualTo(quantumId)
-            assertThat(result?.snoozeUntil).isEqualTo(now.plusDays(20))
-        }
+    @Test
+    fun `Should get a preference with a future date`() {
+      val quantumId = "XYZ"
+      repository.save(UserPreference(quantumId, now.plusDays(20)))
 
-        @Test
-        fun `Should get preference with a past date`() {
-            val quantumId = "XYZ"
-            repository.save(UserPreference(quantumId, now.minusDays(10)))
+      val result = repository.findByQuantumIdIgnoreCase(quantumId)
 
-            val result = repository.findByQuantumIdIgnoreCase(quantumId)
-
-            assertThat(result).isNotNull
-            assertThat(result?.quantumId).isEqualTo(quantumId)
-            assertThat(result?.snoozeUntil).isEqualTo(now.minusDays(10))
-        }
-
-
-        @Test
-        fun `Should ignore case`() {
-            val quantumId = "XyZ123aDSddsdsd"
-            repository.save(UserPreference(quantumId.toUpperCase(), now.minusDays(10)))
-
-            val result = repository.findByQuantumIdIgnoreCase(quantumId.toLowerCase())
-
-            assertThat(result).isNotNull
-            assertThat(result?.quantumId).isEqualToIgnoringCase(quantumId)
-            assertThat(result?.snoozeUntil).isEqualTo(now.minusDays(10))
-        }
-
-
+      assertThat(result).isNotNull
+      assertThat(result?.quantumId).isEqualTo(quantumId)
+      assertThat(result?.snoozeUntil).isEqualTo(now.plusDays(20))
     }
 
+    @Test
+    fun `Should get preference with a past date`() {
+      val quantumId = "XYZ"
+      repository.save(UserPreference(quantumId, now.minusDays(10)))
+
+      val result = repository.findByQuantumIdIgnoreCase(quantumId)
+
+      assertThat(result).isNotNull
+      assertThat(result?.quantumId).isEqualTo(quantumId)
+      assertThat(result?.snoozeUntil).isEqualTo(now.minusDays(10))
+    }
+
+    @Test
+    fun `Should ignore case`() {
+      val quantumId = "XyZ123aDSddsdsd"
+      repository.save(UserPreference(quantumId.toUpperCase(), now.minusDays(10)))
+
+      val result = repository.findByQuantumIdIgnoreCase(quantumId.toLowerCase())
+
+      assertThat(result).isNotNull
+      assertThat(result?.quantumId).isEqualToIgnoringCase(quantumId)
+      assertThat(result?.snoozeUntil).isEqualTo(now.minusDays(10))
+    }
+  }
 }

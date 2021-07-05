@@ -18,38 +18,36 @@ import uk.gov.service.notify.NotificationClient
 import uk.gov.service.notify.NotificationClientApi
 import java.time.Clock
 
-
-
 @EnableCaching
 @EnableScheduling
 @SpringBootApplication
 class CmdApiApplication {
 
-    companion object {
-        @JvmStatic
-        fun main(args: Array<String>) {
-            SpringApplication.run(CmdApiApplication::class.java, *args)
-        }
+  companion object {
+    @JvmStatic
+    fun main(args: Array<String>) {
+      SpringApplication.run(CmdApiApplication::class.java, *args)
     }
+  }
 
-    @Bean
-    fun initialiseClock(): Clock {
-        return Clock.systemDefaultZone()
-    }
+  @Bean
+  fun initialiseClock(): Clock {
+    return Clock.systemDefaultZone()
+  }
 
-    @Bean
-    fun notificationClient(@Value("\${application.notify.key}") key: String?): NotificationClientApi? {
-        return NotificationClient(key)
-    }
+  @Bean
+  fun notificationClient(@Value("\${application.notify.key}") key: String?): NotificationClientApi? {
+    return NotificationClient(key)
+  }
 
-    @Bean
-    @Primary
-    fun objectMapper(): ObjectMapper? {
-        return ObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-                .setSerializationInclusion(JsonInclude.Include.NON_NULL)
-                .setSerializationInclusion(JsonInclude.Include.NON_ABSENT)
-                .registerModules(Jdk8Module(), JavaTimeModule(), KotlinModule())
-    }
+  @Bean
+  @Primary
+  fun objectMapper(): ObjectMapper? {
+    return ObjectMapper()
+      .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+      .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+      .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+      .setSerializationInclusion(JsonInclude.Include.NON_ABSENT)
+      .registerModules(Jdk8Module(), JavaTimeModule(), KotlinModule())
+  }
 }

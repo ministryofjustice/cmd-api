@@ -7,24 +7,23 @@ import java.time.LocalDate
 
 class ShiftDtoTest {
 
-    @Test
-    fun `Create Day Dto `() {
+  @Test
+  fun `Create Day Dto `() {
 
-        val date = LocalDate.now()
-        val type = FullDayActivityType.REST_DAY
-        val details : Collection<DetailDto> = listOf()
+    val date = LocalDate.now()
+    val type = FullDayActivityType.REST_DAY
+    val details: Collection<DetailDto> = listOf()
 
-        val day = ShiftDto(
-            date,
-            type,
-            type.description,
-            details
-        )
+    val day = ShiftDto(
+      date,
+      type,
+      type.description,
+      details
+    )
 
-        Assertions.assertThat(day.date).isEqualTo(date)
-        Assertions.assertThat(day.shiftType).isEqualTo(type)
-        Assertions.assertThat(day.shiftTypeDescription).isEqualTo(type.description)
-        Assertions.assertThat(day.details).isEqualTo(details)
-    }
-
-} 
+    Assertions.assertThat(day.date).isEqualTo(date)
+    Assertions.assertThat(day.shiftType).isEqualTo(type)
+    Assertions.assertThat(day.shiftTypeDescription).isEqualTo(type.description)
+    Assertions.assertThat(day.details).isEqualTo(details)
+  }
+}
