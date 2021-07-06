@@ -10,26 +10,25 @@ import java.time.LocalDateTime
 
 @ApiModel(description = "Notification")
 data class NotificationDto @JsonCreator constructor(
-        @ApiModelProperty(required = true, value = "Description of notification", example = "Your shift on 2020-04-20 has changed.")
-        @JsonProperty("description")
-        val description: String,
-        @ApiModelProperty(required = true, value = "When the shift was modified", example = "2020-04-20T17:45:55")
-        @JsonProperty("shiftModified")
-        val shiftModified: LocalDateTime,
-        @ApiModelProperty(required = true, value = "Whether the notification has been processed", example = "true")
-        @JsonProperty("processed")
-        val processed: Boolean
+  @ApiModelProperty(required = true, value = "Description of notification", example = "Your shift on 2020-04-20 has changed.")
+  @JsonProperty("description")
+  val description: String,
+  @ApiModelProperty(required = true, value = "When the shift was modified", example = "2020-04-20T17:45:55")
+  @JsonProperty("shiftModified")
+  val shiftModified: LocalDateTime,
+  @ApiModelProperty(required = true, value = "Whether the notification has been processed", example = "true")
+  @JsonProperty("processed")
+  val processed: Boolean
 ) {
 
-    companion object {
+  companion object {
 
-        fun from(notification: Notification, communicationPreference: CommunicationPreference): NotificationDto {
-            return NotificationDto(
-                    notification.getNotificationDescription(communicationPreference),
-                    notification.shiftModified,
-                    notification.processed
-                    )
-        }
-
+    fun from(notification: Notification, communicationPreference: CommunicationPreference): NotificationDto {
+      return NotificationDto(
+        notification.getNotificationDescription(communicationPreference),
+        notification.shiftModified,
+        notification.processed
+      )
     }
+  }
 }
