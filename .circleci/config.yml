@@ -1,8 +1,7 @@
 version: 2.1
 
 orbs:
-  owasp: entur/owasp@0.0.10
-  hmpps: ministryofjustice/hmpps@3.2
+  hmpps: ministryofjustice/hmpps@3.8
 
 jobs:
   validate:
@@ -91,3 +90,6 @@ workflows:
     jobs:
       - owasp/gradle_owasp_dependency_check:
           executor: hmpps/java
+      - hmpps/npm_security_audit:
+          context:
+            - hmpps-common-vars
