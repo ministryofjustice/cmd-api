@@ -1,8 +1,7 @@
 version: 2.1
 
 orbs:
-  owasp: entur/owasp@0.0.10
-  hmpps: ministryofjustice/hmpps@3.2
+  hmpps: ministryofjustice/hmpps@3.8
 
 jobs:
   validate:
@@ -52,6 +51,8 @@ workflows:
             branches:
               only:
                 - main
+          context:
+            - hmpps-common-vars
           requires:
             - validate
             - helm_lint
@@ -63,7 +64,9 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_preprod
           env: "preprod"
-          context: check-my-diary-preprod # we only need the kube override settings, the purpose of a context is to share across projects.
+          context:
+            - check-my-diary-preprod # we only need the kube override settings, the purpose of a context is to share across projects.
+            - hmpps-common-vars
           requires:
             - request-preprod-approval
       - request-prod-approval:
@@ -89,5 +92,13 @@ workflows:
               only:
                 - main
     jobs:
-      - owasp/gradle_owasp_dependency_check:
-          executor: hmpps/java
+      - hmpps/gradle_owasp_dependency_check:
+          context:
+            - hmpps-common-vars
+      - hmpps/trivy_latest_scan:
+          context:
+            - hmpps-common-vars
+      - hmpps/veracode_policy_scan:
+          context:
+            - hmpps-common-vars
+            - veracode-credentials

@@ -32,7 +32,7 @@ WORKDIR /app
 COPY --from=builder --chown=appuser:appgroup /app/build/libs/cmd-api*.jar /app/app.jar
 COPY --from=builder --chown=appuser:appgroup /app/build/libs/applicationinsights-agent*.jar /app/agent.jar
 COPY --chown=appuser:appgroup run.sh /app
-COPY --from=builder --chown=appuser:appgroup /app/AI-Agent.xml /app
+COPY --from=builder --chown=appuser:appgroup /app/applicationinsights.json /app
 
 USER 2000
 
