@@ -56,3 +56,9 @@ dependencies {
   testImplementation("com.ninja-squad:springmockk:2.0.3")
   testImplementation("io.jsonwebtoken:jjwt:0.9.1")
 }
+
+tasks {
+  compileKotlin {
+    kotlinOptions.jvmTarget = "16"
+  }
+}

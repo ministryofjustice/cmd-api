@@ -99,7 +99,7 @@ internal class UserPreferenceServiceTest {
     @Test
     fun `Should get preference case insensitive`() {
       val quantumId = "XyZ"
-      val userPref = UserPreference(quantumId.toLowerCase(), now)
+      val userPref = UserPreference(quantumId.lowercase(), now)
       every { repository.findByQuantumIdIgnoreCase(any()) } returns userPref
       every { authenticationFacade.currentUsername } returns quantumId
 

@@ -93,9 +93,9 @@ class UserPreferenceRepositoryTest(
     @Test
     fun `Should ignore case`() {
       val quantumId = "XyZ123aDSddsdsd"
-      repository.save(UserPreference(quantumId.toUpperCase(), now.minusDays(10)))
+      repository.save(UserPreference(quantumId.uppercase(), now.minusDays(10)))
 
-      val result = repository.findByQuantumIdIgnoreCase(quantumId.toLowerCase())
+      val result = repository.findByQuantumIdIgnoreCase(quantumId.lowercase())
 
       assertThat(result).isNotNull
       assertThat(result?.quantumId).isEqualToIgnoringCase(quantumId)

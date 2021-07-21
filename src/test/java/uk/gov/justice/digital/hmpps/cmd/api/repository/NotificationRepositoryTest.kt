@@ -251,24 +251,20 @@ class NotificationRepositoryTest(
   companion object {
     fun getValidNotification(shiftDate: LocalDateTime, shiftModified: LocalDateTime, processed: Boolean = false): Notification {
       val quantumId = "XYZ"
-      val shiftModified = shiftModified
-      val taskStart = shiftDate
-      val taskEnd = shiftDate
       val task = "Any Activity"
       val shiftType = ShiftType.SHIFT
       val actionType = DetailModificationType.ADD
-      val processed = processed
 
       return Notification(
-        1L,
-        quantumId,
-        shiftModified,
-        taskStart,
-        taskEnd,
-        task,
-        shiftType,
-        actionType,
-        processed
+        id = 1L,
+        quantumId = quantumId,
+        shiftModified = shiftModified,
+        detailStart = shiftDate,
+        detailEnd = shiftDate,
+        activity = task,
+        parentType = shiftType,
+        actionType = actionType,
+        processed = processed
       )
     }
   }
