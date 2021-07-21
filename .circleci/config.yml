@@ -3,9 +3,15 @@ version: 2.1
 orbs:
   hmpps: ministryofjustice/hmpps@3.8
 
+executors:
+  validator:
+    docker:
+      - image: cimg/openjdk:16.0-browsers
+    working_directory: ~/app
+
 jobs:
   validate:
-    executor: hmpps/java
+    executor: validator
     steps:
       - checkout
       - restore_cache:
