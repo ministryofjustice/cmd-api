@@ -11,7 +11,7 @@ Continuous Integration:
 https://app.circleci.com/pipelines/github/ministryofjustice/cmd-api
 
 ###Prerequisites
-- Java JDK 11+
+- Java JDK 16+
 - An editor/IDE
 - Gradle
 - Docker

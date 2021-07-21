@@ -298,7 +298,6 @@ internal class NotificationServiceTest_Generate_Shift_Task {
     fun `Should save edit Shift Task notification types`() {
       val today = LocalDate.now(clock)
       val quantumId = "CSTRIFE_GEN"
-      val shiftDate = today.plusDays(2)
       val start = today.atStartOfDay().plusSeconds(123L)
       val end = today.atStartOfDay().plusSeconds(456L)
       val task = "Guard Duty"
@@ -358,7 +357,6 @@ internal class NotificationServiceTest_Generate_Shift_Task {
     fun `Should save remove Shift Task notification types if not exist in the DB`() {
       val today = LocalDate.now(clock)
       val quantumId = "CSTRIFE_GEN"
-      val shiftDate = today.plusDays(2)
       val start = today.atStartOfDay().plusSeconds(123L)
       val end = today.atStartOfDay().plusSeconds(456L)
       val task = "Guard Duty"
