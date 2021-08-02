@@ -35,6 +35,10 @@ generic-service:
                     - "cmd-api"
             topologyKey: kubernetes.io/hostname
 
+  resources:
+    requests:
+      cpu: 40m
+
   # Environment variables to load into the deployment
   env:
     SPRING_PROFILES_ACTIVE: "postgres"

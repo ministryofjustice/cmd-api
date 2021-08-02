@@ -8,8 +8,12 @@ repositories {
   maven("https://dl.bintray.com/gov-uk-notify/maven")
 }
 
-configurations {
-  implementation { exclude(mapOf("module" to "tomcat-jdbc")) }
+allOpen {
+  annotations(
+    "javax.persistence.Entity",
+    "javax.persistence.MappedSuperclass",
+    "javax.persistence.Embeddable"
+  )
 }
 
 dependencies {
@@ -18,7 +22,7 @@ dependencies {
 
   runtimeOnly("com.h2database:h2")
   runtimeOnly("org.postgresql:postgresql")
-  runtimeOnly("com.zaxxer:HikariCP:5.0.0")
+  runtimeOnly("com.zaxxer:HikariCP")
   runtimeOnly("org.flywaydb:flyway-core")
 
   implementation("org.springframework.boot:spring-boot-starter-jdbc")
@@ -39,7 +43,7 @@ dependencies {
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.4")
 
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.4")
-  implementation("com.nimbusds:nimbus-jose-jwt:9.11.1")
+  implementation("com.nimbusds:nimbus-jose-jwt:9.11.3")
   implementation("com.google.guava:guava:30.1.1-jre")
   implementation("uk.gov.service.notify:notifications-java-client:3.17.2-RELEASE")
 
