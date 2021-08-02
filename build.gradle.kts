@@ -33,8 +33,8 @@ dependencies {
   implementation("org.springframework:spring-webflux")
   implementation("org.springframework.boot:spring-boot-starter-reactor-netty")
 
-  implementation("io.springfox:springfox-swagger2:3.0.0")
-  implementation("io.springfox:springfox-swagger-ui:3.0.0")
+  implementation("io.springfox:springfox-swagger2:2.9.2")
+  implementation("io.springfox:springfox-swagger-ui:2.9.2")
   implementation("org.apache.commons:commons-lang3:3.12.0")
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.4")
 

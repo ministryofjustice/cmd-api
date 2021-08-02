@@ -2,6 +2,7 @@ spring:
 
   flyway:
     locations: classpath:db/migration/h2,classpath:db/migration/general
+    baselineOnMigrate: true
 
   jpa:
     show-sql: true
