@@ -155,7 +155,11 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
   }
 
   @Bean
-  fun notificationRefreshSchedulerR1(@Qualifier("notificationRefreshTriggerR1") trigger: Trigger, @Qualifier("notificationRefreshJobR1") job: JobDetail, quartzDataSource: DataSource): SchedulerFactoryBean? {
+  fun notificationRefreshSchedulerR1(
+    @Qualifier("notificationRefreshTriggerR1") trigger: Trigger,
+    @Qualifier("notificationRefreshJobR1") job: JobDetail,
+    quartzDataSource: DataSource
+  ): SchedulerFactoryBean? {
     val schedulerFactory = SchedulerFactoryBean()
     schedulerFactory.setConfigLocation(ClassPathResource("quartz.properties"))
     schedulerFactory.setJobFactory(springBeanJobFactory())
@@ -166,7 +170,11 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
   }
 
   @Bean
-  fun notificationRefreshSchedulerR2(@Qualifier("notificationRefreshTriggerR2") trigger: Trigger, @Qualifier("notificationRefreshJobR2") job: JobDetail, quartzDataSource: DataSource): SchedulerFactoryBean? {
+  fun notificationRefreshSchedulerR2(
+    @Qualifier("notificationRefreshTriggerR2") trigger: Trigger,
+    @Qualifier("notificationRefreshJobR2") job: JobDetail,
+    quartzDataSource: DataSource
+  ): SchedulerFactoryBean? {
     val schedulerFactory = SchedulerFactoryBean()
     schedulerFactory.setConfigLocation(ClassPathResource("quartz.properties"))
     schedulerFactory.setJobFactory(springBeanJobFactory())
@@ -177,7 +185,11 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
   }
 
   @Bean
-  fun notificationRefreshSchedulerR3(@Qualifier("notificationRefreshTriggerR3") trigger: Trigger, @Qualifier("notificationRefreshJobR3") job: JobDetail, quartzDataSource: DataSource): SchedulerFactoryBean? {
+  fun notificationRefreshSchedulerR3(
+    @Qualifier("notificationRefreshTriggerR3") trigger: Trigger,
+    @Qualifier("notificationRefreshJobR3") job: JobDetail,
+    quartzDataSource: DataSource
+  ): SchedulerFactoryBean? {
     val schedulerFactory = SchedulerFactoryBean()
     schedulerFactory.setConfigLocation(ClassPathResource("quartz.properties"))
     schedulerFactory.setJobFactory(springBeanJobFactory())
@@ -188,7 +200,11 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
   }
 
   @Bean
-  fun notificationRefreshSchedulerR4(@Qualifier("notificationRefreshTriggerR4") trigger: Trigger, @Qualifier("notificationRefreshJobR4") job: JobDetail, quartzDataSource: DataSource): SchedulerFactoryBean? {
+  fun notificationRefreshSchedulerR4(
+    @Qualifier("notificationRefreshTriggerR4") trigger: Trigger,
+    @Qualifier("notificationRefreshJobR4") job: JobDetail,
+    quartzDataSource: DataSource
+  ): SchedulerFactoryBean? {
     val schedulerFactory = SchedulerFactoryBean()
     schedulerFactory.setConfigLocation(ClassPathResource("quartz.properties"))
     schedulerFactory.setJobFactory(springBeanJobFactory())
@@ -199,7 +215,11 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
   }
 
   @Bean
-  fun notificationRefreshSchedulerR5(@Qualifier("notificationRefreshTriggerR5") trigger: Trigger, @Qualifier("notificationRefreshJobR5") job: JobDetail, quartzDataSource: DataSource): SchedulerFactoryBean? {
+  fun notificationRefreshSchedulerR5(
+    @Qualifier("notificationRefreshTriggerR5") trigger: Trigger,
+    @Qualifier("notificationRefreshJobR5") job: JobDetail,
+    quartzDataSource: DataSource
+  ): SchedulerFactoryBean? {
     val schedulerFactory = SchedulerFactoryBean()
     schedulerFactory.setConfigLocation(ClassPathResource("quartz.properties"))
     schedulerFactory.setJobFactory(springBeanJobFactory())
@@ -210,7 +230,11 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
   }
 
   @Bean
-  fun notificationRefreshSchedulerR6(@Qualifier("notificationRefreshTriggerR6") trigger: Trigger, @Qualifier("notificationRefreshJobR6") job: JobDetail, quartzDataSource: DataSource): SchedulerFactoryBean? {
+  fun notificationRefreshSchedulerR6(
+    @Qualifier("notificationRefreshTriggerR6") trigger: Trigger,
+    @Qualifier("notificationRefreshJobR6") job: JobDetail,
+    quartzDataSource: DataSource
+  ): SchedulerFactoryBean? {
     val schedulerFactory = SchedulerFactoryBean()
     schedulerFactory.setConfigLocation(ClassPathResource("quartz.properties"))
     schedulerFactory.setJobFactory(springBeanJobFactory())
@@ -221,7 +245,11 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
   }
 
   @Bean
-  fun notificationTidyUpScheduler(@Qualifier("notificationTidyUpTrigger") trigger: Trigger, @Qualifier("notificationTidyUpJob") job: JobDetail, quartzDataSource: DataSource): SchedulerFactoryBean? {
+  fun notificationTidyUpScheduler(
+    @Qualifier("notificationTidyUpTrigger") trigger: Trigger,
+    @Qualifier("notificationTidyUpJob") job: JobDetail,
+    quartzDataSource: DataSource
+  ): SchedulerFactoryBean? {
     val schedulerFactory = SchedulerFactoryBean()
     schedulerFactory.setConfigLocation(ClassPathResource("quartz.properties"))
     schedulerFactory.setJobFactory(springBeanJobFactory())
@@ -250,7 +278,11 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
   }
 
   @Bean
-  fun notificationSendScheduler(@Qualifier("notificationSendTrigger") trigger: Trigger, @Qualifier("notificationSendJob") job: JobDetail, quartzDataSource: DataSource): SchedulerFactoryBean? {
+  fun notificationSendScheduler(
+    @Qualifier("notificationSendTrigger") trigger: Trigger,
+    @Qualifier("notificationSendJob") job: JobDetail,
+    quartzDataSource: DataSource
+  ): SchedulerFactoryBean? {
     val schedulerFactory = SchedulerFactoryBean()
     schedulerFactory.setConfigLocation(ClassPathResource("quartz.properties"))
     schedulerFactory.setJobFactory(springBeanJobFactory())

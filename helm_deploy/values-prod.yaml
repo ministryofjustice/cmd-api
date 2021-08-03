@@ -13,3 +13,6 @@ generic-service:
 
 cron:
   namespace: check-my-diary-prod
+
+generic-prometheus-alerts:
+  alertSeverity: digital-prison-service

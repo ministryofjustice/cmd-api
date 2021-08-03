@@ -14,13 +14,15 @@ spring:
 
   datasource:
     url: 'jdbc:h2:mem:cmd-api-db-test;MODE=PostgreSQL'
-    continue-on-error: true
     username: cmd
     password: dummy
-    initialization-mode: always
 
   cache:
     type: NONE
+  sql:
+    init:
+      mode: always
+      continue-on-error: true
 
 graceful:
   shutdown.enabled: false
