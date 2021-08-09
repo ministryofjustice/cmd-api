@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.cmd.api.service
 
+import com.microsoft.applicationinsights.TelemetryClient
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
@@ -44,7 +45,8 @@ internal class NotificationServiceTest_Send_Duplicates {
     3,
     notifyClient,
     prisonService,
-    csrClient
+    csrClient,
+    TelemetryClient()
   )
 
   private val now = LocalDateTime.now(clock)
