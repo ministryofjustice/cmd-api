@@ -41,7 +41,7 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
   fun notificationRefreshTriggerR1(@Qualifier("notificationRefreshJobR1") job: JobDetail): CronTriggerFactoryBean {
     val trigger = CronTriggerFactoryBean()
     trigger.setJobDetail(job)
-    trigger.setCronExpression("0 5 */3 ? * *")
+    trigger.setCronExpression("0 0 */3 ? * *")
     trigger.setMisfireInstruction(2) // Do Nothing
     return trigger
   }
@@ -59,7 +59,7 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
   fun notificationRefreshTriggerR2(@Qualifier("notificationRefreshJobR2") job: JobDetail): CronTriggerFactoryBean {
     val trigger = CronTriggerFactoryBean()
     trigger.setJobDetail(job)
-    trigger.setCronExpression("0 10 */3 ? * *")
+    trigger.setCronExpression("0 30 */3 ? * *")
     trigger.setMisfireInstruction(2) // Do Nothing
     return trigger
   }
@@ -77,7 +77,7 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
   fun notificationRefreshTriggerR3(@Qualifier("notificationRefreshJobR3") job: JobDetail): CronTriggerFactoryBean {
     val trigger = CronTriggerFactoryBean()
     trigger.setJobDetail(job)
-    trigger.setCronExpression("0 15 */3 ? * *")
+    trigger.setCronExpression("0 0 1-22/3 ? * *")
     trigger.setMisfireInstruction(2) // Do Nothing
     return trigger
   }
@@ -95,7 +95,7 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
   fun notificationRefreshTriggerR4(@Qualifier("notificationRefreshJobR4") job: JobDetail): CronTriggerFactoryBean {
     val trigger = CronTriggerFactoryBean()
     trigger.setJobDetail(job)
-    trigger.setCronExpression("0 20 */3 ? * *")
+    trigger.setCronExpression("0 30 1-22/3 ? * *")
     trigger.setMisfireInstruction(2) // Do Nothing
     return trigger
   }
@@ -113,7 +113,7 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
   fun notificationRefreshTriggerR5(@Qualifier("notificationRefreshJobR5") job: JobDetail): CronTriggerFactoryBean {
     val trigger = CronTriggerFactoryBean()
     trigger.setJobDetail(job)
-    trigger.setCronExpression("0 25 */3 ? * *")
+    trigger.setCronExpression("0 0 2-23/3 ? * *")
     trigger.setMisfireInstruction(2) // Do Nothing
     return trigger
   }
@@ -131,7 +131,7 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
   fun notificationRefreshTriggerR6(@Qualifier("notificationRefreshJobR6") job: JobDetail): CronTriggerFactoryBean {
     val trigger = CronTriggerFactoryBean()
     trigger.setJobDetail(job)
-    trigger.setCronExpression("0 30 */3 ? * *")
+    trigger.setCronExpression("0 30 2-23/3 ? * *")
     trigger.setMisfireInstruction(2) // Do Nothing
     return trigger
   }

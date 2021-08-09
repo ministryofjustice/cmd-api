@@ -37,7 +37,7 @@ generic-service:
 
   resources:
     requests:
-      cpu: 40m
+      cpu: 60m
 
   # Environment variables to load into the deployment
   env:

@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.cmd.api.service
 
+import com.microsoft.applicationinsights.TelemetryClient
+import com.microsoft.applicationinsights.core.dependencies.google.common.collect.ImmutableMap
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -31,7 +33,8 @@ class NotificationService(
   @Value("\${application.to.defaultMonths}") val monthStep: Long,
   val notifyClient: NotificationClientApi,
   val prisonService: PrisonService,
-  val csrClient: CsrClient
+  val csrClient: CsrClient,
+  val telemetryClient: TelemetryClient
 ) {
 
   fun getNotifications(processOnReadParam: Optional<Boolean>, unprocessedOnlyParam: Optional<Boolean>, fromParam: Optional<LocalDate>, toParam: Optional<LocalDate>, quantumId: String = authenticationFacade.currentUsername): Collection<NotificationDto> {
@@ -96,6 +99,7 @@ class NotificationService(
       }
     shiftNotificationRepository.saveAll(Notification.fromDto(allNotifications))
     log.info("Completed Refreshing modified details for region: $region")
+    telemetryClient.trackEvent("completed-region", ImmutableMap.of("region", "$region"), null)
   }
 
   fun tidyNotification() {

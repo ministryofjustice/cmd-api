@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.cmd.api.service
 
+import com.microsoft.applicationinsights.TelemetryClient
 import io.mockk.clearMocks
 import io.mockk.confirmVerified
 import io.mockk.every
@@ -46,7 +47,8 @@ internal class NotificationServiceTest {
     3,
     notifyClient,
     prisonService,
-    csrClient
+    csrClient,
+    TelemetryClient()
   )
 
   private val now = LocalDateTime.now(clock)
