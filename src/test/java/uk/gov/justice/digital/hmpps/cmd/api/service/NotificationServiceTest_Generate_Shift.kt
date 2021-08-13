@@ -86,7 +86,8 @@ internal class NotificationServiceTest_Generate_Shift {
         DetailModificationType.ADD
       )
 
-      every { csrClient.getModifiedDetails(any(), any()) } returns listOf(dto1)
+      every { csrClient.getModifiedShifts("Main Gate", 1) } returns listOf()
+      every { csrClient.getModifiedDetails("Main Gate", 1) } returns listOf(dto1)
 
       every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(quantumId, start, shiftType, today) } returns 1
 
@@ -136,7 +137,8 @@ internal class NotificationServiceTest_Generate_Shift {
         DetailModificationType.ADD
       )
 
-      every { csrClient.getModifiedDetails(any(), any()) } returns listOf(dto1, dto2, dto3)
+      every { csrClient.getModifiedShifts(any(), any()) } returns listOf(dto1, dto2, dto3)
+      every { csrClient.getModifiedDetails(any(), any()) } returns listOf()
 
       every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(quantumId, any(), shiftType, today) } returns 0
 
@@ -188,7 +190,8 @@ internal class NotificationServiceTest_Generate_Shift {
         DetailModificationType.ADD
       )
 
-      every { csrClient.getModifiedDetails(any(), any()) } returns listOf(dto1, dto2, dto3)
+      every { csrClient.getModifiedShifts(any(), any()) } returns listOf(dto1, dto2, dto3)
+      every { csrClient.getModifiedDetails(any(), any()) } returns listOf()
 
       every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(quantumId, any(), shiftType, today) } returns 0
 
@@ -238,6 +241,7 @@ internal class NotificationServiceTest_Generate_Shift {
         DetailModificationType.ADD
       )
 
+      every { csrClient.getModifiedShifts(any(), any()) } returns listOf()
       every { csrClient.getModifiedDetails(any(), any()) } returns listOf(dto1, dto2, dto3)
 
       every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(quantumId, any(), shiftType, today) } returns 0
@@ -270,6 +274,7 @@ internal class NotificationServiceTest_Generate_Shift {
         DetailModificationType.EDIT
       )
 
+      every { csrClient.getModifiedShifts(any(), any()) } returns listOf()
       every { csrClient.getModifiedDetails(any(), any()) } returns listOf(dto1)
 
       every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndActionType(quantumId, today, shiftType, DetailModificationType.ADD) } returns 1
@@ -299,6 +304,7 @@ internal class NotificationServiceTest_Generate_Shift {
         DetailModificationType.ADD
       )
 
+      every { csrClient.getModifiedShifts(any(), any()) } returns listOf()
       every { csrClient.getModifiedDetails(any(), any()) } returns listOf(dto1)
 
       every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(quantumId, today, shiftType, today) } returns 0
@@ -326,6 +332,7 @@ internal class NotificationServiceTest_Generate_Shift {
         DetailModificationType.DELETE
       )
 
+      every { csrClient.getModifiedShifts(any(), any()) } returns listOf()
       every { csrClient.getModifiedDetails(any(), any()) } returns listOf(dto1)
 
       every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(quantumId, today, shiftType, today) } returns 0
@@ -358,6 +365,7 @@ internal class NotificationServiceTest_Generate_Shift {
         DetailModificationType.ADD
       )
 
+      every { csrClient.getModifiedShifts(any(), any()) } returns listOf()
       every { csrClient.getModifiedDetails(any(), any()) } returns listOf(dto1)
 
       every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(quantumId, start, shiftType, today) } returns 1
@@ -372,6 +380,7 @@ internal class NotificationServiceTest_Generate_Shift {
 
     @Test
     fun `Should do nothing if there is nothing to do`() {
+      every { csrClient.getModifiedShifts(any(), any()) } returns listOf()
       every { csrClient.getModifiedDetails(any(), any()) } returns listOf()
 
       val slot = slot<Collection<Notification>>()
@@ -398,6 +407,7 @@ internal class NotificationServiceTest_Generate_Shift {
         DetailModificationType.EDIT
       )
 
+      every { csrClient.getModifiedShifts(any(), any()) } returns listOf(dto1)
       every { csrClient.getModifiedDetails(any(), any()) } returns listOf(dto1)
 
       every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndActionType(quantumId, today, shiftType, DetailModificationType.ADD) } returns 0
