@@ -24,6 +24,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.Optional
+import javax.transaction.Transactional
 
 @Service
 class NotificationService(
@@ -65,6 +66,7 @@ class NotificationService(
   }
 
   fun sendNotifications() {
+    val start = System.currentTimeMillis()
     val unprocessedNotifications = shiftNotificationRepository.findAllByProcessedIsFalse()
     log.info("Sending notifications, found: ${unprocessedNotifications.size}")
     unprocessedNotifications.groupBy { it.quantumId }
@@ -74,11 +76,19 @@ class NotificationService(
           group.value.forEach { it.processed = true }
           shiftNotificationRepository.saveAll(group.value)
         } catch (e: NotificationClientException) {
-          log.warn("Sending notifications to user ${group.key} FAILED", e)
+          log.warn("Sending notifications to user ${group.key} ${group.value} FAILED", e)
         }
         log.info("Sent notification (${group.value.size} lines) for ${group.key}")
       }
     log.info("Finished sending notifications")
+    telemetryClient.trackEvent(
+      "sendNotifications",
+      ImmutableMap.of(
+        "unprocessedNotifications", "${unprocessedNotifications.size}",
+        "durationMillis", (System.currentTimeMillis() - start).toString()
+      ),
+      null
+    )
   }
 
   private fun getModified(planUnit: String, region: Int): Collection<CsrModifiedDetailDto> {
@@ -101,6 +111,8 @@ class NotificationService(
 
   fun refreshNotifications(region: Int) {
     log.info("Refreshing modified details for region: $region")
+    val start = System.currentTimeMillis()
+
     val allPrisons = prisonService.getAllPrisons().filter { it.region == region }.distinctBy { it.csrPlanUnit }
     val newNotifications = allPrisons
       .flatMap { prison ->
@@ -129,15 +141,34 @@ class NotificationService(
       }
     shiftNotificationRepository.saveAll(Notification.fromDto(allNotifications))
     log.info("Completed Refreshing modified details for region: $region")
-    telemetryClient.trackEvent("completed-region", ImmutableMap.of("region", "$region"), null)
+    telemetryClient.trackEvent(
+      "refreshNotifications",
+      ImmutableMap.of(
+        "region", "$region",
+        "durationMillis", (System.currentTimeMillis() - start).toString()
+      ),
+      null
+    )
   }
 
+  @Transactional
   fun tidyNotification() {
+    val start = System.currentTimeMillis()
     // Only hold on to 3 months of this temporary data.
-    var startOfDay = LocalDate.now(clock).atStartOfDay().minusMonths(3)
+    val startOfDay = LocalDate.now(clock).atStartOfDay().minusMonths(3)
     log.info("Removing old notifications (before $startOfDay)")
+
     shiftNotificationRepository.deleteAllByShiftModifiedBefore(startOfDay)
+
     log.info("Removed old notifications (before $startOfDay)")
+    telemetryClient.trackEvent(
+      "tidyNotification",
+      ImmutableMap.of(
+        "startOfDay", "$startOfDay",
+        "durationMillis", (System.currentTimeMillis() - start).toString()
+      ),
+      null
+    )
   }
 
   private fun getNotifications(

@@ -13,13 +13,7 @@ import org.springframework.scheduling.quartz.CronTriggerFactoryBean
 import org.springframework.scheduling.quartz.JobDetailFactoryBean
 import org.springframework.scheduling.quartz.SchedulerFactoryBean
 import org.springframework.scheduling.quartz.SpringBeanJobFactory
-import uk.gov.justice.digital.hmpps.cmd.api.controllers.NotificationRefreshQuartzJobR1
-import uk.gov.justice.digital.hmpps.cmd.api.controllers.NotificationRefreshQuartzJobR2
-import uk.gov.justice.digital.hmpps.cmd.api.controllers.NotificationRefreshQuartzJobR3
-import uk.gov.justice.digital.hmpps.cmd.api.controllers.NotificationRefreshQuartzJobR4
-import uk.gov.justice.digital.hmpps.cmd.api.controllers.NotificationRefreshQuartzJobR5
-import uk.gov.justice.digital.hmpps.cmd.api.controllers.NotificationRefreshQuartzJobR6
-import uk.gov.justice.digital.hmpps.cmd.api.controllers.NotificationSendQuartzJob
+import uk.gov.justice.digital.hmpps.cmd.api.controllers.NotificationRefreshQuartzJob
 import uk.gov.justice.digital.hmpps.cmd.api.controllers.NotificationTidyUpQuartzJob
 import javax.sql.DataSource
 
@@ -29,109 +23,19 @@ import javax.sql.DataSource
 class QuartzConfiguration(val applicationContext: ApplicationContext) {
 
   @Bean
-  fun notificationRefreshJobR1(): JobDetailFactoryBean {
+  fun notificationRefreshJob(): JobDetailFactoryBean {
     val jobDetailFactory = JobDetailFactoryBean()
-    jobDetailFactory.setJobClass(NotificationRefreshQuartzJobR1::class.java)
-    jobDetailFactory.setDescription("Invoke Notification Refresh Job Region 1...")
+    jobDetailFactory.setJobClass(NotificationRefreshQuartzJob::class.java)
+    jobDetailFactory.setDescription("Invoke Notification Refresh Job ...")
     jobDetailFactory.setDurability(true)
     return jobDetailFactory
   }
 
   @Bean
-  fun notificationRefreshTriggerR1(@Qualifier("notificationRefreshJobR1") job: JobDetail): CronTriggerFactoryBean {
+  fun notificationRefreshTrigger(@Qualifier("notificationRefreshJob") job: JobDetail): CronTriggerFactoryBean {
     val trigger = CronTriggerFactoryBean()
     trigger.setJobDetail(job)
     trigger.setCronExpression("0 0 */3 ? * *")
-    trigger.setMisfireInstruction(2) // Do Nothing
-    return trigger
-  }
-
-  @Bean
-  fun notificationRefreshJobR2(): JobDetailFactoryBean {
-    val jobDetailFactory = JobDetailFactoryBean()
-    jobDetailFactory.setJobClass(NotificationRefreshQuartzJobR2::class.java)
-    jobDetailFactory.setDescription("Invoke Notification Refresh Job Region 2...")
-    jobDetailFactory.setDurability(true)
-    return jobDetailFactory
-  }
-
-  @Bean
-  fun notificationRefreshTriggerR2(@Qualifier("notificationRefreshJobR2") job: JobDetail): CronTriggerFactoryBean {
-    val trigger = CronTriggerFactoryBean()
-    trigger.setJobDetail(job)
-    trigger.setCronExpression("0 30 */3 ? * *")
-    trigger.setMisfireInstruction(2) // Do Nothing
-    return trigger
-  }
-
-  @Bean
-  fun notificationRefreshJobR3(): JobDetailFactoryBean {
-    val jobDetailFactory = JobDetailFactoryBean()
-    jobDetailFactory.setJobClass(NotificationRefreshQuartzJobR3::class.java)
-    jobDetailFactory.setDescription("Invoke Notification Refresh Job Region 3...")
-    jobDetailFactory.setDurability(true)
-    return jobDetailFactory
-  }
-
-  @Bean
-  fun notificationRefreshTriggerR3(@Qualifier("notificationRefreshJobR3") job: JobDetail): CronTriggerFactoryBean {
-    val trigger = CronTriggerFactoryBean()
-    trigger.setJobDetail(job)
-    trigger.setCronExpression("0 0 1-22/3 ? * *")
-    trigger.setMisfireInstruction(2) // Do Nothing
-    return trigger
-  }
-
-  @Bean
-  fun notificationRefreshJobR4(): JobDetailFactoryBean {
-    val jobDetailFactory = JobDetailFactoryBean()
-    jobDetailFactory.setJobClass(NotificationRefreshQuartzJobR4::class.java)
-    jobDetailFactory.setDescription("Invoke Notification Refresh Job Region 4...")
-    jobDetailFactory.setDurability(true)
-    return jobDetailFactory
-  }
-
-  @Bean
-  fun notificationRefreshTriggerR4(@Qualifier("notificationRefreshJobR4") job: JobDetail): CronTriggerFactoryBean {
-    val trigger = CronTriggerFactoryBean()
-    trigger.setJobDetail(job)
-    trigger.setCronExpression("0 30 1-22/3 ? * *")
-    trigger.setMisfireInstruction(2) // Do Nothing
-    return trigger
-  }
-
-  @Bean
-  fun notificationRefreshJobR5(): JobDetailFactoryBean {
-    val jobDetailFactory = JobDetailFactoryBean()
-    jobDetailFactory.setJobClass(NotificationRefreshQuartzJobR5::class.java)
-    jobDetailFactory.setDescription("Invoke Notification Refresh Job Region 5...")
-    jobDetailFactory.setDurability(true)
-    return jobDetailFactory
-  }
-
-  @Bean
-  fun notificationRefreshTriggerR5(@Qualifier("notificationRefreshJobR5") job: JobDetail): CronTriggerFactoryBean {
-    val trigger = CronTriggerFactoryBean()
-    trigger.setJobDetail(job)
-    trigger.setCronExpression("0 0 2-23/3 ? * *")
-    trigger.setMisfireInstruction(2) // Do Nothing
-    return trigger
-  }
-
-  @Bean
-  fun notificationRefreshJobR6(): JobDetailFactoryBean {
-    val jobDetailFactory = JobDetailFactoryBean()
-    jobDetailFactory.setJobClass(NotificationRefreshQuartzJobR6::class.java)
-    jobDetailFactory.setDescription("Invoke Notification Refresh Job Region 6...")
-    jobDetailFactory.setDurability(true)
-    return jobDetailFactory
-  }
-
-  @Bean
-  fun notificationRefreshTriggerR6(@Qualifier("notificationRefreshJobR6") job: JobDetail): CronTriggerFactoryBean {
-    val trigger = CronTriggerFactoryBean()
-    trigger.setJobDetail(job)
-    trigger.setCronExpression("0 30 2-23/3 ? * *")
     trigger.setMisfireInstruction(2) // Do Nothing
     return trigger
   }
@@ -155,86 +59,11 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
   }
 
   @Bean
-  fun notificationRefreshSchedulerR1(
-    @Qualifier("notificationRefreshTriggerR1") trigger: Trigger,
-    @Qualifier("notificationRefreshJobR1") job: JobDetail,
+  fun notificationRefreshScheduler(
+    @Qualifier("notificationRefreshTrigger") trigger: Trigger,
+    @Qualifier("notificationRefreshJob") job: JobDetail,
     quartzDataSource: DataSource
-  ): SchedulerFactoryBean? {
-    val schedulerFactory = SchedulerFactoryBean()
-    schedulerFactory.setConfigLocation(ClassPathResource("quartz.properties"))
-    schedulerFactory.setJobFactory(springBeanJobFactory())
-    schedulerFactory.setJobDetails(job)
-    schedulerFactory.setTriggers(trigger)
-    schedulerFactory.setDataSource(quartzDataSource)
-    return schedulerFactory
-  }
-
-  @Bean
-  fun notificationRefreshSchedulerR2(
-    @Qualifier("notificationRefreshTriggerR2") trigger: Trigger,
-    @Qualifier("notificationRefreshJobR2") job: JobDetail,
-    quartzDataSource: DataSource
-  ): SchedulerFactoryBean? {
-    val schedulerFactory = SchedulerFactoryBean()
-    schedulerFactory.setConfigLocation(ClassPathResource("quartz.properties"))
-    schedulerFactory.setJobFactory(springBeanJobFactory())
-    schedulerFactory.setJobDetails(job)
-    schedulerFactory.setTriggers(trigger)
-    schedulerFactory.setDataSource(quartzDataSource)
-    return schedulerFactory
-  }
-
-  @Bean
-  fun notificationRefreshSchedulerR3(
-    @Qualifier("notificationRefreshTriggerR3") trigger: Trigger,
-    @Qualifier("notificationRefreshJobR3") job: JobDetail,
-    quartzDataSource: DataSource
-  ): SchedulerFactoryBean? {
-    val schedulerFactory = SchedulerFactoryBean()
-    schedulerFactory.setConfigLocation(ClassPathResource("quartz.properties"))
-    schedulerFactory.setJobFactory(springBeanJobFactory())
-    schedulerFactory.setJobDetails(job)
-    schedulerFactory.setTriggers(trigger)
-    schedulerFactory.setDataSource(quartzDataSource)
-    return schedulerFactory
-  }
-
-  @Bean
-  fun notificationRefreshSchedulerR4(
-    @Qualifier("notificationRefreshTriggerR4") trigger: Trigger,
-    @Qualifier("notificationRefreshJobR4") job: JobDetail,
-    quartzDataSource: DataSource
-  ): SchedulerFactoryBean? {
-    val schedulerFactory = SchedulerFactoryBean()
-    schedulerFactory.setConfigLocation(ClassPathResource("quartz.properties"))
-    schedulerFactory.setJobFactory(springBeanJobFactory())
-    schedulerFactory.setJobDetails(job)
-    schedulerFactory.setTriggers(trigger)
-    schedulerFactory.setDataSource(quartzDataSource)
-    return schedulerFactory
-  }
-
-  @Bean
-  fun notificationRefreshSchedulerR5(
-    @Qualifier("notificationRefreshTriggerR5") trigger: Trigger,
-    @Qualifier("notificationRefreshJobR5") job: JobDetail,
-    quartzDataSource: DataSource
-  ): SchedulerFactoryBean? {
-    val schedulerFactory = SchedulerFactoryBean()
-    schedulerFactory.setConfigLocation(ClassPathResource("quartz.properties"))
-    schedulerFactory.setJobFactory(springBeanJobFactory())
-    schedulerFactory.setJobDetails(job)
-    schedulerFactory.setTriggers(trigger)
-    schedulerFactory.setDataSource(quartzDataSource)
-    return schedulerFactory
-  }
-
-  @Bean
-  fun notificationRefreshSchedulerR6(
-    @Qualifier("notificationRefreshTriggerR6") trigger: Trigger,
-    @Qualifier("notificationRefreshJobR6") job: JobDetail,
-    quartzDataSource: DataSource
-  ): SchedulerFactoryBean? {
+  ): SchedulerFactoryBean {
     val schedulerFactory = SchedulerFactoryBean()
     schedulerFactory.setConfigLocation(ClassPathResource("quartz.properties"))
     schedulerFactory.setJobFactory(springBeanJobFactory())
@@ -249,40 +78,7 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
     @Qualifier("notificationTidyUpTrigger") trigger: Trigger,
     @Qualifier("notificationTidyUpJob") job: JobDetail,
     quartzDataSource: DataSource
-  ): SchedulerFactoryBean? {
-    val schedulerFactory = SchedulerFactoryBean()
-    schedulerFactory.setConfigLocation(ClassPathResource("quartz.properties"))
-    schedulerFactory.setJobFactory(springBeanJobFactory())
-    schedulerFactory.setJobDetails(job)
-    schedulerFactory.setTriggers(trigger)
-    schedulerFactory.setDataSource(quartzDataSource)
-    return schedulerFactory
-  }
-
-  @Bean
-  fun notificationSendJob(): JobDetailFactoryBean? {
-    val jobDetailFactory = JobDetailFactoryBean()
-    jobDetailFactory.setJobClass(NotificationSendQuartzJob::class.java)
-    jobDetailFactory.setDescription("Invoke Notification Send Job...")
-    jobDetailFactory.setDurability(true)
-    return jobDetailFactory
-  }
-
-  @Bean
-  fun notificationSendTrigger(@Qualifier("notificationSendJob") job: JobDetail): CronTriggerFactoryBean {
-    val trigger = CronTriggerFactoryBean()
-    trigger.setJobDetail(job)
-    trigger.setCronExpression("0 0 9,18,21 ? * *")
-    trigger.setMisfireInstruction(1) // Fire Again
-    return trigger
-  }
-
-  @Bean
-  fun notificationSendScheduler(
-    @Qualifier("notificationSendTrigger") trigger: Trigger,
-    @Qualifier("notificationSendJob") job: JobDetail,
-    quartzDataSource: DataSource
-  ): SchedulerFactoryBean? {
+  ): SchedulerFactoryBean {
     val schedulerFactory = SchedulerFactoryBean()
     schedulerFactory.setConfigLocation(ClassPathResource("quartz.properties"))
     schedulerFactory.setJobFactory(springBeanJobFactory())
