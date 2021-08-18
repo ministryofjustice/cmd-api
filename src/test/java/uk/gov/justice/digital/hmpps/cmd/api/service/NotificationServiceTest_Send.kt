@@ -22,13 +22,14 @@ import uk.gov.justice.digital.hmpps.cmd.api.repository.NotificationRepository
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
 import uk.gov.service.notify.NotificationClient
+import uk.gov.service.notify.NotificationClientException
 import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 
 @ExtendWith(MockKExtension::class)
-@DisplayName("Notification Service tests")
+@DisplayName("Notification Service tests - send")
 internal class NotificationServiceTest_Send {
   private val shiftNotificationRepository: NotificationRepository = mockk(relaxUnitFun = true)
   private val userPreferenceService: UserPreferenceService = mockk(relaxUnitFun = true)
@@ -236,6 +237,29 @@ internal class NotificationServiceTest_Send {
       assertThat(slot.captured.getValue("not2")).isEqualTo("* Your shift on Tuesday, 2nd November has been added.")
       assertThat(slot.captured.getValue("not3")).isEqualTo("* Your detail on Tuesday, 2nd November (00:20:34 - 01:16:07) has been added.")
       assertThat(slot.captured.getValue("not4")).isEqualTo("* Your detail on Tuesday, 2nd November (02:44:36 - 01:49:04) has been added.")
+    }
+
+    @Test
+    fun `Should handle notify exceptions`() {
+      val quantumId = "CSTRIFE_GEN"
+      val date = LocalDate.now().plusDays(4).atStartOfDay()
+      val modified1 = date.plusHours(1)
+
+      val shiftNotifications: List<Notification> = listOf(
+        Notification(1, quantumId, modified1, date, date, null, ShiftType.SHIFT, DetailModificationType.ADD, false),
+        Notification(2, quantumId, modified1, date, date, "A Task", ShiftType.SHIFT, DetailModificationType.ADD, false),
+      )
+
+      every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
+      every { userPreferenceService.getOrCreateUserPreference(quantumId) } returns UserPreference(quantumId, null, "email", "sms", CommunicationPreference.SMS)
+      every { notifyClient.sendEmail(any(), "email", any(), any()) } returns null
+      every { notifyClient.sendSms(any(), "sms", any(), any()) } throws NotificationClientException(quantumId)
+
+      service.sendNotifications()
+
+      verify { userPreferenceService.getOrCreateUserPreference(quantumId) }
+      verify { notifyClient.sendSms(any(), "sms", any(), null) }
+      verify(exactly = 0) { shiftNotificationRepository.saveAll(shiftNotifications) }
     }
   }
 }
