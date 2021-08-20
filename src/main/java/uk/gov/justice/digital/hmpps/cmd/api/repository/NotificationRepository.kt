@@ -18,5 +18,5 @@ interface NotificationRepository : CrudRepository<Notification, Long> {
 
   fun countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndActionType(quantumId: String, detailStart: LocalDateTime, shiftType: ShiftType, actionType: DetailModificationType): Int
 
-  fun deleteAllByShiftModifiedBefore(shiftModified: LocalDateTime)
+  fun deleteAllByShiftModifiedBefore(shiftModified: LocalDateTime): Int
 }

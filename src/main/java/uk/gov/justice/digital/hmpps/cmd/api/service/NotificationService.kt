@@ -158,14 +158,15 @@ class NotificationService(
     val startOfDay = LocalDate.now(clock).atStartOfDay().minusMonths(3)
     log.info("Removing old notifications (before $startOfDay)")
 
-    shiftNotificationRepository.deleteAllByShiftModifiedBefore(startOfDay)
+    val rows = shiftNotificationRepository.deleteAllByShiftModifiedBefore(startOfDay)
 
     log.info("Removed old notifications (before $startOfDay)")
     telemetryClient.trackEvent(
       "tidyNotification",
       ImmutableMap.of(
         "startOfDay", "$startOfDay",
-        "durationMillis", (System.currentTimeMillis() - start).toString()
+        "durationMillis", (System.currentTimeMillis() - start).toString(),
+        "rowsDeleted", rows.toString()
       ),
       null
     )
