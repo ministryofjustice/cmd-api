@@ -367,6 +367,16 @@ internal class NotificationServiceTest {
       verify { userPreferenceService.getOrCreateUserPreference(quantumId1) }
       verify { shiftNotificationRepository.saveAll(shiftNotifications.filter { it.id == 1L }) }
     }
+
+    @Test
+    fun `Tidy notifications`() {
+
+      every { shiftNotificationRepository.deleteAllByShiftModifiedBefore(any()) } returns 4
+
+      service.tidyNotification()
+
+      verify { shiftNotificationRepository.deleteAllByShiftModifiedBefore(any()) }
+    }
   }
 
   companion object {
