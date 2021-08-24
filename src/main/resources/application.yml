@@ -38,9 +38,6 @@ spring:
     jdbc:
       initialize-schema: always
 
-  lifecycle:
-    timeout-per-shutdown-phase=90m # wait for quartz job if necessary
-
 server:
   port: 8080
   servlet:
