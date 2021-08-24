@@ -138,7 +138,10 @@ class NotificationService(
           it.actionType == DetailModificationType.UNCHANGED ||
           checkIfNotificationsExist(it.quantumId, it.detailStart, it.shiftType, it.shiftModified)
       }
+
+    log.info("Calling saveAll with ${allNotifications.size} notifications for region: $region")
     shiftNotificationRepository.saveAll(Notification.fromDto(allNotifications))
+
     log.info("Completed Refreshing modified details for region: $region")
     telemetryClient.trackEvent(
       "refreshNotifications",
