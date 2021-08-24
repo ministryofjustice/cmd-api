@@ -24,7 +24,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.Optional
-import javax.transaction.Transactional
 
 @Service
 class NotificationService(
@@ -151,7 +150,6 @@ class NotificationService(
     )
   }
 
-  @Transactional
   fun tidyNotification() {
     val start = System.currentTimeMillis()
     // Only hold on to 3 months of this temporary data.
