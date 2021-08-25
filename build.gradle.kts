@@ -43,7 +43,7 @@ dependencies {
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.4")
 
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.4")
-  implementation("com.nimbusds:nimbus-jose-jwt:9.12")
+  implementation("com.nimbusds:nimbus-jose-jwt:9.13")
   implementation("com.google.guava:guava:30.1.1-jre")
   implementation("uk.gov.service.notify:notifications-java-client:3.17.2-RELEASE")
 
@@ -55,7 +55,7 @@ dependencies {
   }
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.tngtech.java:junit-dataprovider:1.13.1")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.27.0")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.28.0")
   testImplementation("io.github.http-builder-ng:http-builder-ng-apache:1.0.4")
   testImplementation("com.ninja-squad:springmockk:3.0.1")
   testImplementation("io.jsonwebtoken:jjwt:0.9.1")
