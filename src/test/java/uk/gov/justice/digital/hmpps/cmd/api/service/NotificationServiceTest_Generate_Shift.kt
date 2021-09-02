@@ -421,5 +421,37 @@ internal class NotificationServiceTest_Generate_Shift {
       val expected = Notification(null, quantumId, today, today, today, task, shiftType, DetailModificationType.ADD, false)
       assertThat(results[0]).isEqualTo(listOf(expected))
     }
+
+    @Test
+    fun `Should handle timeout exceptions`() {
+
+      val quantumId = "CSTRIFE_GEN"
+      val shiftDate = today.toLocalDate()
+      val start = shiftDate.atStartOfDay()
+      val end = shiftDate.atStartOfDay()
+      val task = "Guard Duty"
+      val shiftType = ShiftType.SHIFT
+      val dto1 = CsrModifiedDetailDto(
+        quantumId,
+        today,
+        shiftType,
+        start,
+        end,
+        task,
+        DetailModificationType.ADD
+      )
+
+      every { csrClient.getModifiedShifts("Main Gate", 1) } throws RuntimeException("test")
+      every { csrClient.getModifiedDetails("Main Gate", 1) } returns listOf(dto1)
+
+      every { shiftNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(quantumId, start, shiftType, today) } returns 1
+
+      val results = mutableListOf<Collection<Notification>>()
+      every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
+
+      service.refreshNotifications(1)
+
+      assertThat(results[0]).isEqualTo(listOf<Notification>())
+    }
   }
 }

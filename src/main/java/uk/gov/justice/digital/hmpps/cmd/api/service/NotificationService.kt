@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.cmd.api.service
 
 import com.microsoft.applicationinsights.TelemetryClient
 import com.microsoft.applicationinsights.core.dependencies.google.common.collect.ImmutableMap
+import org.apache.commons.lang3.time.DurationFormatUtils
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -80,11 +81,13 @@ class NotificationService(
         log.info("Sent notification (${group.value.size} lines) for ${group.key}")
       }
     log.info("Finished sending notifications")
+    val duration = System.currentTimeMillis() - start
     telemetryClient.trackEvent(
       "sendNotifications",
       ImmutableMap.of(
         "unprocessedNotifications", "${unprocessedNotifications.size}",
-        "durationMillis", (System.currentTimeMillis() - start).toString()
+        "durationMillis", duration.toString(),
+        "duration", DurationFormatUtils.formatDuration(duration, "HH:mm:ss")
       ),
       null
     )
@@ -143,11 +146,13 @@ class NotificationService(
     shiftNotificationRepository.saveAll(Notification.fromDto(allNotifications))
 
     log.info("Completed Refreshing modified details for region: $region")
+    val duration = System.currentTimeMillis() - start
     telemetryClient.trackEvent(
       "refreshNotifications",
       ImmutableMap.of(
         "region", "$region",
-        "durationMillis", (System.currentTimeMillis() - start).toString()
+        "durationMillis", duration.toString(),
+        "duration", DurationFormatUtils.formatDuration(duration, "HH:mm:ss")
       ),
       null
     )
@@ -162,11 +167,13 @@ class NotificationService(
     val rows = shiftNotificationRepository.deleteAllByShiftModifiedBefore(startOfDay)
 
     log.info("Removed old notifications (before $startOfDay)")
+    val duration = System.currentTimeMillis() - start
     telemetryClient.trackEvent(
       "tidyNotification",
       ImmutableMap.of(
         "startOfDay", "$startOfDay",
-        "durationMillis", (System.currentTimeMillis() - start).toString(),
+        "durationMillis", duration.toString(),
+        "duration", DurationFormatUtils.formatDuration(duration, "HH:mm:ss"),
         "rowsDeleted", rows.toString()
       ),
       null
