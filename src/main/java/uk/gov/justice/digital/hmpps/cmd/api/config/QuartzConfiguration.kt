@@ -35,7 +35,7 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
   fun notificationRefreshTrigger(@Qualifier("notificationRefreshJob") job: JobDetail): CronTriggerFactoryBean {
     val trigger = CronTriggerFactoryBean()
     trigger.setJobDetail(job)
-    trigger.setCronExpression("0 30 4,8,12,17 ? * *")
+    trigger.setCronExpression("0 0 6-21 ? * *")
     trigger.setMisfireInstruction(2) // Do Nothing
     return trigger
   }
