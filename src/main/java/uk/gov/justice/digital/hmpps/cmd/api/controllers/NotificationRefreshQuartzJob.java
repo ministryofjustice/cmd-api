@@ -13,8 +13,6 @@ public class NotificationRefreshQuartzJob implements Job {
     private NotificationService service;
 
     public void execute(JobExecutionContext context) {
-        service.refreshNotifications(6);
-        service.sendNotifications();
         service.refreshNotifications(1);
         service.sendNotifications();
         service.refreshNotifications(2);
@@ -24,6 +22,8 @@ public class NotificationRefreshQuartzJob implements Job {
         service.refreshNotifications(4);
         service.sendNotifications();
         service.refreshNotifications(5);
+        service.sendNotifications();
+        service.refreshNotifications(6);
         service.sendNotifications();
     }
 }

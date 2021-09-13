@@ -31,11 +31,23 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
     return jobDetailFactory
   }
 
+  /**
+   * This trigger plus the following one results in the job running every 1.5 hours from 6am
+   */
   @Bean
-  fun notificationRefreshTrigger(@Qualifier("notificationRefreshJob") job: JobDetail): CronTriggerFactoryBean {
+  fun notificationRefreshTriggerHour(@Qualifier("notificationRefreshJob") job: JobDetail): CronTriggerFactoryBean {
     val trigger = CronTriggerFactoryBean()
     trigger.setJobDetail(job)
-    trigger.setCronExpression("0 0 6-21 ? * *")
+    trigger.setCronExpression("0 0 6-21/3 ? * *")
+    trigger.setMisfireInstruction(2) // Do Nothing
+    return trigger
+  }
+
+  @Bean
+  fun notificationRefreshTriggerHalfHour(@Qualifier("notificationRefreshJob") job: JobDetail): CronTriggerFactoryBean {
+    val trigger = CronTriggerFactoryBean()
+    trigger.setJobDetail(job)
+    trigger.setCronExpression("0 30 7-19/3 ? * *")
     trigger.setMisfireInstruction(2) // Do Nothing
     return trigger
   }
@@ -60,7 +72,8 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
 
   @Bean
   fun notificationRefreshScheduler(
-    @Qualifier("notificationRefreshTrigger") trigger: Trigger,
+    notificationRefreshTriggerHour: Trigger,
+    notificationRefreshTriggerHalfHour: Trigger,
     @Qualifier("notificationRefreshJob") job: JobDetail,
     quartzDataSource: DataSource
   ): SchedulerFactoryBean {
@@ -68,7 +81,7 @@ class QuartzConfiguration(val applicationContext: ApplicationContext) {
     schedulerFactory.setConfigLocation(ClassPathResource("quartz.properties"))
     schedulerFactory.setJobFactory(springBeanJobFactory())
     schedulerFactory.setJobDetails(job)
-    schedulerFactory.setTriggers(trigger)
+    schedulerFactory.setTriggers(notificationRefreshTriggerHour, notificationRefreshTriggerHalfHour)
     schedulerFactory.setDataSource(quartzDataSource)
     return schedulerFactory
   }
