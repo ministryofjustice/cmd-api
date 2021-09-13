@@ -1,7 +1,7 @@
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "3.3.7"
-  kotlin("plugin.spring") version "1.5.21"
-  kotlin("plugin.jpa") version "1.5.21"
+  kotlin("plugin.spring") version "1.5.30"
+  kotlin("plugin.jpa") version "1.5.30"
 }
 
 repositories {
@@ -40,9 +40,8 @@ dependencies {
   implementation("io.springfox:springfox-swagger2:2.9.2")
   implementation("io.springfox:springfox-swagger-ui:2.9.2")
   implementation("org.apache.commons:commons-lang3:3.12.0")
-  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.4")
-
-  implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.4")
+  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.5")
+  implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.5")
   implementation("com.nimbusds:nimbus-jose-jwt:9.13")
   implementation("com.google.guava:guava:30.1.1-jre")
   implementation("uk.gov.service.notify:notifications-java-client:3.17.2-RELEASE")
