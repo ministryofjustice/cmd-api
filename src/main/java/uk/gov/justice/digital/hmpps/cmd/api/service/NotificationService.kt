@@ -6,6 +6,8 @@ import org.apache.commons.lang3.time.DurationFormatUtils
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Propagation
+import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.cmd.api.client.CsrClient
 import uk.gov.justice.digital.hmpps.cmd.api.client.CsrModifiedDetailDto
 import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
@@ -27,25 +29,27 @@ import java.time.LocalTime
 import java.util.Optional
 
 @Service
+@Transactional // all public methods do updates, including getNotifications() !
 class NotificationService(
-  val shiftNotificationRepository: NotificationRepository,
-  val userPreferenceService: UserPreferenceService,
-  val clock: Clock,
-  val authenticationFacade: AuthenticationFacade,
-  @Value("\${application.to.defaultMonths}") val monthStep: Long,
-  val notifyClient: NotificationClientApi,
-  val prisonService: PrisonService,
-  val csrClient: CsrClient,
-  val telemetryClient: TelemetryClient
+  private val shiftNotificationRepository: NotificationRepository,
+  private val userPreferenceService: UserPreferenceService,
+  private val clock: Clock,
+  private val authenticationFacade: AuthenticationFacade,
+  @Value("\${application.to.defaultMonths}")
+  private val monthStep: Long,
+  private val notifyClient: NotificationClientApi,
+  private val prisonService: PrisonService,
+  private val csrClient: CsrClient,
+  private val telemetryClient: TelemetryClient
 ) {
 
   fun getNotifications(
     processOnReadParam: Optional<Boolean>,
     unprocessedOnlyParam: Optional<Boolean>,
     fromParam: Optional<LocalDate>,
-    toParam: Optional<LocalDate>,
-    quantumId: String = authenticationFacade.currentUsername
+    toParam: Optional<LocalDate>
   ): Collection<NotificationDto> {
+    val quantumId = authenticationFacade.currentUsername
     val from = calculateStartDateTime(fromParam, toParam)
     val to = calculateEndDateTime(toParam, from)
     val unprocessedOnly = unprocessedOnlyParam.orElse(false)
@@ -65,6 +69,7 @@ class NotificationService(
     return notificationDtos.distinct()
   }
 
+  @Transactional(propagation = Propagation.NEVER)
   fun sendNotifications() {
     val start = System.currentTimeMillis()
     val unprocessedNotifications = shiftNotificationRepository.findAllByProcessedIsFalse()
@@ -111,6 +116,7 @@ class NotificationService(
     return shifts + details
   }
 
+  @Transactional(propagation = Propagation.NEVER)
   fun refreshNotifications(region: Int) {
     log.info("Refreshing modified details for region: $region")
     val start = System.currentTimeMillis()
@@ -138,8 +144,8 @@ class NotificationService(
       // we want to filter anything that is unchanged
       .filterNot {
         (it.activity == null && it.actionType == DetailModificationType.EDIT) ||
-          it.actionType == DetailModificationType.UNCHANGED ||
-          checkIfNotificationsExist(it.quantumId, it.detailStart, it.shiftType, it.shiftModified)
+            it.actionType == DetailModificationType.UNCHANGED ||
+            checkIfNotificationsExist(it.quantumId, it.detailStart, it.shiftType, it.shiftModified)
       }
 
     log.info("Calling saveAll with ${allNotifications.size} notifications for region: $region")
@@ -304,10 +310,10 @@ class NotificationService(
   private fun shouldSend(userPreference: UserPreference): Boolean {
     val isNotSnoozed =
       (
-        userPreference.snoozeUntil == null || userPreference.snoozeUntil != null && userPreference.snoozeUntil!!.isBefore(
-          LocalDate.now(clock)
-        )
-        )
+          userPreference.snoozeUntil == null || userPreference.snoozeUntil != null && userPreference.snoozeUntil!!.isBefore(
+            LocalDate.now(clock)
+          )
+          )
     val isValidCommunicationMethod = when (userPreference.commPref) {
       CommunicationPreference.EMAIL -> {
         !userPreference.email.isNullOrBlank()
@@ -335,9 +341,9 @@ class NotificationService(
       notificationKeys
         .mapIndexed { index, templateKey ->
           templateKey to (
-            chunk.getOrNull(index)?.getNotificationDescription(communicationPreference)
-              ?: ""
-            )
+              chunk.getOrNull(index)?.getNotificationDescription(communicationPreference)
+                ?: ""
+              )
         }.toMap()
     )
     return personalisation

@@ -20,7 +20,7 @@ import java.time.LocalDateTime
 class CsrClient(
   @Qualifier("csrApiWebClient") private val csrClient: WebClient,
   @Qualifier("csrAPIWebClientAppScope") private val csrApiServiceAccountWebClient: WebClient,
-  val authenticationFacade: AuthenticationFacade,
+  private val authenticationFacade: AuthenticationFacade,
   private val regionData: Regions
 ) {
 

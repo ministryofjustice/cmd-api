@@ -19,7 +19,7 @@ import java.util.Optional
 @Api(tags = ["notifications"])
 @RestController
 @RequestMapping(produces = [APPLICATION_JSON_VALUE])
-class NotificationController(val notificationService: NotificationService) {
+class NotificationController(private val notificationService: NotificationService) {
 
   @ApiOperation(value = "Retrieve all notifications for a user between two dates")
   @ApiResponses(

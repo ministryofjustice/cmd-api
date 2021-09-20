@@ -20,7 +20,7 @@ import javax.sql.DataSource
 @Configuration
 @Profile("!dev")
 @EnableAutoConfiguration
-class QuartzConfiguration(val applicationContext: ApplicationContext) {
+class QuartzConfiguration(private val applicationContext: ApplicationContext) {
 
   @Bean
   fun notificationRefreshJob(): JobDetailFactoryBean {
