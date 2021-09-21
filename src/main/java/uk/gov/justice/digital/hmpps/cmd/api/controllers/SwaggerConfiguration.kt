@@ -35,7 +35,7 @@ import java.util.Properties
 
 @Configuration
 @EnableSwagger2
-class SwaggerConfiguration(@Autowired val applicationContext: ApplicationContext) {
+class SwaggerConfiguration(@Autowired private val applicationContext: ApplicationContext) {
 
   @Bean
   fun serializingObjectMapper(): ObjectMapper? {

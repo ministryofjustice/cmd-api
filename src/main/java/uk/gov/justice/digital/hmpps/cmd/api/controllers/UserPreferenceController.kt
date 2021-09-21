@@ -20,7 +20,7 @@ import javax.validation.Valid
 @Api(tags = ["user-preferences"])
 @RestController
 @RequestMapping(produces = [APPLICATION_JSON_VALUE])
-class UserPreferenceController(val userPreferenceService: UserPreferenceService) {
+class UserPreferenceController(private val userPreferenceService: UserPreferenceService) {
 
   @ApiOperation(value = "Retrieve all preferences for a user")
   @ApiResponses(
