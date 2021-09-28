@@ -144,8 +144,8 @@ class NotificationService(
       // we want to filter anything that is unchanged
       .filterNot {
         (it.activity == null && it.actionType == DetailModificationType.EDIT) ||
-            it.actionType == DetailModificationType.UNCHANGED ||
-            checkIfNotificationsExist(it.quantumId, it.detailStart, it.shiftType, it.shiftModified)
+          it.actionType == DetailModificationType.UNCHANGED ||
+          checkIfNotificationsExist(it.quantumId, it.detailStart, it.shiftType, it.shiftModified)
       }
 
     log.info("Calling saveAll with ${allNotifications.size} notifications for region: $region")
@@ -310,10 +310,10 @@ class NotificationService(
   private fun shouldSend(userPreference: UserPreference): Boolean {
     val isNotSnoozed =
       (
-          userPreference.snoozeUntil == null || userPreference.snoozeUntil != null && userPreference.snoozeUntil!!.isBefore(
-            LocalDate.now(clock)
-          )
-          )
+        userPreference.snoozeUntil == null || userPreference.snoozeUntil != null && userPreference.snoozeUntil!!.isBefore(
+          LocalDate.now(clock)
+        )
+        )
     val isValidCommunicationMethod = when (userPreference.commPref) {
       CommunicationPreference.EMAIL -> {
         !userPreference.email.isNullOrBlank()
@@ -341,9 +341,9 @@ class NotificationService(
       notificationKeys
         .mapIndexed { index, templateKey ->
           templateKey to (
-              chunk.getOrNull(index)?.getNotificationDescription(communicationPreference)
-                ?: ""
-              )
+            chunk.getOrNull(index)?.getNotificationDescription(communicationPreference)
+              ?: ""
+            )
         }.toMap()
     )
     return personalisation
