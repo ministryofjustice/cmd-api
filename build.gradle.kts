@@ -25,6 +25,9 @@ dependencies {
   runtimeOnly("com.zaxxer:HikariCP")
   runtimeOnly("org.flywaydb:flyway-core")
 
+  implementation("org.apache.logging.log4j:log4j-to-slf4j:2.15.0")
+  implementation("org.apache.logging.log4j:log4j-api:2.15.0")
+
   implementation("org.springframework.boot:spring-boot-starter-jdbc")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("org.springframework.boot:spring-boot-starter-security")
