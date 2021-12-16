@@ -7,6 +7,8 @@ import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.joda.time.DateTime
+import org.joda.time.DateTimeZone
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -23,7 +25,8 @@ import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
-import java.util.Optional
+import java.util.*
+
 
 @ExtendWith(MockKExtension::class)
 @DisplayName("Shift Service Full Day Type tests")
@@ -357,6 +360,26 @@ internal class ShiftServiceTest_DayModelFullDayType {
       val dayModel = dayModelList.first()
       assertThat(dayModel.date).isEqualTo(day1)
       assertThat(dayModel.shiftType).isEqualTo(FullDayActivityType.SHIFT)
+    }
+
+    @Test
+    fun `Should return SHIFT as Full Day Activity for TOIL`() {
+
+      val shifts = listOf(
+        CsrDetailDto(ShiftType.SHIFT, day1.atTime(0, 0), day1.atTime(LocalTime.of(0, 0)), "TOIL"),
+        CsrDetailDto(ShiftType.SHIFT, day2.atTime(LocalTime.of(7, 0)), day2.atTime(LocalTime.of(11, 0)), "Other")
+      )
+
+      every { csrApiClient.getDetailsForUser(day1, day2, 1, "xyz") } returns shifts
+      val fullDayActivityModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day2))
+
+      verify { prisonService.getPrisonForUser() }
+      verify { csrApiClient.getDetailsForUser(day1, day2, 1, "xyz") }
+
+      assertThat(fullDayActivityModelList).hasSize(2)
+      val fullDayActivityModel = fullDayActivityModelList.first()
+      assertThat(fullDayActivityModel.date).isEqualTo(day1)
+      assertThat(fullDayActivityModel.shiftType).isEqualTo(FullDayActivityType.TOIL)
     }
 
     @Test
