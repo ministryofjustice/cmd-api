@@ -7,8 +7,6 @@ import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
-import org.joda.time.DateTime
-import org.joda.time.DateTimeZone
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
