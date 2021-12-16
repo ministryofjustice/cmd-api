@@ -23,8 +23,7 @@ import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
-import java.util.*
-
+import java.util.Optional
 
 @ExtendWith(MockKExtension::class)
 @DisplayName("Shift Service Full Day Type tests")
