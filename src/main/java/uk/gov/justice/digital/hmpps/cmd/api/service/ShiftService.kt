@@ -77,11 +77,12 @@ class ShiftService(
         if (
           (activity == FullDayActivityType.REST_DAY && onlyHasBreaksOrNightShiftFinish(shiftTasks, FullDayActivityType.REST_DAY)) ||
           (activity == FullDayActivityType.HOLIDAY && onlyHasBreaksOrNightShiftFinish(shiftTasks, FullDayActivityType.HOLIDAY)) ||
-          (activity == FullDayActivityType.ILLNESS) ||
+          (activity == FullDayActivityType.ILLNESS && onlyHasBreaksOrNightShiftFinish(shiftTasks, FullDayActivityType.ILLNESS)) ||
           (activity == FullDayActivityType.ABSENCE && onlyHasBreaksOrNightShiftFinish(shiftTasks, FullDayActivityType.ABSENCE)) ||
           (activity == FullDayActivityType.TU_OFFICIALS_LEAVE_DAYS) ||
           (activity == FullDayActivityType.TU_OFFICIALS_LEAVE_HOURS) ||
           (activity == FullDayActivityType.TOIL && isStartType(it.displayType)) ||
+          (activity == FullDayActivityType.TOIL && onlyHasBreaksOrNightShiftFinish(shiftTasks, FullDayActivityType.TOIL)) ||
           (activity == FullDayActivityType.SECONDMENT && isStartType(it.displayType)) ||
           (activity == FullDayActivityType.TRAINING_INTERNAL && isStartType(it.displayType)) ||
           (activity == FullDayActivityType.TRAINING_EXTERNAL && isStartType(it.displayType))

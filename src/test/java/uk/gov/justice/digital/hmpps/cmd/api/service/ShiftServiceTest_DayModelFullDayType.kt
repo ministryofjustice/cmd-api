@@ -360,6 +360,26 @@ internal class ShiftServiceTest_DayModelFullDayType {
     }
 
     @Test
+    fun `Should return SHIFT as Full Day Activity for TOIL`() {
+
+      val shifts = listOf(
+        CsrDetailDto(ShiftType.SHIFT, day1.atTime(0, 0), day1.atTime(LocalTime.of(0, 0)), "TOIL"),
+        CsrDetailDto(ShiftType.SHIFT, day2.atTime(LocalTime.of(7, 0)), day2.atTime(LocalTime.of(11, 0)), "Other")
+      )
+
+      every { csrApiClient.getDetailsForUser(day1, day2, 1, "xyz") } returns shifts
+      val fullDayActivityModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day2))
+
+      verify { prisonService.getPrisonForUser() }
+      verify { csrApiClient.getDetailsForUser(day1, day2, 1, "xyz") }
+
+      assertThat(fullDayActivityModelList).hasSize(2)
+      val fullDayActivityModel = fullDayActivityModelList.first()
+      assertThat(fullDayActivityModel.date).isEqualTo(day1)
+      assertThat(fullDayActivityModel.shiftType).isEqualTo(FullDayActivityType.TOIL)
+    }
+
+    @Test
     fun `Should return SECONDMENT as Full Day Type for SECONDMENT`() {
 
       val shifts = listOf(
