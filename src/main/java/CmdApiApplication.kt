@@ -48,6 +48,6 @@ class CmdApiApplication {
       .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
       .setSerializationInclusion(JsonInclude.Include.NON_NULL)
       .setSerializationInclusion(JsonInclude.Include.NON_ABSENT)
-      .registerModules(Jdk8Module(), JavaTimeModule(), KotlinModule())
+      .registerModules(Jdk8Module(), JavaTimeModule(), KotlinModule.Builder().build())
   }
 }
