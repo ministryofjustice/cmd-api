@@ -1,17 +1,13 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@3.11
-
-executors:
-  validator:
-    docker:
-      - image: cimg/openjdk:16.0-browsers
-    working_directory: ~/app
+  hmpps: ministryofjustice/hmpps@3.12
 
 jobs:
   validate:
-    executor: validator
+    executor:
+      name: hmpps/java
+      tag: "17.0"
     steps:
       - checkout
       - restore_cache:
@@ -53,12 +49,11 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_dev
           env: "dev"
+          context: hmpps-common-vars
           filters:
             branches:
               only:
                 - main
-          context:
-            - hmpps-common-vars
           requires:
             - validate
             - helm_lint

@@ -1,9 +1,7 @@
 package uk.gov.justice.digital.hmpps.cmd.api.controllers
 
 import io.swagger.v3.oas.annotations.Operation
-import io.swagger.v3.oas.annotations.media.Content
-import io.swagger.v3.oas.annotations.media.Schema
-import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.http.ResponseEntity
@@ -18,17 +16,10 @@ import java.util.Optional
 
 @RestController
 @RequestMapping(produces = [APPLICATION_JSON_VALUE])
+@Tag(name = "notifications")
 class NotificationController(private val notificationService: NotificationService) {
 
-  @Operation(
-    summary = "Retrieve all notifications for a user between two dates",
-    responses = [
-      ApiResponse(
-        responseCode = "200",
-        content = [Content(mediaType = "application/json", schema = Schema(implementation = NotificationDto::class))]
-      )
-    ]
-  )
+  @Operation(summary = "Retrieve all notifications for a user between two dates")
   @GetMapping("/notifications")
   fun getNotifications(
     @RequestParam processOnRead: Optional<Boolean>,

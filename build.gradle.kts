@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.0.3"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.0.4"
   kotlin("plugin.spring") version "1.6.10"
   kotlin("plugin.jpa") version "1.6.10"
   idea
@@ -22,9 +22,9 @@ dependencies {
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
   runtimeOnly("com.h2database:h2:2.1.210")
-  runtimeOnly("org.postgresql:postgresql:42.3.2")
+  runtimeOnly("org.postgresql:postgresql:42.3.3")
   runtimeOnly("com.zaxxer:HikariCP")
-  runtimeOnly("org.flywaydb:flyway-core:8.5.0")
+  runtimeOnly("org.flywaydb:flyway-core:8.5.1")
 
   implementation("org.springframework.boot:spring-boot-starter-jdbc")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -53,7 +53,7 @@ dependencies {
   }
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.tngtech.java:junit-dataprovider:1.13.1")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.28.0")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.32.0")
   testImplementation("io.github.http-builder-ng:http-builder-ng-apache:1.0.4")
   testImplementation("com.ninja-squad:springmockk:3.1.0")
   testImplementation("io.jsonwebtoken:jjwt:0.9.1")
@@ -61,6 +61,6 @@ dependencies {
 
 tasks {
   compileKotlin {
-    kotlinOptions.jvmTarget = "16"
+    kotlinOptions.jvmTarget = "17"
   }
 }

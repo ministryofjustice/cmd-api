@@ -32,12 +32,12 @@ class ResourceServerConfiguration : WebSecurityConfigurerAdapter() {
             "/health/**",
             "/info",
             "/h2-console/**",
-            "/v2/api-docs",
+            "/v3/api-docs/**",
             "/swagger-ui.html",
+            "/swagger-ui/**",
             "/swagger-resources",
             "/swagger-resources/configuration/ui",
-            "/swagger-resources/configuration/security",
-            "/shifts"
+            "/swagger-resources/configuration/security"
           )
           .permitAll()
           .anyRequest()
