@@ -22,7 +22,7 @@ data class Notification(
   @Id
   @Column(name = "ID")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  var id: Long? = null,
+  var id: Long = 0,
 
   @Column(nullable = false)
   var quantumId: String,

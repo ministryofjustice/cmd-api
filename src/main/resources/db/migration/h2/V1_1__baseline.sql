@@ -1,3 +1,6 @@
+-- Makes H2 2.1 behave like 1.4 in that nulls can be inserted into PK fields (and ignored)
+SET MODE LEGACY;
+
 drop table if exists "NotificationConfiguration";
 drop table if exists "UserNotificationSetting";
 drop table if exists "ShiftTaskNotification";

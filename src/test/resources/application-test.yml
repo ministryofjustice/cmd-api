@@ -53,6 +53,3 @@ oauth:
 
 api:
   health-timeout: 400ms
-
-info:
-  test-message: 'Info Test'
