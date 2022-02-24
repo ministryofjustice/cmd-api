@@ -23,17 +23,17 @@ class OpenApiConfiguration(buildProperties: BuildProperties?) {
         Server().url("http://localhost:8080").description("Local"),
       )
     )
-//    .components(
-//      Components().addSecuritySchemes(
-//        "bearer-jwt",
-//        SecurityScheme()
-//          .type(SecurityScheme.Type.HTTP)
-//          .scheme("bearer")
-//          .bearerFormat("JWT")
-//          .`in`(SecurityScheme.In.HEADER)
-//          .name("Authorization")
-//      )
-//    )
+    .components(
+      Components().addSecuritySchemes(
+        "bearer-jwt",
+        SecurityScheme()
+          .type(SecurityScheme.Type.HTTP)
+          .scheme("bearer")
+          .bearerFormat("JWT")
+          .`in`(SecurityScheme.In.HEADER)
+          .name("Authorization")
+      )
+    )
     .info(
       Info()
         .title("HMPPS CMD-API Documentation")
@@ -42,6 +42,5 @@ class OpenApiConfiguration(buildProperties: BuildProperties?) {
         .license(License().name("MIT").url("https://opensource.org/licenses/MIT"))
         .contact(Contact().name("HMPPS Digital Studio").email("feedback@digital.justice.gov.uk"))
     )
-    // .addSecurityItem(SecurityRequirement().addList("bearer-jwt", listOf("read", "write")))
-
+    .addSecurityItem(SecurityRequirement().addList("bearer-jwt", listOf("read", "write")))
 }

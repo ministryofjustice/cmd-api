@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.cmd.api.domain.TaskDisplayType
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
 import java.time.LocalDateTime
 
-@Schema(description = "Shift")
+@Schema(description = "Shift details")
 data class DetailDto @JsonCreator constructor(
   @Schema(description = "The human readable activity", example = "Internal Training")
   @JsonProperty("activity")
@@ -36,5 +36,4 @@ data class DetailDto @JsonCreator constructor(
   @Schema(description = "If the type is a 'finish' we include the duration of the whole shift in seconds", example = "54321")
   @JsonProperty("finishDuration")
   var finishDuration: Long? = null
-
 )
