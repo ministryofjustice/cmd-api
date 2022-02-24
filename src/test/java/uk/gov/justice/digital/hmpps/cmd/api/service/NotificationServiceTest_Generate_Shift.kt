@@ -146,9 +146,9 @@ internal class NotificationServiceTest_Generate_Shift {
       every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
 
       service.refreshNotifications(1)
-      val notification1 = Notification(null, quantumId, today, start.plusDays(1), end.plusDays(1), task, shiftType, DetailModificationType.ADD, false)
-      val notification2 = Notification(null, quantumId, today, start.plusDays(2), end.plusDays(2), task, shiftType, DetailModificationType.ADD, false)
-      val notification3 = Notification(null, quantumId, today, start.plusDays(3), end.plusDays(3), task, shiftType, DetailModificationType.ADD, false)
+      val notification1 = Notification(0, quantumId, today, start.plusDays(1), end.plusDays(1), task, shiftType, DetailModificationType.ADD, false)
+      val notification2 = Notification(0, quantumId, today, start.plusDays(2), end.plusDays(2), task, shiftType, DetailModificationType.ADD, false)
+      val notification3 = Notification(0, quantumId, today, start.plusDays(3), end.plusDays(3), task, shiftType, DetailModificationType.ADD, false)
       assertThat(results[0]).isEqualTo(listOf(notification1, notification2, notification3))
     }
 
@@ -199,7 +199,7 @@ internal class NotificationServiceTest_Generate_Shift {
       every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
 
       service.refreshNotifications(1)
-      val notification1 = Notification(null, quantumId, today, start, end, task, shiftType, DetailModificationType.ADD, false)
+      val notification1 = Notification(0, quantumId, today, start, end, task, shiftType, DetailModificationType.ADD, false)
       assertThat(results[0]).isEqualTo(listOf(notification1))
     }
 
@@ -252,9 +252,9 @@ internal class NotificationServiceTest_Generate_Shift {
       every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
 
       service.refreshNotifications(1)
-      val notification1 = Notification(null, quantumId, today, start, end, task, shiftType, DetailModificationType.ADD, false)
-      val notification2 = Notification(null, quantumId, today.plusSeconds(5), start, end, task, shiftType, DetailModificationType.ADD, false)
-      val notification3 = Notification(null, quantumId, today.plusSeconds(10), start, end, task, shiftType, DetailModificationType.ADD, false)
+      val notification1 = Notification(0, quantumId, today, start, end, task, shiftType, DetailModificationType.ADD, false)
+      val notification2 = Notification(0, quantumId, today.plusSeconds(5), start, end, task, shiftType, DetailModificationType.ADD, false)
+      val notification3 = Notification(0, quantumId, today.plusSeconds(10), start, end, task, shiftType, DetailModificationType.ADD, false)
       assertThat(results[0]).isEqualTo(listOf(notification1, notification2, notification3))
     }
 
@@ -313,7 +313,7 @@ internal class NotificationServiceTest_Generate_Shift {
       every { shiftNotificationRepository.saveAll(capture(results)) } returns listOf()
       service.refreshNotifications(1)
 
-      val expected = Notification(null, quantumId, today, today, today, task, shiftType, DetailModificationType.ADD, false)
+      val expected = Notification(0, quantumId, today, today, today, task, shiftType, DetailModificationType.ADD, false)
       assertThat(results[0]).isEqualTo(listOf(expected))
     }
 
@@ -342,7 +342,7 @@ internal class NotificationServiceTest_Generate_Shift {
 
       service.refreshNotifications(1)
 
-      val expected = Notification(null, quantumId, today, today, today, task, shiftType, DetailModificationType.DELETE, false)
+      val expected = Notification(0, quantumId, today, today, today, task, shiftType, DetailModificationType.DELETE, false)
       assertThat(results[0]).isEqualTo(listOf(expected))
     }
 
@@ -418,7 +418,7 @@ internal class NotificationServiceTest_Generate_Shift {
 
       service.refreshNotifications(1)
 
-      val expected = Notification(null, quantumId, today, today, today, task, shiftType, DetailModificationType.ADD, false)
+      val expected = Notification(0, quantumId, today, today, today, task, shiftType, DetailModificationType.ADD, false)
       assertThat(results[0]).isEqualTo(listOf(expected))
     }
 

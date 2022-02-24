@@ -14,7 +14,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(value = ["test"])
-
 class HealthResourceTest(@Autowired val testRestTemplate: TestRestTemplate) {
 
   val jsonTester = BasicJsonTester(this.javaClass)
@@ -23,25 +22,24 @@ class HealthResourceTest(@Autowired val testRestTemplate: TestRestTemplate) {
   fun `Ping test`() {
     val response = testRestTemplate.getForEntity(PING_URL, String::class.java)
     assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
-    assertThat(jsonTester.from(response.body)).hasJsonPathStringValue("$.status", "UP")
+    assertThat(jsonTester.from(response.body)).extractingJsonPathStringValue("$.status").isEqualTo("UP")
   }
 
   @Test
   fun `Health test`() {
     val response = testRestTemplate.getForEntity(HEALTH_URL, String::class.java)
     assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
-    assertThat(jsonTester.from(response.body)).hasJsonPathStringValue("$.status", "UP")
-    assertThat(jsonTester.from(response.body)).hasJsonPathStringValue("$.components.ping.status", "UP")
-    // TODO: db status - we don't have a DB yet.
-    // assertThat(jsonTester.from(response.body)).hasJsonPathStringValue("$.components.db.status", "UP")
-    assertThat(jsonTester.from(response.body)).hasJsonPathStringValue("$.components.diskSpace.status", "UP")
+    assertThat(jsonTester.from(response.body)).extractingJsonPathStringValue("$.status").isEqualTo("UP")
+    assertThat(jsonTester.from(response.body)).extractingJsonPathStringValue("$.components.ping.status").isEqualTo("UP")
+    // TODO: db status
+    assertThat(jsonTester.from(response.body)).extractingJsonPathStringValue("$.components.diskSpace.status").isEqualTo("UP")
   }
 
   @Test
   fun `Info test`() {
     val response = testRestTemplate.getForEntity(INFO_URL, String::class.java)
     assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
-    assertThat(jsonTester.from(response.body)).hasJsonPathStringValue("$.test-message", "Info Test")
+    assertThat(jsonTester.from(response.body)).extractingJsonPathStringValue("$.build.name").isEqualTo("cmd-api")
   }
 
   companion object {

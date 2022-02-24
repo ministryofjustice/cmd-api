@@ -1,17 +1,15 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@3.11
-
-executors:
-  validator:
-    docker:
-      - image: cimg/openjdk:16.0-browsers
-    working_directory: ~/app
+  hmpps: ministryofjustice/hmpps@3.12
 
 jobs:
   validate:
-    executor: validator
+    executor:
+      name: hmpps/java
+      tag: "17.0"
+    environment:
+      _JAVA_OPTIONS: -Xmx500m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false -Dkotlin.compiler.execution.strategy=in-process
     steps:
       - checkout
       - restore_cache:
@@ -53,12 +51,11 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_dev
           env: "dev"
+          context: hmpps-common-vars
           filters:
             branches:
               only:
                 - main
-          context:
-            - hmpps-common-vars
           requires:
             - validate
             - helm_lint

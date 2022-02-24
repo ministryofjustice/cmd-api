@@ -32,12 +32,12 @@ class ResourceServerConfiguration : WebSecurityConfigurerAdapter() {
             "/health/**",
             "/info",
             "/h2-console/**",
-            "/v2/api-docs",
+            "/v3/api-docs/**",
             "/swagger-ui.html",
+            "/swagger-ui/**",
             "/swagger-resources",
             "/swagger-resources/configuration/ui",
-            "/swagger-resources/configuration/security",
-            "/shifts"
+            "/swagger-resources/configuration/security"
           )
           .permitAll()
           .anyRequest()
@@ -49,7 +49,7 @@ class ResourceServerConfiguration : WebSecurityConfigurerAdapter() {
   class AuthAwareTokenConverter : Converter<Jwt, AbstractAuthenticationToken> {
     private val jwtGrantedAuthoritiesConverter: Converter<Jwt, Collection<GrantedAuthority>> = JwtGrantedAuthoritiesConverter()
 
-    override fun convert(jwt: Jwt): AbstractAuthenticationToken? = AuthAwareAuthenticationToken(jwt, extractAuthorities(jwt))
+    override fun convert(jwt: Jwt): AbstractAuthenticationToken = AuthAwareAuthenticationToken(jwt, extractAuthorities(jwt))
 
     @Suppress("UNCHECKED_CAST", "RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
     private fun extractAuthorities(jwt: Jwt): Collection<GrantedAuthority> {

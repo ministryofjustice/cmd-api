@@ -1,9 +1,9 @@
 package uk.gov.justice.digital.hmpps.cmd.api.controllers
 
-import io.swagger.annotations.Api
-import io.swagger.annotations.ApiOperation
-import io.swagger.annotations.ApiResponse
-import io.swagger.annotations.ApiResponses
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -17,15 +17,17 @@ import uk.gov.justice.digital.hmpps.cmd.api.dto.UserPreferenceDto
 import uk.gov.justice.digital.hmpps.cmd.api.service.UserPreferenceService
 import javax.validation.Valid
 
-@Api(tags = ["user-preferences"])
 @RestController
 @RequestMapping(produces = [APPLICATION_JSON_VALUE])
 class UserPreferenceController(private val userPreferenceService: UserPreferenceService) {
 
-  @ApiOperation(value = "Retrieve all preferences for a user")
-  @ApiResponses(
-    value = [
-      ApiResponse(code = 200, message = "OK", response = UserPreferenceDto::class)
+  @Operation(
+    summary = "Retrieve all preferences for a user",
+    responses = [
+      ApiResponse(
+        responseCode = "200",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = UserPreferenceDto::class))]
+      )
     ]
   )
   @GetMapping("/preferences/notifications")
@@ -33,10 +35,12 @@ class UserPreferenceController(private val userPreferenceService: UserPreference
     return ResponseEntity.ok(userPreferenceService.getUserPreference())
   }
 
-  @ApiOperation(value = "Update the notification snooze until preference for a user")
-  @ApiResponses(
-    value = [
-      ApiResponse(code = 200, message = "OK")
+  @Operation(
+    summary = "Update the notification snooze until preference for a user",
+    responses = [
+      ApiResponse(
+        responseCode = "200"
+      )
     ]
   )
   @PutMapping("/preferences/notifications/snooze")
@@ -45,10 +49,12 @@ class UserPreferenceController(private val userPreferenceService: UserPreference
     return ResponseEntity.ok().build()
   }
 
-  @ApiOperation(value = "Update the notification details for a user")
-  @ApiResponses(
-    value = [
-      ApiResponse(code = 200, message = "OK")
+  @Operation(
+    summary = "Update the notification details for a user",
+    responses = [
+      ApiResponse(
+        responseCode = "200"
+      )
     ]
   )
   @PutMapping("/preferences/notifications/details")
