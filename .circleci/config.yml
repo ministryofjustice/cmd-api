@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@3.12
+  hmpps: ministryofjustice/hmpps@3.14
 
 jobs:
   validate:
@@ -51,6 +51,7 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_dev
           env: "dev"
+          jira_update: true
           context: hmpps-common-vars
           filters:
             branches:
@@ -67,6 +68,8 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_preprod
           env: "preprod"
+          jira_update: true
+          jira_env_type: staging
           context:
             - check-my-diary-preprod # we only need the kube override settings, the purpose of a context is to share across projects.
             - hmpps-common-vars
@@ -79,6 +82,8 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_prod
           env: "prod"
+          jira_update: true
+          jira_env_type: production
           slack_notification: true
           context:
             - check-my-diary-prod # we only need the kube override settings, the purpose of a context is to share across projects.
