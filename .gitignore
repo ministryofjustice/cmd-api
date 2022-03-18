@@ -28,5 +28,5 @@ out
 
 dps-gradle-spring-boot-suppressions.xml
 
-.editorConfig
+.editorconfig
 sonar-project.properties

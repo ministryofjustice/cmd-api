@@ -15,7 +15,6 @@ ENV BUILD_NUMBER ${BUILD_NUMBER:-1_0_0}
 
 RUN apt-get update && \
     apt-get -y upgrade && \
-    apt-get install -y curl && \
     rm -rf /var/lib/apt/lists/*
 
 ENV TZ=Europe/London
@@ -28,8 +27,6 @@ RUN addgroup --gid 2000 --system appgroup && \
 RUN mkdir /home/appuser/.postgresql \
   && curl https://s3.amazonaws.com/rds-downloads/rds-ca-2019-root.pem \
     > /home/appuser/.postgresql/root.crt
-RUN curl https://s3.amazonaws.com/rds-downloads/rds-ca-2015-root.pem \
-    >> /home/appuser/.postgresql/root.crt
 
 WORKDIR /app
 
