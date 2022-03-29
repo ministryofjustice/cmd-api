@@ -15,7 +15,7 @@ class InfoConfiguration(private val cacheManager: CacheManager) : InfoContributo
   override fun contribute(builder: Builder) {
     val cache = cacheManager.getCache("userDetails")
     val nativeCache = cache!!.nativeCache
-    if (nativeCache is Cache<*,*>) {
+    if (nativeCache is Cache<*, *>) {
       val stats = nativeCache.stats()
       builder.withDetail("cache-userDetails", stats.toString())
     }
