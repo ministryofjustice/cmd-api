@@ -5,7 +5,6 @@ generic-service:
     maxReplicas: 2
 
   env:
-    JAVA_OPTS: "-Xmx1536m"
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json"
     OAUTH_ENDPOINT_URL: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth"
     ELITE2API_ENDPOINT_URL: "https://api-dev.prison.service.justice.gov.uk"
