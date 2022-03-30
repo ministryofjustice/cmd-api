@@ -37,10 +37,15 @@ generic-service:
 
   resources:
     requests:
-      cpu: 60m
+      cpu: 20m
+      memory: 1000Mi
+    limit:
+      cpu: 1000m
+      memory: 1000Mi
 
   # Environment variables to load into the deployment
   env:
+    JAVA_OPTS: "-Xmx512m"
     SPRING_PROFILES_ACTIVE: "postgres"
     SERVER_PORT: 8080
 
