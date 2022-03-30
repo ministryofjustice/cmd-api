@@ -13,11 +13,12 @@ import org.springframework.stereotype.Component
 class InfoConfiguration(private val cacheManager: CacheManager) : InfoContributor {
 
   override fun contribute(builder: Builder) {
-    val cache = cacheManager.getCache("userDetails")
-    val nativeCache = cache!!.nativeCache
-    if (nativeCache is Cache<*, *>) {
-      val stats = nativeCache.stats()
-      builder.withDetail("cache-userDetails", stats.toString())
+    cacheManager.cacheNames.forEach { name ->
+      val nativeCache = cacheManager.getCache(name)?.nativeCache
+      if (nativeCache is Cache<*, *>) {
+        val stats = nativeCache.stats()
+        builder.withDetail("cache-$name", stats.toString())
+      }
     }
   }
 }
