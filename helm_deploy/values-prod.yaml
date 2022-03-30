@@ -8,7 +8,7 @@ generic-service:
     requests:
       cpu: 80m
       memory: 1000Mi
-    limit:
+    limits:
       cpu: 2000m
       memory: 2000Mi
 

@@ -17,8 +17,6 @@ spring:
     username: cmd
     password: dummy
 
-  cache:
-    type: NONE
   sql:
     init:
       mode: always

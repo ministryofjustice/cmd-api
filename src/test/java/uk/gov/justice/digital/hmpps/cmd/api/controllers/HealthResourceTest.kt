@@ -40,6 +40,7 @@ class HealthResourceTest(@Autowired val testRestTemplate: TestRestTemplate) {
     val response = testRestTemplate.getForEntity(INFO_URL, String::class.java)
     assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
     assertThat(jsonTester.from(response.body)).extractingJsonPathStringValue("$.build.name").isEqualTo("cmd-api")
+    assertThat(jsonTester.from(response.body)).extractingJsonPathStringValue("$.cache-userDetails").contains("hitCount")
   }
 
   companion object {
