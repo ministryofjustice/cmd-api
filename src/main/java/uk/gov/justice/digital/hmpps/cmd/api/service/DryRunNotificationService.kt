@@ -85,7 +85,7 @@ class DryRunNotificationService(
     val detailsToProcess = details.filter { it.quantumId in usersWithoutRecentActivity.keys }
 
     val allNotifications = detailsToProcess
-      .distinctBy { it.copy(id = null, shiftModified = LocalDateTime.MIN) } // omit id in comparison
+      .distinctBy { it.copy(id = null, shiftModified = LocalDateTime.MIN) } // omit id and timestamp in comparison
       .map {
         // We only want to transform shift level changes, not detail changes.
         if (it.activity == null && it.actionType == DetailModificationType.EDIT && thereIsNoADDForThisShift(it)) {

@@ -355,8 +355,8 @@ internal class DryRunNotificationServiceTest_Generate_Shift_Task {
         task,
         DetailModificationType.ADD
       )
-      val dto2 = dto1.copy(id=2, shiftModified = today.atStartOfDay().plusSeconds(5))
-      val dto3 = dto1.copy(id=3, shiftModified = today.atStartOfDay().plusSeconds(10))
+      val dto2 = dto1.copy(id = 2, shiftModified = today.atStartOfDay().plusSeconds(5))
+      val dto3 = dto1.copy(id = 3, shiftModified = today.atStartOfDay().plusSeconds(10))
 
       every { csrClient.getModified(any()) } returns listOf(dto1, dto2, dto3)
 
