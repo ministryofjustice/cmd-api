@@ -5,13 +5,11 @@ import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.cache.annotation.EnableCaching
 import org.springframework.context.annotation.Bean
-import org.springframework.scheduling.annotation.EnableScheduling
 import uk.gov.service.notify.NotificationClient
 import uk.gov.service.notify.NotificationClientApi
 import java.time.Clock
 
 @EnableCaching
-@EnableScheduling
 @SpringBootApplication
 class CmdApiApplication {
 
