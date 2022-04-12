@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.1.3"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.1.4-beta"
   kotlin("plugin.spring") version "1.6.20"
   kotlin("plugin.jpa") version "1.6.20"
   idea
@@ -21,10 +21,10 @@ dependencies {
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
-  runtimeOnly("com.h2database:h2:2.1.210")
+  runtimeOnly("com.h2database:h2:2.1.212")
   runtimeOnly("org.postgresql:postgresql:42.3.3")
   runtimeOnly("com.zaxxer:HikariCP")
-  runtimeOnly("org.flywaydb:flyway-core:8.5.5")
+  runtimeOnly("org.flywaydb:flyway-core:8.5.7")
 
   implementation("org.springframework.boot:spring-boot-starter-jdbc")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -35,15 +35,15 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-quartz")
   implementation("com.github.ben-manes.caffeine:caffeine")
 
-  implementation("net.javacrumbs.shedlock:shedlock-spring:4.33.0")
-  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:4.33.0")
+  implementation("net.javacrumbs.shedlock:shedlock-spring:4.34.0")
+  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:4.34.0")
 
   implementation("org.springframework:spring-webflux")
   implementation("org.springframework.boot:spring-boot-starter-reactor-netty")
 
-  implementation("org.springdoc:springdoc-openapi-ui:1.6.6")
-  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.6")
-  implementation("org.springdoc:springdoc-openapi-data-rest:1.6.6")
+  implementation("org.springdoc:springdoc-openapi-ui:1.6.7")
+  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.7")
+  implementation("org.springdoc:springdoc-openapi-data-rest:1.6.7")
 
   implementation("org.apache.commons:commons-lang3:3.12.0")
   implementation("uk.gov.service.notify:notifications-java-client:3.17.3-RELEASE")
