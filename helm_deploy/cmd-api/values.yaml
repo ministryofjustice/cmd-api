@@ -59,13 +59,11 @@ generic-service:
   namespace_secrets:
     cmd-api:
       APPINSIGHTS_INSTRUMENTATIONKEY: "APPINSIGHTS_INSTRUMENTATIONKEY"
+      OAUTH_CLIENT_ID: "API_CLIENT_ID"
+      OAUTH_CLIENT_SECRET: "API_CLIENT_SECRET"
 
     check-my-diary-notifications:
       APPLICATION_NOTIFY_KEY: NOTIFY_CLIENT_KEY
-
-    check-my-diary:
-      OAUTH_CLIENT_ID: "API_CLIENT_ID"
-      OAUTH_CLIENT_SECRET: "API_CLIENT_SECRET"
 
     check-my-diary-rds:
       DATABASE_ENDPOINT: "rds_instance_endpoint"
