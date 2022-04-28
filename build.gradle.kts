@@ -35,9 +35,6 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-quartz")
   implementation("com.github.ben-manes.caffeine:caffeine")
 
-  implementation("net.javacrumbs.shedlock:shedlock-spring:4.34.0")
-  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:4.34.0")
-
   implementation("org.springframework:spring-webflux")
   implementation("org.springframework.boot:spring-boot-starter-reactor-netty")
 
@@ -60,7 +57,6 @@ dependencies {
   testImplementation("io.github.http-builder-ng:http-builder-ng-apache:1.0.4")
   testImplementation("com.ninja-squad:springmockk:3.1.1")
   testImplementation("io.jsonwebtoken:jjwt:0.9.1")
-  testImplementation("com.github.tomakehurst:wiremock-standalone:2.27.2")
 }
 
 java {

@@ -77,13 +77,13 @@ internal class NotificationServiceTest_Generate_Shift {
       val task = "Guard Duty"
       val shiftType = ShiftType.SHIFT
       val dto1 = CsrModifiedDetailDto(
-        quantumId = quantumId,
-        shiftModified = today,
-        shiftType = shiftType,
-        detailStart = start,
-        detailEnd = end,
-        activity = task,
-        actionType = DetailModificationType.ADD
+        quantumId,
+        today,
+        shiftType,
+        start,
+        end,
+        task,
+        DetailModificationType.ADD
       )
 
       every { csrClient.getModifiedShifts("Main Gate", 1) } returns listOf()
@@ -108,7 +108,6 @@ internal class NotificationServiceTest_Generate_Shift {
       val task = "Guard Duty"
       val shiftType = ShiftType.SHIFT
       val dto1 = CsrModifiedDetailDto(
-        null,
         quantumId,
         today,
         shiftType,
@@ -119,7 +118,6 @@ internal class NotificationServiceTest_Generate_Shift {
       )
 
       val dto2 = CsrModifiedDetailDto(
-        null,
         quantumId,
         today,
         shiftType,
@@ -130,7 +128,6 @@ internal class NotificationServiceTest_Generate_Shift {
       )
 
       val dto3 = CsrModifiedDetailDto(
-        null,
         quantumId,
         today,
         shiftType,
@@ -164,7 +161,6 @@ internal class NotificationServiceTest_Generate_Shift {
       val task = "Guard Duty"
       val shiftType = ShiftType.SHIFT
       val dto1 = CsrModifiedDetailDto(
-        null,
         quantumId,
         today,
         shiftType,
@@ -175,7 +171,6 @@ internal class NotificationServiceTest_Generate_Shift {
       )
 
       val dto2 = CsrModifiedDetailDto(
-        null,
         quantumId,
         today,
         shiftType,
@@ -186,7 +181,6 @@ internal class NotificationServiceTest_Generate_Shift {
       )
 
       val dto3 = CsrModifiedDetailDto(
-        null,
         quantumId,
         today,
         shiftType,
@@ -218,7 +212,6 @@ internal class NotificationServiceTest_Generate_Shift {
       val task = "Guard Duty"
       val shiftType = ShiftType.SHIFT
       val dto1 = CsrModifiedDetailDto(
-        null,
         quantumId,
         today,
         shiftType,
@@ -229,7 +222,6 @@ internal class NotificationServiceTest_Generate_Shift {
       )
 
       val dto2 = CsrModifiedDetailDto(
-        null,
         quantumId,
         today.plusSeconds(5),
         shiftType,
@@ -240,7 +232,6 @@ internal class NotificationServiceTest_Generate_Shift {
       )
 
       val dto3 = CsrModifiedDetailDto(
-        null,
         quantumId,
         today.plusSeconds(10),
         shiftType,
@@ -274,7 +265,6 @@ internal class NotificationServiceTest_Generate_Shift {
       val task = null
       val shiftType = ShiftType.SHIFT
       val dto1 = CsrModifiedDetailDto(
-        null,
         quantumId,
         today,
         shiftType,
@@ -305,7 +295,6 @@ internal class NotificationServiceTest_Generate_Shift {
       val task = "Guard Duty"
       val shiftType = ShiftType.SHIFT
       val dto1 = CsrModifiedDetailDto(
-        null,
         quantumId,
         today,
         shiftType,
@@ -334,7 +323,6 @@ internal class NotificationServiceTest_Generate_Shift {
       val task = "Guard Duty"
       val shiftType = ShiftType.SHIFT
       val dto1 = CsrModifiedDetailDto(
-        null,
         quantumId,
         today,
         shiftType,
@@ -368,7 +356,6 @@ internal class NotificationServiceTest_Generate_Shift {
       val task = "Guard Duty"
       val shiftType = ShiftType.SHIFT
       val dto1 = CsrModifiedDetailDto(
-        null,
         quantumId,
         today,
         shiftType,
@@ -411,7 +398,6 @@ internal class NotificationServiceTest_Generate_Shift {
       val task = null
       val shiftType = ShiftType.SHIFT
       val dto1 = CsrModifiedDetailDto(
-        null,
         quantumId,
         today,
         shiftType,
@@ -446,7 +432,6 @@ internal class NotificationServiceTest_Generate_Shift {
       val task = "Guard Duty"
       val shiftType = ShiftType.SHIFT
       val dto1 = CsrModifiedDetailDto(
-        null,
         quantumId,
         today,
         shiftType,

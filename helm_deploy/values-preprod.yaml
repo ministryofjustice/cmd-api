@@ -6,11 +6,11 @@ generic-service:
 
   resources:
     requests:
-      cpu: 150m
+      cpu: 80m
       memory: 1000Mi
     limits:
       cpu: 2000m
-      memory: 2500Mi
+      memory: 2000Mi
 
   env:
     JAVA_OPTS: "-Xmx1536m"
