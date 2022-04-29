@@ -81,7 +81,7 @@ class CsrClient(
       .retrieve()
       .bodyToMono(CSR_DETAIL_DTO_LIST_TYPE)
       .block() ?: listOf()
-    log.info("User Details: found ${csrDetails.size}, User ${authenticationFacade.currentUsername}, Region $region")
+    log.info("User Details: found ${csrDetails.size}, User ${authenticationFacade.currentUsername}, $from - $to, Region $region")
 
     return csrDetails
   }
