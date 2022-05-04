@@ -31,7 +31,7 @@ spring:
 
   cache:
     cache-names: userDetails
-    caffeine.spec: maximumSize=500,expireAfterAccess=600s,recordStats
+    caffeine.spec: maximumSize=2000,expireAfterWrite=300s,recordStats
 
   quartz:
     job-store-type: jdbc
