@@ -1,11 +1,11 @@
 package uk.gov.justice.digital.hmpps.cmd.api.client
 
 import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonProperty
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.core.ParameterizedTypeReference
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
@@ -72,6 +72,33 @@ class CsrClient(
     return csrModifiedDetails
   }
 
+  fun getModified(region: Int): List<CsrModifiedDetailDto> {
+    log.info("getModified: Region $region")
+    val csrModifiedDetails: List<CsrModifiedDetailDto> = csrApiServiceAccountWebClient
+      .get()
+      .uri("/updates/$region")
+      .retrieve()
+      .bodyToMono(object : ParameterizedTypeReference<List<CsrModifiedDetailDto>>() {})
+      .block() ?: emptyList()
+    log.info("getModified: found ${csrModifiedDetails.size}, Region $region")
+    return csrModifiedDetails
+  }
+
+  fun deleteProcessed(region: Int, ids: List<Long>) {
+    log.info("deleteProcessed: Region $region")
+
+    csrApiServiceAccountWebClient
+      .put()
+      .uri("/updates/$region")
+      .contentType(MediaType.APPLICATION_JSON)
+      .bodyValue(ids)
+      .retrieve()
+      .bodyToMono(Unit::class.java)
+      .block()
+
+    log.info("deleteProcessed: end, Region $region")
+  }
+
   private fun getDetails(from: LocalDate, to: LocalDate, region: String): Collection<CsrDetailDto> {
     log.debug("User Details: finding User ${authenticationFacade.currentUsername}, Region $region")
     val csrDetails: Collection<CsrDetailDto> = csrClient
@@ -95,39 +122,29 @@ class CsrClient(
 
 data class CsrDetailDto @JsonCreator constructor(
 
-  @JsonProperty("shiftType")
   var shiftType: ShiftType,
 
-  @JsonProperty("detailStart")
   var detailStart: LocalDateTime,
 
-  @JsonProperty("detailEnd")
   var detailEnd: LocalDateTime,
 
-  @JsonProperty("activity")
   var activity: String
 )
 
 data class CsrModifiedDetailDto @JsonCreator constructor(
+  val id: Long? = null,
 
-  @JsonProperty("quantumId")
   var quantumId: String,
 
-  @JsonProperty("shiftModified")
   var shiftModified: LocalDateTime,
 
-  @JsonProperty("shiftType")
   var shiftType: ShiftType,
 
-  @JsonProperty("detailStart")
   var detailStart: LocalDateTime,
 
-  @JsonProperty("detailEnd")
   var detailEnd: LocalDateTime,
 
-  @JsonProperty("activity")
   var activity: String?,
 
-  @JsonProperty("actionType")
   var actionType: DetailModificationType
 )

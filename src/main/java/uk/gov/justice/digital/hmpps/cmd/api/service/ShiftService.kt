@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.cmd.api.service
 
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.cmd.api.client.CsrClient
 import uk.gov.justice.digital.hmpps.cmd.api.client.CsrDetailDto
@@ -27,6 +28,8 @@ class ShiftService(
   fun getDetailsForUser(fromParam: Optional<LocalDate>, toParam: Optional<LocalDate>): Collection<ShiftDto> {
     val start = fromParam.orElse(LocalDate.now(clock))
     val end = toParam.orElse(LocalDate.now(clock))
+
+    log.info("getDetailsForUser: getting for User ${authenticationFacade.currentUsername}, $start - $end")
 
     val detailsByDate: Map<LocalDate, Collection<CsrDetailDto>> = getDetailsGroupedByDate(start, end)
 
@@ -245,5 +248,9 @@ class ShiftService(
         detail.detailEnd
       ).toSeconds()
     }.sum()
+  }
+
+  companion object {
+    private val log = LoggerFactory.getLogger(ShiftService::class.java)
   }
 }

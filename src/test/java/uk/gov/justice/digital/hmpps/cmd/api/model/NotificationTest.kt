@@ -58,6 +58,7 @@ class NotificationTest {
     val processed = false
 
     val shiftNotificationDto = CsrModifiedDetailDto(
+      null,
       quantumId,
       shiftModified,
       shiftType,
@@ -93,6 +94,7 @@ class NotificationTest {
     val processed = false
 
     val shiftNotificationDto = CsrModifiedDetailDto(
+      null,
       quantumId,
       shiftModified,
       shiftType,
