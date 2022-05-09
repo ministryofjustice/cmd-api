@@ -32,8 +32,8 @@ internal class UserPreferenceServiceTest {
   }
 
   @Nested
-  @DisplayName("Get Preference tests")
-  inner class GetPreferenceTests {
+  @DisplayName("Get or create preference tests")
+  inner class GetOrCreatePreferenceTests {
 
     @Test
     fun `Should get preference with future date`() {
@@ -110,6 +110,23 @@ internal class UserPreferenceServiceTest {
 
       assertThat(returnValue).isNotNull
       assertThat(returnValue.snoozeUntil).isEqualTo(userPref.snoozeUntil)
+    }
+  }
+
+  @Nested
+  @DisplayName("Get Preference tests")
+  inner class GetPreferenceTests {
+    @Test
+    fun `Should handle preference not found by returning null`() {
+      val quantumId = "XYZ"
+      every { repository.findByQuantumIdIgnoreCase(any()) } returns null
+
+      val returnValue = service.getUserPreference(quantumId)
+
+      verify { repository.findByQuantumIdIgnoreCase(quantumId) }
+      confirmVerified(repository)
+
+      assertThat(returnValue).isNull()
     }
   }
 

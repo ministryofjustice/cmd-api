@@ -37,16 +37,20 @@ class UserPreferenceService(
     repository.save(userPreferences)
   }
 
-  fun getOrCreateUserPreference(quantumId: String = authenticationFacade.currentUsername): UserPreference {
+  fun getOrCreateUserPreference(quantumId: String = authenticationFacade.currentUsername): UserPreference =
+    getUserPreference(quantumId) ?: repository.save(UserPreference(quantumId.uppercase()))
+      .also { log.info("getOrCreateUserPreference: Created new user preference for $quantumId") }
+
+  fun getUserPreference(quantumId: String): UserPreference? {
     val userPreference = repository.findByQuantumIdIgnoreCase(quantumId)
-    log.debug("Finding user preference for $quantumId")
+    log.debug("getUserPreference: Finding user preference for $quantumId")
     return if (userPreference != null) {
       log.info("Found user preference for $quantumId")
       log.debug(userPreference.toString())
       userPreference
     } else {
-      log.info("Creating new user preference for $quantumId")
-      repository.save(UserPreference(quantumId.uppercase()))
+      log.info("User preference for $quantumId not found")
+      null
     }
   }
 

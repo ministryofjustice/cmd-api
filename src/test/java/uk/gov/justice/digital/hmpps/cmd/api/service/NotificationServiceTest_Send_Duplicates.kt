@@ -78,7 +78,7 @@ internal class NotificationServiceTest_Send_Duplicates {
       )
 
       every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
-      every { userPreferenceService.getOrCreateUserPreference(quantumId) } returns UserPreference(quantumId, null, "email", "sms", CommunicationPreference.EMAIL)
+      every { userPreferenceService.getUserPreference(quantumId) } returns UserPreference(quantumId, null, "email", "sms", CommunicationPreference.EMAIL)
       every { notifyClient.sendEmail(any(), "email", any(), any()) } returns null
       every { notifyClient.sendSms(any(), "sms", any(), any()) } returns null
       every { shiftNotificationRepository.saveAll(shiftNotifications) } returns shiftNotifications
@@ -89,7 +89,7 @@ internal class NotificationServiceTest_Send_Duplicates {
       service.sendNotifications()
 
       verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
-      verify { userPreferenceService.getOrCreateUserPreference(quantumId) }
+      verify { userPreferenceService.getUserPreference(quantumId) }
       verify(exactly = 1) { notifyClient.sendEmail(any(), "email", any(), null) }
       verify(exactly = 0) { notifyClient.sendSms(any(), "sms", any(), null) }
       verify { shiftNotificationRepository.saveAll(shiftNotifications) }
@@ -113,7 +113,7 @@ internal class NotificationServiceTest_Send_Duplicates {
       )
 
       every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
-      every { userPreferenceService.getOrCreateUserPreference(quantumId) } returns UserPreference(quantumId, null, "email", "sms", CommunicationPreference.EMAIL)
+      every { userPreferenceService.getUserPreference(quantumId) } returns UserPreference(quantumId, null, "email", "sms", CommunicationPreference.EMAIL)
       every { notifyClient.sendEmail(any(), "email", any(), any()) } returns null
       every { notifyClient.sendSms(any(), "sms", any(), any()) } returns null
       every { shiftNotificationRepository.saveAll(shiftNotifications) } returns shiftNotifications
@@ -124,7 +124,7 @@ internal class NotificationServiceTest_Send_Duplicates {
       service.sendNotifications()
 
       verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
-      verify { userPreferenceService.getOrCreateUserPreference(quantumId) }
+      verify { userPreferenceService.getUserPreference(quantumId) }
       verify(exactly = 1) { notifyClient.sendEmail(any(), "email", any(), null) }
       verify(exactly = 0) { notifyClient.sendSms(any(), "sms", any(), null) }
       verify { shiftNotificationRepository.saveAll(shiftNotifications) }

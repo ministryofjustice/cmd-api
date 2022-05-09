@@ -267,40 +267,41 @@ class NotificationService(
   * 10 means we can cover 99.9% of scenarios in one email.
   */
   private fun sendNotification(quantumId: String, notificationGroup: List<Notification>) {
-    val userPreference = userPreferenceService.getOrCreateUserPreference(quantumId)
+    val userPreference = userPreferenceService.getUserPreference(quantumId)
+    userPreference?.also {
+      data class Key(val shiftType: ShiftType, val quantumId: String, val detailStart: LocalDateTime)
 
-    data class Key(val shiftType: ShiftType, val quantumId: String, val detailStart: LocalDateTime)
+      fun Notification.toKeyDuplicates() = Key(this.parentType, this.quantumId.uppercase(), this.detailStart)
 
-    fun Notification.toKeyDuplicates() = Key(this.parentType, this.quantumId.uppercase(), this.detailStart)
+      // Only send the latest notification for a shift if there are multiple
+      val mostRecentNotifications = notificationGroup
+        .groupBy { it.toKeyDuplicates() }
+        .map { (_, value) -> value.maxByOrNull { it.shiftModified } }
+        .filterNotNull()
 
-    // Only send the latest notification for a shift if there are multiple
-    val mostRecentNotifications = notificationGroup
-      .groupBy { it.toKeyDuplicates() }
-      .map { (_, value) -> value.maxByOrNull { it.shiftModified } }
-      .filterNotNull()
-
-    if (shouldSend(userPreference)) {
-      log.debug("Sending (${mostRecentNotifications.size}) notifications to ${userPreference.quantumId}, preference set to ${userPreference.commPref}")
-      mostRecentNotifications.sortedWith(compareBy { it.detailStart }).chunked(10).forEach { chunk ->
-        when (val communicationPreference = userPreference.commPref) {
-          CommunicationPreference.EMAIL -> {
-            notifyClient.sendEmail(
-              NotificationType.EMAIL_SUMMARY.value,
-              userPreference.email,
-              generateTemplateValues(chunk, communicationPreference),
-              null
-            )
-          }
-          CommunicationPreference.SMS -> {
-            notifyClient.sendSms(
-              NotificationType.SMS_SUMMARY.value,
-              userPreference.sms,
-              generateTemplateValues(chunk, communicationPreference),
-              null
-            )
-          }
-          else -> {
-            log.info("Skipping sending notifications for ${userPreference.quantumId}")
+      if (shouldSend(userPreference)) {
+        log.debug("Sending (${mostRecentNotifications.size}) notifications to ${userPreference.quantumId}, preference set to ${userPreference.commPref}")
+        mostRecentNotifications.sortedWith(compareBy { it.detailStart }).chunked(10).forEach { chunk ->
+          when (val communicationPreference = userPreference.commPref) {
+            CommunicationPreference.EMAIL -> {
+              notifyClient.sendEmail(
+                NotificationType.EMAIL_SUMMARY.value,
+                userPreference.email,
+                generateTemplateValues(chunk, communicationPreference),
+                null
+              )
+            }
+            CommunicationPreference.SMS -> {
+              notifyClient.sendSms(
+                NotificationType.SMS_SUMMARY.value,
+                userPreference.sms,
+                generateTemplateValues(chunk, communicationPreference),
+                null
+              )
+            }
+            else -> {
+              log.info("Skipping sending notifications for ${userPreference.quantumId}")
+            }
           }
         }
       }
@@ -308,12 +309,7 @@ class NotificationService(
   }
 
   private fun shouldSend(userPreference: UserPreference): Boolean {
-    val isNotSnoozed =
-      (
-        userPreference.snoozeUntil == null || userPreference.snoozeUntil != null && userPreference.snoozeUntil!!.isBefore(
-          LocalDate.now(clock)
-        )
-        )
+    val isNotSnoozed = userPreference.snoozeUntil == null || userPreference.snoozeUntil!!.isBefore(LocalDate.now(clock))
     val isValidCommunicationMethod = when (userPreference.commPref) {
       CommunicationPreference.EMAIL -> {
         !userPreference.email.isNullOrBlank()
