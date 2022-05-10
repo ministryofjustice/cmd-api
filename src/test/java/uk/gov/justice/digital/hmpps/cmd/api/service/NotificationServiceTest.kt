@@ -258,14 +258,14 @@ internal class NotificationServiceTest {
 
       val snoozePref = LocalDate.now(clock).plusDays(20)
       every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
-      every { userPreferenceService.getOrCreateUserPreference(quantumId1) } returns UserPreference(quantumId1, snoozePref, "email", "sms", CommunicationPreference.EMAIL)
+      every { userPreferenceService.getUserPreference(quantumId1) } returns UserPreference(quantumId1, snoozePref, "email", "sms", CommunicationPreference.EMAIL)
       every { notifyClient.sendEmail(any(), "email", any(), any()) } returns null
       every { shiftNotificationRepository.saveAll(shiftNotifications) } returns shiftNotifications
 
       service.sendNotifications()
 
       verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
-      verify { userPreferenceService.getOrCreateUserPreference(quantumId1) }
+      verify { userPreferenceService.getUserPreference(quantumId1) }
       verify { shiftNotificationRepository.saveAll(shiftNotifications) }
     }
 
@@ -278,14 +278,14 @@ internal class NotificationServiceTest {
 
       val snoozePref = LocalDate.now(clock)
       every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
-      every { userPreferenceService.getOrCreateUserPreference(quantumId1) } returns UserPreference(quantumId1, snoozePref, "email", "sms", CommunicationPreference.EMAIL)
+      every { userPreferenceService.getUserPreference(quantumId1) } returns UserPreference(quantumId1, snoozePref, "email", "sms", CommunicationPreference.EMAIL)
       every { notifyClient.sendEmail(any(), "email", any(), any()) } returns null
       every { shiftNotificationRepository.saveAll(shiftNotifications) } returns shiftNotifications
 
       service.sendNotifications()
 
       verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
-      verify { userPreferenceService.getOrCreateUserPreference(quantumId1) }
+      verify { userPreferenceService.getUserPreference(quantumId1) }
       verify { shiftNotificationRepository.saveAll(shiftNotifications) }
     }
 
@@ -298,14 +298,14 @@ internal class NotificationServiceTest {
 
       val snoozePref = LocalDate.now(clock).minusDays(1)
       every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
-      every { userPreferenceService.getOrCreateUserPreference(quantumId1) } returns UserPreference(quantumId1, snoozePref, "email", "sms", CommunicationPreference.EMAIL)
+      every { userPreferenceService.getUserPreference(quantumId1) } returns UserPreference(quantumId1, snoozePref, "email", "sms", CommunicationPreference.EMAIL)
       every { notifyClient.sendEmail(any(), "email", any(), any()) } returns null
       every { shiftNotificationRepository.saveAll(shiftNotifications) } returns shiftNotifications
 
       service.sendNotifications()
 
       verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
-      verify { userPreferenceService.getOrCreateUserPreference(quantumId1) }
+      verify { userPreferenceService.getUserPreference(quantumId1) }
       verify(exactly = 1) { notifyClient.sendEmail(any(), "email", any(), null) }
       verify { shiftNotificationRepository.saveAll(shiftNotifications) }
     }
@@ -318,14 +318,14 @@ internal class NotificationServiceTest {
       )
 
       every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
-      every { userPreferenceService.getOrCreateUserPreference(quantumId1) } returns UserPreference(quantumId1, null, "email", "sms", CommunicationPreference.EMAIL)
+      every { userPreferenceService.getUserPreference(quantumId1) } returns UserPreference(quantumId1, null, "email", "sms", CommunicationPreference.EMAIL)
       every { notifyClient.sendEmail(any(), "email", any(), any()) } returns null
       every { shiftNotificationRepository.saveAll(shiftNotifications) } returns shiftNotifications
 
       service.sendNotifications()
 
       verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
-      verify { userPreferenceService.getOrCreateUserPreference(quantumId1) }
+      verify { userPreferenceService.getUserPreference(quantumId1) }
       verify(exactly = 1) { notifyClient.sendEmail(any(), "email", any(), any()) }
       verify { shiftNotificationRepository.saveAll(shiftNotifications) }
     }
@@ -338,14 +338,14 @@ internal class NotificationServiceTest {
       )
 
       every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
-      every { userPreferenceService.getOrCreateUserPreference(quantumId1) } returns UserPreference(quantumId1, null, "email", "sms", CommunicationPreference.SMS)
+      every { userPreferenceService.getUserPreference(quantumId1) } returns UserPreference(quantumId1, null, "email", "sms", CommunicationPreference.SMS)
       every { notifyClient.sendSms(any(), "sms", any(), any()) } returns null
       every { shiftNotificationRepository.saveAll(shiftNotifications) } returns shiftNotifications
 
       service.sendNotifications()
 
       verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
-      verify { userPreferenceService.getOrCreateUserPreference(quantumId1) }
+      verify { userPreferenceService.getUserPreference(quantumId1) }
       verify(exactly = 1) { notifyClient.sendSms(any(), "sms", any(), null) }
       verify { shiftNotificationRepository.saveAll(shiftNotifications) }
     }
@@ -358,13 +358,13 @@ internal class NotificationServiceTest {
       )
 
       every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
-      every { userPreferenceService.getOrCreateUserPreference(quantumId1) } returns UserPreference(quantumId1, null, "email", "sms", CommunicationPreference.NONE)
+      every { userPreferenceService.getUserPreference(quantumId1) } returns UserPreference(quantumId1, null, "email", "sms", CommunicationPreference.NONE)
       every { shiftNotificationRepository.saveAll(shiftNotifications) } returns shiftNotifications
 
       service.sendNotifications()
 
       verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
-      verify { userPreferenceService.getOrCreateUserPreference(quantumId1) }
+      verify { userPreferenceService.getUserPreference(quantumId1) }
       verify { shiftNotificationRepository.saveAll(shiftNotifications.filter { it.id == 1L }) }
     }
 
