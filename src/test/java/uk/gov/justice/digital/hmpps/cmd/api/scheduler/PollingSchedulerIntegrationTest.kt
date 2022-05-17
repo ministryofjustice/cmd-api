@@ -8,7 +8,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import uk.gov.justice.digital.hmpps.cmd.api.controllers.EntityWithJwtAuthorisationBuilder
 import uk.gov.justice.digital.hmpps.cmd.api.repository.DryRunNotificationRepository
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.scheduler.PollingScheduler
 import uk.gov.justice.digital.hmpps.prisonertonomisupdate.wiremock.CsrApiExtension
