@@ -129,7 +129,7 @@ class NotificationService(
       .map {
         // We only want to transform shift level changes, not detail changes.
         if (it.activity == null && it.actionType == DetailModificationType.EDIT && !checkIfEditNotificationsHasCorrespondingAdd(
-            it.quantumId,
+            it.quantumId!!,
             it.detailStart,
             it.shiftType
           )
@@ -145,7 +145,7 @@ class NotificationService(
       .filterNot {
         (it.activity == null && it.actionType == DetailModificationType.EDIT) ||
           it.actionType == DetailModificationType.UNCHANGED ||
-          checkIfNotificationsExist(it.quantumId, it.detailStart, it.shiftType, it.shiftModified)
+          checkIfNotificationsExist(it.quantumId!!, it.detailStart, it.shiftType, it.shiftModified!!)
       }
 
     log.info("Calling saveAll with ${allNotifications.size} notifications for region: $region")

@@ -77,9 +77,10 @@ class DryRunNotificationService(
     val cutoffTime = LocalDateTime.now(clock).minusMinutes(CUTOFF_MINUTES)
 
     val usersWithoutRecentActivity = details
+      .filter { it.quantumId != null && it.shiftModified != null }
       .groupingBy { it.quantumId }
       .aggregate(::latestShiftModified)
-      .filter { it.value.shiftModified.isBefore(cutoffTime) }
+      .filter { it.value.shiftModified!!.isBefore(cutoffTime) }
 
     // Now omit details for users with recent changes
     val detailsToProcess = details.filter { it.quantumId in usersWithoutRecentActivity.keys }
@@ -125,21 +126,21 @@ class DryRunNotificationService(
 
   private fun thereIsNoADDForThisShift(it: CsrModifiedDetailDto) =
     dryRunNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndActionType(
-      it.quantumId, it.detailStart, it.shiftType, DetailModificationType.ADD
+      it.quantumId!!, it.detailStart, it.shiftType, DetailModificationType.ADD
     ) == 0
 
   private fun shiftChangeAlreadyRecorded(it: CsrModifiedDetailDto) =
     dryRunNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
-      it.quantumId, it.detailStart, it.shiftType, it.shiftModified
+      it.quantumId!!, it.detailStart, it.shiftType, it.shiftModified!!
     ) > 0
 
   private fun latestShiftModified(
-    @Suppress("UNUSED_PARAMETER") key: String,
+    @Suppress("UNUSED_PARAMETER") key: String?,
     acc: CsrModifiedDetailDto?,
     item: CsrModifiedDetailDto,
     first: Boolean
   ): CsrModifiedDetailDto =
-    if (first) item else if (item.shiftModified.isAfter(acc!!.shiftModified)) item else acc
+    if (first) item else if (item.shiftModified!!.isAfter(acc!!.shiftModified)) item else acc
 
   companion object {
     private val log = LoggerFactory.getLogger(DryRunNotificationService::class.java)

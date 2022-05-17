@@ -134,9 +134,9 @@ data class CsrDetailDto @JsonCreator constructor(
 data class CsrModifiedDetailDto @JsonCreator constructor(
   val id: Long? = null,
 
-  var quantumId: String,
+  var quantumId: String?,
 
-  var shiftModified: LocalDateTime,
+  var shiftModified: LocalDateTime?,
 
   var shiftType: ShiftType,
 
@@ -146,5 +146,5 @@ data class CsrModifiedDetailDto @JsonCreator constructor(
 
   var activity: String?,
 
-  var actionType: DetailModificationType
+  var actionType: DetailModificationType?
 )

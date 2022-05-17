@@ -70,13 +70,13 @@ data class Notification(
 
     fun fromDto(dtoCsr: CsrModifiedDetailDto): Notification {
       return Notification(
-        quantumId = dtoCsr.quantumId,
-        shiftModified = dtoCsr.shiftModified,
+        quantumId = dtoCsr.quantumId!!,
+        shiftModified = dtoCsr.shiftModified!!,
         detailStart = dtoCsr.detailStart,
         detailEnd = dtoCsr.detailEnd,
         activity = dtoCsr.activity,
         parentType = dtoCsr.shiftType,
-        actionType = dtoCsr.actionType,
+        actionType = dtoCsr.actionType!!,
         processed = false
       )
     }
