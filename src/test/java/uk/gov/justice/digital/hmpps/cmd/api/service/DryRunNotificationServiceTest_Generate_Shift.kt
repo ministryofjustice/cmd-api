@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.cmd.api.service
 
-import com.microsoft.applicationinsights.TelemetryClient
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
@@ -46,7 +45,6 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
     notifyClient,
     prisonService,
     csrClient,
-    TelemetryClient()
   )
 
   private val today = LocalDate.now(clock).atStartOfDay()
@@ -508,6 +506,7 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
       every { dryRunNotificationRepository.saveAll(capture(results)) } returns listOf()
 
       service.dryRunNotifications(1)
+
       val notification1 = DryRunNotification(
         0,
         "FINISHED_USER",
@@ -532,6 +531,49 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
       )
       assertThat(results[0]).asList().containsExactly(notification1, notification3)
       verify { csrClient.deleteProcessed(1, listOf(1L, 3L)) }
+    }
+
+    @Test
+    fun `Should process but not notify when null quantum id or lastmodified`() {
+
+      val quantumId = "CSTRIFE_GEN"
+      val shiftDate = today.plusDays(2).toLocalDate()
+      val start = shiftDate.atStartOfDay().plusSeconds(123L)
+      val end = shiftDate.atStartOfDay().plusSeconds(456L)
+      val task = "Guard Duty"
+      val shiftType = ShiftType.SHIFT
+      val dto1 = CsrModifiedDetailDto(
+        1,
+        quantumId,
+        today,
+        shiftType,
+        start,
+        end,
+        task,
+        DetailModificationType.ADD
+      )
+      val dto2 = dto1.copy(id = 2, quantumId = null)
+      val dto3 = dto1.copy(id = 3, shiftModified = null)
+      val dto4 = dto1.copy(id = 4, quantumId = null, shiftModified = null)
+
+      every { csrClient.getModified(any()) } returns listOf(dto1, dto2, dto3, dto4)
+
+      every {
+        dryRunNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
+          quantumId,
+          start,
+          shiftType,
+          today
+        )
+      } returns 0
+
+      val results = mutableListOf<Collection<DryRunNotification>>()
+      every { dryRunNotificationRepository.saveAll(capture(results)) } returns listOf()
+
+      service.dryRunNotifications(1)
+
+      assertThat(results[0]).asList().hasSize(1)
+      verify { csrClient.deleteProcessed(1, listOf(1L, 2L, 3L, 4L)) }
     }
   }
 }

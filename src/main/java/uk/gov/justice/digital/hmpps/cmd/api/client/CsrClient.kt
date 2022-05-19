@@ -73,7 +73,6 @@ class CsrClient(
   }
 
   fun getModified(region: Int): List<CsrModifiedDetailDto> {
-    log.info("getModified: Region $region")
     val csrModifiedDetails: List<CsrModifiedDetailDto> = csrApiServiceAccountWebClient
       .get()
       .uri("/updates/$region")

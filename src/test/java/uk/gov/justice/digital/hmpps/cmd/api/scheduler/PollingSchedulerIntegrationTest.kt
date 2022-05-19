@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.cmd.api.scheduler
 
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -43,39 +43,9 @@ class PollingSchedulerIntegrationTest(
         "detailEnd" : "2022-03-31T11:00:00",
         "activity" : "CCTV monitoring",
         "actionType" : "ADD"
-        }
-      ]
-      """.trimIndent()
-    )
-    CsrApiExtension.api.stubGetUpdates(2, "[]")
-    CsrApiExtension.api.stubGetUpdates(3, "[]")
-    CsrApiExtension.api.stubGetUpdates(4, "[]")
-    CsrApiExtension.api.stubGetUpdates(5, "[]")
-    CsrApiExtension.api.stubGetUpdates(6, "[]")
-    CsrApiExtension.api.stubDeleteProcessed(1, "[101]")
-
-    pollingScheduler.pollNotifications()
-
-    Assertions.assertThat(CsrApiExtension.api.putCountFor("/updates/1")).isEqualTo(1)
-    Assertions.assertThat(CsrApiExtension.api.putCountFor("/updates/2")).isEqualTo(0)
-    Assertions.assertThat(CsrApiExtension.api.putCountFor("/updates/3")).isEqualTo(0)
-    Assertions.assertThat(CsrApiExtension.api.putCountFor("/updates/4")).isEqualTo(0)
-    Assertions.assertThat(CsrApiExtension.api.putCountFor("/updates/5")).isEqualTo(0)
-    Assertions.assertThat(CsrApiExtension.api.putCountFor("/updates/6")).isEqualTo(0)
-
-    val notification = dryRunNotificationRepository.findAll().first()
-    Assertions.assertThat(notification.quantumId).isEqualTo(A_USER)
-    Assertions.assertThat(notification.processed).isTrue
-  }
-
-  @Test
-  fun `null quantum ids and modified timestamps are handled`() {
-    CsrApiExtension.api.stubGetUpdates(
-      1,
-      """
-      [
+        },
         {
-        "id" : "101",
+        "id" : "102",
         "shiftType" : "SHIFT",
         "detailStart" : "2022-03-31T10:00:00",
         "detailEnd" : "2022-03-31T11:00:00",
@@ -90,18 +60,22 @@ class PollingSchedulerIntegrationTest(
     CsrApiExtension.api.stubGetUpdates(4, "[]")
     CsrApiExtension.api.stubGetUpdates(5, "[]")
     CsrApiExtension.api.stubGetUpdates(6, "[]")
+    CsrApiExtension.api.stubDeleteProcessed(1, "[101,102]")
 
     pollingScheduler.pollNotifications()
 
-    Assertions.assertThat(CsrApiExtension.api.putCountFor("/updates/1")).isEqualTo(0)
-    Assertions.assertThat(CsrApiExtension.api.putCountFor("/updates/2")).isEqualTo(0)
-    Assertions.assertThat(CsrApiExtension.api.putCountFor("/updates/3")).isEqualTo(0)
-    Assertions.assertThat(CsrApiExtension.api.putCountFor("/updates/4")).isEqualTo(0)
-    Assertions.assertThat(CsrApiExtension.api.putCountFor("/updates/5")).isEqualTo(0)
-    Assertions.assertThat(CsrApiExtension.api.putCountFor("/updates/6")).isEqualTo(0)
+    assertThat(CsrApiExtension.api.putCountFor("/updates/1")).isEqualTo(1)
+    assertThat(CsrApiExtension.api.putCountFor("/updates/2")).isEqualTo(0)
+    assertThat(CsrApiExtension.api.putCountFor("/updates/3")).isEqualTo(0)
+    assertThat(CsrApiExtension.api.putCountFor("/updates/4")).isEqualTo(0)
+    assertThat(CsrApiExtension.api.putCountFor("/updates/5")).isEqualTo(0)
+    assertThat(CsrApiExtension.api.putCountFor("/updates/6")).isEqualTo(0)
 
-    val notifications = dryRunNotificationRepository.findAll()
-    Assertions.assertThat(notifications).isEmpty()
+    val saved = dryRunNotificationRepository.findAll()
+    val notification = saved.first()
+    assertThat(notification.quantumId).isEqualTo(A_USER)
+    assertThat(notification.processed).isTrue
+    assertThat(saved).hasSize(1)
   }
 
   companion object {

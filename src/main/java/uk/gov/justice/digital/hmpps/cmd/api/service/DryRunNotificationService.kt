@@ -1,8 +1,5 @@
 package uk.gov.justice.digital.hmpps.cmd.api.service
 
-import com.microsoft.applicationinsights.TelemetryClient
-import com.microsoft.applicationinsights.core.dependencies.google.common.collect.ImmutableMap
-import org.apache.commons.lang3.time.DurationFormatUtils
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -33,12 +30,10 @@ class DryRunNotificationService(
   private val notifyClient: NotificationClientApi,
   private val prisonService: PrisonService,
   private val csrClient: CsrClient,
-  private val telemetryClient: TelemetryClient
 ) {
 
   @Transactional(propagation = Propagation.NEVER)
   fun dryRunSendNotifications() {
-    val start = System.currentTimeMillis()
     val unprocessedNotifications = dryRunNotificationRepository.findAllByProcessedIsFalse()
     log.info("dryRunSendNotifications: Sending notifications, found: ${unprocessedNotifications.size}")
     unprocessedNotifications.groupBy { it.quantumId }
@@ -53,39 +48,26 @@ class DryRunNotificationService(
         log.info("dryRunSendNotifications: Sent notification (${group.value.size} lines) for ${group.key}")
       }
     log.info("dryRunSendNotifications: Finished sending notifications")
-    val duration = System.currentTimeMillis() - start
-    telemetryClient.trackEvent(
-      "dryRunSendNotifications",
-      ImmutableMap.of(
-        "unprocessedNotifications", "${unprocessedNotifications.size}",
-        "durationMillis", duration.toString(),
-        "duration", DurationFormatUtils.formatDuration(duration, "HH:mm:ss")
-      ),
-      null
-    )
   }
 
   @Transactional
   fun dryRunNotifications(region: Int) {
-    val start = System.currentTimeMillis()
     log.info("dryRunNotifications region: $region")
 
     val details = csrClient.getModified(region)
 
-    log.debug("dryRunNotifications region: $region found ${details.size} cmd_notifications details")
-
     val cutoffTime = LocalDateTime.now(clock).minusMinutes(CUTOFF_MINUTES)
 
     val usersWithoutRecentActivity = details
-      .filter { it.quantumId != null && it.shiftModified != null }
       .groupingBy { it.quantumId }
       .aggregate(::latestShiftModified)
-      .filter { it.value.shiftModified!!.isBefore(cutoffTime) }
+      .filter { it.value.shiftModified?.isBefore(cutoffTime) ?: true }
 
     // Now omit details for users with recent changes
     val detailsToProcess = details.filter { it.quantumId in usersWithoutRecentActivity.keys }
 
     val allNotifications = detailsToProcess
+      .filter { it.quantumId != null }
       .distinctBy { it.copy(id = null, shiftModified = LocalDateTime.MIN) } // omit id and timestamp in comparison
       .map {
         // We only want to transform shift level changes, not detail changes.
@@ -108,19 +90,9 @@ class DryRunNotificationService(
     }
 
     if (detailsToProcess.isNotEmpty()) {
-      csrClient.deleteProcessed(region, detailsToProcess.map { it.id!! })
+      csrClient.deleteProcessed(region, detailsToProcess.mapNotNull { it.id })
     }
 
-    val duration = System.currentTimeMillis() - start
-    telemetryClient.trackEvent(
-      "dryRunNotifications",
-      ImmutableMap.of(
-        "region", "$region",
-        "durationMillis", duration.toString(),
-        "duration", DurationFormatUtils.formatDuration(duration, "HH:mm:ss")
-      ),
-      null
-    )
     log.info("dryRunNotifications end for region: $region")
   }
 
@@ -130,7 +102,8 @@ class DryRunNotificationService(
     ) == 0
 
   private fun shiftChangeAlreadyRecorded(it: CsrModifiedDetailDto) =
-    dryRunNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
+    it.shiftModified != null &&
+      dryRunNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
       it.quantumId!!, it.detailStart, it.shiftType, it.shiftModified!!
     ) > 0
 
@@ -140,7 +113,7 @@ class DryRunNotificationService(
     item: CsrModifiedDetailDto,
     first: Boolean
   ): CsrModifiedDetailDto =
-    if (first) item else if (item.shiftModified!!.isAfter(acc!!.shiftModified)) item else acc
+    if (first) item else if (item.shiftModified?.isAfter(acc!!.shiftModified) == true) item else acc!!
 
   companion object {
     private val log = LoggerFactory.getLogger(DryRunNotificationService::class.java)
