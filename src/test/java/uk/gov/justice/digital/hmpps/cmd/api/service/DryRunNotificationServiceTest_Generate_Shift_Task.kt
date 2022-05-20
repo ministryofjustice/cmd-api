@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.cmd.api.service
 
-import com.microsoft.applicationinsights.TelemetryClient
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
@@ -45,7 +44,6 @@ internal class DryRunNotificationServiceTest_Generate_Shift_Task {
     notifyClient,
     prisonService,
     csrClient,
-    TelemetryClient()
   )
 
   @BeforeEach

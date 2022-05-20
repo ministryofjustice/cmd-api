@@ -73,7 +73,6 @@ class CsrClient(
   }
 
   fun getModified(region: Int): List<CsrModifiedDetailDto> {
-    log.info("getModified: Region $region")
     val csrModifiedDetails: List<CsrModifiedDetailDto> = csrApiServiceAccountWebClient
       .get()
       .uri("/updates/$region")
@@ -134,17 +133,17 @@ data class CsrDetailDto @JsonCreator constructor(
 data class CsrModifiedDetailDto @JsonCreator constructor(
   val id: Long? = null,
 
-  var quantumId: String?,
+  val quantumId: String?,
 
-  var shiftModified: LocalDateTime?,
+  val shiftModified: LocalDateTime?,
 
-  var shiftType: ShiftType,
+  val shiftType: ShiftType,
 
-  var detailStart: LocalDateTime,
+  val detailStart: LocalDateTime,
 
-  var detailEnd: LocalDateTime,
+  val detailEnd: LocalDateTime,
 
-  var activity: String?,
+  val activity: String?,
 
   var actionType: DetailModificationType?
 )
