@@ -104,7 +104,7 @@ class DryRunNotificationService(
   private fun shiftChangeAlreadyRecorded(it: CsrModifiedDetailDto) =
     it.shiftModified != null &&
       dryRunNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
-      it.quantumId!!, it.detailStart, it.shiftType, it.shiftModified!!
+      it.quantumId!!, it.detailStart, it.shiftType, it.shiftModified
     ) > 0
 
   private fun latestShiftModified(
@@ -113,7 +113,7 @@ class DryRunNotificationService(
     item: CsrModifiedDetailDto,
     first: Boolean
   ): CsrModifiedDetailDto =
-    if (first) item else if (item.shiftModified?.isAfter(acc!!.shiftModified) == true) item else acc!!
+    if (first || item.shiftModified == null || acc == null || item.shiftModified.isAfter(acc.shiftModified)) item else acc
 
   companion object {
     private val log = LoggerFactory.getLogger(DryRunNotificationService::class.java)
