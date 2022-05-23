@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.cmd.api.service
 
+import com.microsoft.applicationinsights.TelemetryClient
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
@@ -45,6 +46,7 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
     notifyClient,
     prisonService,
     csrClient,
+    TelemetryClient(),
   )
 
   private val today = LocalDate.now(clock).atStartOfDay()
@@ -543,20 +545,21 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
       val task = "Guard Duty"
       val shiftType = ShiftType.SHIFT
       val dto1 = CsrModifiedDetailDto(
-        1,
-        quantumId,
-        today,
-        shiftType,
-        start,
-        end,
-        task,
-        DetailModificationType.ADD
+        id = 1,
+        quantumId = quantumId,
+        shiftModified = today,
+        shiftType = shiftType,
+        detailStart = start,
+        detailEnd = end,
+        activity = task,
+        actionType = DetailModificationType.ADD,
       )
       val dto2 = dto1.copy(id = 2, quantumId = null)
       val dto3 = dto1.copy(id = 3, shiftModified = null)
       val dto4 = dto1.copy(id = 4, quantumId = null, shiftModified = null)
+      val dto5 = dto1.copy(id = 5)
 
-      every { csrClient.getModified(any()) } returns listOf(dto1, dto2, dto3, dto4)
+      every { csrClient.getModified(any()) } returns listOf(dto1, dto2, dto3, dto4, dto5)
 
       every {
         dryRunNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
@@ -573,7 +576,7 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
       service.dryRunNotifications(1)
 
       assertThat(results[0]).asList().hasSize(1)
-      verify { csrClient.deleteProcessed(1, listOf(1L, 2L, 3L, 4L)) }
+      verify { csrClient.deleteProcessed(1, listOf(1L, 2L, 3L, 4L, 5L)) }
     }
   }
 }
