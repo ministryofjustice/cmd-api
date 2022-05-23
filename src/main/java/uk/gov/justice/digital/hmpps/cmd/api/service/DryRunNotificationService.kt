@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.cmd.api.service
 
+import com.microsoft.applicationinsights.TelemetryClient
+import com.microsoft.applicationinsights.core.dependencies.google.common.collect.ImmutableMap
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -30,6 +32,7 @@ class DryRunNotificationService(
   private val notifyClient: NotificationClientApi,
   private val prisonService: PrisonService,
   private val csrClient: CsrClient,
+  private val telemetryClient: TelemetryClient,
 ) {
 
   @Transactional(propagation = Propagation.NEVER)
@@ -53,47 +56,55 @@ class DryRunNotificationService(
   @Transactional
   fun dryRunNotifications(region: Int) {
     log.info("dryRunNotifications region: $region")
+    try {
+      val details = csrClient.getModified(region)
 
-    val details = csrClient.getModified(region)
+      val cutoffTime = LocalDateTime.now(clock).minusMinutes(CUTOFF_MINUTES)
 
-    val cutoffTime = LocalDateTime.now(clock).minusMinutes(CUTOFF_MINUTES)
+      val usersWithoutRecentActivity = details
+        .groupingBy { it.quantumId }
+        .aggregate(::latestShiftModified)
+        .filter { it.value.shiftModified?.isBefore(cutoffTime) ?: true }
 
-    val usersWithoutRecentActivity = details
-      .groupingBy { it.quantumId }
-      .aggregate(::latestShiftModified)
-      .filter { it.value.shiftModified?.isBefore(cutoffTime) ?: true }
+      // Now omit details for users with recent changes
+      val detailsToProcess = details.filter { it.quantumId in usersWithoutRecentActivity.keys }
 
-    // Now omit details for users with recent changes
-    val detailsToProcess = details.filter { it.quantumId in usersWithoutRecentActivity.keys }
-
-    val allNotifications = detailsToProcess
-      .filter { it.quantumId != null }
-      .distinctBy { it.copy(id = null, shiftModified = LocalDateTime.MIN) } // omit id and timestamp in comparison
-      .map {
-        // We only want to transform shift level changes, not detail changes.
-        if (it.activity == null && it.actionType == DetailModificationType.EDIT && thereIsNoADDForThisShift(it)) {
-          it.actionType = DetailModificationType.ADD
+      val allNotifications = detailsToProcess
+        .filter { it.quantumId != null }
+        .distinctBy { it.copy(id = null, shiftModified = LocalDateTime.MIN) } // omit id and timestamp in comparison
+        .map {
+          // We only want to transform shift level changes, not detail changes.
+          if (it.activity == null && it.actionType == DetailModificationType.EDIT && thereIsNoADDForThisShift(it)) {
+            it.actionType = DetailModificationType.ADD
+          }
+          it
         }
-        it
+        // We want to remove Shift level changes that aren't 'add'
+        // we want to filter anything that is unchanged
+        .filterNot {
+          (it.activity == null && it.actionType == DetailModificationType.EDIT) ||
+            it.actionType == DetailModificationType.UNCHANGED ||
+            shiftChangeAlreadyRecorded(it)
+        }
+
+      log.info("dryRunNotifications calling saveAll with ${allNotifications.size} notifications for region: $region")
+      if (allNotifications.isNotEmpty()) {
+        dryRunNotificationRepository.saveAll(DryRunNotification.fromDto(allNotifications))
       }
-      // We want to remove Shift level changes that aren't 'add'
-      // we want to filter anything that is unchanged
-      .filterNot {
-        (it.activity == null && it.actionType == DetailModificationType.EDIT) ||
-          it.actionType == DetailModificationType.UNCHANGED ||
-          shiftChangeAlreadyRecorded(it)
+
+      if (detailsToProcess.isNotEmpty()) {
+        csrClient.deleteProcessed(region, detailsToProcess.mapNotNull { it.id })
       }
 
-    log.info("dryRunNotifications calling saveAll with ${allNotifications.size} notifications for region: $region")
-    if (allNotifications.isNotEmpty()) {
-      dryRunNotificationRepository.saveAll(DryRunNotification.fromDto(allNotifications))
+      log.info("dryRunNotifications end for region: $region")
+    } catch (e: Exception) {
+      log.error("dryRunNotifications error in region $region", e)
+      telemetryClient.trackEvent(
+        "dryRunNotificationsError",
+        ImmutableMap.of("region", region.toString()),
+        null
+      )
     }
-
-    if (detailsToProcess.isNotEmpty()) {
-      csrClient.deleteProcessed(region, detailsToProcess.mapNotNull { it.id })
-    }
-
-    log.info("dryRunNotifications end for region: $region")
   }
 
   private fun thereIsNoADDForThisShift(it: CsrModifiedDetailDto) =
@@ -113,7 +124,7 @@ class DryRunNotificationService(
     item: CsrModifiedDetailDto,
     first: Boolean
   ): CsrModifiedDetailDto =
-    if (first || item.shiftModified == null || acc == null || item.shiftModified.isAfter(acc.shiftModified)) item else acc
+    if (first || item.shiftModified == null || acc == null || (acc.shiftModified != null && item.shiftModified.isAfter(acc.shiftModified))) item else acc
 
   companion object {
     private val log = LoggerFactory.getLogger(DryRunNotificationService::class.java)
