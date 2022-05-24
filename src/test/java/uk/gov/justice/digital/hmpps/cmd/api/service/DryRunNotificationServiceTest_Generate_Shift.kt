@@ -239,24 +239,34 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
     }
 
     @Test
-    fun `Should filter multiple notifications for same shift with different modified times for one user`() {
+    fun `Should filter multiple notifications for same shift day with different modified times for one user`() {
 
       val quantumId = "CSTRIFE_GEN"
-      val start = today.plusSeconds(123L)
-      val end = today.plusSeconds(456L)
+      val start = today.plusHours(1L)
+      val start2 = today.plusHours(2L)
+      val start3 = today.plusHours(3L)
+      val end = today.plusHours(12L)
       val task = "Guard Duty"
       val shiftType = ShiftType.SHIFT
-      val dto1 = CsrModifiedDetailDto(1, quantumId, today, shiftType, start, end, task, DetailModificationType.ADD)
-      val dto2 = dto1.copy(id = 2, shiftModified = today.plusSeconds(5))
-      val dto3 = dto1.copy(id = 3, shiftModified = today.plusSeconds(10))
-      every { csrClient.getModified(any()) } returns listOf(dto1, dto2, dto3)
+      val shiftModified = today
+      val shiftModified2 = today.plusSeconds(5)
+      val shiftModified3 = today.plusSeconds(10)
+
+      val dto1 =
+        CsrModifiedDetailDto(1, quantumId, shiftModified, shiftType, start, end, task, DetailModificationType.ADD)
+      val dto2 = dto1.copy(id = 2, shiftModified = shiftModified2, detailStart = start2)
+      val dto3 = dto1.copy(id = 3, shiftModified = shiftModified3, detailStart = start3)
+      val dto4 = dto1.copy(actionType = DetailModificationType.EDIT)
+      val dto5 = dto4.copy(id = 2, shiftModified = shiftModified2, detailStart = start2)
+      val dto6 = dto4.copy(id = 3, shiftModified = shiftModified3, detailStart = start3)
+      every { csrClient.getModified(any()) } returns listOf(dto1, dto2, dto3, dto4, dto5, dto6)
 
       every {
         dryRunNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
           quantumId,
-          any(),
+          start3,
           shiftType,
-          today
+          shiftModified3,
         )
       } returns 0
 
@@ -265,9 +275,19 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
 
       service.dryRunNotifications(1)
       val notification1 =
-        DryRunNotification(0, quantumId, today, start, end, task, shiftType, DetailModificationType.ADD, false)
-
-      assertThat(results[0]).isEqualTo(listOf(notification1))
+        DryRunNotification(
+          0,
+          quantumId,
+          shiftModified3,
+          start3,
+          end,
+          task,
+          shiftType,
+          DetailModificationType.ADD,
+          false
+        )
+      val notification2 = notification1.copy(actionType = DetailModificationType.EDIT)
+      assertThat(results[0]).isEqualTo(listOf(notification1, notification2))
     }
 
     @Test
@@ -432,7 +452,7 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
     }
 
     @Test
-    fun `Should Change an Edit with no existing Add in the database to an Edit`() {
+    fun `Should Change an Edit with no existing Add in the database to an Add`() {
 
       val quantumId = "CSTRIFE_GEN"
       val task = null
@@ -483,6 +503,7 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
       val now = LocalDateTime.now(clock)
       val start = today.plusSeconds(123L)
       val end = today.plusSeconds(456L)
+      val start2 = today.plusDays(1).plusSeconds(123L)
       val shiftType = ShiftType.SHIFT
 
       val dto1 = CsrModifiedDetailDto(
@@ -490,8 +511,15 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
       )
       val dto2 = dto1.copy(id = 2, shiftModified = now.minusMinutes(6), quantumId = "STILL_CHANGING_USER")
       val dto3 =
-        dto1.copy(id = 3, shiftModified = now.minusMinutes(6), quantumId = "FINISHED_USER", activity = "another")
-      val dto4 = dto1.copy(id = 4, shiftModified = now.minusMinutes(4), quantumId = "STILL_CHANGING_USER")
+        dto1.copy(
+          id = 3,
+          shiftModified = now.minusMinutes(6),
+          quantumId = "FINISHED_USER",
+          activity = "another",
+          detailStart = start2
+        )
+      val dto4 =
+        dto1.copy(id = 4, shiftModified = now.minusMinutes(4), quantumId = "STILL_CHANGING_USER", detailStart = start2)
 
       every { csrClient.getModified(any()) } returns listOf(dto1, dto2, dto3, dto4)
 
@@ -512,6 +540,17 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
       val notification1 = DryRunNotification(
         0,
         "FINISHED_USER",
+        now.minusMinutes(6),
+        start2,
+        end,
+        "another",
+        shiftType,
+        DetailModificationType.ADD,
+        false
+      )
+      val notification2 = DryRunNotification(
+        0,
+        "FINISHED_USER",
         now.minusMinutes(7),
         start,
         end,
@@ -520,18 +559,7 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
         DetailModificationType.ADD,
         false
       )
-      val notification3 = DryRunNotification(
-        0,
-        "FINISHED_USER",
-        now.minusMinutes(6),
-        start,
-        end,
-        "another",
-        shiftType,
-        DetailModificationType.ADD,
-        false
-      )
-      assertThat(results[0]).asList().containsExactly(notification1, notification3)
+      assertThat(results[0]).asList().containsExactly(notification1, notification2)
       verify { csrClient.deleteProcessed(1, listOf(1L, 3L)) }
     }
 

@@ -30,7 +30,7 @@ class ShiftControllerIntegrationTest(
   fun `It returns shifts`() {
     PrisonApiExtension.api.stubUsersMe()
     CsrApiExtension.api.stubUserDetails(
-      1, "2022-04-06", "2022-04-06",
+      3, "2022-04-06", "2022-04-06", // WMI is region 3
       """
       [
         {
