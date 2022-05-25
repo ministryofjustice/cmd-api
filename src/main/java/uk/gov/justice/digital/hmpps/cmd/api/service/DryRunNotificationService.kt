@@ -76,9 +76,13 @@ class DryRunNotificationService(
         .sortedWith(compareBy<CsrModifiedDetailDto> { it.quantumId }.thenByDescending { it.shiftModified })
         .distinctBy {
           CsrModifiedDetailDto(
-            null, it.quantumId, null, it.shiftType,
-            it.detailStart.truncatedTo(ChronoUnit.DAYS), it.detailEnd.truncatedTo(ChronoUnit.DAYS),
-            null, it.actionType,
+            quantumId = it.quantumId,
+            shiftModified = null,
+            shiftType = it.shiftType,
+            detailStart = it.detailStart.truncatedTo(ChronoUnit.DAYS),
+            detailEnd = it.detailEnd.truncatedTo(ChronoUnit.DAYS),
+            activity = null,
+            actionType = it.actionType,
           )
         }
         .map {
