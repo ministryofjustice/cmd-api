@@ -112,7 +112,7 @@ internal class DryRunNotificationServiceTest_Generate_Shift_Task {
         quantumId,
         today.atStartOfDay(),
         ShiftType.SHIFT,
-        start.plusSeconds(10),
+        start,
         end,
         task,
         DetailModificationType.EDIT
@@ -123,7 +123,7 @@ internal class DryRunNotificationServiceTest_Generate_Shift_Task {
         quantumId,
         today.atStartOfDay(),
         ShiftType.SHIFT,
-        start.plusSeconds(20),
+        start.plusDays(1),
         end,
         task,
         DetailModificationType.EDIT
@@ -134,7 +134,7 @@ internal class DryRunNotificationServiceTest_Generate_Shift_Task {
         quantumId,
         today.atStartOfDay(),
         ShiftType.SHIFT,
-        start.plusSeconds(30),
+        start.plusDays(2),
         end,
         task,
         DetailModificationType.EDIT
@@ -160,7 +160,7 @@ internal class DryRunNotificationServiceTest_Generate_Shift_Task {
         0,
         quantumId,
         today.atStartOfDay(),
-        start.plusSeconds(10),
+        start,
         end,
         task,
         ShiftType.SHIFT,
@@ -171,7 +171,7 @@ internal class DryRunNotificationServiceTest_Generate_Shift_Task {
         0,
         quantumId,
         today.atStartOfDay(),
-        start.plusSeconds(20),
+        start.plusDays(1),
         end,
         task,
         ShiftType.SHIFT,
@@ -182,7 +182,7 @@ internal class DryRunNotificationServiceTest_Generate_Shift_Task {
         0,
         quantumId,
         today.atStartOfDay(),
-        start.plusSeconds(30),
+        start.plusDays(2),
         end,
         task,
         ShiftType.SHIFT,
@@ -209,28 +209,8 @@ internal class DryRunNotificationServiceTest_Generate_Shift_Task {
         task,
         DetailModificationType.ADD
       )
-
-      val dto2 = CsrModifiedDetailDto(
-        2,
-        quantumId,
-        today.atStartOfDay(),
-        ShiftType.SHIFT,
-        start,
-        end,
-        task,
-        DetailModificationType.ADD
-      )
-
-      val dto3 = CsrModifiedDetailDto(
-        3,
-        quantumId,
-        today.atStartOfDay(),
-        ShiftType.SHIFT,
-        start,
-        end,
-        task,
-        DetailModificationType.ADD
-      )
+      val dto2 = dto1.copy(id = 2)
+      val dto3 = dto1.copy(id = 3)
 
       every { csrClient.getModified(any()) } returns listOf(dto1, dto2, dto3)
 
@@ -277,26 +257,8 @@ internal class DryRunNotificationServiceTest_Generate_Shift_Task {
         task,
         DetailModificationType.EDIT
       )
-
-      val dto2 = CsrModifiedDetailDto(
-        2, quantumId,
-        today.atStartOfDay(),
-        ShiftType.SHIFT,
-        start,
-        end,
-        task,
-        DetailModificationType.EDIT
-      )
-
-      val dto3 = CsrModifiedDetailDto(
-        3, quantumId,
-        today.atStartOfDay(),
-        ShiftType.SHIFT,
-        start,
-        end,
-        task,
-        DetailModificationType.EDIT
-      )
+      val dto2 = dto1.copy(id = 2, shiftType = ShiftType.SHIFT)
+      val dto3 = dto1.copy(id = 3, shiftType = ShiftType.SHIFT)
 
       every { csrClient.getModified(any()) } returns listOf(dto2, dto3, dto1)
 
@@ -365,7 +327,7 @@ internal class DryRunNotificationServiceTest_Generate_Shift_Task {
           quantumId,
           any(),
           any(),
-          today.atStartOfDay()
+          today.atStartOfDay().plusSeconds(10)
         )
       } returns 0
 
@@ -376,7 +338,7 @@ internal class DryRunNotificationServiceTest_Generate_Shift_Task {
       val notification1 = DryRunNotification(
         0,
         quantumId,
-        today.atStartOfDay(),
+        today.atStartOfDay().plusSeconds(10),
         start,
         end,
         task,

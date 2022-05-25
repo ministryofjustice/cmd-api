@@ -17,6 +17,7 @@ import uk.gov.service.notify.NotificationClientApi
 import uk.gov.service.notify.NotificationClientException
 import java.time.Clock
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 
 private const val CUTOFF_MINUTES = 5L
 
@@ -71,7 +72,19 @@ class DryRunNotificationService(
 
       val allNotifications = detailsToProcess
         .filter { it.quantumId != null }
-        .distinctBy { it.copy(id = null, shiftModified = LocalDateTime.MIN) } // omit id and timestamp in comparison
+        // notify using only the latest add and edit for each day and each user
+        .sortedWith(compareBy<CsrModifiedDetailDto> { it.quantumId }.thenByDescending { it.shiftModified })
+        .distinctBy {
+          CsrModifiedDetailDto(
+            quantumId = it.quantumId,
+            shiftModified = null,
+            shiftType = it.shiftType,
+            detailStart = it.detailStart.truncatedTo(ChronoUnit.DAYS),
+            detailEnd = it.detailEnd.truncatedTo(ChronoUnit.DAYS),
+            activity = null,
+            actionType = it.actionType,
+          )
+        }
         .map {
           // We only want to transform shift level changes, not detail changes.
           if (it.activity == null && it.actionType == DetailModificationType.EDIT && thereIsNoADDForThisShift(it)) {
