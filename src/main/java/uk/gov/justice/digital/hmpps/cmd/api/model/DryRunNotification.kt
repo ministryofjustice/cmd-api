@@ -1,9 +1,12 @@
 package uk.gov.justice.digital.hmpps.cmd.api.model
 
 import uk.gov.justice.digital.hmpps.cmd.api.client.CsrModifiedDetailDto
+import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
 import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.EnumType
@@ -47,6 +50,17 @@ data class DryRunNotification(
   @Column(nullable = false)
   var processed: Boolean
 ) {
+  fun getNotificationDescription(communicationPreference: CommunicationPreference): String {
+
+    val bulletPoint = getOptionalBulletPoint(communicationPreference)
+    val date = this.detailStart.getDateTimeFormattedForTemplate()
+    val taskTime = getOptionalTaskDescription(this.detailStart, this.detailEnd, this.activity)
+    val shiftActionType = this.actionType
+    val taskTo = getOptionalTaskTo(this.activity, communicationPreference, shiftActionType)
+    val shiftNotificationType = getNotificationType(this.parentType, this.activity)
+
+    return "${bulletPoint}Your $shiftNotificationType on $date ${taskTime}has ${shiftActionType.description}$taskTo."
+  }
 
   companion object {
 
@@ -65,6 +79,72 @@ data class DryRunNotification(
         actionType = dtoCsr.actionType!!,
         processed = false
       )
+    }
+
+    fun LocalDateTime.getDateTimeFormattedForTemplate(): String {
+      val day = this.dayOfMonth
+      val ordinal = if (day in 11..13) {
+        "th"
+      } else when (day % 10) {
+        1 -> "st"
+        2 -> "nd"
+        3 -> "rd"
+        else -> "th"
+      }
+
+      return DateTimeFormatter.ofPattern("EEEE, d'$ordinal' MMMM").format(this)
+    }
+
+    private fun getNotificationType(shiftNotificationType: ShiftType, activity: String?): String {
+      return if (shiftNotificationType == ShiftType.SHIFT) {
+        if (activity == null) {
+          "shift"
+        } else {
+          "detail"
+        }
+      } else {
+        if (activity == null) {
+          "overtime shift"
+        } else {
+          "overtime detail"
+        }
+      }
+    }
+
+    private fun getOptionalTaskDescription(from: LocalDateTime, to: LocalDateTime, task: String?): String {
+      return if (!task.isNullOrEmpty()) {
+        if (from.toLocalTime().isAfter(LocalTime.MIN) && to.toLocalTime().isAfter(LocalTime.MIN)) {
+          "(${from.toLocalTime()} - ${to.toLocalTime()}) "
+        } else {
+          "(full day) "
+        }
+      } else ""
+    }
+
+    private fun getOptionalTaskTo(task: String?, communicationPreference: CommunicationPreference, shiftActionType: DetailModificationType): String {
+      return if (communicationPreference == CommunicationPreference.NONE && task != null && task.isNotEmpty()) {
+        when (shiftActionType) {
+          DetailModificationType.ADD -> {
+            " as $task"
+          }
+          DetailModificationType.EDIT -> {
+            " to $task"
+          }
+          DetailModificationType.DELETE -> {
+            " (was $task)"
+          }
+          else -> {
+            ""
+          }
+        }
+      } else ""
+    }
+
+    // Notify supports bullet points for Email but not Sms
+    private fun getOptionalBulletPoint(communicationPreference: CommunicationPreference): String {
+      return if (communicationPreference == CommunicationPreference.EMAIL) {
+        "* "
+      } else ""
     }
   }
 }

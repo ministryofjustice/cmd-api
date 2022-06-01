@@ -29,7 +29,7 @@ class PollingScheduler(
     for (region in 1..6) {
       dryRunnotificationService.dryRunNotifications(region)
     }
-    dryRunnotificationService.dryRunSendNotifications()
+    dryRunnotificationService.sendNotifications()
 
     val duration = System.currentTimeMillis() - start
     telemetryClient.trackEvent(

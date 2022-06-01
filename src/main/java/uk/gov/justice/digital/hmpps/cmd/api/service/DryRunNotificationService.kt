@@ -9,13 +9,19 @@ import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.cmd.api.client.CsrClient
 import uk.gov.justice.digital.hmpps.cmd.api.client.CsrModifiedDetailDto
+import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
+import uk.gov.justice.digital.hmpps.cmd.api.domain.NotificationType
 import uk.gov.justice.digital.hmpps.cmd.api.model.DryRunNotification
+import uk.gov.justice.digital.hmpps.cmd.api.model.DryRunNotification.Companion.getDateTimeFormattedForTemplate
+import uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
 import uk.gov.justice.digital.hmpps.cmd.api.repository.DryRunNotificationRepository
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
+import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
 import uk.gov.service.notify.NotificationClientApi
 import uk.gov.service.notify.NotificationClientException
 import java.time.Clock
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
@@ -37,21 +43,21 @@ class DryRunNotificationService(
 ) {
 
   @Transactional(propagation = Propagation.NEVER)
-  fun dryRunSendNotifications() {
+  fun sendNotifications() {
     val unprocessedNotifications = dryRunNotificationRepository.findAllByProcessedIsFalse()
-    log.info("dryRunSendNotifications: Sending notifications, found: ${unprocessedNotifications.size}")
+    log.info("dryRun sendNotifications: Sending notifications, found: ${unprocessedNotifications.size}")
     unprocessedNotifications.groupBy { it.quantumId }
       .forEach { group ->
         try {
-          // NO! sendNotification(group.key, group.value)
+          sendNotification(group.key, group.value)
           group.value.forEach { it.processed = true }
           dryRunNotificationRepository.saveAll(group.value)
+          log.info("dryRun sendNotifications: Sent notification (${group.value.size} lines) for ${group.key}")
         } catch (e: NotificationClientException) {
-          log.warn("Sending notifications to user ${group.key} ${group.value} FAILED", e)
+          log.warn("dryRun sendNotifications: Sending notifications to user ${group.key} ${group.value} FAILED", e)
         }
-        log.info("dryRunSendNotifications: Sent notification (${group.value.size} lines) for ${group.key}")
       }
-    log.info("dryRunSendNotifications: Finished sending notifications")
+    log.info("dryRun sendNotifications: Finished sending notifications")
   }
 
   @Transactional
@@ -139,7 +145,95 @@ class DryRunNotificationService(
   ): CsrModifiedDetailDto =
     if (first || item.shiftModified == null || acc == null || (acc.shiftModified != null && item.shiftModified.isAfter(acc.shiftModified))) item else acc
 
+  /*
+  * Chunk the notifications into 10s -
+  * Notify doesn't support vertical lists
+  * so we have to have a fixed size template with 'slots'
+  * 10 means we can cover 99.9% of scenarios in one email.
+  */
+  private fun sendNotification(quantumId: String, notificationGroup: List<DryRunNotification>) {
+    val userPreference = userPreferenceService.getUserPreference(quantumId)
+    userPreference?.also {
+      data class Key(val shiftType: ShiftType, val quantumId: String, val detailStart: LocalDateTime)
+
+      fun DryRunNotification.toKeyDuplicates() = Key(this.parentType, this.quantumId.uppercase(), this.detailStart)
+
+      // Only send the latest notification for a shift if there are multiple
+      val mostRecentNotifications = notificationGroup
+        .groupBy { it.toKeyDuplicates() }
+        .map { (_, value) -> value.maxByOrNull { it.shiftModified } }
+        .filterNotNull()
+
+      if (shouldSend(userPreference)) {
+        log.debug("dryRun sendNotification: Sending (${mostRecentNotifications.size}) notifications to ${userPreference.quantumId}, preference set to ${userPreference.commPref}")
+        mostRecentNotifications.sortedWith(compareBy { it.detailStart }).chunked(10).forEach { chunk ->
+          when (val communicationPreference = userPreference.commPref) {
+            CommunicationPreference.EMAIL -> {
+              notifyClient.sendEmail(
+                NotificationType.EMAIL_SUMMARY.value,
+                userPreference.email,
+                generateTemplateValues(chunk, communicationPreference),
+                null
+              )
+            }
+            CommunicationPreference.SMS -> {
+              notifyClient.sendSms(
+                NotificationType.SMS_SUMMARY.value,
+                userPreference.sms,
+                generateTemplateValues(chunk, communicationPreference),
+                null
+              )
+            }
+            else -> {
+              log.info("dryRun sendNotification: Skipping sending notifications for ${userPreference.quantumId}")
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private fun shouldSend(userPreference: UserPreference): Boolean {
+    val isNotSnoozed = userPreference.snoozeUntil == null || userPreference.snoozeUntil!!.isBefore(LocalDate.now(clock))
+    val isValidCommunicationMethod = when (userPreference.commPref) {
+      CommunicationPreference.EMAIL -> {
+        !userPreference.email.isNullOrBlank()
+      }
+      CommunicationPreference.SMS -> {
+        !userPreference.sms.isNullOrBlank()
+      }
+      else -> {
+        false
+      }
+    }
+    return isNotSnoozed && isValidCommunicationMethod
+  }
+
+  private fun generateTemplateValues(
+    chunk: List<DryRunNotification>,
+    communicationPreference: CommunicationPreference
+  ): MutableMap<String, String?> {
+    val personalisation = mutableMapOf<String, String?>()
+    // Get the oldest modified date "Changes since"
+    personalisation["title"] =
+      chunk.minByOrNull { it.shiftModified }?.shiftModified?.let { "Changes since ${it.getDateTimeFormattedForTemplate()}" }
+    // Map each notification onto an predefined key
+    personalisation.putAll(
+      notificationKeys
+        .mapIndexed { index, templateKey ->
+          templateKey to (
+            chunk.getOrNull(index)?.getNotificationDescription(communicationPreference)
+              ?: ""
+            )
+        }.toMap()
+    )
+    return personalisation
+  }
+
   companion object {
     private val log = LoggerFactory.getLogger(DryRunNotificationService::class.java)
+
+    private val notificationKeys =
+      listOf("not1", "not2", "not3", "not4", "not5", "not6", "not7", "not8", "not9", "not10")
   }
 }
