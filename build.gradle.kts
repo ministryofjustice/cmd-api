@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.2.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.2.1"
   kotlin("plugin.spring") version "1.6.21"
   kotlin("plugin.jpa") version "1.6.21"
   idea
@@ -24,7 +24,7 @@ dependencies {
   runtimeOnly("com.h2database:h2:2.1.212")
   runtimeOnly("org.postgresql:postgresql:42.3.6")
   runtimeOnly("com.zaxxer:HikariCP")
-  runtimeOnly("org.flywaydb:flyway-core:8.5.11")
+  runtimeOnly("org.flywaydb:flyway-core:8.5.12")
 
   implementation("org.springframework.boot:spring-boot-starter-jdbc")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -40,9 +40,9 @@ dependencies {
   implementation("org.springframework:spring-webflux")
   implementation("org.springframework.boot:spring-boot-starter-reactor-netty")
 
-  implementation("org.springdoc:springdoc-openapi-ui:1.6.8")
-  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.8")
-  implementation("org.springdoc:springdoc-openapi-data-rest:1.6.8")
+  implementation("org.springdoc:springdoc-openapi-ui:1.6.9")
+  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.9")
+  implementation("org.springdoc:springdoc-openapi-data-rest:1.6.9")
 
   implementation("org.apache.commons:commons-lang3:3.12.0")
   implementation("uk.gov.service.notify:notifications-java-client:3.17.3-RELEASE")
