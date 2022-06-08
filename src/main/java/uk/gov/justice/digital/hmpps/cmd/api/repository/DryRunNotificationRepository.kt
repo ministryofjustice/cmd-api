@@ -3,8 +3,8 @@ package uk.gov.justice.digital.hmpps.cmd.api.repository
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
-import uk.gov.justice.digital.hmpps.cmd.api.model.DryRunNotification
 import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
+import uk.gov.justice.digital.hmpps.cmd.api.model.DryRunNotification
 import java.time.LocalDateTime
 
 @Repository

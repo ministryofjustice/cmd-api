@@ -3,8 +3,8 @@ package uk.gov.justice.digital.hmpps.cmd.api.dto
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.v3.oas.annotations.media.Schema
-import uk.gov.justice.digital.hmpps.cmd.api.domain.TaskDisplayType
 import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
+import uk.gov.justice.digital.hmpps.cmd.api.domain.TaskDisplayType
 import java.time.LocalDateTime
 
 @Schema(description = "Shift details")

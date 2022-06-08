@@ -4,8 +4,8 @@ import uk.gov.justice.digital.hmpps.cmd.api.client.CsrModifiedDetailDto
 import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType.ADD
-import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType.EDIT
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType.DELETE
+import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType.EDIT
 import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
 import java.time.LocalDateTime
 import java.time.LocalTime
