@@ -16,11 +16,11 @@ import org.junit.jupiter.api.extension.ExtendWith
 import uk.gov.justice.digital.hmpps.cmd.api.client.CsrClient
 import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
+import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.cmd.api.model.Notification
 import uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
 import uk.gov.justice.digital.hmpps.cmd.api.repository.NotificationRepository
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
 import uk.gov.service.notify.NotificationClient
 import java.time.Clock
 import java.time.LocalDate
@@ -48,8 +48,6 @@ internal class NotificationServiceTest_Send_Duplicates {
     csrClient,
     TelemetryClient()
   )
-
-  private val now = LocalDateTime.now(clock)
 
   @BeforeEach
   fun resetAllMocks() {
@@ -132,34 +130,6 @@ internal class NotificationServiceTest_Send_Duplicates {
       assertThat(slot.captured.getValue("not1")).isEqualTo("* Your shift on Tuesday, 2nd November has been added.")
       assertThat(slot.captured.getValue("not2")).isEqualTo("* Your detail on Tuesday, 2nd November (00:20:34 - 01:16:07) has been added.")
       assertThat(slot.captured.getValue("not3")).isEqualTo("* Your detail on Tuesday, 2nd November (02:44:36 - 01:49:04) has been added.")
-    }
-  }
-
-  companion object {
-    fun getValidNotification(clock: Clock): Notification {
-      val date = LocalDate.now(clock)
-
-      val quantumId = "XYZ"
-      val shiftModified = date.plusDays(3)
-      val taskStart = date.atStartOfDay().plusSeconds(123L)
-      val taskEnd = date.atStartOfDay().plusSeconds(456L)
-      val task = "Any Activity"
-      val shiftType = ShiftType.SHIFT
-      val actionType = DetailModificationType.ADD
-
-      val processed = false
-
-      return Notification(
-        1L,
-        quantumId,
-        shiftModified.atStartOfDay(),
-        taskStart,
-        taskEnd,
-        task,
-        shiftType,
-        actionType,
-        processed
-      )
     }
   }
 }

@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.scheduler
+package uk.gov.justice.digital.hmpps.cmd.api.scheduler
 
 import com.microsoft.applicationinsights.TelemetryClient
 import com.microsoft.applicationinsights.core.dependencies.google.common.collect.ImmutableMap
