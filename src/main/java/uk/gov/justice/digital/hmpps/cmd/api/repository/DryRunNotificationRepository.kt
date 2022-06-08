@@ -10,6 +10,8 @@ import java.time.LocalDateTime
 @Repository
 interface DryRunNotificationRepository : CrudRepository<DryRunNotification, Long> {
 
+  fun findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(quantumId: String, from: LocalDateTime, to: LocalDateTime): Collection<DryRunNotification>
+
   fun findAllByProcessedIsFalse(): List<DryRunNotification>
 
   fun countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(

@@ -155,12 +155,8 @@ class ShiftService(
             it.detailEnd,
             it.shiftType,
             when (it.shiftType) {
-              ShiftType.OVERTIME -> {
-                TaskDisplayType.OVERTIME_DAY_START
-              }
-              else -> {
-                TaskDisplayType.DAY_START
-              }
+              ShiftType.OVERTIME -> TaskDisplayType.OVERTIME_DAY_START
+              else -> TaskDisplayType.DAY_START
             },
             it.detailStart
           )
@@ -175,12 +171,8 @@ class ShiftService(
             it.detailEnd,
             it.shiftType,
             when (it.shiftType) {
-              ShiftType.OVERTIME -> {
-                TaskDisplayType.OVERTIME_DAY_FINISH
-              }
-              else -> {
-                TaskDisplayType.DAY_FINISH
-              }
+              ShiftType.OVERTIME -> TaskDisplayType.OVERTIME_DAY_FINISH
+              else -> TaskDisplayType.DAY_FINISH
             },
             it.detailEnd,
             calculateShiftDuration(dayShiftDetails)
@@ -196,12 +188,8 @@ class ShiftService(
             it.detailEnd,
             it.shiftType,
             when (it.shiftType) {
-              ShiftType.OVERTIME -> {
-                TaskDisplayType.OVERTIME_NIGHT_START
-              }
-              else -> {
-                TaskDisplayType.NIGHT_START
-              }
+              ShiftType.OVERTIME -> TaskDisplayType.OVERTIME_NIGHT_START
+              else -> TaskDisplayType.NIGHT_START
             },
             it.detailStart
           )
@@ -216,12 +204,8 @@ class ShiftService(
             it.detailEnd,
             it.shiftType,
             when (it.shiftType) {
-              ShiftType.OVERTIME -> {
-                TaskDisplayType.OVERTIME_NIGHT_FINISH
-              }
-              else -> {
-                TaskDisplayType.NIGHT_FINISH
-              }
+              ShiftType.OVERTIME -> TaskDisplayType.OVERTIME_NIGHT_FINISH
+              else -> TaskDisplayType.NIGHT_FINISH
             },
             it.detailEnd,
                         /*

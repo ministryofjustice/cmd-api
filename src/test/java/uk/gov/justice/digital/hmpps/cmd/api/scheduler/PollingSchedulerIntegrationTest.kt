@@ -94,7 +94,9 @@ class PollingSchedulerIntegrationTest(
     val saved = dryRunNotificationRepository.findAll()
     assertThat(saved).asList().containsExactly(
       DryRunNotification(
-        id = 1, quantumId = A_USER, shiftModified = LocalDateTime.parse("2022-03-25T15:00:00"),
+        id = saved.first().id, // generated
+        quantumId = A_USER,
+        shiftModified = LocalDateTime.parse("2022-03-25T15:00:00"),
         detailStart = LocalDateTime.parse("2022-03-31T10:00:00"),
         detailEnd = LocalDateTime.parse("2022-03-31T11:00:00"),
         activity = "CCTV monitoring",
@@ -103,7 +105,9 @@ class PollingSchedulerIntegrationTest(
         processed = true,
       ),
       DryRunNotification(
-        id = 2, quantumId = "other-user", shiftModified = LocalDateTime.parse("2022-03-25T15:40:00"),
+        id = saved.last().id,
+        quantumId = "other-user",
+        shiftModified = LocalDateTime.parse("2022-03-25T15:40:00"),
         detailStart = LocalDateTime.parse("2022-03-31T10:00:00"),
         detailEnd = LocalDateTime.parse("2022-03-31T11:00:00"),
         activity = "CCTV monitoring",
@@ -112,6 +116,41 @@ class PollingSchedulerIntegrationTest(
         processed = true,
       ),
     )
+  }
+
+  @Test
+  fun `tidy job functions`() {
+
+    dryRunNotificationRepository.save(
+      DryRunNotification(
+        quantumId = "user1",
+        shiftModified = LocalDateTime.now().minusMonths(4),
+        detailStart = LocalDateTime.parse("2022-03-31T10:00:00"),
+        detailEnd = LocalDateTime.parse("2022-03-31T11:00:00"),
+        activity = "CCTV monitoring",
+        actionType = DetailModificationType.ADD,
+        parentType = ShiftType.SHIFT,
+        processed = true,
+      )
+    )
+    dryRunNotificationRepository.save(
+      DryRunNotification(
+        quantumId = "user2",
+        shiftModified = LocalDateTime.now().minusMonths(2),
+        detailStart = LocalDateTime.parse("2022-03-31T10:00:00"),
+        detailEnd = LocalDateTime.parse("2022-03-31T11:00:00"),
+        activity = "CCTV monitoring",
+        actionType = DetailModificationType.ADD,
+        parentType = ShiftType.SHIFT,
+        processed = true,
+      )
+    )
+
+    pollingScheduler.tidyNotifications()
+
+    val all = dryRunNotificationRepository.findAll()
+    assertThat(all).asList().hasSize(1)
+    assertThat(all.first().quantumId).isEqualTo("user2")
   }
 
   companion object {

@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.cmd.api.service
 
 import com.microsoft.applicationinsights.TelemetryClient
 import com.microsoft.applicationinsights.core.dependencies.google.common.collect.ImmutableMap
+import org.apache.commons.lang3.time.DurationFormatUtils
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -12,6 +13,7 @@ import uk.gov.justice.digital.hmpps.cmd.api.client.CsrModifiedDetailDto
 import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
 import uk.gov.justice.digital.hmpps.cmd.api.domain.NotificationType
+import uk.gov.justice.digital.hmpps.cmd.api.dto.NotificationDto
 import uk.gov.justice.digital.hmpps.cmd.api.model.DryRunNotification
 import uk.gov.justice.digital.hmpps.cmd.api.model.DryRunNotification.Companion.getDateTimeFormattedForTemplate
 import uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
@@ -23,7 +25,9 @@ import uk.gov.service.notify.NotificationClientException
 import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.temporal.ChronoUnit
+import java.util.Optional
 
 private const val CUTOFF_MINUTES = 5L
 
@@ -41,6 +45,32 @@ class DryRunNotificationService(
   private val csrClient: CsrClient,
   private val telemetryClient: TelemetryClient,
 ) {
+
+  fun getNotifications(
+    processOnReadParam: Optional<Boolean>,
+    unprocessedOnlyParam: Optional<Boolean>,
+    fromParam: Optional<LocalDate>,
+    toParam: Optional<LocalDate>
+  ): Collection<NotificationDto> {
+    val quantumId = authenticationFacade.currentUsername
+    val from = calculateStartDateTime(fromParam, toParam)
+    val to = calculateEndDateTime(toParam, from)
+    val unprocessedOnly = unprocessedOnlyParam.orElse(false)
+    val processOnRead = processOnReadParam.orElse(true)
+    log.debug("User Notifications: finding user $quantumId, unprocessedOnly: $unprocessedOnly")
+    val notifications = getNotifications(quantumId, from, to, unprocessedOnly)
+    log.info("User Notifications: found ${notifications.size} user $quantumId, unprocessedOnly: $unprocessedOnly")
+
+    val notificationDtos = notifications.map {
+      NotificationDto.from(it, CommunicationPreference.NONE)
+    }
+
+    if (processOnRead) {
+      notifications.forEach { it.processed = true }
+      dryRunNotificationRepository.saveAll(notifications)
+    }
+    return notificationDtos.distinct()
+  }
 
   @Transactional(propagation = Propagation.NEVER)
   fun sendNotifications() {
@@ -126,6 +156,42 @@ class DryRunNotificationService(
     }
   }
 
+  fun tidyNotification() {
+    val start = System.currentTimeMillis()
+    // Only hold on to 3 months of this temporary data.
+    val startOfDay = LocalDate.now(clock).atStartOfDay().minusMonths(3)
+    log.info("tidyNotification: Removing old notifications (before $startOfDay)")
+
+    val rows = dryRunNotificationRepository.deleteAllByShiftModifiedBefore(startOfDay)
+
+    log.info("tidyNotification: Removed old notifications (before $startOfDay)")
+    val duration = System.currentTimeMillis() - start
+    telemetryClient.trackEvent(
+      "tidyNotification",
+      ImmutableMap.of(
+        "startOfDay", "$startOfDay",
+        "durationMillis", duration.toString(),
+        "duration", DurationFormatUtils.formatDuration(duration, "HH:mm:ss"),
+        "rowsDeleted", rows.toString()
+      ),
+      null
+    )
+  }
+
+  private fun getNotifications(
+    quantumId: String,
+    start: LocalDateTime,
+    end: LocalDateTime,
+    unprocessedOnly: Boolean
+  ): Collection<DryRunNotification> {
+    return dryRunNotificationRepository.findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(
+      quantumId,
+      start,
+      end
+    )
+      .filter { !unprocessedOnly || (unprocessedOnly && !it.processed) }
+  }
+
   private fun thereIsNoADDForThisShift(it: CsrModifiedDetailDto) =
     dryRunNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndActionType(
       it.quantumId!!, it.detailStart, it.shiftType, DetailModificationType.ADD
@@ -144,6 +210,39 @@ class DryRunNotificationService(
     first: Boolean
   ): CsrModifiedDetailDto =
     if (first || item.shiftModified == null || acc == null || (acc.shiftModified != null && item.shiftModified.isAfter(acc.shiftModified))) item else acc
+
+  private fun calculateStartDateTime(fromParam: Optional<LocalDate>, toParam: Optional<LocalDate>): LocalDateTime {
+    val start = when {
+      fromParam.isPresent -> {
+        // Use the passed in 'from' param
+        fromParam.get()
+      }
+      toParam.isPresent -> {
+        // Set the 'from' to be the start day of 3 months into the relative past
+        toParam.get().minusMonths(monthStep).withDayOfMonth(1)
+      }
+      else -> {
+        // Use the default
+        LocalDate.now(clock).withDayOfMonth(1)
+      }
+    }
+    return start.atTime(LocalTime.MIN)
+  }
+
+  private fun calculateEndDateTime(toParam: Optional<LocalDate>, calculatedFromDateTime: LocalDateTime): LocalDateTime {
+    val end = when {
+      toParam.isPresent -> {
+        // Use the passed in 'from' param
+        toParam.get()
+      }
+      else -> {
+        // Use the default
+        val toDate = calculatedFromDateTime.toLocalDate().plusMonths(monthStep)
+        toDate.withDayOfMonth(toDate.lengthOfMonth())
+      }
+    }
+    return end.atTime(LocalTime.MAX)
+  }
 
   /*
   * Chunk the notifications into 10s -
@@ -168,22 +267,18 @@ class DryRunNotificationService(
         log.debug("dryRun sendNotification: Sending (${mostRecentNotifications.size}) notifications to ${userPreference.quantumId}, preference set to ${userPreference.commPref}")
         mostRecentNotifications.sortedWith(compareBy { it.detailStart }).chunked(10).forEach { chunk ->
           when (val communicationPreference = userPreference.commPref) {
-            CommunicationPreference.EMAIL -> {
-              notifyClient.sendEmail(
-                NotificationType.EMAIL_SUMMARY.value,
-                userPreference.email,
-                generateTemplateValues(chunk, communicationPreference),
-                null
-              )
-            }
-            CommunicationPreference.SMS -> {
-              notifyClient.sendSms(
-                NotificationType.SMS_SUMMARY.value,
-                userPreference.sms,
-                generateTemplateValues(chunk, communicationPreference),
-                null
-              )
-            }
+            CommunicationPreference.EMAIL -> notifyClient.sendEmail(
+              NotificationType.EMAIL_SUMMARY.value,
+              userPreference.email,
+              generateTemplateValues(chunk, communicationPreference),
+              null
+            )
+            CommunicationPreference.SMS -> notifyClient.sendSms(
+              NotificationType.SMS_SUMMARY.value,
+              userPreference.sms,
+              generateTemplateValues(chunk, communicationPreference),
+              null
+            )
             else -> {
               log.info("dryRun sendNotification: Skipping sending notifications for ${userPreference.quantumId}")
             }
@@ -196,12 +291,8 @@ class DryRunNotificationService(
   private fun shouldSend(userPreference: UserPreference): Boolean {
     val isNotSnoozed = userPreference.snoozeUntil == null || userPreference.snoozeUntil!!.isBefore(LocalDate.now(clock))
     val isValidCommunicationMethod = when (userPreference.commPref) {
-      CommunicationPreference.EMAIL -> {
-        !userPreference.email.isNullOrBlank()
-      }
-      CommunicationPreference.SMS -> {
-        !userPreference.sms.isNullOrBlank()
-      }
+      CommunicationPreference.EMAIL -> !userPreference.email.isNullOrBlank()
+      CommunicationPreference.SMS -> !userPreference.sms.isNullOrBlank()
       else -> {
         false
       }

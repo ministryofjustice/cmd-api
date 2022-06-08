@@ -10,14 +10,14 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.cmd.api.dto.NotificationDto
-import uk.gov.justice.digital.hmpps.cmd.api.service.NotificationService
+import uk.gov.justice.digital.hmpps.cmd.api.service.DryRunNotificationService
 import java.time.LocalDate
 import java.util.Optional
 
 @RestController
 @RequestMapping(produces = [APPLICATION_JSON_VALUE])
 @Tag(name = "notifications")
-class NotificationController(private val notificationService: NotificationService) {
+class NotificationController(private val notificationService: DryRunNotificationService) {
 
   @Operation(summary = "Retrieve all notifications for a user between two dates")
   @GetMapping("/notifications")

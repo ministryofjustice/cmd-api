@@ -43,6 +43,29 @@ class PollingScheduler(
     log.info("pollNotifications end")
   }
 
+  @Scheduled(cron = "0 37 3 * * ?")
+  @SchedulerLock(
+    name = "tidyNotificationsLock",
+    lockAtLeastFor = "PT10M"
+  )
+  fun tidyNotifications() {
+    log.info("tidyNotifications start")
+    val start = System.currentTimeMillis()
+
+    dryRunnotificationService.tidyNotification()
+
+    val duration = System.currentTimeMillis() - start
+    telemetryClient.trackEvent(
+      "PollingSchedulerTidy",
+      ImmutableMap.of(
+        "durationMillis", duration.toString(),
+        "duration", DurationFormatUtils.formatDuration(duration, "HH:mm:ss")
+      ),
+      null
+    )
+    log.info("tidyNotifications end")
+  }
+
   companion object {
     private val log = LoggerFactory.getLogger(PollingScheduler::class.java)
   }
