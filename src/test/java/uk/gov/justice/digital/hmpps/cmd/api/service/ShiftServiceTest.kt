@@ -15,11 +15,11 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import uk.gov.justice.digital.hmpps.cmd.api.client.CsrClient
 import uk.gov.justice.digital.hmpps.cmd.api.client.CsrDetailDto
+import uk.gov.justice.digital.hmpps.cmd.api.domain.FullDayActivityType
+import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.cmd.api.domain.TaskDisplayType
 import uk.gov.justice.digital.hmpps.cmd.api.model.Prison
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.FullDayActivityType
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
 import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalTime

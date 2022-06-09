@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.cmd.api.model
 import uk.gov.justice.digital.hmpps.cmd.api.client.CsrModifiedDetailDto
 import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
+import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter

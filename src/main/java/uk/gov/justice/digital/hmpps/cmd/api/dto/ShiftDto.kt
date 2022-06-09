@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.cmd.api.dto
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.v3.oas.annotations.media.Schema
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.FullDayActivityType
+import uk.gov.justice.digital.hmpps.cmd.api.domain.FullDayActivityType
 import java.time.LocalDate
 
 @Schema(description = "Shift")

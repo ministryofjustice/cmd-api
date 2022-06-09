@@ -4,12 +4,12 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.cmd.api.client.CsrClient
 import uk.gov.justice.digital.hmpps.cmd.api.client.CsrDetailDto
+import uk.gov.justice.digital.hmpps.cmd.api.domain.FullDayActivityType
+import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.cmd.api.domain.TaskDisplayType
 import uk.gov.justice.digital.hmpps.cmd.api.dto.DetailDto
 import uk.gov.justice.digital.hmpps.cmd.api.dto.ShiftDto
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.FullDayActivityType
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
 import java.time.Clock
 import java.time.Duration
 import java.time.LocalDate
@@ -155,12 +155,8 @@ class ShiftService(
             it.detailEnd,
             it.shiftType,
             when (it.shiftType) {
-              ShiftType.OVERTIME -> {
-                TaskDisplayType.OVERTIME_DAY_START
-              }
-              else -> {
-                TaskDisplayType.DAY_START
-              }
+              ShiftType.OVERTIME -> TaskDisplayType.OVERTIME_DAY_START
+              else -> TaskDisplayType.DAY_START
             },
             it.detailStart
           )
@@ -175,12 +171,8 @@ class ShiftService(
             it.detailEnd,
             it.shiftType,
             when (it.shiftType) {
-              ShiftType.OVERTIME -> {
-                TaskDisplayType.OVERTIME_DAY_FINISH
-              }
-              else -> {
-                TaskDisplayType.DAY_FINISH
-              }
+              ShiftType.OVERTIME -> TaskDisplayType.OVERTIME_DAY_FINISH
+              else -> TaskDisplayType.DAY_FINISH
             },
             it.detailEnd,
             calculateShiftDuration(dayShiftDetails)
@@ -196,12 +188,8 @@ class ShiftService(
             it.detailEnd,
             it.shiftType,
             when (it.shiftType) {
-              ShiftType.OVERTIME -> {
-                TaskDisplayType.OVERTIME_NIGHT_START
-              }
-              else -> {
-                TaskDisplayType.NIGHT_START
-              }
+              ShiftType.OVERTIME -> TaskDisplayType.OVERTIME_NIGHT_START
+              else -> TaskDisplayType.NIGHT_START
             },
             it.detailStart
           )
@@ -216,12 +204,8 @@ class ShiftService(
             it.detailEnd,
             it.shiftType,
             when (it.shiftType) {
-              ShiftType.OVERTIME -> {
-                TaskDisplayType.OVERTIME_NIGHT_FINISH
-              }
-              else -> {
-                TaskDisplayType.NIGHT_FINISH
-              }
+              ShiftType.OVERTIME -> TaskDisplayType.OVERTIME_NIGHT_FINISH
+              else -> TaskDisplayType.NIGHT_FINISH
             },
             it.detailEnd,
                         /*

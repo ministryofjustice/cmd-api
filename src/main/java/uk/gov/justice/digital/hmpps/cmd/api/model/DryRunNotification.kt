@@ -3,7 +3,10 @@ package uk.gov.justice.digital.hmpps.cmd.api.model
 import uk.gov.justice.digital.hmpps.cmd.api.client.CsrModifiedDetailDto
 import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
+import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType.ADD
+import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType.DELETE
+import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType.EDIT
+import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -121,24 +124,19 @@ data class DryRunNotification(
       } else ""
     }
 
-    private fun getOptionalTaskTo(task: String?, communicationPreference: CommunicationPreference, shiftActionType: DetailModificationType): String {
-      return if (communicationPreference == CommunicationPreference.NONE && task != null && task.isNotEmpty()) {
+    private fun getOptionalTaskTo(
+      task: String?,
+      communicationPreference: CommunicationPreference,
+      shiftActionType: DetailModificationType
+    ): String =
+      if (communicationPreference == CommunicationPreference.NONE && !task.isNullOrEmpty())
         when (shiftActionType) {
-          DetailModificationType.ADD -> {
-            " as $task"
-          }
-          DetailModificationType.EDIT -> {
-            " to $task"
-          }
-          DetailModificationType.DELETE -> {
-            " (was $task)"
-          }
-          else -> {
-            ""
-          }
+          ADD -> " as $task"
+          EDIT -> " to $task"
+          DELETE -> " (was $task)"
+          else -> ""
         }
-      } else ""
-    }
+      else ""
 
     // Notify supports bullet points for Email but not Sms
     private fun getOptionalBulletPoint(communicationPreference: CommunicationPreference): String {

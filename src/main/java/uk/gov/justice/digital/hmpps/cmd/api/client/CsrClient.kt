@@ -9,8 +9,8 @@ import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
+import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
-import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.cmd.api.utils.region.Regions
 import java.time.Duration
 import java.time.LocalDate
