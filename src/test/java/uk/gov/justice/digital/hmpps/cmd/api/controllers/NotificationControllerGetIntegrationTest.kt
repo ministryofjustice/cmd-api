@@ -44,7 +44,7 @@ class NotificationControllerGetIntegrationTest(
       assertThat(statusCode).isEqualTo(HttpStatus.OK)
       // we use an insert of CURRENT_DATE in the test data. so there should be 4 returned
       val content = jsonTester.from(body)
-      val date = LocalDate.now().format(DateTimeFormatter.ofPattern("EEEE d MMMM")) //"Thursday 9 June"
+      val date = LocalDate.now().format(DateTimeFormatter.ofPattern("EEEE d MMMM"))
       assertThat(content).extractingJsonPathValue("$").asList().hasSize(4)
       assertThat(content).extractingJsonPathValue("$[0].description").isEqualTo("Your shift on $date has been added.")
     }
