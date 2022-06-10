@@ -20,6 +20,7 @@ import org.springframework.test.context.jdbc.SqlGroup
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import uk.gov.justice.digital.hmpps.cmd.api.dto.NotificationDto
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -43,8 +44,9 @@ class NotificationControllerGetIntegrationTest(
       assertThat(statusCode).isEqualTo(HttpStatus.OK)
       // we use an insert of CURRENT_DATE in the test data. so there should be 4 returned
       val content = jsonTester.from(body)
+      val date = LocalDate.now().format(DateTimeFormatter.ofPattern("EEEE d MMMM"))
       assertThat(content).extractingJsonPathValue("$").asList().hasSize(4)
-      assertThat(content).extractingJsonPathValue("$[0].description").isEqualTo("Your shift on Thursday 9 June has been added.")
+      assertThat(content).extractingJsonPathValue("$[0].description").isEqualTo("Your shift on $date has been added.")
     }
   }
 
