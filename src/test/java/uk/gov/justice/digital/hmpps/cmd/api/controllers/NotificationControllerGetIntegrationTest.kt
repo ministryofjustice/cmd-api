@@ -42,7 +42,9 @@ class NotificationControllerGetIntegrationTest(
     with(response) {
       assertThat(statusCode).isEqualTo(HttpStatus.OK)
       // we use an insert of CURRENT_DATE in the test data. so there should be 4 returned
-      assertThat(jsonTester.from(body)).extractingJsonPathValue("$").asList().hasSize(4)
+      val content = jsonTester.from(body)
+      assertThat(content).extractingJsonPathValue("$").asList().hasSize(4)
+      assertThat(content).extractingJsonPathValue("$[0].description").isEqualTo("Your shift on Thursday 9 June has been added.")
     }
   }
 

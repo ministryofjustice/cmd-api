@@ -56,7 +56,11 @@ data class DryRunNotification(
   fun getNotificationDescription(communicationPreference: CommunicationPreference): String {
 
     val bulletPoint = getOptionalBulletPoint(communicationPreference)
-    val date = this.detailStart.getDateTimeFormattedForTemplate()
+    val date =
+      if (communicationPreference == CommunicationPreference.NONE)
+        this.detailStart.getDateTimeFormattedForNotifications()
+      else
+        this.detailStart.getDateTimeFormattedForTemplate()
     val taskTime = getOptionalTaskDescription(this.detailStart, this.detailEnd, this.activity)
     val shiftActionType = this.actionType
     val taskTo = getOptionalTaskTo(this.activity, communicationPreference, shiftActionType)
@@ -83,6 +87,9 @@ data class DryRunNotification(
         processed = false
       )
     }
+
+    fun LocalDateTime.getDateTimeFormattedForNotifications(): String =
+      DateTimeFormatter.ofPattern("EEEE d MMMM").format(this)
 
     fun LocalDateTime.getDateTimeFormattedForTemplate(): String {
       val day = this.dayOfMonth
