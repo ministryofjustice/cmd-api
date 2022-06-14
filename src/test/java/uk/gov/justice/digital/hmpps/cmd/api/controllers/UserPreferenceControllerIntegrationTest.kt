@@ -48,14 +48,10 @@ class UserPreferenceControllerIntegrationTest(
   }
 
   @Test
-  fun `It create a blank notification preference when there isn't one`() {
+  fun `It returns 404 when there isn't a notification preference `() {
     val response = getNotificationPreference(A_USER_NO_PREFERENCE)
     with(response) {
-      assertThat(statusCode).isEqualTo(HttpStatus.OK)
-      assertThat(jsonTester.from(body)).extractingJsonPathStringValue("$.snoozeUntil").isNull()
-      assertThat(jsonTester.from(body)).extractingJsonPathStringValue("$.email").isNull()
-      assertThat(jsonTester.from(body)).extractingJsonPathStringValue("$.sms").isNull()
-      assertThat(jsonTester.from(body)).extractingJsonPathStringValue("$.preference").isEqualTo("NONE")
+      assertThat(statusCode).isEqualTo(HttpStatus.NOT_FOUND)
     }
   }
 
@@ -94,6 +90,14 @@ class UserPreferenceControllerIntegrationTest(
   @Test
   fun `It accepts a blank sms`() {
     val response = putNotificationPreference(A_USER, "a@b.com", "", CommunicationPreference.EMAIL)
+    with(response) {
+      assertThat(statusCode).isEqualTo(HttpStatus.OK)
+    }
+  }
+
+  @Test
+  fun `It accepts a null sms`() {
+    val response = putNotificationPreference(A_USER, "a@b.com", null, CommunicationPreference.EMAIL)
     with(response) {
       assertThat(statusCode).isEqualTo(HttpStatus.OK)
     }
@@ -139,7 +143,7 @@ class UserPreferenceControllerIntegrationTest(
       Void::class.java
     )
 
-  fun putNotificationPreference(user: String, email: String, sms: String, pref: CommunicationPreference): ResponseEntity<Void> =
+  fun putNotificationPreference(user: String, email: String, sms: String?, pref: CommunicationPreference): ResponseEntity<Void> =
     testRestTemplate.exchange(
       PUT_NOTIFICATION_PREFERENCES_TEMPLATE,
       HttpMethod.PUT,

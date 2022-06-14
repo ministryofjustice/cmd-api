@@ -15,9 +15,8 @@ class UserPreferenceService(
   private val authenticationFacade: AuthenticationFacade
 ) {
 
-  fun getUserPreference(): UserPreferenceDto {
-    return UserPreferenceDto.from(getOrCreateUserPreference())
-  }
+  fun getUserPreference(): UserPreferenceDto? =
+    UserPreferenceDto.from(getUserPreference(authenticationFacade.currentUsername))
 
   fun updateSnoozePreference(newDate: LocalDate) {
     val userPreferences = getOrCreateUserPreference()
@@ -27,7 +26,7 @@ class UserPreferenceService(
     repository.save(userPreferences)
   }
 
-  fun updateNotificationDetails(email: String, sms: String, communicationPreference: CommunicationPreference) {
+  fun updateNotificationDetails(email: String, sms: String?, communicationPreference: CommunicationPreference) {
     val userPreferences = getOrCreateUserPreference()
     log.debug("Updating notification preference for user ${userPreferences.quantumId} to email: $email, sms: $sms, preference: $communicationPreference")
     userPreferences.email = email

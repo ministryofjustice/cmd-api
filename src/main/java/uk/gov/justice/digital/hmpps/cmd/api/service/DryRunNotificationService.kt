@@ -197,10 +197,14 @@ class DryRunNotificationService(
     ) == 0
 
   private fun shiftChangeAlreadyRecorded(it: CsrModifiedDetailDto) =
-    it.shiftModified != null &&
-      dryRunNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
-      it.quantumId!!, it.detailStart, it.shiftType, it.shiftModified
-    ) > 0
+    (
+      it.shiftModified != null &&
+        dryRunNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
+        it.quantumId!!, it.detailStart, it.shiftType, it.shiftModified
+      ) > 0
+      ).also { result -> if (result) log.warn("shiftChangeAlreadyRecorded was true for ${it.quantumId} at ${it.shiftModified}") }
+  // This check is probably redundant as triggers should not repeatedly find the same event (unlike the old polling),
+  // so if this log message never happens, it can be removed ^
 
   private fun latestShiftModified(
     @Suppress("UNUSED_PARAMETER") key: String?,

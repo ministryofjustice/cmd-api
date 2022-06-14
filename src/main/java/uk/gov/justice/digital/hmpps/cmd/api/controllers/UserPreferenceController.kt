@@ -31,9 +31,10 @@ class UserPreferenceController(private val userPreferenceService: UserPreference
     ]
   )
   @GetMapping("/preferences/notifications")
-  fun getNotificationPreferences(): ResponseEntity<UserPreferenceDto> {
-    return ResponseEntity.ok(userPreferenceService.getUserPreference())
-  }
+  fun getNotificationPreferences(): ResponseEntity<UserPreferenceDto> =
+    userPreferenceService.getUserPreference()
+      ?.let { ResponseEntity.ok(it) }
+      ?: ResponseEntity.notFound().build()
 
   @Operation(
     summary = "Update the notification snooze until preference for a user",

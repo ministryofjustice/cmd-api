@@ -19,9 +19,9 @@ class UserPreferenceDtoTest {
 
     val userPreferenceDto = UserPreferenceDto.from(userPreference)
 
-    Assertions.assertThat(userPreferenceDto.snoozeUntil).isEqualTo(date)
-    Assertions.assertThat(userPreferenceDto.email).isEqualTo(email)
-    Assertions.assertThat(userPreferenceDto.sms).isEqualTo(sms)
-    Assertions.assertThat(userPreferenceDto.preference).isEqualTo(pref)
+    Assertions.assertThat(userPreferenceDto?.snoozeUntil).isEqualTo(date)
+    Assertions.assertThat(userPreferenceDto?.email).isEqualTo(email)
+    Assertions.assertThat(userPreferenceDto?.sms).isEqualTo(sms)
+    Assertions.assertThat(userPreferenceDto?.preference).isEqualTo(pref)
   }
 }
