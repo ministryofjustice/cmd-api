@@ -60,6 +60,14 @@ class UserPreferenceControllerIntegrationTest(
   }
 
   @Test
+  fun `It returns 404 when there isn't a notification preference `() {
+    val response = getNotificationPreference2(A_USER_NO_PREFERENCE)
+    with(response) {
+      assertThat(statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+    }
+  }
+
+  @Test
   fun `It updates a notification preference with valid values`() {
     val response = putNotificationPreference(A_USER, "a@b.com", "07234567890", CommunicationPreference.EMAIL)
     with(response) {
@@ -94,6 +102,14 @@ class UserPreferenceControllerIntegrationTest(
   @Test
   fun `It accepts a blank sms`() {
     val response = putNotificationPreference(A_USER, "a@b.com", "", CommunicationPreference.EMAIL)
+    with(response) {
+      assertThat(statusCode).isEqualTo(HttpStatus.OK)
+    }
+  }
+
+  @Test
+  fun `It accepts a null sms`() {
+    val response = putNotificationPreference(A_USER, "a@b.com", null, CommunicationPreference.EMAIL)
     with(response) {
       assertThat(statusCode).isEqualTo(HttpStatus.OK)
     }
@@ -139,7 +155,7 @@ class UserPreferenceControllerIntegrationTest(
       Void::class.java
     )
 
-  fun putNotificationPreference(user: String, email: String, sms: String, pref: CommunicationPreference): ResponseEntity<Void> =
+  fun putNotificationPreference(user: String, email: String, sms: String?, pref: CommunicationPreference): ResponseEntity<Void> =
     testRestTemplate.exchange(
       PUT_NOTIFICATION_PREFERENCES_TEMPLATE,
       HttpMethod.PUT,
@@ -155,8 +171,17 @@ class UserPreferenceControllerIntegrationTest(
       String::class.java
     )
 
+  fun getNotificationPreference2(user: String): ResponseEntity<String> =
+    testRestTemplate.exchange(
+      NOTIFICATION_PREFERENCES_TEMPLATE2,
+      HttpMethod.GET,
+      entityBuilder.entityWithJwtAuthorisation(user, NO_ROLES),
+      String::class.java
+    )
+
   companion object {
     private const val NOTIFICATION_PREFERENCES_TEMPLATE = "/preferences/notifications"
+    private const val NOTIFICATION_PREFERENCES_TEMPLATE2 = "/preferences/notifications2"
     private const val PUT_SNOOZE_PREFERENCES_TEMPLATE = "/preferences/notifications/snooze"
     private const val PUT_NOTIFICATION_PREFERENCES_TEMPLATE = "/preferences/notifications/details"
 
