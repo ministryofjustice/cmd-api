@@ -48,8 +48,20 @@ class UserPreferenceControllerIntegrationTest(
   }
 
   @Test
-  fun `It returns 404 when there isn't a notification preference `() {
+  fun `It create a blank notification preference when there isn't one`() {
     val response = getNotificationPreference(A_USER_NO_PREFERENCE)
+    with(response) {
+      assertThat(statusCode).isEqualTo(HttpStatus.OK)
+      assertThat(jsonTester.from(body)).extractingJsonPathStringValue("$.snoozeUntil").isNull()
+      assertThat(jsonTester.from(body)).extractingJsonPathStringValue("$.email").isNull()
+      assertThat(jsonTester.from(body)).extractingJsonPathStringValue("$.sms").isNull()
+      assertThat(jsonTester.from(body)).extractingJsonPathStringValue("$.preference").isEqualTo("NONE")
+    }
+  }
+
+  @Test
+  fun `It returns 404 when there isn't a notification preference `() {
+    val response = getNotificationPreference2(A_USER_NO_PREFERENCE)
     with(response) {
       assertThat(statusCode).isEqualTo(HttpStatus.NOT_FOUND)
     }
@@ -159,8 +171,17 @@ class UserPreferenceControllerIntegrationTest(
       String::class.java
     )
 
+  fun getNotificationPreference2(user: String): ResponseEntity<String> =
+    testRestTemplate.exchange(
+      NOTIFICATION_PREFERENCES_TEMPLATE2,
+      HttpMethod.GET,
+      entityBuilder.entityWithJwtAuthorisation(user, NO_ROLES),
+      String::class.java
+    )
+
   companion object {
     private const val NOTIFICATION_PREFERENCES_TEMPLATE = "/preferences/notifications"
+    private const val NOTIFICATION_PREFERENCES_TEMPLATE2 = "/preferences/notifications2"
     private const val PUT_SNOOZE_PREFERENCES_TEMPLATE = "/preferences/notifications/snooze"
     private const val PUT_NOTIFICATION_PREFERENCES_TEMPLATE = "/preferences/notifications/details"
 

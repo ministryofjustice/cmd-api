@@ -30,11 +30,25 @@ class UserPreferenceController(private val userPreferenceService: UserPreference
       )
     ]
   )
-  @GetMapping("/preferences/notifications")
-  fun getNotificationPreferences(): ResponseEntity<UserPreferenceDto> =
-    userPreferenceService.getUserPreference()
+  @GetMapping("/preferences/notifications2")
+  fun getNotificationPreferences2(): ResponseEntity<UserPreferenceDto> =
+    userPreferenceService.getUserPreference2()
       ?.let { ResponseEntity.ok(it) }
       ?: ResponseEntity.notFound().build()
+
+  @Operation(
+    summary = "Retrieve all preferences for a user",
+    responses = [
+      ApiResponse(
+        responseCode = "200",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = UserPreferenceDto::class))]
+      )
+    ]
+  )
+  @GetMapping("/preferences/notifications")
+  fun getNotificationPreferences(): ResponseEntity<UserPreferenceDto> {
+    return ResponseEntity.ok(userPreferenceService.getUserPreference())
+  }
 
   @Operation(
     summary = "Update the notification snooze until preference for a user",

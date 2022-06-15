@@ -15,8 +15,12 @@ class UserPreferenceService(
   private val authenticationFacade: AuthenticationFacade
 ) {
 
-  fun getUserPreference(): UserPreferenceDto? =
+  fun getUserPreference2(): UserPreferenceDto? =
     UserPreferenceDto.from(getUserPreference(authenticationFacade.currentUsername))
+
+  fun getUserPreference(): UserPreferenceDto {
+    return UserPreferenceDto.from(getOrCreateUserPreference())!!
+  }
 
   fun updateSnoozePreference(newDate: LocalDate) {
     val userPreferences = getOrCreateUserPreference()
