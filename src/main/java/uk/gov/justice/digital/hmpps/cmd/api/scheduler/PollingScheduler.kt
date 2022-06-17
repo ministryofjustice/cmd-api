@@ -17,7 +17,7 @@ class PollingScheduler(
   private val dryRunnotificationService: DryRunNotificationService,
   private val telemetryClient: TelemetryClient,
 ) {
-  @Scheduled(cron = "17 */$INTERVAL 7-19 * * ?")
+  @Scheduled(cron = "17 */$INTERVAL 6-21 * * ?")
   @SchedulerLock(
     name = "pollNotificationsLock",
     lockAtLeastFor = "PT${MIN_LOCK}M"
