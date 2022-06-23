@@ -1,7 +1,7 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.2.3"
-  kotlin("plugin.spring") version "1.6.21"
-  kotlin("plugin.jpa") version "1.6.21"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.3.0-beta"
+  kotlin("plugin.spring") version "1.7.0"
+  kotlin("plugin.jpa") version "1.7.0"
   idea
 }
 
@@ -24,7 +24,7 @@ dependencies {
   runtimeOnly("com.h2database:h2:2.1.212")
   runtimeOnly("org.postgresql:postgresql:42.4.0")
   runtimeOnly("com.zaxxer:HikariCP")
-  runtimeOnly("org.flywaydb:flyway-core:8.5.12")
+  runtimeOnly("org.flywaydb:flyway-core:8.5.13")
 
   implementation("org.springframework.boot:spring-boot-starter-jdbc")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -34,8 +34,8 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-cache")
   implementation("com.github.ben-manes.caffeine:caffeine")
 
-  implementation("net.javacrumbs.shedlock:shedlock-spring:4.36.0")
-  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:4.36.0")
+  implementation("net.javacrumbs.shedlock:shedlock-spring:4.37.0")
+  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:4.37.0")
 
   implementation("org.springframework:spring-webflux")
   implementation("org.springframework.boot:spring-boot-starter-reactor-netty")
@@ -63,13 +63,13 @@ dependencies {
 }
 
 java {
-  toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+  toolchain.languageVersion.set(JavaLanguageVersion.of(18))
 }
 
 tasks {
   withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
-      jvmTarget = "17"
+      jvmTarget = "18"
     }
   }
 }
