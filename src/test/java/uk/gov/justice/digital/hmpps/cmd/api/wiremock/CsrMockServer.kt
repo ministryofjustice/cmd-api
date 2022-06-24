@@ -5,6 +5,7 @@ import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.client.WireMock.get
+import com.github.tomakehurst.wiremock.http.Fault
 import org.junit.jupiter.api.extension.AfterAllCallback
 import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
@@ -88,6 +89,15 @@ class CsrMockServer : WireMockServer(WIREMOCK_PORT) {
             .withHeader("Content-Type", "application/json")
             .withStatus(200)
         )
+    )
+  }
+
+  fun stubConnectionResetByPeer(region: Int) {
+    stubFor(
+      get("/updates/$region").willReturn(
+        aResponse()
+          .withFault(Fault.CONNECTION_RESET_BY_PEER)
+      )
     )
   }
 

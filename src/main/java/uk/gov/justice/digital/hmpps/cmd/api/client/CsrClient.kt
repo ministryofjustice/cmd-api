@@ -3,15 +3,18 @@ package uk.gov.justice.digital.hmpps.cmd.api.client
 import com.fasterxml.jackson.annotation.JsonCreator
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
+import reactor.core.publisher.Mono
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
 import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
 import uk.gov.justice.digital.hmpps.cmd.api.utils.region.Regions
+import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -20,7 +23,8 @@ class CsrClient(
   @Qualifier("csrApiWebClient") private val csrClient: WebClient,
   @Qualifier("csrAPIWebClientAppScope") private val csrApiServiceAccountWebClient: WebClient,
   private val authenticationFacade: AuthenticationFacade,
-  private val regionData: Regions
+  private val regionData: Regions,
+  @Value("\${csr.timeout}") private val csrApiTimeout: Duration,
 ) {
 
   @Cacheable(
@@ -49,6 +53,7 @@ class CsrClient(
       .uri("/updates/$region")
       .retrieve()
       .bodyToMono(object : ParameterizedTypeReference<List<CsrModifiedDetailDto>>() {})
+      .timeout(csrApiTimeout, Mono.just(emptyList()))
       .block() ?: emptyList()
     log.info("getModified: found ${csrModifiedDetails.size}, Region $region")
     return csrModifiedDetails
@@ -64,6 +69,7 @@ class CsrClient(
       .bodyValue(ids)
       .retrieve()
       .bodyToMono(Unit::class.java)
+      .timeout(csrApiTimeout)
       .block()
 
     log.info("deleteProcessed: end, Region $region")
@@ -76,6 +82,7 @@ class CsrClient(
       .uri("/user/details/$region?from=$from&to=$to")
       .retrieve()
       .bodyToMono(CSR_DETAIL_DTO_LIST_TYPE)
+      .timeout(csrApiTimeout, Mono.just(emptyList()))
       .block() ?: listOf()
     log.info("User Details: found ${csrDetails.size}, User ${authenticationFacade.currentUsername}, $from - $to, Region $region")
 
