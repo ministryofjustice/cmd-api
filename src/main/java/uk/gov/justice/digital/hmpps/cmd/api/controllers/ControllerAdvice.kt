@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestClientResponseException
 import uk.gov.justice.digital.hmpps.cmd.api.dto.ErrorResponse
+import uk.gov.justice.digital.hmpps.cmd.api.service.NotFoundException
 import java.util.function.Consumer
 
 @RestControllerAdvice(basePackages = ["uk.gov.justice.digital.hmpps.cmd.api.controllers"])
@@ -62,6 +63,13 @@ class ControllerAdvice {
     return ResponseEntity
       .status(HttpStatus.BAD_REQUEST)
       .body(ErrorResponse(status = (HttpStatus.BAD_REQUEST.value()), developerMessage = (e.message)))
+  }
+
+  @ExceptionHandler(NotFoundException::class)
+  fun handleNotFoundException(e: NotFoundException): ResponseEntity<ErrorResponse> {
+    return ResponseEntity
+      .status(HttpStatus.NOT_FOUND)
+      .body(ErrorResponse(status = HttpStatus.NOT_FOUND.value(), developerMessage = e.message))
   }
 
   @ExceptionHandler(Exception::class)

@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -24,8 +23,5 @@ class ShiftController(private val shiftService: ShiftService) {
   fun getShifts(
     @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) from: Optional<LocalDate>,
     @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: Optional<LocalDate>
-  ): ResponseEntity<Collection<ShiftDto>> {
-    val result = shiftService.getDetailsForUser(from, to)
-    return ResponseEntity.ok(result)
-  }
+  ): Collection<ShiftDto> = shiftService.getDetailsForUser(from, to)
 }

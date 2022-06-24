@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -31,10 +30,7 @@ class UserPreferenceController(private val userPreferenceService: UserPreference
     ]
   )
   @GetMapping("/preferences/notifications2")
-  fun getNotificationPreferences2(): ResponseEntity<UserPreferenceDto> =
-    userPreferenceService.getUserPreference2()
-      ?.let { ResponseEntity.ok(it) }
-      ?: ResponseEntity.notFound().build()
+  fun getNotificationPreferences2(): UserPreferenceDto = userPreferenceService.getUserPreference2()
 
   @Operation(
     summary = "Retrieve all preferences for a user",
@@ -46,9 +42,7 @@ class UserPreferenceController(private val userPreferenceService: UserPreference
     ]
   )
   @GetMapping("/preferences/notifications")
-  fun getNotificationPreferences(): ResponseEntity<UserPreferenceDto> {
-    return ResponseEntity.ok(userPreferenceService.getUserPreference())
-  }
+  fun getNotificationPreferences(): UserPreferenceDto = userPreferenceService.getUserPreference()
 
   @Operation(
     summary = "Update the notification snooze until preference for a user",
@@ -59,9 +53,8 @@ class UserPreferenceController(private val userPreferenceService: UserPreference
     ]
   )
   @PutMapping("/preferences/notifications/snooze")
-  fun updateSnoozeNotification(@RequestBody untilRequest: UpdateSnoozeUntilRequest): ResponseEntity<Void> {
+  fun updateSnoozeNotification(@RequestBody untilRequest: UpdateSnoozeUntilRequest) {
     userPreferenceService.updateSnoozePreference(untilRequest.snoozeUntil)
-    return ResponseEntity.ok().build()
   }
 
   @Operation(
@@ -73,8 +66,7 @@ class UserPreferenceController(private val userPreferenceService: UserPreference
     ]
   )
   @PutMapping("/preferences/notifications/details")
-  fun updateNotificationDetails(@Valid @RequestBody detailsRequest: UpdateNotificationDetailsRequest): ResponseEntity<Void> {
+  fun updateNotificationDetails(@Valid @RequestBody detailsRequest: UpdateNotificationDetailsRequest) {
     userPreferenceService.updateNotificationDetails(detailsRequest.email, detailsRequest.sms, detailsRequest.commPref)
-    return ResponseEntity.ok().build()
   }
 }

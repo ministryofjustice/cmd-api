@@ -15,8 +15,9 @@ class UserPreferenceService(
   private val authenticationFacade: AuthenticationFacade
 ) {
 
-  fun getUserPreference2(): UserPreferenceDto? =
+  fun getUserPreference2(): UserPreferenceDto =
     UserPreferenceDto.from(getUserPreference(authenticationFacade.currentUsername))
+      ?: throw NotFoundException("Prefences not found for ${authenticationFacade.currentUsername}")
 
   fun getUserPreference(): UserPreferenceDto {
     return UserPreferenceDto.from(getOrCreateUserPreference())!!
@@ -61,3 +62,5 @@ class UserPreferenceService(
     private val log = LoggerFactory.getLogger(UserPreferenceService::class.java)
   }
 }
+
+class NotFoundException(message: String) : RuntimeException(message)
