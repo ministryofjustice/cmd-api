@@ -29,26 +29,6 @@ internal class PrisonServiceTest {
   }
 
   @Nested
-  @DisplayName("Get Prisons tests")
-  inner class GetPrisonsTest {
-
-    @Test
-    fun `Should get Prisons`() {
-      val prisonsStub = getValidPrisons()
-      every { prisonRepository.findAll() } returns prisonsStub
-
-      val prisons = service.getAllPrisons()
-
-      verify { prisonRepository.findAll() }
-      confirmVerified(prisonRepository)
-
-      assertThat(prisons).hasSize(2)
-      assertThat(prisons).contains(prison1)
-      assertThat(prisons).contains(prison2)
-    }
-  }
-
-  @Nested
   @DisplayName("Get Prison for User tests")
   inner class GetPrisonForUserTest {
 
@@ -85,10 +65,5 @@ internal class PrisonServiceTest {
 
   companion object {
     val prison1 = Prison("AKA", "Big plan", "Arkham Asylum", 5)
-    val prison2 = Prison("TPT", "Little plan", "The Pit", 3)
-
-    fun getValidPrisons(): Collection<Prison> {
-      return listOf(prison1, prison2)
-    }
   }
 }

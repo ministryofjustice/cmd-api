@@ -17,7 +17,6 @@ import uk.gov.justice.digital.hmpps.cmd.api.client.CsrModifiedDetailDto
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
 import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.cmd.api.model.DryRunNotification
-import uk.gov.justice.digital.hmpps.cmd.api.model.Prison
 import uk.gov.justice.digital.hmpps.cmd.api.repository.DryRunNotificationRepository
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
 import uk.gov.service.notify.NotificationClient
@@ -32,7 +31,6 @@ import java.time.ZoneId
 internal class DryRunNotificationServiceTest_Generate_Shift {
   private val dryRunNotificationRepository: DryRunNotificationRepository = mockk(relaxUnitFun = true)
   private val userPreferenceService: UserPreferenceService = mockk(relaxUnitFun = true)
-  private val prisonService: PrisonService = mockk(relaxUnitFun = true)
   private val authenticationFacade: AuthenticationFacade = mockk(relaxUnitFun = true)
   private val notifyClient: NotificationClient = mockk(relaxUnitFun = true)
   private val csrClient: CsrClient = mockk(relaxUnitFun = true)
@@ -61,12 +59,6 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
   @Nested
   @DisplayName("Generate and save Notification tests")
   inner class GenerateAndSaveNotificationTests {
-
-    @BeforeEach
-    fun `set up prison fetching`() {
-      val prison1 = Prison("ABC", "Main Gate", "Midgar Central", 1)
-      every { prisonService.getAllPrisons() } returns listOf(prison1)
-    }
 
     @Test
     fun `Should disregard Shift Notification if it exists in our db`() {
