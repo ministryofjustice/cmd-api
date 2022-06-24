@@ -5,7 +5,6 @@ import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.client.WireMock.get
-import com.github.tomakehurst.wiremock.client.WireMock.matching
 import org.junit.jupiter.api.extension.AfterAllCallback
 import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
@@ -48,8 +47,7 @@ class CsrMockServer : WireMockServer(WIREMOCK_PORT) {
 
   fun stubUserDetails(region: Int, from: String, to: String, response: String) {
     stubFor(
-      get("/user/details?from=$from&to=$to")
-        .withHeader("X-Region", matching(region.toString()))
+      get("/user/details/$region?from=$from&to=$to")
         .willReturn(
           aResponse()
             .withHeader("Content-Type", "application/json")

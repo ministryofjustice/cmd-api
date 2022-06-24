@@ -12,7 +12,6 @@ import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
 import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
 import uk.gov.justice.digital.hmpps.cmd.api.utils.region.Regions
-import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -42,34 +41,6 @@ class CsrClient(
       }
     }
     return listOf()
-  }
-
-  fun getModifiedShifts(planUnit: String, region: Int): Collection<CsrModifiedDetailDto> {
-    log.info("getModifiedShifts: finding PlanUnit $planUnit, Region $region")
-    val csrModifiedDetails: Collection<CsrModifiedDetailDto> = csrApiServiceAccountWebClient
-      .get()
-      .uri("/planUnit/$planUnit/shifts/updated")
-      .header("X-Region", region.toString())
-      .retrieve()
-      .bodyToMono(CSR_MODIFIED_DETAIL_DTO_LIST_TYPE)
-      .timeout(Duration.ofMinutes(10))
-      .block() ?: emptyList()
-    log.info("getModifiedShifts: found ${csrModifiedDetails.size}, PlanUnit $planUnit, Region $region")
-    return csrModifiedDetails
-  }
-
-  fun getModifiedDetails(planUnit: String, region: Int): Collection<CsrModifiedDetailDto> {
-    log.info("getModifiedDetails: finding PlanUnit $planUnit, Region $region")
-    val csrModifiedDetails: Collection<CsrModifiedDetailDto> = csrApiServiceAccountWebClient
-      .get()
-      .uri("/planUnit/$planUnit/details/updated")
-      .header("X-Region", region.toString())
-      .retrieve()
-      .bodyToMono(CSR_MODIFIED_DETAIL_DTO_LIST_TYPE)
-      .timeout(Duration.ofMinutes(10))
-      .block() ?: emptyList()
-    log.info("getModifiedDetails: found ${csrModifiedDetails.size}, PlanUnit $planUnit, Region $region")
-    return csrModifiedDetails
   }
 
   fun getModified(region: Int): List<CsrModifiedDetailDto> {
@@ -102,8 +73,7 @@ class CsrClient(
     log.debug("User Details: finding User ${authenticationFacade.currentUsername}, Region $region")
     val csrDetails: Collection<CsrDetailDto> = csrClient
       .get()
-      .uri("/user/details?from=$from&to=$to")
-      .header("X-Region", region)
+      .uri("/user/details/$region?from=$from&to=$to")
       .retrieve()
       .bodyToMono(CSR_DETAIL_DTO_LIST_TYPE)
       .block() ?: listOf()
@@ -114,7 +84,6 @@ class CsrClient(
 
   companion object {
     private val log = LoggerFactory.getLogger(CsrClient::class.java)
-    private val CSR_MODIFIED_DETAIL_DTO_LIST_TYPE = object : ParameterizedTypeReference<Collection<CsrModifiedDetailDto>>() {}
     private val CSR_DETAIL_DTO_LIST_TYPE = object : ParameterizedTypeReference<Collection<CsrDetailDto>>() {}
   }
 }
