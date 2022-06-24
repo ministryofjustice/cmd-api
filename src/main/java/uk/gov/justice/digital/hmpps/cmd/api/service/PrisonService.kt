@@ -11,14 +11,6 @@ class PrisonService(
   private val repository: PrisonRepository,
   private val elite2Client: Elite2ApiClient
 ) {
-
-  fun getAllPrisons(): Collection<Prison> {
-    log.debug("Finding all prisons")
-    val prisons = repository.findAll()
-    log.debug("Found ${prisons.size} prisons")
-    return prisons
-  }
-
   fun getPrisonForUser(): Prison? {
     val prisonId = elite2Client.getCurrentPrisonIdForUser()
     log.debug("Finding prison by id $prisonId")

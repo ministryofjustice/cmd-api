@@ -5,12 +5,12 @@ import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
 import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
-import uk.gov.justice.digital.hmpps.cmd.api.model.Notification
+import uk.gov.justice.digital.hmpps.cmd.api.model.DryRunNotification
 import java.time.Clock
 import java.time.LocalDate
 import java.time.ZoneId
 
-class NotificationDtoTest {
+class DryRunNotificationDtoTest {
 
   @Test
   fun `Create Notification Dto from collection of Notification`() {
@@ -20,7 +20,7 @@ class NotificationDtoTest {
     Assertions.assertThat(notificationDtos).hasSize(1)
 
     val first = notificationDtos[0]
-    Assertions.assertThat(first.description).isEqualTo("Your shift on Sunday, 3rd May has been added.")
+    Assertions.assertThat(first.description).isEqualTo("Your shift on Sunday 3 May has been added.")
     Assertions.assertThat(first.shiftModified).isEqualTo(shifts[0].shiftModified)
     Assertions.assertThat(first.processed).isEqualTo(shifts[0].processed)
   }
@@ -33,7 +33,7 @@ class NotificationDtoTest {
     Assertions.assertThat(notificationDtos).hasSize(1)
 
     val first = notificationDtos[0]
-    Assertions.assertThat(first.description).isEqualTo("Your detail on Sunday, 3rd May (full day) has been added as Any Activity.")
+    Assertions.assertThat(first.description).isEqualTo("Your detail on Sunday 3 May (full day) has been added as Any Activity.")
     Assertions.assertThat(first.shiftModified).isEqualTo(shifts[0].shiftModified)
     Assertions.assertThat(first.processed).isEqualTo(shifts[0].processed)
   }
@@ -42,7 +42,7 @@ class NotificationDtoTest {
 
     private val clock = Clock.fixed(LocalDate.of(2020, 5, 3).atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
 
-    fun getValidNotification(): Notification {
+    fun getValidNotification(): DryRunNotification {
       val shiftDate = LocalDate.now(clock)
 
       val quantumId = "XYZ"
@@ -54,7 +54,7 @@ class NotificationDtoTest {
       val actionType = DetailModificationType.ADD
       val processed = false
 
-      return Notification(
+      return DryRunNotification(
         1L,
         quantumId,
         shiftModified,
@@ -67,7 +67,7 @@ class NotificationDtoTest {
       )
     }
 
-    fun getValidShiftTaskNotification(): Notification {
+    fun getValidShiftTaskNotification(): DryRunNotification {
       val shiftDate = LocalDate.now(clock)
 
       val quantumId = "XYZ"
@@ -79,7 +79,7 @@ class NotificationDtoTest {
       val actionType = DetailModificationType.ADD
       val processed = false
 
-      return Notification(
+      return DryRunNotification(
         1L,
         quantumId,
         shiftModified,
