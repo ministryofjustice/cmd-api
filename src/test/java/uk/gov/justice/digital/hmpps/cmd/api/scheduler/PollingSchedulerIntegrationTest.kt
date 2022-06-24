@@ -184,7 +184,9 @@ class PollingSchedulerIntegrationTest(
       """.trimIndent()
     )
     CsrApiExtension.api.stubConnectionResetByPeer(2)
-    CsrApiExtension.api.stubGetUpdates(3, """[{
+    CsrApiExtension.api.stubGetUpdates(
+      3,
+      """[{
         "id" : "102",
         "quantumId" : "other-user",
         "shiftModified" : "2022-03-25T15:40:00",
@@ -193,7 +195,8 @@ class PollingSchedulerIntegrationTest(
         "detailEnd" : "2022-03-31T11:00:00",
         "activity" : "CCTV monitoring",
         "actionType" : "ADD"
-        }]""")
+        }]"""
+    )
     CsrApiExtension.api.stubGetUpdates(4, "[]")
     CsrApiExtension.api.stubGetUpdates(5, "[]")
     CsrApiExtension.api.stubGetUpdates(6, "[]")
@@ -210,7 +213,6 @@ class PollingSchedulerIntegrationTest(
     assertThat(CsrApiExtension.api.putCountFor("/updates/6")).isEqualTo(0)
     CsrApiExtension.api.verify(putRequestedFor(urlEqualTo("/updates/1")).withRequestBody(equalTo("[101,103]")))
     CsrApiExtension.api.verify(putRequestedFor(urlEqualTo("/updates/3")).withRequestBody(equalTo("[102]")))
-
 
     val saved = dryRunNotificationRepository.findAll()
     assertThat(saved).asList().containsExactly(
