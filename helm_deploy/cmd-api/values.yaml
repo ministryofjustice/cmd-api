@@ -2,9 +2,6 @@
 generic-service:
   nameOverride: cmd-api
 
-  autoscaling:
-    enabled: true
-
   image:
     repository: quay.io/hmpps/cmd-api
     tag: latest    # override at deployment time
