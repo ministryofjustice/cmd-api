@@ -383,7 +383,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
     fun `Should return SECONDMENT as Full Day Type for SECONDMENT`() {
 
       val shifts = listOf(
-        CsrDetailDto(ShiftType.SHIFT, day1.atTime(LocalTime.of(7, 0)), day1.atTime(LocalTime.of(11, 0)), "secondment")
+        CsrDetailDto(ShiftType.SHIFT, day1.atTime(LocalTime.of(7, 0)), day1.atTime(LocalTime.of(11, 0)), "detached Duty")
       )
 
       every { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") } returns shifts
@@ -404,7 +404,7 @@ internal class ShiftServiceTest_DayModelFullDayType {
     fun `Should return Secondment as Full Day Type for Secondment if it is a Night Start`() {
 
       val shifts = listOf(
-        CsrDetailDto(ShiftType.SHIFT, day1.atTime(LocalTime.of(7, 0)), day2.atTime(LocalTime.of(11, 0)), "Secondment")
+        CsrDetailDto(ShiftType.SHIFT, day1.atTime(LocalTime.of(7, 0)), day2.atTime(LocalTime.of(11, 0)), "Detached Duty")
       )
 
       every { csrApiClient.getDetailsForUser(day1, day1, 1, "xyz") } returns shifts

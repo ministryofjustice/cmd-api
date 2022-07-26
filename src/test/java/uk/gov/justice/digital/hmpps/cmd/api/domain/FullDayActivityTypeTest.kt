@@ -67,17 +67,12 @@ class FullDayActivityTypeTest {
 
     @Test
     fun `It should match TU_OFFICIALS_LEAVE_DAYS`() {
-      assertThat(FullDayActivityType.from("TU Officials Leave Days")).isEqualTo(FullDayActivityType.TU_OFFICIALS_LEAVE_DAYS)
-    }
-
-    @Test
-    fun `It should match TU_OFFICIALS_LEAVE_HOURS`() {
-      assertThat(FullDayActivityType.from("TU Officials Leave Hours")).isEqualTo(FullDayActivityType.TU_OFFICIALS_LEAVE_HOURS)
+      assertThat(FullDayActivityType.from("Union Duties (Collective Negotiations)")).isEqualTo(FullDayActivityType.TU_OFFICIALS_LEAVE)
     }
 
     @Test
     fun `It should match SECONDMENT`() {
-      assertThat(FullDayActivityType.from("Secondment")).isEqualTo(FullDayActivityType.SECONDMENT)
+      assertThat(FullDayActivityType.from("Detached Duty")).isEqualTo(FullDayActivityType.SECONDMENT)
     }
 
     @Test

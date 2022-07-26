@@ -82,11 +82,12 @@ class ShiftService(
           (activity == FullDayActivityType.HOLIDAY && onlyHasBreaksOrNightShiftFinish(shiftTasks, FullDayActivityType.HOLIDAY)) ||
           (activity == FullDayActivityType.ILLNESS && onlyHasBreaksOrNightShiftFinish(shiftTasks, FullDayActivityType.ILLNESS)) ||
           (activity == FullDayActivityType.ABSENCE && onlyHasBreaksOrNightShiftFinish(shiftTasks, FullDayActivityType.ABSENCE)) ||
-          (activity == FullDayActivityType.TU_OFFICIALS_LEAVE_DAYS) ||
-          (activity == FullDayActivityType.TU_OFFICIALS_LEAVE_HOURS) ||
+          (activity == FullDayActivityType.TU_OFFICIALS_LEAVE) ||
+          (activity == FullDayActivityType.TU_OFFICIALS_LEAVE_2) ||
           (activity == FullDayActivityType.TOIL && isStartType(it.displayType)) ||
           (activity == FullDayActivityType.TOIL && onlyHasBreaksOrNightShiftFinish(shiftTasks, FullDayActivityType.TOIL)) ||
           (activity == FullDayActivityType.SECONDMENT && isStartType(it.displayType)) ||
+          (activity == FullDayActivityType.SECONDMENT && onlyHasBreaksOrNightShiftFinish(shiftTasks, FullDayActivityType.SECONDMENT)) ||
           (activity == FullDayActivityType.TRAINING_INTERNAL && isStartType(it.displayType)) ||
           (activity == FullDayActivityType.TRAINING_EXTERNAL && isStartType(it.displayType))
         ) {
@@ -99,22 +100,23 @@ class ShiftService(
     }
   }
 
-  private fun isStartType(displayType: TaskDisplayType?): Boolean {
-    return (displayType == TaskDisplayType.DAY_START || displayType == TaskDisplayType.NIGHT_START)
-  }
+  private fun isStartType(displayType: TaskDisplayType?): Boolean =
+    (displayType == TaskDisplayType.DAY_START || displayType == TaskDisplayType.NIGHT_START)
 
-  private fun onlyHasBreaksOrNightShiftFinish(tasks: Collection<DetailDto>, type: FullDayActivityType): Boolean {
-    return tasks.none {
+  private fun onlyHasBreaksOrNightShiftFinish(tasks: Collection<DetailDto>, type: FullDayActivityType): Boolean =
+    tasks.none {
       it.displayType != TaskDisplayType.NIGHT_FINISH &&
         FullDayActivityType.from(it.activity!!) != type &&
         FullDayActivityType.from(it.activity) != FullDayActivityType.BREAK
     }
-  }
 
-  private fun getMiddleDetails(details: Collection<CsrDetailDto>, startAndFinishDetails: Collection<DetailDto>): Collection<DetailDto> {
+  private fun getMiddleDetails(
+    details: Collection<CsrDetailDto>,
+    startAndFinishDetails: Collection<DetailDto>
+  ): Collection<DetailDto> =
 
     // The middle details are the fullDetails - the start and finish details
-    return details
+    details
       .filter { detail ->
         startAndFinishDetails.all { sfd -> detail.detailStart != sfd.start && detail.detailEnd != sfd.end }
       }
@@ -127,7 +129,6 @@ class ShiftService(
           null
         )
       }
-  }
 
     /* For each day we are looking for :
      * 1) the earliest start date with a finish date on the same day, this is a day shift start
