@@ -34,7 +34,6 @@ import java.util.Optional
 internal class DryRunNotificationServiceTest {
   private val shiftNotificationRepository: DryRunNotificationRepository = mockk(relaxUnitFun = true)
   private val userPreferenceService: UserPreferenceService = mockk(relaxUnitFun = true)
-  private val prisonService: PrisonService = mockk(relaxUnitFun = true)
   private val authenticationFacade: AuthenticationFacade = mockk(relaxUnitFun = true)
   private val notifyClient: NotificationClient = mockk(relaxUnitFun = true)
   private val csrClient: CsrClient = mockk(relaxUnitFun = true)
@@ -330,7 +329,7 @@ internal class DryRunNotificationServiceTest {
     }
 
     @Test
-    fun `Should respect communication preferences Sms`() {
+    fun `Should never send Sms`() {
       val quantumId1 = "XYZ"
       val shiftNotifications: List<DryRunNotification> = listOf(
         DryRunNotification(1, quantumId1, now.plusDays(4), now.plusDays(4), now.plusDays(4), null, ShiftType.SHIFT, DetailModificationType.ADD, false)
@@ -338,14 +337,13 @@ internal class DryRunNotificationServiceTest {
 
       every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
       every { userPreferenceService.getUserPreference(quantumId1) } returns UserPreference(quantumId1, null, "email", "sms", CommunicationPreference.SMS)
-      every { notifyClient.sendSms(any(), "sms", any(), any()) } returns null
       every { shiftNotificationRepository.saveAll(shiftNotifications) } returns shiftNotifications
 
       service.sendNotifications()
 
       verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
       verify { userPreferenceService.getUserPreference(quantumId1) }
-      verify(exactly = 1) { notifyClient.sendSms(any(), "sms", any(), null) }
+      verify(exactly = 0) { notifyClient.sendSms(any(), "sms", any(), null) }
       verify { shiftNotificationRepository.saveAll(shiftNotifications) }
     }
 
