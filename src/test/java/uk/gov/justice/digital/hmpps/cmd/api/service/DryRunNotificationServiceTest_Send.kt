@@ -158,7 +158,7 @@ internal class DryRunNotificationServiceTest_Send {
     }
 
     @Test
-    fun `Should send notifications to email user but not SMS users`() {
+    fun `Should send notifications to two users with different preferences`() {
       val quantumId1 = "XYZ"
       val quantumId2 = "ABC"
       val shiftNotifications: List<DryRunNotification> = listOf(
@@ -170,6 +170,7 @@ internal class DryRunNotificationServiceTest_Send {
       every { userPreferenceService.getUserPreference(quantumId1) } returns UserPreference(quantumId1, null, "email", "sms", CommunicationPreference.EMAIL)
       every { userPreferenceService.getUserPreference(quantumId2) } returns UserPreference(quantumId1, null, "email", "sms", CommunicationPreference.SMS)
       every { notifyClient.sendEmail(any(), "email", any(), any()) } returns null
+      every { notifyClient.sendSms(any(), "sms", any(), any()) } returns null
       every { shiftNotificationRepository.saveAll(shiftNotifications.filter { it.id == 1L }) } returns shiftNotifications
       every { shiftNotificationRepository.saveAll(shiftNotifications.filter { it.id == 2L }) } returns shiftNotifications
 
@@ -179,12 +180,12 @@ internal class DryRunNotificationServiceTest_Send {
       verify { userPreferenceService.getUserPreference(quantumId1) }
       verify { userPreferenceService.getUserPreference(quantumId2) }
       verify(exactly = 1) { notifyClient.sendEmail(any(), "email", any(), null) }
-      verify(exactly = 0) { notifyClient.sendSms(any(), any(), any(), null) }
+      verify(exactly = 1) { notifyClient.sendSms(any(), "sms", any(), null) }
       verify { shiftNotificationRepository.saveAll(shiftNotifications.filter { it.id == 1L }) }
     }
 
     @Test
-    fun `Should send notifications to email user when the third one is 'NONE'`() {
+    fun `Should send notifications to two users with different preferences when the third one is 'NONE'`() {
       val quantumId1 = "XYZ"
       val quantumId2 = "ABC"
       val quantumId3 = "123"
@@ -200,6 +201,7 @@ internal class DryRunNotificationServiceTest_Send {
       every { userPreferenceService.getUserPreference(quantumId2) } returns UserPreference(quantumId1, null, "email", "sms", CommunicationPreference.SMS)
       every { userPreferenceService.getUserPreference(quantumId3) } returns UserPreference(quantumId1, null, "email", "sms", CommunicationPreference.NONE)
       every { notifyClient.sendEmail(any(), "email", any(), any()) } returns null
+      every { notifyClient.sendSms(any(), "sms", any(), any()) } returns null
       every { shiftNotificationRepository.saveAll(shiftNotifications.filter { it.id == 1L }) } returns shiftNotifications
       every { shiftNotificationRepository.saveAll(shiftNotifications.filter { it.id == 2L }) } returns shiftNotifications
       every { shiftNotificationRepository.saveAll(shiftNotifications.filter { it.id == 3L }) } returns shiftNotifications
@@ -211,7 +213,7 @@ internal class DryRunNotificationServiceTest_Send {
       verify { userPreferenceService.getUserPreference(quantumId2) }
       verify { userPreferenceService.getUserPreference(quantumId3) }
       verify(exactly = 1) { notifyClient.sendEmail(any(), "email", any(), null) }
-      verify(exactly = 0) { notifyClient.sendSms(any(), "sms", any(), null) }
+      verify(exactly = 1) { notifyClient.sendSms(any(), "sms", any(), null) }
       verify { shiftNotificationRepository.saveAll(shiftNotifications.filter { it.id == 1L }) }
       verify { shiftNotificationRepository.saveAll(shiftNotifications.filter { it.id == 2L }) }
       verify { shiftNotificationRepository.saveAll(shiftNotifications.filter { it.id == 3L }) }

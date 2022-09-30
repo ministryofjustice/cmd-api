@@ -220,12 +220,10 @@ class DryRunNotificationService(
         // Use the passed in 'from' param
         fromParam.get()
       }
-
       toParam.isPresent -> {
         // Set the 'from' to be the start day of 3 months into the relative past
         toParam.get().minusMonths(monthStep).withDayOfMonth(1)
       }
-
       else -> {
         // Use the default
         LocalDate.now(clock).withDayOfMonth(1)
@@ -240,7 +238,6 @@ class DryRunNotificationService(
         // Use the passed in 'from' param
         toParam.get()
       }
-
       else -> {
         // Use the default
         val toDate = calculatedFromDateTime.toLocalDate().plusMonths(monthStep)
@@ -272,12 +269,23 @@ class DryRunNotificationService(
       if (shouldSend(userPreference)) {
         log.debug("dryRun sendNotification: Sending (${mostRecentNotifications.size}) notifications to ${userPreference.quantumId}, preference set to ${userPreference.commPref}")
         mostRecentNotifications.sortedWith(compareBy { it.detailStart }).chunked(10).forEach { chunk ->
-          notifyClient.sendEmail(
-            NotificationType.EMAIL_SUMMARY.value,
-            userPreference.email,
-            generateTemplateValues(chunk, userPreference.commPref),
-            null
-          )
+          when (val communicationPreference = userPreference.commPref) {
+            CommunicationPreference.EMAIL -> notifyClient.sendEmail(
+              NotificationType.EMAIL_SUMMARY.value,
+              userPreference.email,
+              generateTemplateValues(chunk, communicationPreference),
+              null
+            )
+            CommunicationPreference.SMS -> notifyClient.sendSms(
+              NotificationType.SMS_SUMMARY.value,
+              userPreference.sms,
+              generateTemplateValues(chunk, communicationPreference),
+              null
+            )
+            else -> {
+              log.info("dryRun sendNotification: Skipping sending notifications for ${userPreference.quantumId}")
+            }
+          }
         }
       }
     }
@@ -285,15 +293,13 @@ class DryRunNotificationService(
 
   private fun shouldSend(userPreference: UserPreference): Boolean {
     val isNotSnoozed = userPreference.snoozeUntil == null || userPreference.snoozeUntil!!.isBefore(LocalDate.now(clock))
-    val isValidCommunicationMethod = if (userPreference.commPref == CommunicationPreference.EMAIL) {
-      !userPreference.email.isNullOrBlank()
+    val isValidCommunicationMethod = when (userPreference.commPref) {
+      CommunicationPreference.EMAIL -> !userPreference.email.isNullOrBlank()
+      CommunicationPreference.SMS -> !userPreference.sms.isNullOrBlank()
+      else -> {
+        false
+      }
     }
-    // SMS is no longer available as an option
-    else {
-      log.info("dryRun sendNotification: Skipping sending notifications for ${userPreference.quantumId} using ${userPreference.commPref}")
-      false
-    }
-
     return isNotSnoozed && isValidCommunicationMethod
   }
 

@@ -329,7 +329,7 @@ internal class DryRunNotificationServiceTest {
     }
 
     @Test
-    fun `Should never send Sms`() {
+    fun `Should respect communication preferences Sms`() {
       val quantumId1 = "XYZ"
       val shiftNotifications: List<DryRunNotification> = listOf(
         DryRunNotification(1, quantumId1, now.plusDays(4), now.plusDays(4), now.plusDays(4), null, ShiftType.SHIFT, DetailModificationType.ADD, false)
@@ -337,13 +337,14 @@ internal class DryRunNotificationServiceTest {
 
       every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
       every { userPreferenceService.getUserPreference(quantumId1) } returns UserPreference(quantumId1, null, "email", "sms", CommunicationPreference.SMS)
+      every { notifyClient.sendSms(any(), "sms", any(), any()) } returns null
       every { shiftNotificationRepository.saveAll(shiftNotifications) } returns shiftNotifications
 
       service.sendNotifications()
 
       verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
       verify { userPreferenceService.getUserPreference(quantumId1) }
-      verify(exactly = 0) { notifyClient.sendSms(any(), "sms", any(), null) }
+      verify(exactly = 1) { notifyClient.sendSms(any(), "sms", any(), null) }
       verify { shiftNotificationRepository.saveAll(shiftNotifications) }
     }
 
