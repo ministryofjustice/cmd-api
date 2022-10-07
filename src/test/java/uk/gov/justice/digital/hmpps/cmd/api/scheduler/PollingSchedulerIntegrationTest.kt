@@ -18,7 +18,6 @@ import uk.gov.justice.digital.hmpps.cmd.api.repository.NotificationRepository
 import uk.gov.justice.digital.hmpps.prisonertonomisupdate.wiremock.CsrApiExtension
 import uk.gov.justice.digital.hmpps.prisonertonomisupdate.wiremock.HmppsAuthApiExtension
 import uk.gov.justice.digital.hmpps.prisonertonomisupdate.wiremock.PrisonApiExtension
-import java.time.Clock
 import java.time.LocalDateTime
 
 @ExtendWith(PrisonApiExtension::class, CsrApiExtension::class, HmppsAuthApiExtension::class)

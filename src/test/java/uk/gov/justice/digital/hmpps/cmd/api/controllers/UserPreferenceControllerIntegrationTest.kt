@@ -47,8 +47,6 @@ class UserPreferenceControllerIntegrationTest(
     }
   }
 
-
-
   @Test
   fun `It returns 404 when there isn't a notification preference `() {
     val response = getNotificationPreference2(A_USER_NO_PREFERENCE)
