@@ -20,8 +20,8 @@ import javax.persistence.Id
 import javax.persistence.Table
 
 @Entity
-@Table(name = "dry_run_notification")
-data class DryRunNotification(
+@Table(name = "notification")
+data class Notification(
   @Id
   @Column(name = "ID")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -71,12 +71,12 @@ data class DryRunNotification(
 
   companion object {
 
-    fun fromDto(dtoCsrs: Collection<CsrModifiedDetailDto>): Collection<DryRunNotification> {
+    fun fromDto(dtoCsrs: Collection<CsrModifiedDetailDto>): Collection<Notification> {
       return dtoCsrs.map { fromDto(it) }
     }
 
-    fun fromDto(dtoCsr: CsrModifiedDetailDto): DryRunNotification {
-      return DryRunNotification(
+    fun fromDto(dtoCsr: CsrModifiedDetailDto): Notification {
+      return Notification(
         quantumId = dtoCsr.quantumId!!,
         shiftModified = dtoCsr.shiftModified!!,
         detailStart = dtoCsr.detailStart,

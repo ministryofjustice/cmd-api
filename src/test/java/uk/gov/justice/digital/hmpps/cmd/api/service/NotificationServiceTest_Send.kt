@@ -18,9 +18,9 @@ import uk.gov.justice.digital.hmpps.cmd.api.client.CsrClient
 import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
 import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
-import uk.gov.justice.digital.hmpps.cmd.api.model.DryRunNotification
+import uk.gov.justice.digital.hmpps.cmd.api.model.Notification
 import uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
-import uk.gov.justice.digital.hmpps.cmd.api.repository.DryRunNotificationRepository
+import uk.gov.justice.digital.hmpps.cmd.api.repository.NotificationRepository
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
 import uk.gov.service.notify.NotificationClient
 import uk.gov.service.notify.NotificationClientException
@@ -30,15 +30,15 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 
 @ExtendWith(MockKExtension::class)
-@DisplayName("DryRunNotification Service tests - send")
-internal class DryRunNotificationServiceTest_Send {
-  private val shiftNotificationRepository: DryRunNotificationRepository = mockk(relaxUnitFun = true)
+@DisplayName("Notification Service tests - send")
+internal class NotificationServiceTest_Send {
+  private val shiftNotificationRepository: NotificationRepository = mockk(relaxUnitFun = true)
   private val userPreferenceService: UserPreferenceService = mockk(relaxUnitFun = true)
   private val authenticationFacade: AuthenticationFacade = mockk(relaxUnitFun = true)
   private val notifyClient: NotificationClient = mockk(relaxUnitFun = true)
   private val csrClient: CsrClient = mockk(relaxUnitFun = true)
   private val clock = Clock.fixed(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
-  private val service = DryRunNotificationService(
+  private val service = NotificationService(
     shiftNotificationRepository,
     userPreferenceService,
     clock,
@@ -64,7 +64,7 @@ internal class DryRunNotificationServiceTest_Send {
 
     @Test
     fun `Should do nothing if there are no notifications`() {
-      val shiftNotifications: List<DryRunNotification> = listOf()
+      val shiftNotifications: List<Notification> = listOf()
 
       every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
 
@@ -76,8 +76,8 @@ internal class DryRunNotificationServiceTest_Send {
     @Test
     fun `Should do nothing if user has no preferences`() {
       val quantumId1 = "XYZ"
-      val shiftNotifications: List<DryRunNotification> = listOf(
-        DryRunNotification(1, quantumId1, now, now, now, null, ShiftType.SHIFT, DetailModificationType.ADD, false),
+      val shiftNotifications: List<Notification> = listOf(
+        Notification(1, quantumId1, now, now, now, null, ShiftType.SHIFT, DetailModificationType.ADD, false),
       )
       every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
       every { shiftNotificationRepository.saveAll(shiftNotifications) } returns shiftNotifications
@@ -94,9 +94,9 @@ internal class DryRunNotificationServiceTest_Send {
     @Test
     fun `Should combine notifications to one user`() {
       val quantumId1 = "XYZ"
-      val shiftNotifications: List<DryRunNotification> = listOf(
-        DryRunNotification(1, quantumId1, now.plusDays(4), now.plusDays(4), now.plusDays(4), null, ShiftType.SHIFT, DetailModificationType.ADD, false),
-        DryRunNotification(2, quantumId1, now.plusDays(5), now.plusDays(4), now.plusDays(4), null, ShiftType.SHIFT, DetailModificationType.ADD, false)
+      val shiftNotifications: List<Notification> = listOf(
+        Notification(1, quantumId1, now.plusDays(4), now.plusDays(4), now.plusDays(4), null, ShiftType.SHIFT, DetailModificationType.ADD, false),
+        Notification(2, quantumId1, now.plusDays(5), now.plusDays(4), now.plusDays(4), null, ShiftType.SHIFT, DetailModificationType.ADD, false)
       )
 
       every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
@@ -115,8 +115,8 @@ internal class DryRunNotificationServiceTest_Send {
     @Test
     fun `Should send a notification to one user`() {
       val quantumId1 = "XYZ"
-      val shiftNotifications: List<DryRunNotification> = listOf(
-        DryRunNotification(1, quantumId1, now.plusDays(4), now.plusDays(4), now.plusDays(4), null, ShiftType.SHIFT, DetailModificationType.ADD, false)
+      val shiftNotifications: List<Notification> = listOf(
+        Notification(1, quantumId1, now.plusDays(4), now.plusDays(4), now.plusDays(4), null, ShiftType.SHIFT, DetailModificationType.ADD, false)
       )
 
       every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
@@ -136,9 +136,9 @@ internal class DryRunNotificationServiceTest_Send {
     fun `Should send notifications to two users`() {
       val quantumId1 = "XYZ"
       val quantumId2 = "ABC"
-      val shiftNotifications: List<DryRunNotification> = listOf(
-        DryRunNotification(1, quantumId1, now.plusDays(4), now.plusDays(4), now.plusDays(4), null, ShiftType.SHIFT, DetailModificationType.ADD, false),
-        DryRunNotification(2, quantumId2, now.plusDays(5), now.plusDays(5), now.plusDays(5), null, ShiftType.SHIFT, DetailModificationType.ADD, false)
+      val shiftNotifications: List<Notification> = listOf(
+        Notification(1, quantumId1, now.plusDays(4), now.plusDays(4), now.plusDays(4), null, ShiftType.SHIFT, DetailModificationType.ADD, false),
+        Notification(2, quantumId2, now.plusDays(5), now.plusDays(5), now.plusDays(5), null, ShiftType.SHIFT, DetailModificationType.ADD, false)
       )
 
       every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
@@ -161,9 +161,9 @@ internal class DryRunNotificationServiceTest_Send {
     fun `Should send notifications to two users with different preferences`() {
       val quantumId1 = "XYZ"
       val quantumId2 = "ABC"
-      val shiftNotifications: List<DryRunNotification> = listOf(
-        DryRunNotification(1, quantumId1, now.plusDays(4), now.plusDays(4), now.plusDays(4), null, ShiftType.SHIFT, DetailModificationType.ADD, false),
-        DryRunNotification(2, quantumId2, now.plusDays(5), now.plusDays(5), now.plusDays(5), null, ShiftType.SHIFT, DetailModificationType.ADD, false)
+      val shiftNotifications: List<Notification> = listOf(
+        Notification(1, quantumId1, now.plusDays(4), now.plusDays(4), now.plusDays(4), null, ShiftType.SHIFT, DetailModificationType.ADD, false),
+        Notification(2, quantumId2, now.plusDays(5), now.plusDays(5), now.plusDays(5), null, ShiftType.SHIFT, DetailModificationType.ADD, false)
       )
 
       every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
@@ -190,10 +190,10 @@ internal class DryRunNotificationServiceTest_Send {
       val quantumId2 = "ABC"
       val quantumId3 = "123"
 
-      val shiftNotifications: List<DryRunNotification> = listOf(
-        DryRunNotification(1, quantumId1, now.plusDays(4), now.plusDays(4), now.plusDays(4), null, ShiftType.SHIFT, DetailModificationType.ADD, false),
-        DryRunNotification(2, quantumId2, now.plusDays(5), now.plusDays(5), now.plusDays(5), null, ShiftType.SHIFT, DetailModificationType.ADD, false),
-        DryRunNotification(3, quantumId3, now.plusDays(5), now.plusDays(5), now.plusDays(5), null, ShiftType.SHIFT, DetailModificationType.ADD, false)
+      val shiftNotifications: List<Notification> = listOf(
+        Notification(1, quantumId1, now.plusDays(4), now.plusDays(4), now.plusDays(4), null, ShiftType.SHIFT, DetailModificationType.ADD, false),
+        Notification(2, quantumId2, now.plusDays(5), now.plusDays(5), now.plusDays(5), null, ShiftType.SHIFT, DetailModificationType.ADD, false),
+        Notification(3, quantumId3, now.plusDays(5), now.plusDays(5), now.plusDays(5), null, ShiftType.SHIFT, DetailModificationType.ADD, false)
       )
 
       every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
@@ -226,11 +226,11 @@ internal class DryRunNotificationServiceTest_Send {
       val date = LocalDate.now(frozenClock).plusDays(4).atStartOfDay()
       val modified1 = date.plusHours(1)
 
-      val shiftNotifications: List<DryRunNotification> = listOf(
-        DryRunNotification(1, quantumId, modified1, date.plusSeconds(0), date.plusSeconds(0), null, ShiftType.SHIFT, DetailModificationType.ADD, false),
-        DryRunNotification(1, quantumId, modified1, date.plusSeconds(1234), date.plusSeconds(4567), "A Task", ShiftType.SHIFT, DetailModificationType.ADD, false),
-        DryRunNotification(1, quantumId, modified1, date.plusSeconds(9876), date.plusSeconds(6544), "Any Task", ShiftType.SHIFT, DetailModificationType.ADD, false),
-        DryRunNotification(1, quantumId, modified1, date.plusSeconds(1234).minusDays(1), date.plusSeconds(4567), "Any Task", ShiftType.SHIFT, DetailModificationType.ADD, false)
+      val shiftNotifications: List<Notification> = listOf(
+        Notification(1, quantumId, modified1, date.plusSeconds(0), date.plusSeconds(0), null, ShiftType.SHIFT, DetailModificationType.ADD, false),
+        Notification(1, quantumId, modified1, date.plusSeconds(1234), date.plusSeconds(4567), "A Task", ShiftType.SHIFT, DetailModificationType.ADD, false),
+        Notification(1, quantumId, modified1, date.plusSeconds(9876), date.plusSeconds(6544), "Any Task", ShiftType.SHIFT, DetailModificationType.ADD, false),
+        Notification(1, quantumId, modified1, date.plusSeconds(1234).minusDays(1), date.plusSeconds(4567), "Any Task", ShiftType.SHIFT, DetailModificationType.ADD, false)
       )
 
       every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
@@ -262,9 +262,9 @@ internal class DryRunNotificationServiceTest_Send {
       val date = LocalDate.now().plusDays(4).atStartOfDay()
       val modified1 = date.plusHours(1)
 
-      val shiftNotifications: List<DryRunNotification> = listOf(
-        DryRunNotification(1, quantumId, modified1, date, date, null, ShiftType.SHIFT, DetailModificationType.ADD, false),
-        DryRunNotification(2, quantumId, modified1, date, date, "A Task", ShiftType.SHIFT, DetailModificationType.ADD, false),
+      val shiftNotifications: List<Notification> = listOf(
+        Notification(1, quantumId, modified1, date, date, null, ShiftType.SHIFT, DetailModificationType.ADD, false),
+        Notification(2, quantumId, modified1, date, date, "A Task", ShiftType.SHIFT, DetailModificationType.ADD, false),
       )
 
       every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications

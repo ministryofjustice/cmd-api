@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
 import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
 import java.time.LocalDate
 
-class DryRunNotificationTest {
+class NotificationTest {
 
   @Test
   fun `Should return a valid shift notification`() {
@@ -22,7 +22,7 @@ class DryRunNotificationTest {
     val actionType = DetailModificationType.ADD
     val processed = false
 
-    val notification = DryRunNotification(
+    val notification = Notification(
       1L,
       quantumId,
       shiftModified,
@@ -68,7 +68,7 @@ class DryRunNotificationTest {
       actionType
     )
 
-    val shiftNotification = DryRunNotification.fromDto(shiftNotificationDto)
+    val shiftNotification = Notification.fromDto(shiftNotificationDto)
 
     Assertions.assertThat(shiftNotification.quantumId).isEqualTo(quantumId)
     Assertions.assertThat(shiftNotification.shiftModified).isEqualTo(shiftModified)
@@ -106,7 +106,7 @@ class DryRunNotificationTest {
 
     val lisfOfDtos = listOf(shiftNotificationDto)
 
-    val shiftNotifications = DryRunNotification.fromDto(lisfOfDtos)
+    val shiftNotifications = Notification.fromDto(lisfOfDtos)
     val shiftNotification = shiftNotifications.elementAt(0)
 
     Assertions.assertThat(shiftNotification.quantumId).isEqualTo(quantumId)

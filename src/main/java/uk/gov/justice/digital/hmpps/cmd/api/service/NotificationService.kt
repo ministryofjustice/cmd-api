@@ -15,10 +15,10 @@ import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
 import uk.gov.justice.digital.hmpps.cmd.api.domain.NotificationType
 import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.cmd.api.dto.NotificationDto
-import uk.gov.justice.digital.hmpps.cmd.api.model.DryRunNotification
-import uk.gov.justice.digital.hmpps.cmd.api.model.DryRunNotification.Companion.getDateTimeFormattedForTemplate
+import uk.gov.justice.digital.hmpps.cmd.api.model.Notification
+import uk.gov.justice.digital.hmpps.cmd.api.model.Notification.Companion.getDateTimeFormattedForTemplate
 import uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
-import uk.gov.justice.digital.hmpps.cmd.api.repository.DryRunNotificationRepository
+import uk.gov.justice.digital.hmpps.cmd.api.repository.NotificationRepository
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
 import uk.gov.service.notify.NotificationClientApi
 import uk.gov.service.notify.NotificationClientException
@@ -33,8 +33,8 @@ private const val CUTOFF_MINUTES = 5L
 
 @Service
 @Transactional // all public methods do updates, including getNotifications() !
-class DryRunNotificationService(
-  private val dryRunNotificationRepository: DryRunNotificationRepository,
+class NotificationService(
+  private val notificationRepository: NotificationRepository,
   private val userPreferenceService: UserPreferenceService,
   private val clock: Clock,
   private val authenticationFacade: AuthenticationFacade,
@@ -66,32 +66,32 @@ class DryRunNotificationService(
 
     if (processOnRead) {
       notifications.forEach { it.processed = true }
-      dryRunNotificationRepository.saveAll(notifications)
+      notificationRepository.saveAll(notifications)
     }
     return notificationDtos.distinct()
   }
 
   @Transactional(propagation = Propagation.NEVER)
   fun sendNotifications() {
-    val unprocessedNotifications = dryRunNotificationRepository.findAllByProcessedIsFalse()
-    log.info("dryRun sendNotifications: Sending notifications, found: ${unprocessedNotifications.size}")
+    val unprocessedNotifications = notificationRepository.findAllByProcessedIsFalse()
+    log.info("sendNotifications: Sending notifications, found: ${unprocessedNotifications.size}")
     unprocessedNotifications.groupBy { it.quantumId }
       .forEach { group ->
         try {
           sendNotification(group.key, group.value)
           group.value.forEach { it.processed = true }
-          dryRunNotificationRepository.saveAll(group.value)
-          log.info("dryRun sendNotifications: Sent notification (${group.value.size} lines) for ${group.key}")
+          notificationRepository.saveAll(group.value)
+          log.info("sendNotifications: Sent notification (${group.value.size} lines) for ${group.key}")
         } catch (e: NotificationClientException) {
-          log.warn("dryRun sendNotifications: Sending notifications to user ${group.key} ${group.value} FAILED", e)
+          log.warn("sendNotifications: Sending notifications to user ${group.key} ${group.value} FAILED", e)
         }
       }
-    log.info("dryRun sendNotifications: Finished sending notifications")
+    log.info("sendNotifications: Finished sending notifications")
   }
 
   @Transactional
-  fun dryRunNotifications(region: Int) {
-    log.info("dryRunNotifications region: $region")
+  fun getNotifications(region: Int) {
+    log.info("notifications region: $region")
     try {
       val details = csrClient.getModified(region)
 
@@ -135,20 +135,20 @@ class DryRunNotificationService(
             shiftChangeAlreadyRecorded(it)
         }
 
-      log.info("dryRunNotifications calling saveAll with ${allNotifications.size} notifications for region: $region")
+      log.info("notifications calling saveAll with ${allNotifications.size} notifications for region: $region")
       if (allNotifications.isNotEmpty()) {
-        dryRunNotificationRepository.saveAll(DryRunNotification.fromDto(allNotifications))
+        notificationRepository.saveAll(Notification.fromDto(allNotifications))
       }
 
       if (detailsToProcess.isNotEmpty()) {
         csrClient.deleteProcessed(region, detailsToProcess.mapNotNull { it.id })
       }
 
-      log.info("dryRunNotifications end for region: $region")
+      log.info("notifications end for region: $region")
     } catch (e: Exception) {
-      log.error("dryRunNotifications error in region $region", e)
+      log.error("notifications error in region $region", e)
       telemetryClient.trackEvent(
-        "dryRunNotificationsError",
+        "notificationsError",
         ImmutableMap.of("region", region.toString()),
         null
       )
@@ -161,7 +161,7 @@ class DryRunNotificationService(
     val startOfDay = LocalDate.now(clock).atStartOfDay().minusMonths(3)
     log.info("tidyNotification: Removing old notifications (before $startOfDay)")
 
-    val rows = dryRunNotificationRepository.deleteAllByShiftModifiedBefore(startOfDay)
+    val rows = notificationRepository.deleteAllByShiftModifiedBefore(startOfDay)
 
     log.info("tidyNotification: Removed old notifications (before $startOfDay)")
     val duration = System.currentTimeMillis() - start
@@ -182,8 +182,8 @@ class DryRunNotificationService(
     start: LocalDateTime,
     end: LocalDateTime,
     unprocessedOnly: Boolean
-  ): Collection<DryRunNotification> {
-    return dryRunNotificationRepository.findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(
+  ): Collection<Notification> {
+    return notificationRepository.findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(
       quantumId,
       start,
       end
@@ -192,14 +192,14 @@ class DryRunNotificationService(
   }
 
   private fun thereIsNoADDForThisShift(it: CsrModifiedDetailDto) =
-    dryRunNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndActionType(
+    notificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndActionType(
       it.quantumId!!, it.detailStart, it.shiftType, DetailModificationType.ADD
     ) == 0
 
   private fun shiftChangeAlreadyRecorded(it: CsrModifiedDetailDto) =
     (
       it.shiftModified != null &&
-        dryRunNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
+        notificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
         it.quantumId!!, it.detailStart, it.shiftType, it.shiftModified
       ) > 0
       ).also { result -> if (result) log.warn("shiftChangeAlreadyRecorded was true for ${it.quantumId} at ${it.shiftModified}") }
@@ -253,12 +253,12 @@ class DryRunNotificationService(
   * so we have to have a fixed size template with 'slots'
   * 10 means we can cover 99.9% of scenarios in one email.
   */
-  private fun sendNotification(quantumId: String, notificationGroup: List<DryRunNotification>) {
+  private fun sendNotification(quantumId: String, notificationGroup: List<Notification>) {
     val userPreference = userPreferenceService.getUserPreference(quantumId)
     userPreference?.also {
       data class Key(val shiftType: ShiftType, val quantumId: String, val detailStart: LocalDateTime)
 
-      fun DryRunNotification.toKeyDuplicates() = Key(this.parentType, this.quantumId.uppercase(), this.detailStart)
+      fun Notification.toKeyDuplicates() = Key(this.parentType, this.quantumId.uppercase(), this.detailStart)
 
       // Only send the latest notification for a shift if there are multiple
       val mostRecentNotifications = notificationGroup
@@ -267,7 +267,7 @@ class DryRunNotificationService(
         .filterNotNull()
 
       if (shouldSend(userPreference)) {
-        log.debug("dryRun sendNotification: Sending (${mostRecentNotifications.size}) notifications to ${userPreference.quantumId}, preference set to ${userPreference.commPref}")
+        log.debug("sendNotification: Sending (${mostRecentNotifications.size}) notifications to ${userPreference.quantumId}, preference set to ${userPreference.commPref}")
         mostRecentNotifications.sortedWith(compareBy { it.detailStart }).chunked(10).forEach { chunk ->
           when (val communicationPreference = userPreference.commPref) {
             CommunicationPreference.EMAIL -> notifyClient.sendEmail(
@@ -283,7 +283,7 @@ class DryRunNotificationService(
               null
             )
             else -> {
-              log.info("dryRun sendNotification: Skipping sending notifications for ${userPreference.quantumId}")
+              log.info("sendNotification: Skipping sending notifications for ${userPreference.quantumId}")
             }
           }
         }
@@ -304,7 +304,7 @@ class DryRunNotificationService(
   }
 
   private fun generateTemplateValues(
-    chunk: List<DryRunNotification>,
+    chunk: List<Notification>,
     communicationPreference: CommunicationPreference
   ): MutableMap<String, String?> {
     val personalisation = mutableMapOf<String, String?>()
@@ -325,7 +325,7 @@ class DryRunNotificationService(
   }
 
   companion object {
-    private val log = LoggerFactory.getLogger(DryRunNotificationService::class.java)
+    private val log = LoggerFactory.getLogger(NotificationService::class.java)
 
     private val notificationKeys =
       listOf("not1", "not2", "not3", "not4", "not5", "not6", "not7", "not8", "not9", "not10")

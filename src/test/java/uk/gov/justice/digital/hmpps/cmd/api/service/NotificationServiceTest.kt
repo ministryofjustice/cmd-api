@@ -17,9 +17,9 @@ import uk.gov.justice.digital.hmpps.cmd.api.client.CsrClient
 import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
 import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
-import uk.gov.justice.digital.hmpps.cmd.api.model.DryRunNotification
+import uk.gov.justice.digital.hmpps.cmd.api.model.Notification
 import uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
-import uk.gov.justice.digital.hmpps.cmd.api.repository.DryRunNotificationRepository
+import uk.gov.justice.digital.hmpps.cmd.api.repository.NotificationRepository
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
 import uk.gov.service.notify.NotificationClient
 import java.time.Clock
@@ -31,14 +31,14 @@ import java.util.Optional
 
 @ExtendWith(MockKExtension::class)
 @DisplayName("Notification Service tests")
-internal class DryRunNotificationServiceTest {
-  private val shiftNotificationRepository: DryRunNotificationRepository = mockk(relaxUnitFun = true)
+internal class NotificationServiceTest {
+  private val shiftNotificationRepository: NotificationRepository = mockk(relaxUnitFun = true)
   private val userPreferenceService: UserPreferenceService = mockk(relaxUnitFun = true)
   private val authenticationFacade: AuthenticationFacade = mockk(relaxUnitFun = true)
   private val notifyClient: NotificationClient = mockk(relaxUnitFun = true)
   private val csrClient: CsrClient = mockk(relaxUnitFun = true)
   private val clock = Clock.fixed(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
-  private val service = DryRunNotificationService(
+  private val service = NotificationService(
     shiftNotificationRepository,
     userPreferenceService,
     clock,
@@ -132,7 +132,7 @@ internal class DryRunNotificationServiceTest {
       val unprocessedOnly = Optional.of(false)
       val processOnRead = Optional.of(true)
 
-      val shiftNotifications: List<DryRunNotification> = listOf()
+      val shiftNotifications: List<Notification> = listOf()
       every { shiftNotificationRepository.findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(quantumId, from.get().atTime(LocalTime.MIN), to.get().atTime(LocalTime.MAX)) } returns shiftNotifications
       every { authenticationFacade.currentUsername } returns quantumId
       every { shiftNotificationRepository.saveAll(shiftNotifications) } returns listOf()
@@ -154,7 +154,7 @@ internal class DryRunNotificationServiceTest {
       val unprocessedOnly = Optional.of(false)
       val processOnRead = Optional.of(true)
 
-      val shiftNotifications: List<DryRunNotification> = listOf()
+      val shiftNotifications: List<Notification> = listOf()
       every { shiftNotificationRepository.findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(quantumId, from.get().atTime(LocalTime.MIN), to.get().atTime(LocalTime.MAX)) } returns shiftNotifications
       every { authenticationFacade.currentUsername } returns quantumId
       every { shiftNotificationRepository.saveAll(shiftNotifications) } returns listOf()
@@ -180,7 +180,7 @@ internal class DryRunNotificationServiceTest {
       val toDate = defaultFrom.plusMonths(3)
       val defaultTo = toDate.withDayOfMonth(toDate.lengthOfMonth())
 
-      val shiftNotifications: List<DryRunNotification> = listOf()
+      val shiftNotifications: List<Notification> = listOf()
       every { shiftNotificationRepository.findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(quantumId, defaultFrom.atTime(LocalTime.MIN), defaultTo.atTime(LocalTime.MAX)) } returns shiftNotifications
       every { authenticationFacade.currentUsername } returns quantumId
       every { shiftNotificationRepository.saveAll(shiftNotifications) } returns listOf()
@@ -204,7 +204,7 @@ internal class DryRunNotificationServiceTest {
       // Should count back 3 months to create the 'to'.
       val defaultFrom = to.get().minusMonths(3).withDayOfMonth(1)
 
-      val shiftNotifications: List<DryRunNotification> = listOf()
+      val shiftNotifications: List<Notification> = listOf()
       every { shiftNotificationRepository.findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(quantumId, defaultFrom.atTime(LocalTime.MIN), to.get().atTime(LocalTime.MAX)) } returns shiftNotifications
       every { authenticationFacade.currentUsername } returns quantumId
       every { shiftNotificationRepository.saveAll(shiftNotifications) } returns listOf()
@@ -229,7 +229,7 @@ internal class DryRunNotificationServiceTest {
       val toDate = from.get().plusMonths(3)
       val defaultTo = toDate.withDayOfMonth(toDate.lengthOfMonth())
 
-      val shiftNotifications: List<DryRunNotification> = listOf()
+      val shiftNotifications: List<Notification> = listOf()
       every { shiftNotificationRepository.findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(quantumId, from.get().atTime(LocalTime.MIN), defaultTo.atTime(LocalTime.MAX)) } returns shiftNotifications
       every { authenticationFacade.currentUsername } returns quantumId
       every { shiftNotificationRepository.saveAll(shiftNotifications) } returns listOf()
@@ -250,8 +250,8 @@ internal class DryRunNotificationServiceTest {
     @Test
     fun `Should not send a notification if the user has a snooze preference set to future date`() {
       val quantumId1 = "XYZ"
-      val shiftNotifications: List<DryRunNotification> = listOf(
-        DryRunNotification(1, quantumId1, now, now, now, null, ShiftType.SHIFT, DetailModificationType.ADD, false)
+      val shiftNotifications: List<Notification> = listOf(
+        Notification(1, quantumId1, now, now, now, null, ShiftType.SHIFT, DetailModificationType.ADD, false)
       )
 
       val snoozePref = LocalDate.now(clock).plusDays(20)
@@ -270,8 +270,8 @@ internal class DryRunNotificationServiceTest {
     @Test
     fun `Should not send a notification if the user has a snooze preference set to today's date`() {
       val quantumId1 = "XYZ"
-      val shiftNotifications: List<DryRunNotification> = listOf(
-        DryRunNotification(1, quantumId1, now, now, now, null, ShiftType.SHIFT, DetailModificationType.ADD, false)
+      val shiftNotifications: List<Notification> = listOf(
+        Notification(1, quantumId1, now, now, now, null, ShiftType.SHIFT, DetailModificationType.ADD, false)
       )
 
       val snoozePref = LocalDate.now(clock)
@@ -290,8 +290,8 @@ internal class DryRunNotificationServiceTest {
     @Test
     fun `Should send a notification if the user has a snooze preference set to yesterday's date`() {
       val quantumId1 = "XYZ"
-      val shiftNotifications: List<DryRunNotification> = listOf(
-        DryRunNotification(1, quantumId1, now, now, now, null, ShiftType.SHIFT, DetailModificationType.ADD, false)
+      val shiftNotifications: List<Notification> = listOf(
+        Notification(1, quantumId1, now, now, now, null, ShiftType.SHIFT, DetailModificationType.ADD, false)
       )
 
       val snoozePref = LocalDate.now(clock).minusDays(1)
@@ -311,8 +311,8 @@ internal class DryRunNotificationServiceTest {
     @Test
     fun `Should respect communication preferences Email`() {
       val quantumId1 = "XYZ"
-      val shiftNotifications: List<DryRunNotification> = listOf(
-        DryRunNotification(1, quantumId1, now.plusDays(4), now.plusDays(4), now.plusDays(4), null, ShiftType.SHIFT, DetailModificationType.ADD, false)
+      val shiftNotifications: List<Notification> = listOf(
+        Notification(1, quantumId1, now.plusDays(4), now.plusDays(4), now.plusDays(4), null, ShiftType.SHIFT, DetailModificationType.ADD, false)
       )
 
       every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
@@ -331,8 +331,8 @@ internal class DryRunNotificationServiceTest {
     @Test
     fun `Should respect communication preferences Sms`() {
       val quantumId1 = "XYZ"
-      val shiftNotifications: List<DryRunNotification> = listOf(
-        DryRunNotification(1, quantumId1, now.plusDays(4), now.plusDays(4), now.plusDays(4), null, ShiftType.SHIFT, DetailModificationType.ADD, false)
+      val shiftNotifications: List<Notification> = listOf(
+        Notification(1, quantumId1, now.plusDays(4), now.plusDays(4), now.plusDays(4), null, ShiftType.SHIFT, DetailModificationType.ADD, false)
       )
 
       every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
@@ -351,8 +351,8 @@ internal class DryRunNotificationServiceTest {
     @Test
     fun `Should respect communication preferences None`() {
       val quantumId1 = "XYZ"
-      val shiftNotifications: List<DryRunNotification> = listOf(
-        DryRunNotification(1, quantumId1, now.plusDays(4), now.plusDays(4), now.plusDays(4), null, ShiftType.SHIFT, DetailModificationType.ADD, false)
+      val shiftNotifications: List<Notification> = listOf(
+        Notification(1, quantumId1, now.plusDays(4), now.plusDays(4), now.plusDays(4), null, ShiftType.SHIFT, DetailModificationType.ADD, false)
       )
 
       every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
@@ -378,7 +378,7 @@ internal class DryRunNotificationServiceTest {
   }
 
   companion object {
-    fun getValidNotification(now: LocalDateTime): DryRunNotification {
+    fun getValidNotification(now: LocalDateTime): Notification {
       val quantumId = "XYZ"
       val shiftDate = now.plusDays(2).toLocalDate()
       val shiftModified = now.plusDays(3)
@@ -390,7 +390,7 @@ internal class DryRunNotificationServiceTest {
 
       val processed = false
 
-      return DryRunNotification(
+      return Notification(
         1L,
         quantumId,
         shiftModified,

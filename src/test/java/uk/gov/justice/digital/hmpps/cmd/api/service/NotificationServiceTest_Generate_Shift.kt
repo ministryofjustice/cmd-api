@@ -16,8 +16,8 @@ import uk.gov.justice.digital.hmpps.cmd.api.client.CsrClient
 import uk.gov.justice.digital.hmpps.cmd.api.client.CsrModifiedDetailDto
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
 import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
-import uk.gov.justice.digital.hmpps.cmd.api.model.DryRunNotification
-import uk.gov.justice.digital.hmpps.cmd.api.repository.DryRunNotificationRepository
+import uk.gov.justice.digital.hmpps.cmd.api.model.Notification
+import uk.gov.justice.digital.hmpps.cmd.api.repository.NotificationRepository
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
 import uk.gov.service.notify.NotificationClient
 import java.time.Clock
@@ -27,16 +27,16 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 
 @ExtendWith(MockKExtension::class)
-@DisplayName("DryRunNotification Service tests Generate Shift")
-internal class DryRunNotificationServiceTest_Generate_Shift {
-  private val dryRunNotificationRepository: DryRunNotificationRepository = mockk(relaxUnitFun = true)
+@DisplayName("Notification Service tests Generate Shift")
+internal class NotificationServiceTest_Generate_Shift {
+  private val notificationRepository: NotificationRepository = mockk(relaxUnitFun = true)
   private val userPreferenceService: UserPreferenceService = mockk(relaxUnitFun = true)
   private val authenticationFacade: AuthenticationFacade = mockk(relaxUnitFun = true)
   private val notifyClient: NotificationClient = mockk(relaxUnitFun = true)
   private val csrClient: CsrClient = mockk(relaxUnitFun = true)
   private val clock = Clock.fixed(Instant.parse("2022-04-01T10:00:00Z"), ZoneId.systemDefault())
-  private val service = DryRunNotificationService(
-    dryRunNotificationRepository,
+  private val service = NotificationService(
+    notificationRepository,
     userPreferenceService,
     clock,
     authenticationFacade,
@@ -50,7 +50,7 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
 
   @BeforeEach
   fun resetAllMocks() {
-    clearMocks(dryRunNotificationRepository)
+    clearMocks(notificationRepository)
     clearMocks(userPreferenceService)
     clearMocks(notifyClient)
     clearMocks(csrClient)
@@ -83,7 +83,7 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
       every { csrClient.getModified(1) } returns listOf(dto1)
 
       every {
-        dryRunNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
+        notificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
           quantumId,
           start,
           shiftType,
@@ -91,9 +91,9 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
         )
       } returns 1
 
-      service.dryRunNotifications(1)
+      service.getNotifications(1)
 
-      verify(exactly = 0) { dryRunNotificationRepository.saveAll<DryRunNotification>(allAny()) }
+      verify(exactly = 0) { notificationRepository.saveAll<Notification>(allAny()) }
     }
 
     @Test
@@ -120,7 +120,7 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
       every { csrClient.getModified(any()) } returns listOf(dto1, dto2, dto3)
 
       every {
-        dryRunNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
+        notificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
           quantumId,
           any(),
           shiftType,
@@ -128,11 +128,11 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
         )
       } returns 0
 
-      val results = mutableListOf<Collection<DryRunNotification>>()
-      every { dryRunNotificationRepository.saveAll(capture(results)) } returns listOf()
+      val results = mutableListOf<Collection<Notification>>()
+      every { notificationRepository.saveAll(capture(results)) } returns listOf()
 
-      service.dryRunNotifications(1)
-      val notification1 = DryRunNotification(
+      service.getNotifications(1)
+      val notification1 = Notification(
         quantumId = quantumId,
         shiftModified = today,
         detailStart = start.plusDays(1),
@@ -171,7 +171,7 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
       every { csrClient.getModified(any()) } returns listOf(dto1, dto2, dto3)
 
       every {
-        dryRunNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
+        notificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
           quantumId,
           any(),
           shiftType,
@@ -179,11 +179,11 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
         )
       } returns 0
 
-      val results = mutableListOf<Collection<DryRunNotification>>()
-      every { dryRunNotificationRepository.saveAll(capture(results)) } returns listOf()
+      val results = mutableListOf<Collection<Notification>>()
+      every { notificationRepository.saveAll(capture(results)) } returns listOf()
 
-      service.dryRunNotifications(1)
-      val notification1 = DryRunNotification(
+      service.getNotifications(1)
+      val notification1 = Notification(
         id = 0,
         quantumId = quantumId,
         shiftModified = today,
@@ -230,7 +230,7 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
       every { csrClient.getModified(any()) } returns listOf(dto1, dto2, dto3, dto4, dto5, dto6)
 
       every {
-        dryRunNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
+        notificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
           quantumId,
           start3,
           shiftType,
@@ -238,14 +238,14 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
         )
       } returns 0
 
-      val results = mutableListOf<Collection<DryRunNotification>>()
-      every { dryRunNotificationRepository.saveAll(capture(results)) } returns listOf()
+      val results = mutableListOf<Collection<Notification>>()
+      every { notificationRepository.saveAll(capture(results)) } returns listOf()
 
       val ids = mutableListOf<List<Long>>()
       every { csrClient.deleteProcessed(1, capture(ids)) }
 
-      service.dryRunNotifications(1)
-      val notification1 = DryRunNotification(
+      service.getNotifications(1)
+      val notification1 = Notification(
         quantumId = quantumId,
         shiftModified = shiftModified3,
         detailStart = start3,
@@ -280,7 +280,7 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
       every { csrClient.getModified(any()) } returns listOf(dto1)
 
       every {
-        dryRunNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndActionType(
+        notificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndActionType(
           quantumId,
           today,
           shiftType,
@@ -288,7 +288,7 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
         )
       } returns 1
       every {
-        dryRunNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
+        notificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
           quantumId,
           today,
           shiftType,
@@ -296,9 +296,9 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
         )
       } returns 0
 
-      service.dryRunNotifications(1)
+      service.getNotifications(1)
 
-      verify(exactly = 0) { dryRunNotificationRepository.saveAll<DryRunNotification>(allAny()) }
+      verify(exactly = 0) { notificationRepository.saveAll<Notification>(allAny()) }
     }
 
     @Test
@@ -321,7 +321,7 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
       every { csrClient.getModified(any()) } returns listOf(dto1)
 
       every {
-        dryRunNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
+        notificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
           quantumId,
           today,
           shiftType,
@@ -329,11 +329,11 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
         )
       } returns 0
 
-      val results = mutableListOf<Collection<DryRunNotification>>()
-      every { dryRunNotificationRepository.saveAll(capture(results)) } returns listOf()
-      service.dryRunNotifications(1)
+      val results = mutableListOf<Collection<Notification>>()
+      every { notificationRepository.saveAll(capture(results)) } returns listOf()
+      service.getNotifications(1)
 
-      val expected = DryRunNotification(
+      val expected = Notification(
         quantumId = quantumId,
         shiftModified = today,
         detailStart = today,
@@ -366,7 +366,7 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
       every { csrClient.getModified(any()) } returns listOf(dto1)
 
       every {
-        dryRunNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
+        notificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
           quantumId,
           today,
           shiftType,
@@ -374,12 +374,12 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
         )
       } returns 0
 
-      val results = mutableListOf<Collection<DryRunNotification>>()
-      every { dryRunNotificationRepository.saveAll(capture(results)) } returns listOf()
+      val results = mutableListOf<Collection<Notification>>()
+      every { notificationRepository.saveAll(capture(results)) } returns listOf()
 
-      service.dryRunNotifications(1)
+      service.getNotifications(1)
 
-      val expected = DryRunNotification(
+      val expected = Notification(
         quantumId = quantumId,
         shiftModified = today,
         detailStart = today,
@@ -415,7 +415,7 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
       every { csrClient.getModified(any()) } returns listOf(dto1)
 
       every {
-        dryRunNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
+        notificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
           quantumId,
           start,
           shiftType,
@@ -423,18 +423,18 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
         )
       } returns 1
 
-      service.dryRunNotifications(1)
+      service.getNotifications(1)
 
-      verify(exactly = 0) { dryRunNotificationRepository.saveAll<DryRunNotification>(allAny()) }
+      verify(exactly = 0) { notificationRepository.saveAll<Notification>(allAny()) }
     }
 
     @Test
     fun `Should do nothing if there is nothing to do`() {
       every { csrClient.getModified(any()) } returns listOf()
 
-      service.dryRunNotifications(1)
+      service.getNotifications(1)
 
-      verify(exactly = 0) { dryRunNotificationRepository.saveAll<DryRunNotification>(allAny()) }
+      verify(exactly = 0) { notificationRepository.saveAll<Notification>(allAny()) }
     }
 
     @Test
@@ -457,7 +457,7 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
       every { csrClient.getModified(any()) } returns listOf(dto1, dto1)
 
       every {
-        dryRunNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndActionType(
+        notificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndActionType(
           quantumId,
           today,
           shiftType,
@@ -465,7 +465,7 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
         )
       } returns 0
       every {
-        dryRunNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
+        notificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
           quantumId,
           today,
           shiftType,
@@ -473,12 +473,12 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
         )
       } returns 0
 
-      val results = mutableListOf<Collection<DryRunNotification>>()
-      every { dryRunNotificationRepository.saveAll(capture(results)) } returns listOf()
+      val results = mutableListOf<Collection<Notification>>()
+      every { notificationRepository.saveAll(capture(results)) } returns listOf()
 
-      service.dryRunNotifications(1)
+      service.getNotifications(1)
 
-      val expected = DryRunNotification(
+      val expected = Notification(
         quantumId = quantumId,
         shiftModified = today,
         detailStart = today,
@@ -525,7 +525,7 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
       every { csrClient.getModified(any()) } returns listOf(dto1, dto2, dto3, dto4)
 
       every {
-        dryRunNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
+        notificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
           "FINISHED_USER",
           any(),
           shiftType,
@@ -533,12 +533,12 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
         )
       } returns 0
 
-      val results = mutableListOf<Collection<DryRunNotification>>()
-      every { dryRunNotificationRepository.saveAll(capture(results)) } returns listOf()
+      val results = mutableListOf<Collection<Notification>>()
+      every { notificationRepository.saveAll(capture(results)) } returns listOf()
 
-      service.dryRunNotifications(1)
+      service.getNotifications(1)
 
-      val notification1 = DryRunNotification(
+      val notification1 = Notification(
         quantumId = "FINISHED_USER",
         shiftModified = now.minusMinutes(6),
         detailStart = start2,
@@ -581,7 +581,7 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
       every { csrClient.getModified(any()) } returns listOf(dto1, dto2, dto3, dto4, dto5)
 
       every {
-        dryRunNotificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
+        notificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
           quantumId,
           start,
           shiftType,
@@ -589,10 +589,10 @@ internal class DryRunNotificationServiceTest_Generate_Shift {
         )
       } returns 0
 
-      val results = mutableListOf<Collection<DryRunNotification>>()
-      every { dryRunNotificationRepository.saveAll(capture(results)) } returns listOf()
+      val results = mutableListOf<Collection<Notification>>()
+      every { notificationRepository.saveAll(capture(results)) } returns listOf()
 
-      service.dryRunNotifications(1)
+      service.getNotifications(1)
 
       assertThat(results[0]).asList().hasSize(1)
       verify { csrClient.deleteProcessed(1, listOf(1L, 2L, 3L, 4L, 5L)) }

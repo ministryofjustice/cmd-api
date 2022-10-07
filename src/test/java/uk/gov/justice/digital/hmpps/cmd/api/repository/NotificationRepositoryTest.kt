@@ -10,14 +10,14 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.test.context.ActiveProfiles
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
 import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
-import uk.gov.justice.digital.hmpps.cmd.api.model.DryRunNotification
+import uk.gov.justice.digital.hmpps.cmd.api.model.Notification
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 @ActiveProfiles("test")
 @DataJpaTest
-class DryRunNotificationRepositoryTest(
-  @Autowired val repository: DryRunNotificationRepository
+class NotificationRepositoryTest(
+  @Autowired val repository: NotificationRepository
 ) {
 
   private val now: LocalDate = LocalDate.now()
@@ -249,13 +249,13 @@ class DryRunNotificationRepositoryTest(
   }
 
   companion object {
-    fun getValidNotification(shiftDate: LocalDateTime, shiftModified: LocalDateTime, processed: Boolean = false): DryRunNotification {
+    fun getValidNotification(shiftDate: LocalDateTime, shiftModified: LocalDateTime, processed: Boolean = false): Notification {
       val quantumId = "XYZ"
       val task = "Any Activity"
       val shiftType = ShiftType.SHIFT
       val actionType = DetailModificationType.ADD
 
-      return DryRunNotification(
+      return Notification(
         id = 1L,
         quantumId = quantumId,
         shiftModified = shiftModified,
