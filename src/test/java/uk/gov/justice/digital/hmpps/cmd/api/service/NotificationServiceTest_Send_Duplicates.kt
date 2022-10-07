@@ -17,9 +17,9 @@ import uk.gov.justice.digital.hmpps.cmd.api.client.CsrClient
 import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
 import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
-import uk.gov.justice.digital.hmpps.cmd.api.model.DryRunNotification
+import uk.gov.justice.digital.hmpps.cmd.api.model.Notification
 import uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
-import uk.gov.justice.digital.hmpps.cmd.api.repository.DryRunNotificationRepository
+import uk.gov.justice.digital.hmpps.cmd.api.repository.NotificationRepository
 import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
 import uk.gov.service.notify.NotificationClient
 import java.time.Clock
@@ -29,14 +29,14 @@ import java.time.ZoneId
 
 @ExtendWith(MockKExtension::class)
 @DisplayName("Notification Service tests")
-internal class DryRunNotificationServiceTest_Send_Duplicates {
-  private val shiftNotificationRepository: DryRunNotificationRepository = mockk(relaxUnitFun = true)
+internal class NotificationServiceTest_Send_Duplicates {
+  private val shiftNotificationRepository: NotificationRepository = mockk(relaxUnitFun = true)
   private val userPreferenceService: UserPreferenceService = mockk(relaxUnitFun = true)
   private val authenticationFacade: AuthenticationFacade = mockk(relaxUnitFun = true)
   private val notifyClient: NotificationClient = mockk(relaxUnitFun = true)
   private val csrClient: CsrClient = mockk(relaxUnitFun = true)
   private val clock = Clock.fixed(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
-  private val service = DryRunNotificationService(
+  private val service = NotificationService(
     shiftNotificationRepository,
     userPreferenceService,
     clock,
@@ -67,10 +67,10 @@ internal class DryRunNotificationServiceTest_Send_Duplicates {
       val modified2 = LocalDateTime.now(frozenClock).plusHours(2)
       val modified3 = LocalDateTime.now(frozenClock).plusHours(3)
 
-      val shiftNotifications: List<DryRunNotification> = listOf(
-        DryRunNotification(1, quantumId, modified1, date, date, null, ShiftType.SHIFT, DetailModificationType.ADD, false),
-        DryRunNotification(1, quantumId, modified2, date, date, null, ShiftType.SHIFT, DetailModificationType.ADD, false),
-        DryRunNotification(1, quantumId, modified3, date, date, null, ShiftType.SHIFT, DetailModificationType.ADD, false)
+      val shiftNotifications: List<Notification> = listOf(
+        Notification(1, quantumId, modified1, date, date, null, ShiftType.SHIFT, DetailModificationType.ADD, false),
+        Notification(1, quantumId, modified2, date, date, null, ShiftType.SHIFT, DetailModificationType.ADD, false),
+        Notification(1, quantumId, modified3, date, date, null, ShiftType.SHIFT, DetailModificationType.ADD, false)
       )
 
       every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
@@ -101,11 +101,11 @@ internal class DryRunNotificationServiceTest_Send_Duplicates {
       val date = LocalDate.now(frozenClock).plusDays(4)
       val modified1 = LocalDateTime.now(frozenClock).plusHours(1)
 
-      val shiftNotifications: List<DryRunNotification> = listOf(
-        DryRunNotification(1, quantumId, modified1, date.atStartOfDay().plusSeconds(0), date.atStartOfDay().plusSeconds(0), null, ShiftType.SHIFT, DetailModificationType.ADD, false),
-        DryRunNotification(1, quantumId, modified1, date.atStartOfDay().plusSeconds(0), date.atStartOfDay().plusSeconds(0), null, ShiftType.SHIFT, DetailModificationType.ADD, false),
-        DryRunNotification(1, quantumId, modified1, date.atStartOfDay().plusSeconds(9876), date.atStartOfDay().plusSeconds(6544), "A Task", ShiftType.SHIFT, DetailModificationType.ADD, false),
-        DryRunNotification(1, quantumId, modified1, date.atStartOfDay().plusSeconds(1234), date.atStartOfDay().plusSeconds(4567), "Any Task", ShiftType.SHIFT, DetailModificationType.ADD, false)
+      val shiftNotifications: List<Notification> = listOf(
+        Notification(1, quantumId, modified1, date.atStartOfDay().plusSeconds(0), date.atStartOfDay().plusSeconds(0), null, ShiftType.SHIFT, DetailModificationType.ADD, false),
+        Notification(1, quantumId, modified1, date.atStartOfDay().plusSeconds(0), date.atStartOfDay().plusSeconds(0), null, ShiftType.SHIFT, DetailModificationType.ADD, false),
+        Notification(1, quantumId, modified1, date.atStartOfDay().plusSeconds(9876), date.atStartOfDay().plusSeconds(6544), "A Task", ShiftType.SHIFT, DetailModificationType.ADD, false),
+        Notification(1, quantumId, modified1, date.atStartOfDay().plusSeconds(1234), date.atStartOfDay().plusSeconds(4567), "Any Task", ShiftType.SHIFT, DetailModificationType.ADD, false)
       )
 
       every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications

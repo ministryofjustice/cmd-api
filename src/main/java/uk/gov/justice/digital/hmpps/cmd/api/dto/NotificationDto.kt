@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.v3.oas.annotations.media.Schema
 import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
-import uk.gov.justice.digital.hmpps.cmd.api.model.DryRunNotification
+import uk.gov.justice.digital.hmpps.cmd.api.model.Notification
 import java.time.LocalDateTime
 
 @Schema(description = "Notification")
@@ -22,7 +22,7 @@ data class NotificationDto @JsonCreator constructor(
 
   companion object {
 
-    fun from(notification: DryRunNotification, communicationPreference: CommunicationPreference): NotificationDto {
+    fun from(notification: Notification, communicationPreference: CommunicationPreference): NotificationDto {
       return NotificationDto(
         notification.getNotificationDescription(communicationPreference),
         notification.shiftModified,

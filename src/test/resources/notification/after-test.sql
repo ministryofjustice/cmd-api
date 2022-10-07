@@ -1,3 +1,3 @@
 DELETE
-FROM dry_run_notification
+FROM notification
 WHERE TRUE;

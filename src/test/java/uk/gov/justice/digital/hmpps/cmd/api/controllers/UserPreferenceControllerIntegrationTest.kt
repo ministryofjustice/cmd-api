@@ -48,18 +48,6 @@ class UserPreferenceControllerIntegrationTest(
   }
 
   @Test
-  fun `It create a blank notification preference when there isn't one`() {
-    val response = getNotificationPreference(A_USER_NO_PREFERENCE)
-    with(response) {
-      assertThat(statusCode).isEqualTo(HttpStatus.OK)
-      assertThat(jsonTester.from(body)).extractingJsonPathStringValue("$.snoozeUntil").isNull()
-      assertThat(jsonTester.from(body)).extractingJsonPathStringValue("$.email").isNull()
-      assertThat(jsonTester.from(body)).extractingJsonPathStringValue("$.sms").isNull()
-      assertThat(jsonTester.from(body)).extractingJsonPathStringValue("$.preference").isEqualTo("NONE")
-    }
-  }
-
-  @Test
   fun `It returns 404 when there isn't a notification preference `() {
     val response = getNotificationPreference2(A_USER_NO_PREFERENCE)
     with(response) {

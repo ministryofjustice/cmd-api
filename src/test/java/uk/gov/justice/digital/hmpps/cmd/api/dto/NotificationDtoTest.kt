@@ -5,12 +5,12 @@ import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
 import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
-import uk.gov.justice.digital.hmpps.cmd.api.model.DryRunNotification
+import uk.gov.justice.digital.hmpps.cmd.api.model.Notification
 import java.time.Clock
 import java.time.LocalDate
 import java.time.ZoneId
 
-class DryRunNotificationDtoTest {
+class NotificationDtoTest {
 
   @Test
   fun `Create Notification Dto from collection of Notification`() {
@@ -42,7 +42,7 @@ class DryRunNotificationDtoTest {
 
     private val clock = Clock.fixed(LocalDate.of(2020, 5, 3).atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
 
-    fun getValidNotification(): DryRunNotification {
+    fun getValidNotification(): Notification {
       val shiftDate = LocalDate.now(clock)
 
       val quantumId = "XYZ"
@@ -54,7 +54,7 @@ class DryRunNotificationDtoTest {
       val actionType = DetailModificationType.ADD
       val processed = false
 
-      return DryRunNotification(
+      return Notification(
         1L,
         quantumId,
         shiftModified,
@@ -67,7 +67,7 @@ class DryRunNotificationDtoTest {
       )
     }
 
-    fun getValidShiftTaskNotification(): DryRunNotification {
+    fun getValidShiftTaskNotification(): Notification {
       val shiftDate = LocalDate.now(clock)
 
       val quantumId = "XYZ"
@@ -79,7 +79,7 @@ class DryRunNotificationDtoTest {
       val actionType = DetailModificationType.ADD
       val processed = false
 
-      return DryRunNotification(
+      return Notification(
         1L,
         quantumId,
         shiftModified,

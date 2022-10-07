@@ -7,14 +7,14 @@ import org.apache.commons.lang3.time.DurationFormatUtils
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
-import uk.gov.justice.digital.hmpps.cmd.api.service.DryRunNotificationService
+import uk.gov.justice.digital.hmpps.cmd.api.service.NotificationService
 
 const val INTERVAL = 10
 const val MIN_LOCK = INTERVAL - 1 // lock for slightly less than polling interval
 
 @Component
 class PollingScheduler(
-  private val dryRunnotificationService: DryRunNotificationService,
+  private val notificationService: NotificationService,
   private val telemetryClient: TelemetryClient,
 ) {
   @Scheduled(cron = "17 */$INTERVAL 6-21 * * ?")
@@ -27,9 +27,9 @@ class PollingScheduler(
     val start = System.currentTimeMillis()
 
     for (region in 1..6) {
-      dryRunnotificationService.dryRunNotifications(region)
+      notificationService.getNotifications(region)
     }
-    dryRunnotificationService.sendNotifications()
+    notificationService.sendNotifications()
 
     val duration = System.currentTimeMillis() - start
     telemetryClient.trackEvent(
@@ -52,7 +52,7 @@ class PollingScheduler(
     log.info("tidyNotifications start")
     val start = System.currentTimeMillis()
 
-    dryRunnotificationService.tidyNotification()
+    notificationService.tidyNotification()
 
     val duration = System.currentTimeMillis() - start
     telemetryClient.trackEvent(

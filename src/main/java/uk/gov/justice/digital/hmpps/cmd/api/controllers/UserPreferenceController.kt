@@ -30,7 +30,8 @@ class UserPreferenceController(private val userPreferenceService: UserPreference
     ]
   )
   @GetMapping("/preferences/notifications2")
-  fun getNotificationPreferences2(): UserPreferenceDto = userPreferenceService.getUserPreference2()
+  @Deprecated("No longer needed - use /preferences/notifications")
+  fun getNotificationPreferences2(): UserPreferenceDto = userPreferenceService.getUserPreference()
 
   @Operation(
     summary = "Retrieve all preferences for a user",

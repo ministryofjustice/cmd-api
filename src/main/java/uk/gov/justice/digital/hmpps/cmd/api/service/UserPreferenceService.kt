@@ -15,13 +15,9 @@ class UserPreferenceService(
   private val authenticationFacade: AuthenticationFacade
 ) {
 
-  fun getUserPreference2(): UserPreferenceDto =
+  fun getUserPreference(): UserPreferenceDto =
     UserPreferenceDto.from(getUserPreference(authenticationFacade.currentUsername))
-      ?: throw NotFoundException("Prefences not found for ${authenticationFacade.currentUsername}")
-
-  fun getUserPreference(): UserPreferenceDto {
-    return UserPreferenceDto.from(getOrCreateUserPreference())!!
-  }
+      ?: throw NotFoundException("Preferences not found for ${authenticationFacade.currentUsername}")
 
   fun updateSnoozePreference(newDate: LocalDate) {
     val userPreferences = getOrCreateUserPreference()

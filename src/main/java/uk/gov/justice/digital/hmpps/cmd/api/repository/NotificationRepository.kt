@@ -4,15 +4,15 @@ import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
 import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
-import uk.gov.justice.digital.hmpps.cmd.api.model.DryRunNotification
+import uk.gov.justice.digital.hmpps.cmd.api.model.Notification
 import java.time.LocalDateTime
 
 @Repository
-interface DryRunNotificationRepository : CrudRepository<DryRunNotification, Long> {
+interface NotificationRepository : CrudRepository<Notification, Long> {
 
-  fun findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(quantumId: String, from: LocalDateTime, to: LocalDateTime): Collection<DryRunNotification>
+  fun findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(quantumId: String, from: LocalDateTime, to: LocalDateTime): Collection<Notification>
 
-  fun findAllByProcessedIsFalse(): List<DryRunNotification>
+  fun findAllByProcessedIsFalse(): List<Notification>
 
   fun countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
     quantumId: String,

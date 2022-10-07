@@ -13,12 +13,11 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
 import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
-import uk.gov.justice.digital.hmpps.cmd.api.model.DryRunNotification
-import uk.gov.justice.digital.hmpps.cmd.api.repository.DryRunNotificationRepository
+import uk.gov.justice.digital.hmpps.cmd.api.model.Notification
+import uk.gov.justice.digital.hmpps.cmd.api.repository.NotificationRepository
 import uk.gov.justice.digital.hmpps.prisonertonomisupdate.wiremock.CsrApiExtension
 import uk.gov.justice.digital.hmpps.prisonertonomisupdate.wiremock.HmppsAuthApiExtension
 import uk.gov.justice.digital.hmpps.prisonertonomisupdate.wiremock.PrisonApiExtension
-import java.time.Clock
 import java.time.LocalDateTime
 
 @ExtendWith(PrisonApiExtension::class, CsrApiExtension::class, HmppsAuthApiExtension::class)
@@ -27,13 +26,12 @@ import java.time.LocalDateTime
 @DisplayName("Integration Tests for Shift Controller")
 class PollingSchedulerIntegrationTest(
   @Autowired val pollingScheduler: PollingScheduler,
-  @Autowired val dryRunNotificationRepository: DryRunNotificationRepository,
-  @Autowired private val clock: Clock,
+  @Autowired val notificationRepository: NotificationRepository,
 ) {
 
   @BeforeEach
   fun init() {
-    dryRunNotificationRepository.deleteAll()
+    notificationRepository.deleteAll()
   }
 
   @Test
@@ -93,9 +91,9 @@ class PollingSchedulerIntegrationTest(
     assertThat(CsrApiExtension.api.putCountFor("/updates/5")).isEqualTo(0)
     assertThat(CsrApiExtension.api.putCountFor("/updates/6")).isEqualTo(0)
 
-    val saved = dryRunNotificationRepository.findAll()
+    val saved = notificationRepository.findAll()
     assertThat(saved).asList().containsExactly(
-      DryRunNotification(
+      Notification(
         id = saved.first().id, // generated
         quantumId = A_USER,
         shiftModified = LocalDateTime.parse("2022-03-25T15:00:00"),
@@ -106,7 +104,7 @@ class PollingSchedulerIntegrationTest(
         parentType = ShiftType.SHIFT,
         processed = true,
       ),
-      DryRunNotification(
+      Notification(
         id = saved.last().id,
         quantumId = "other-user",
         shiftModified = LocalDateTime.parse("2022-03-25T15:40:00"),
@@ -123,8 +121,8 @@ class PollingSchedulerIntegrationTest(
   @Test
   fun `tidy job functions`() {
 
-    dryRunNotificationRepository.save(
-      DryRunNotification(
+    notificationRepository.save(
+      Notification(
         quantumId = "user1",
         shiftModified = LocalDateTime.now().minusMonths(4),
         detailStart = LocalDateTime.parse("2022-03-31T10:00:00"),
@@ -135,8 +133,8 @@ class PollingSchedulerIntegrationTest(
         processed = true,
       )
     )
-    dryRunNotificationRepository.save(
-      DryRunNotification(
+    notificationRepository.save(
+      Notification(
         quantumId = "user2",
         shiftModified = LocalDateTime.now().minusMonths(2),
         detailStart = LocalDateTime.parse("2022-03-31T10:00:00"),
@@ -150,7 +148,7 @@ class PollingSchedulerIntegrationTest(
 
     pollingScheduler.tidyNotifications()
 
-    val all = dryRunNotificationRepository.findAll()
+    val all = notificationRepository.findAll()
     assertThat(all).asList().hasSize(1)
     assertThat(all.first().quantumId).isEqualTo("user2")
   }
@@ -214,9 +212,9 @@ class PollingSchedulerIntegrationTest(
     CsrApiExtension.api.verify(putRequestedFor(urlEqualTo("/updates/1")).withRequestBody(equalTo("[101,103]")))
     CsrApiExtension.api.verify(putRequestedFor(urlEqualTo("/updates/3")).withRequestBody(equalTo("[102]")))
 
-    val saved = dryRunNotificationRepository.findAll()
+    val saved = notificationRepository.findAll()
     assertThat(saved).asList().containsExactly(
-      DryRunNotification(
+      Notification(
         id = saved.first().id, // generated
         quantumId = A_USER,
         shiftModified = LocalDateTime.parse("2022-03-25T15:00:00"),
@@ -227,7 +225,7 @@ class PollingSchedulerIntegrationTest(
         parentType = ShiftType.SHIFT,
         processed = true,
       ),
-      DryRunNotification(
+      Notification(
         id = saved.last().id,
         quantumId = "other-user",
         shiftModified = LocalDateTime.parse("2022-03-25T15:40:00"),
