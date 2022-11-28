@@ -3,6 +3,14 @@ version: 2.1
 orbs:
   hmpps: ministryofjustice/hmpps@6
 
+parameters:
+  alerts-slack-channel:
+    type: string
+    default: syscon-alerts
+  releases-slack-channel:
+    type: string
+    default: dps-releases
+
 jobs:
   validate:
     executor:
@@ -99,12 +107,15 @@ workflows:
                 - main
     jobs:
       - hmpps/gradle_owasp_dependency_check:
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - hmpps-common-vars
       - hmpps/trivy_latest_scan:
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - hmpps-common-vars
       - hmpps/veracode_pipeline_scan:
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - hmpps-common-vars
             - veracode-credentials
@@ -118,6 +129,7 @@ workflows:
                 - main
     jobs:
       - hmpps/veracode_policy_scan:
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - veracode-credentials
             - hmpps-common-vars

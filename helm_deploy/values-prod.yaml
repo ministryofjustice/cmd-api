@@ -20,5 +20,4 @@ generic-service:
 cron:
   namespace: check-my-diary-prod
 
-generic-prometheus-alerts:
-  alertSeverity: digital-prison-service
+# Note: postgres database monitoring configured in CMD UI
