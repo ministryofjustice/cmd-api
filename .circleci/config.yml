@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@6
+  hmpps: ministryofjustice/hmpps@dev:alpha
 
 parameters:
   alerts-slack-channel:
@@ -50,6 +50,10 @@ workflows:
               ignore: /.*/
       - hmpps/helm_lint:
           name: helm_lint
+      - hmpps/veracode_pipeline_scan:
+          context:
+            - hmpps-common-vars
+            - veracode-credentials
       - hmpps/build_multiplatform_docker:
           name: build_docker
           filters:
