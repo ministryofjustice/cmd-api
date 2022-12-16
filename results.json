@@ -1,0 +1,57 @@
+{
+  "_links": {
+    "root": {
+      "href": "/"
+    },
+    "self": {
+      "href": "/scans/34a845b5-d29f-4f90-830c-30eaa63a481e/findings"
+    },
+    "help": {
+      "href": "https://help.veracode.com/reader/tS9CaFwL4_lbIEWWomsJoA/ovfZGgu96UINQxIuTqRDwg"
+    }
+  },
+  "scan_id": "34a845b5-d29f-4f90-830c-30eaa63a481e",
+  "scan_status": "SUCCESS",
+  "message": "Scan successful. Results size: 25332 bytes",
+  "modules": [
+    "app.jar"
+  ],
+  "modules_count": 1,
+  "findings": [
+    {
+      "title": "spring.h2.console.enabled.",
+      "issue_id": 1001,
+      "gob": "B",
+      "severity": 4,
+      "issue_type_id": "crypto",
+      "issue_type": "Exposed Dangerous Method or Function",
+      "cwe_id": "749",
+      "display_text": "\u003cspan\u003eThe application contains dangerous administrative functionality which is enabled via the spring.h2.console.enabled. configuration property. An attacker could use the exposed methods to perform sensitive operations on the application and leverage it to execute sophisticated attacks. These can amount to Denial-of-Service or tampering with application run-time behavior.\u003c/span\u003e \u003cspan\u003eEnsure that any administrative features or sensitive operations are not enabled in production if they are not needed. Set  to a value that prevents unathorized access or put other mitigating controls in place (e.g. network firewall rules) to prevent access by unauthorized parties. Ensure that proper authentication and authorization controls are in place for any required sensitive operations.\u003c/span\u003e \u003cspan\u003eReferences: \u003ca href\u003d\"https://cwe.mitre.org/data/definitions/749.html\"\u003eCWE\u003c/a\u003e\u003c/span\u003e",
+      "files": {
+        "source_file": {
+          "file": "BOOT-INF/classes/application-dev.yml",
+          "line": 1,
+          "function_name": "application-dev",
+          "qualified_function_name": "application-dev.application-dev.application-dev",
+          "function_prototype": "void application-dev(void)",
+          "scope": "application-dev.application-dev"
+        }
+      },
+      "flaw_match": {
+        "procedure_hash": "2397300004",
+        "prototype_hash": "211846691",
+        "flaw_hash": "798351294",
+        "flaw_hash_count": 3,
+        "flaw_hash_ordinal": 1,
+        "cause_hash": "897930665",
+        "cause_hash_count": 1,
+        "cause_hash_ordinal": 1,
+        "cause_hash2": "0",
+        "cause_hash2_ordinal": "0"
+      },
+      "stack_dumps": {}
+    }
+  ],
+  "pipeline_scan": "22.12.0-0",
+  "dev_stage": "DEVELOPMENT"
+}
