@@ -1,27 +1,16 @@
 package uk.gov.justice.digital.hmpps.cmd.api.config
 
 import com.microsoft.applicationinsights.TelemetryClient
-import org.apache.commons.lang3.StringUtils
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Condition
-import org.springframework.context.annotation.ConditionContext
-import org.springframework.context.annotation.Conditional
 import org.springframework.context.annotation.Configuration
-import org.springframework.core.type.AnnotatedTypeMetadata
 
 /**
- * Application insights now controlled by the spring-boot-starter dependency.  However when the key is not specified
- * we don't get a telemetry bean and application won't start.  Therefore need this backup configuration.
+ * TelemetryClient gets altered at runtime by the java agent and so is a no-op otherwise
  */
 @Configuration
 class ApplicationInsightsConfiguration {
-
   @Bean
-  @Conditional(AppInsightKeyAbsentCondition::class)
-  fun telemetryClient() = TelemetryClient()
+  fun telemetryClient(): TelemetryClient = TelemetryClient()
 }
 
-class AppInsightKeyAbsentCondition : Condition {
-  override fun matches(context: ConditionContext, metadata: AnnotatedTypeMetadata) =
-    StringUtils.isBlank(context.environment.getProperty("appinsights.instrumentationkey"))
-}
+fun TelemetryClient.trackEvent(name: String, properties: Map<String, String>) = this.trackEvent(name, properties, null)

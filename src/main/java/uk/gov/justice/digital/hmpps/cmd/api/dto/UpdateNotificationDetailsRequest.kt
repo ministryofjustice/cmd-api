@@ -2,9 +2,9 @@ package uk.gov.justice.digital.hmpps.cmd.api.dto
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.v3.oas.annotations.media.Schema
+import jakarta.validation.constraints.Email
+import jakarta.validation.constraints.Pattern
 import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
-import javax.validation.constraints.Email
-import javax.validation.constraints.Pattern
 
 @Schema(description = "Update notification details for a user")
 data class UpdateNotificationDetailsRequest(

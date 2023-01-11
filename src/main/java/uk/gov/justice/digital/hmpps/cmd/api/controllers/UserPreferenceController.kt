@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
+import jakarta.validation.Valid
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PutMapping
@@ -14,7 +15,6 @@ import uk.gov.justice.digital.hmpps.cmd.api.dto.UpdateNotificationDetailsRequest
 import uk.gov.justice.digital.hmpps.cmd.api.dto.UpdateSnoozeUntilRequest
 import uk.gov.justice.digital.hmpps.cmd.api.dto.UserPreferenceDto
 import uk.gov.justice.digital.hmpps.cmd.api.service.UserPreferenceService
-import javax.validation.Valid
 
 @RestController
 @RequestMapping(produces = [APPLICATION_JSON_VALUE])

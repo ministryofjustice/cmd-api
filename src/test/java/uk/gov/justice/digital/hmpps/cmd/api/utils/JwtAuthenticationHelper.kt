@@ -33,7 +33,7 @@ class JwtAuthenticationHelper {
     expiryTime: Duration = Duration.ofHours(1),
     jwtId: String = UUID.randomUUID().toString()
   ): String {
-    val claims = mutableMapOf<String, Any>("client_id" to "elite2apiclient")
+    val claims = mutableMapOf<String, Any>("client_id" to "test-client-id")
     subject?.let { claims["user_name"] = subject }
     roles?.let { claims["authorities"] = roles }
     scope?.let { claims["scope"] = scope }
@@ -42,7 +42,7 @@ class JwtAuthenticationHelper {
       .setSubject(subject)
       .addClaims(claims)
       .setExpiration(Date(System.currentTimeMillis() + expiryTime.toMillis()))
-      .signWith(SignatureAlgorithm.RS256, keyPair.private)
+      .signWith(keyPair.private, SignatureAlgorithm.RS256)
       .compact()
   }
 }

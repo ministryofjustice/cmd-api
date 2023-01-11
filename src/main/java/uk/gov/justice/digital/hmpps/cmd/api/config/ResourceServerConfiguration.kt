@@ -10,47 +10,49 @@ import org.springframework.core.convert.converter.Converter
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.security.authentication.AbstractAuthenticationToken
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
+import org.springframework.security.config.annotation.web.invoke
+import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.config.http.SessionCreationPolicy.STATELESS
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter
+import org.springframework.security.web.SecurityFilterChain
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
-class ResourceServerConfiguration : WebSecurityConfigurerAdapter() {
-  @Throws(Exception::class)
-  public override fun configure(http: HttpSecurity) {
-    http.headers().frameOptions().sameOrigin().and()
-      .sessionManagement()
-      .sessionCreationPolicy(STATELESS) // Can't have CSRF protection as requires session
-      .and().csrf().disable()
-      .authorizeRequests({ auth ->
-        auth
-          .antMatchers(
-            "/webjars/**",
-            "/favicon.ico",
-            "/health/**",
-            "/info",
-            "/h2-console/**",
-            "/v3/api-docs/**",
-            "/swagger-ui.html",
-            "/swagger-ui/**",
-            "/swagger-resources",
-            "/swagger-resources/configuration/ui",
-            "/swagger-resources/configuration/security"
-          )
-          .permitAll()
-          .anyRequest()
-          .authenticated()
-      })
-      .oauth2ResourceServer().jwt().jwtAuthenticationConverter(AuthAwareTokenConverter())
+@EnableMethodSecurity(prePostEnabled = true)
+class ResourceServerConfiguration {
+  @Bean
+  fun filterChain(http: HttpSecurity): SecurityFilterChain {
+    http {
+      headers { frameOptions { sameOrigin = true } }
+      sessionManagement { sessionCreationPolicy = SessionCreationPolicy.STATELESS }
+      // Can't have CSRF protection as requires session
+      csrf { disable() }
+      authorizeHttpRequests {
+        listOf(
+          "/webjars/**",
+          "/favicon.ico",
+          "/health/**",
+          "/info",
+          "/h2-console/**",
+          "/v3/api-docs/**",
+          "/swagger-ui.html",
+          "/swagger-ui/**",
+          "/swagger-resources",
+          "/swagger-resources/configuration/ui",
+          "/swagger-resources/configuration/security"
+        ).forEach { authorize(it, permitAll) }
+        authorize(anyRequest, authenticated)
+      }
+      oauth2ResourceServer { jwt { jwtAuthenticationConverter = AuthAwareTokenConverter() } }
+    }
+    return http.build()
   }
 
   @Bean

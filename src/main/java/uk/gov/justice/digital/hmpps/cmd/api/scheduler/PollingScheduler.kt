@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.cmd.api.scheduler
 
 import com.microsoft.applicationinsights.TelemetryClient
-import com.microsoft.applicationinsights.core.dependencies.google.common.collect.ImmutableMap
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
 import org.apache.commons.lang3.time.DurationFormatUtils
 import org.slf4j.LoggerFactory
@@ -34,9 +33,9 @@ class PollingScheduler(
     val duration = System.currentTimeMillis() - start
     telemetryClient.trackEvent(
       "PollingScheduler",
-      ImmutableMap.of(
-        "durationMillis", duration.toString(),
-        "duration", DurationFormatUtils.formatDuration(duration, "HH:mm:ss")
+      mapOf(
+        "durationMillis" to duration.toString(),
+        "duration" to DurationFormatUtils.formatDuration(duration, "HH:mm:ss")
       ),
       null
     )
@@ -57,9 +56,9 @@ class PollingScheduler(
     val duration = System.currentTimeMillis() - start
     telemetryClient.trackEvent(
       "PollingSchedulerTidy",
-      ImmutableMap.of(
-        "durationMillis", duration.toString(),
-        "duration", DurationFormatUtils.formatDuration(duration, "HH:mm:ss")
+      mapOf(
+        "durationMillis" to duration.toString(),
+        "duration" to DurationFormatUtils.formatDuration(duration, "HH:mm:ss")
       ),
       null
     )

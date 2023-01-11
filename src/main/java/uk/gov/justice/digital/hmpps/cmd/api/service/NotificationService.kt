@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.cmd.api.service
 
 import com.microsoft.applicationinsights.TelemetryClient
-import com.microsoft.applicationinsights.core.dependencies.google.common.collect.ImmutableMap
 import org.apache.commons.lang3.time.DurationFormatUtils
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -149,7 +148,7 @@ class NotificationService(
       log.error("notifications error in region $region", e)
       telemetryClient.trackEvent(
         "notificationsError",
-        ImmutableMap.of("region", region.toString()),
+        mapOf("region" to region.toString()),
         null
       )
     }
@@ -167,11 +166,11 @@ class NotificationService(
     val duration = System.currentTimeMillis() - start
     telemetryClient.trackEvent(
       "tidyNotification",
-      ImmutableMap.of(
-        "startOfDay", "$startOfDay",
-        "durationMillis", duration.toString(),
-        "duration", DurationFormatUtils.formatDuration(duration, "HH:mm:ss"),
-        "rowsDeleted", rows.toString()
+      mapOf(
+        "startOfDay" to "$startOfDay",
+        "durationMillis" to duration.toString(),
+        "duration" to DurationFormatUtils.formatDuration(duration, "HH:mm:ss"),
+        "rowsDeleted" to rows.toString()
       ),
       null
     )
