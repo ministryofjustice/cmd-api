@@ -21,7 +21,7 @@ class ControllerAdvice {
   fun handleRestClientResponseException(e: RestClientResponseException): ResponseEntity<ByteArray> {
     log.error("Unexpected exception", e)
     return ResponseEntity
-      .status(e.rawStatusCode)
+      .status(e.statusCode)
       .body(e.responseBodyAsByteArray)
   }
 
