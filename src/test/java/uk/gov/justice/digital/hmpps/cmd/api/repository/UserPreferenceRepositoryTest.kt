@@ -14,7 +14,7 @@ import java.time.LocalDate
 @ActiveProfiles("test")
 @DataJpaTest
 class UserPreferenceRepositoryTest(
-  @Autowired val repository: UserPreferenceRepository
+  @Autowired val repository: UserPreferenceRepository,
 ) {
 
   private val now: LocalDate = LocalDate.now()

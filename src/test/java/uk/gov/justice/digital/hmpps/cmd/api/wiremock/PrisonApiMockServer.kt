@@ -39,8 +39,8 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
         aResponse()
           .withHeader("Content-Type", "application/json")
           .withBody(if (status == 200) "pong" else "some error")
-          .withStatus(status)
-      )
+          .withStatus(status),
+      ),
     )
   }
 
@@ -50,8 +50,8 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
         aResponse()
           .withHeader("Content-Type", "application/json")
           .withBody("""{ "activeCaseLoadId": "WMI" }""")
-          .withStatus(200)
-      )
+          .withStatus(200),
+      ),
     )
   }
 

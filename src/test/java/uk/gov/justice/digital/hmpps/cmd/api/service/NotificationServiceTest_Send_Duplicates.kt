@@ -44,7 +44,7 @@ internal class NotificationServiceTest_Send_Duplicates {
     3,
     notifyClient,
     csrClient,
-    TelemetryClient()
+    TelemetryClient(),
   )
 
   @BeforeEach
@@ -70,7 +70,7 @@ internal class NotificationServiceTest_Send_Duplicates {
       val shiftNotifications: List<Notification> = listOf(
         Notification(1, quantumId, modified1, date, date, null, ShiftType.SHIFT, DetailModificationType.ADD, false),
         Notification(1, quantumId, modified2, date, date, null, ShiftType.SHIFT, DetailModificationType.ADD, false),
-        Notification(1, quantumId, modified3, date, date, null, ShiftType.SHIFT, DetailModificationType.ADD, false)
+        Notification(1, quantumId, modified3, date, date, null, ShiftType.SHIFT, DetailModificationType.ADD, false),
       )
 
       every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
@@ -105,7 +105,7 @@ internal class NotificationServiceTest_Send_Duplicates {
         Notification(1, quantumId, modified1, date.atStartOfDay().plusSeconds(0), date.atStartOfDay().plusSeconds(0), null, ShiftType.SHIFT, DetailModificationType.ADD, false),
         Notification(1, quantumId, modified1, date.atStartOfDay().plusSeconds(0), date.atStartOfDay().plusSeconds(0), null, ShiftType.SHIFT, DetailModificationType.ADD, false),
         Notification(1, quantumId, modified1, date.atStartOfDay().plusSeconds(9876), date.atStartOfDay().plusSeconds(6544), "A Task", ShiftType.SHIFT, DetailModificationType.ADD, false),
-        Notification(1, quantumId, modified1, date.atStartOfDay().plusSeconds(1234), date.atStartOfDay().plusSeconds(4567), "Any Task", ShiftType.SHIFT, DetailModificationType.ADD, false)
+        Notification(1, quantumId, modified1, date.atStartOfDay().plusSeconds(1234), date.atStartOfDay().plusSeconds(4567), "Any Task", ShiftType.SHIFT, DetailModificationType.ADD, false),
       )
 
       every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications

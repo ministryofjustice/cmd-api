@@ -23,7 +23,11 @@ class NotificationController(private val notificationService: NotificationServic
   fun getNotifications(
     @RequestParam processOnRead: Optional<Boolean>,
     @RequestParam unprocessedOnly: Optional<Boolean>,
-    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) from: Optional<LocalDate>,
-    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: Optional<LocalDate>
+    @RequestParam
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    from: Optional<LocalDate>,
+    @RequestParam
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    to: Optional<LocalDate>,
   ): Collection<NotificationDto> = notificationService.getNotifications(processOnRead, unprocessedOnly, from, to)
 }

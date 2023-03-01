@@ -9,7 +9,7 @@ import uk.gov.justice.digital.hmpps.cmd.api.repository.PrisonRepository
 @Service
 class PrisonService(
   private val repository: PrisonRepository,
-  private val elite2Client: Elite2ApiClient
+  private val elite2Client: Elite2ApiClient,
 ) {
   fun getPrisonForUser(): Prison? {
     val prisonId = elite2Client.getCurrentPrisonIdForUser()

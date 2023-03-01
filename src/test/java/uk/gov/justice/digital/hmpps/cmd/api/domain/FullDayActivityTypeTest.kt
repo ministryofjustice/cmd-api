@@ -79,6 +79,7 @@ class FullDayActivityTypeTest {
     fun `It should match TOIL`() {
       assertThat(FullDayActivityType.from("Toil")).isEqualTo(FullDayActivityType.TOIL)
     }
+
     @Test
     fun `It should match TRAINING_EXTERNAL`() {
       assertThat(FullDayActivityType.from("Training - External")).isEqualTo(FullDayActivityType.TRAINING_EXTERNAL)

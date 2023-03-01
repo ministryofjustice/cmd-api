@@ -58,17 +58,16 @@ internal class ShiftServiceTest_Overtime_Scenarios {
 
     @Test
     fun `Should return a basic day shift with overtime after`() {
-
       val dayShift = listOf(
         CsrDetailDto(ShiftType.SHIFT, day1.atTime(LocalTime.of(7, 15)), day1.atTime(LocalTime.of(12, 30)), "Present"),
         CsrDetailDto(ShiftType.SHIFT, day1.atTime(LocalTime.of(12, 30)), day1.atTime(LocalTime.of(13, 30)), "Break (Unpaid)"),
-        CsrDetailDto(ShiftType.SHIFT, day1.atTime(LocalTime.of(13, 30)), day1.atTime(LocalTime.of(17, 0)), "Present")
+        CsrDetailDto(ShiftType.SHIFT, day1.atTime(LocalTime.of(13, 30)), day1.atTime(LocalTime.of(17, 0)), "Present"),
       )
 
       val overtime = listOf(
         CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(17, 15)), day1.atTime(LocalTime.of(18, 30)), "Present"),
         CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(18, 30)), day1.atTime(LocalTime.of(19, 30)), "Break (Unpaid)"),
-        CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(19, 30)), day1.atTime(LocalTime.of(22, 0)), "Present")
+        CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(19, 30)), day1.atTime(LocalTime.of(22, 0)), "Present"),
       )
 
       every { prisonService.getPrisonForUser() } returns Prison("prison", "", "", 1)
@@ -107,17 +106,16 @@ internal class ShiftServiceTest_Overtime_Scenarios {
 
     @Test
     fun `Should return a basic day shift with overtime before`() {
-
       val dayShift = listOf(
         CsrDetailDto(ShiftType.SHIFT, day1.atTime(LocalTime.of(17, 15)), day1.atTime(LocalTime.of(18, 30)), "Present"),
         CsrDetailDto(ShiftType.SHIFT, day1.atTime(LocalTime.of(18, 30)), day1.atTime(LocalTime.of(19, 30)), "Break (Unpaid)"),
-        CsrDetailDto(ShiftType.SHIFT, day1.atTime(LocalTime.of(19, 30)), day1.atTime(LocalTime.of(22, 0)), "Present")
+        CsrDetailDto(ShiftType.SHIFT, day1.atTime(LocalTime.of(19, 30)), day1.atTime(LocalTime.of(22, 0)), "Present"),
       )
 
       val overtime = listOf(
         CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(7, 15)), day1.atTime(LocalTime.of(12, 30)), "Present"),
         CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(12, 30)), day1.atTime(LocalTime.of(13, 30)), "Break (Unpaid)"),
-        CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(13, 30)), day1.atTime(LocalTime.of(17, 0)), "Present")
+        CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(13, 30)), day1.atTime(LocalTime.of(17, 0)), "Present"),
       )
 
       every { prisonService.getPrisonForUser() } returns Prison("prison", "", "", 1)
@@ -156,15 +154,14 @@ internal class ShiftServiceTest_Overtime_Scenarios {
 
     @Test
     fun `Should return a basic night shift with overtime after`() {
-
       val nightShift = listOf(
-        CsrDetailDto(ShiftType.SHIFT, day1.atTime(LocalTime.of(20, 45)), day2.atTime(LocalTime.of(7, 45)), "Night OSG")
+        CsrDetailDto(ShiftType.SHIFT, day1.atTime(LocalTime.of(20, 45)), day2.atTime(LocalTime.of(7, 45)), "Night OSG"),
       )
 
       val overtime = listOf(
         CsrDetailDto(ShiftType.OVERTIME, day2.atTime(LocalTime.of(17, 15)), day2.atTime(LocalTime.of(18, 30)), "Present"),
         CsrDetailDto(ShiftType.OVERTIME, day2.atTime(LocalTime.of(18, 30)), day2.atTime(LocalTime.of(19, 30)), "Break (Unpaid)"),
-        CsrDetailDto(ShiftType.OVERTIME, day2.atTime(LocalTime.of(19, 30)), day2.atTime(LocalTime.of(22, 0)), "Present")
+        CsrDetailDto(ShiftType.OVERTIME, day2.atTime(LocalTime.of(19, 30)), day2.atTime(LocalTime.of(22, 0)), "Present"),
       )
 
       every { prisonService.getPrisonForUser() } returns Prison("prison", "", "", 1)
@@ -209,13 +206,13 @@ internal class ShiftServiceTest_Overtime_Scenarios {
     @Test
     fun `Should return a basic night shift with overtime before`() {
       val nightShift = listOf(
-        CsrDetailDto(ShiftType.SHIFT, day1.atTime(LocalTime.of(20, 45)), day2.atTime(LocalTime.of(7, 45)), "Night OSG")
+        CsrDetailDto(ShiftType.SHIFT, day1.atTime(LocalTime.of(20, 45)), day2.atTime(LocalTime.of(7, 45)), "Night OSG"),
       )
 
       val overtime = listOf(
         CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(17, 15)), day1.atTime(LocalTime.of(18, 30)), "Present"),
         CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(18, 30)), day1.atTime(LocalTime.of(19, 30)), "Break (Unpaid)"),
-        CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(19, 30)), day1.atTime(LocalTime.of(20, 0)), "Present")
+        CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(19, 30)), day1.atTime(LocalTime.of(20, 0)), "Present"),
       )
 
       every { prisonService.getPrisonForUser() } returns Prison("prison", "", "", 1)

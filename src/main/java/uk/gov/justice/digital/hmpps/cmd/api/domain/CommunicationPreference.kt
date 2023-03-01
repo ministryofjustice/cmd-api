@@ -5,7 +5,8 @@ import java.util.Arrays
 enum class CommunicationPreference {
   EMAIL,
   SMS,
-  NONE;
+  NONE,
+  ;
 
   companion object {
     fun from(value: String): CommunicationPreference {

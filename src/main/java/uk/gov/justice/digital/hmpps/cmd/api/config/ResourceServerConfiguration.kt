@@ -46,7 +46,7 @@ class ResourceServerConfiguration {
           "/swagger-ui/**",
           "/swagger-resources",
           "/swagger-resources/configuration/ui",
-          "/swagger-resources/configuration/security"
+          "/swagger-resources/configuration/security",
         ).forEach { authorize(it, permitAll) }
         authorize(anyRequest, authenticated)
       }
@@ -61,7 +61,7 @@ class ResourceServerConfiguration {
       JdbcTemplateLockProvider.Configuration.builder()
         .withJdbcTemplate(jdbcTemplate)
         .usingDbTime()
-        .build()
+        .build(),
     )
 
   class AuthAwareTokenConverter : Converter<Jwt, AbstractAuthenticationToken> {
@@ -75,7 +75,7 @@ class ResourceServerConfiguration {
       if (jwt.claims.containsKey("authorities")) {
         authorities.addAll(
           (jwt.claims["authorities"] as Collection<String?>)
-            .map { SimpleGrantedAuthority(it) }.toSet()
+            .map { SimpleGrantedAuthority(it) }.toSet(),
         )
       }
       return authorities.toSet()

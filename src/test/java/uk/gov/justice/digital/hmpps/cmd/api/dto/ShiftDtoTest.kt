@@ -9,7 +9,6 @@ class ShiftDtoTest {
 
   @Test
   fun `Create Day Dto `() {
-
     val date = LocalDate.now()
     val type = FullDayActivityType.REST_DAY
     val details: Collection<DetailDto> = listOf()
@@ -18,7 +17,7 @@ class ShiftDtoTest {
       date,
       type,
       type.description,
-      details
+      details,
     )
 
     Assertions.assertThat(day.date).isEqualTo(date)

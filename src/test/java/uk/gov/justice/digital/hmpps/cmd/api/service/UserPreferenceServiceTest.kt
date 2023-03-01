@@ -43,7 +43,7 @@ internal class UserPreferenceServiceTest {
         now.plusDays(1),
         "Any Email",
         "Any Sms",
-        CommunicationPreference.EMAIL
+        CommunicationPreference.EMAIL,
       )
       every { repository.findByQuantumIdIgnoreCase(any()) } returns userPref
       every { authenticationFacade.currentUsername } returns quantumId
@@ -211,7 +211,7 @@ internal class UserPreferenceServiceTest {
         now.plusDays(1),
         "Any Email",
         "Any Sms",
-        CommunicationPreference.EMAIL
+        CommunicationPreference.EMAIL,
       )
 
       every { repository.findByQuantumIdIgnoreCase(any()) } returns userPref

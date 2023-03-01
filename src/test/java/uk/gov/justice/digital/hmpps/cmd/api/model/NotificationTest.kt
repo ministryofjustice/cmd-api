@@ -31,7 +31,7 @@ class NotificationTest {
       task,
       shiftType,
       actionType,
-      processed
+      processed,
     )
 
     Assertions.assertThat(notification.quantumId).isEqualTo(quantumId)
@@ -65,7 +65,7 @@ class NotificationTest {
       taskStart,
       taskEnd,
       task,
-      actionType
+      actionType,
     )
 
     val shiftNotification = Notification.fromDto(shiftNotificationDto)
@@ -101,7 +101,7 @@ class NotificationTest {
       taskStart,
       taskEnd,
       task,
-      actionType
+      actionType,
     )
 
     val lisfOfDtos = listOf(shiftNotificationDto)

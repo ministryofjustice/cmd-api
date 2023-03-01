@@ -62,7 +62,6 @@ internal class NotificationServiceTest_Generate_Shift {
 
     @Test
     fun `Should disregard Shift Notification if it exists in our db`() {
-
       val quantumId = "CSTRIFE_GEN"
       val shiftDate = today.plusDays(2).toLocalDate()
       val start = shiftDate.atStartOfDay().plusSeconds(123L)
@@ -77,7 +76,7 @@ internal class NotificationServiceTest_Generate_Shift {
         detailStart = start,
         detailEnd = end,
         activity = task,
-        actionType = DetailModificationType.ADD
+        actionType = DetailModificationType.ADD,
       )
 
       every { csrClient.getModified(1) } returns listOf(dto1)
@@ -87,7 +86,7 @@ internal class NotificationServiceTest_Generate_Shift {
           quantumId,
           start,
           shiftType,
-          today
+          today,
         )
       } returns 1
 
@@ -98,7 +97,6 @@ internal class NotificationServiceTest_Generate_Shift {
 
     @Test
     fun `Should add multiple Shift notifications for one user`() {
-
       val quantumId = "CSTRIFE_GEN"
       val start = today.plusSeconds(123L)
       val end = today.plusSeconds(456L)
@@ -112,7 +110,7 @@ internal class NotificationServiceTest_Generate_Shift {
         detailStart = start.plusDays(1),
         detailEnd = end.plusDays(1),
         activity = task,
-        actionType = DetailModificationType.ADD
+        actionType = DetailModificationType.ADD,
       )
       val dto2 = dto1.copy(id = 2, detailStart = start.plusDays(2), detailEnd = end.plusDays(2))
       val dto3 = dto1.copy(id = 3, detailStart = start.plusDays(3), detailEnd = end.plusDays(3))
@@ -124,7 +122,7 @@ internal class NotificationServiceTest_Generate_Shift {
           quantumId,
           any(),
           shiftType,
-          today
+          today,
         )
       } returns 0
 
@@ -140,7 +138,7 @@ internal class NotificationServiceTest_Generate_Shift {
         activity = task,
         parentType = shiftType,
         actionType = DetailModificationType.ADD,
-        processed = false
+        processed = false,
       )
       val notification2 = notification1.copy(detailStart = start.plusDays(2), detailEnd = end.plusDays(2))
       val notification3 = notification1.copy(detailStart = start.plusDays(3), detailEnd = end.plusDays(3))
@@ -149,7 +147,6 @@ internal class NotificationServiceTest_Generate_Shift {
 
     @Test
     fun `Should not add multiple duplicate Shift notifications for one user`() {
-
       val quantumId = "CSTRIFE_GEN"
       val start = LocalDateTime.now(clock)
       val end = LocalDateTime.now(clock)
@@ -163,7 +160,7 @@ internal class NotificationServiceTest_Generate_Shift {
         start,
         end,
         task,
-        DetailModificationType.ADD
+        DetailModificationType.ADD,
       )
       val dto2 = dto1.copy(id = 2L)
       val dto3 = dto1.copy(id = 3L)
@@ -175,7 +172,7 @@ internal class NotificationServiceTest_Generate_Shift {
           quantumId,
           any(),
           shiftType,
-          today
+          today,
         )
       } returns 0
 
@@ -192,14 +189,13 @@ internal class NotificationServiceTest_Generate_Shift {
         activity = task,
         parentType = shiftType,
         actionType = DetailModificationType.ADD,
-        processed = false
+        processed = false,
       )
       assertThat(results[0]).isEqualTo(listOf(notification1))
     }
 
     @Test
     fun `Should filter multiple notifications for same shift day with different modified times for one user`() {
-
       val quantumId = "CSTRIFE_GEN"
       val start = today.plusHours(1L)
       val start2 = today.plusHours(2L)
@@ -220,7 +216,7 @@ internal class NotificationServiceTest_Generate_Shift {
           detailStart = start,
           detailEnd = end,
           activity = task,
-          actionType = DetailModificationType.ADD
+          actionType = DetailModificationType.ADD,
         )
       val dto2 = dto1.copy(id = 2, shiftModified = shiftModified2, detailStart = start2)
       val dto3 = dto1.copy(id = 3, shiftModified = shiftModified3, detailStart = start3)
@@ -253,7 +249,7 @@ internal class NotificationServiceTest_Generate_Shift {
         activity = task,
         parentType = shiftType,
         actionType = DetailModificationType.ADD,
-        processed = false
+        processed = false,
       )
       val notification2 = notification1.copy(actionType = DetailModificationType.EDIT)
       assertThat(results[0]).isEqualTo(listOf(notification1, notification2))
@@ -262,7 +258,6 @@ internal class NotificationServiceTest_Generate_Shift {
 
     @Test
     fun `Should not save edit Shift notification types, these are covered by shift Task Notifications`() {
-
       val quantumId = "CSTRIFE_GEN"
       val task = null
       val shiftType = ShiftType.SHIFT
@@ -274,7 +269,7 @@ internal class NotificationServiceTest_Generate_Shift {
         detailStart = today,
         detailEnd = today,
         activity = task,
-        actionType = DetailModificationType.EDIT
+        actionType = DetailModificationType.EDIT,
       )
 
       every { csrClient.getModified(any()) } returns listOf(dto1)
@@ -284,7 +279,7 @@ internal class NotificationServiceTest_Generate_Shift {
           quantumId,
           today,
           shiftType,
-          DetailModificationType.ADD
+          DetailModificationType.ADD,
         )
       } returns 1
       every {
@@ -292,7 +287,7 @@ internal class NotificationServiceTest_Generate_Shift {
           quantumId,
           today,
           shiftType,
-          today
+          today,
         )
       } returns 0
 
@@ -303,7 +298,6 @@ internal class NotificationServiceTest_Generate_Shift {
 
     @Test
     fun `Should save Add shift notification types if not exist in the DB`() {
-
       val quantumId = "CSTRIFE_GEN"
       val task = "Guard Duty"
       val shiftType = ShiftType.SHIFT
@@ -315,7 +309,7 @@ internal class NotificationServiceTest_Generate_Shift {
         detailStart = today,
         detailEnd = today,
         activity = task,
-        actionType = DetailModificationType.ADD
+        actionType = DetailModificationType.ADD,
       )
 
       every { csrClient.getModified(any()) } returns listOf(dto1)
@@ -325,7 +319,7 @@ internal class NotificationServiceTest_Generate_Shift {
           quantumId,
           today,
           shiftType,
-          today
+          today,
         )
       } returns 0
 
@@ -341,7 +335,7 @@ internal class NotificationServiceTest_Generate_Shift {
         activity = task,
         parentType = shiftType,
         actionType = DetailModificationType.ADD,
-        processed = false
+        processed = false,
       )
       assertThat(results[0]).isEqualTo(listOf(expected))
       verify { csrClient.deleteProcessed(1, listOf(1L)) }
@@ -360,7 +354,7 @@ internal class NotificationServiceTest_Generate_Shift {
         detailStart = today,
         detailEnd = today,
         activity = task,
-        actionType = DetailModificationType.DELETE
+        actionType = DetailModificationType.DELETE,
       )
 
       every { csrClient.getModified(any()) } returns listOf(dto1)
@@ -370,7 +364,7 @@ internal class NotificationServiceTest_Generate_Shift {
           quantumId,
           today,
           shiftType,
-          today
+          today,
         )
       } returns 0
 
@@ -387,14 +381,13 @@ internal class NotificationServiceTest_Generate_Shift {
         activity = task,
         parentType = shiftType,
         actionType = DetailModificationType.DELETE,
-        processed = false
+        processed = false,
       )
       assertThat(results[0]).isEqualTo(listOf(expected))
     }
 
     @Test
     fun `Should disregard unprocessed Shift Notification duplicates`() {
-
       val quantumId = "CSTRIFE_GEN"
       val shiftDate = today.plusDays(2).toLocalDate()
       val start = shiftDate.atStartOfDay().plusSeconds(123L)
@@ -409,7 +402,7 @@ internal class NotificationServiceTest_Generate_Shift {
         detailStart = start,
         detailEnd = end,
         activity = task,
-        actionType = DetailModificationType.ADD
+        actionType = DetailModificationType.ADD,
       )
 
       every { csrClient.getModified(any()) } returns listOf(dto1)
@@ -419,7 +412,7 @@ internal class NotificationServiceTest_Generate_Shift {
           quantumId,
           start,
           shiftType,
-          today
+          today,
         )
       } returns 1
 
@@ -439,7 +432,6 @@ internal class NotificationServiceTest_Generate_Shift {
 
     @Test
     fun `Should Change an Edit with no existing Add in the database to an Add`() {
-
       val quantumId = "CSTRIFE_GEN"
       val task = null
       val shiftType = ShiftType.SHIFT
@@ -451,7 +443,7 @@ internal class NotificationServiceTest_Generate_Shift {
         detailStart = today,
         detailEnd = today,
         activity = task,
-        actionType = DetailModificationType.EDIT
+        actionType = DetailModificationType.EDIT,
       )
 
       every { csrClient.getModified(any()) } returns listOf(dto1, dto1)
@@ -461,7 +453,7 @@ internal class NotificationServiceTest_Generate_Shift {
           quantumId,
           today,
           shiftType,
-          DetailModificationType.ADD
+          DetailModificationType.ADD,
         )
       } returns 0
       every {
@@ -469,7 +461,7 @@ internal class NotificationServiceTest_Generate_Shift {
           quantumId,
           today,
           shiftType,
-          today
+          today,
         )
       } returns 0
 
@@ -486,14 +478,13 @@ internal class NotificationServiceTest_Generate_Shift {
         activity = task,
         parentType = shiftType,
         actionType = DetailModificationType.ADD,
-        processed = false
+        processed = false,
       )
       assertThat(results[0]).isEqualTo(listOf(expected))
     }
 
     @Test
     fun `Should ignore user with changes that are too recent`() {
-
       val now = LocalDateTime.now(clock)
       val start = today.plusSeconds(123L)
       val end = today.plusSeconds(456L)
@@ -508,7 +499,7 @@ internal class NotificationServiceTest_Generate_Shift {
         detailStart = start,
         detailEnd = end,
         activity = "Guard Duty",
-        actionType = DetailModificationType.ADD
+        actionType = DetailModificationType.ADD,
       )
       val dto2 = dto1.copy(id = 2, shiftModified = now.minusMinutes(6), quantumId = "STILL_CHANGING_USER")
       val dto3 =
@@ -517,7 +508,7 @@ internal class NotificationServiceTest_Generate_Shift {
           shiftModified = now.minusMinutes(6),
           quantumId = "FINISHED_USER",
           activity = "another",
-          detailStart = start2
+          detailStart = start2,
         )
       val dto4 =
         dto1.copy(id = 4, shiftModified = now.minusMinutes(4), quantumId = "STILL_CHANGING_USER", detailStart = start2)
@@ -529,7 +520,7 @@ internal class NotificationServiceTest_Generate_Shift {
           "FINISHED_USER",
           any(),
           shiftType,
-          any()
+          any(),
         )
       } returns 0
 
@@ -546,7 +537,7 @@ internal class NotificationServiceTest_Generate_Shift {
         activity = "another",
         parentType = shiftType,
         actionType = DetailModificationType.ADD,
-        processed = false
+        processed = false,
       )
       val notification2 =
         notification1.copy(shiftModified = now.minusMinutes(7), detailStart = start, activity = "Guard Duty")
@@ -556,7 +547,6 @@ internal class NotificationServiceTest_Generate_Shift {
 
     @Test
     fun `Should process but not notify when null quantum id or lastmodified`() {
-
       val quantumId = "CSTRIFE_GEN"
       val shiftDate = today.plusDays(2).toLocalDate()
       val start = shiftDate.atStartOfDay().plusSeconds(123L)
@@ -585,7 +575,7 @@ internal class NotificationServiceTest_Generate_Shift {
           quantumId,
           start,
           shiftType,
-          today
+          today,
         )
       } returns 0
 

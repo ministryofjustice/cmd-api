@@ -7,7 +7,6 @@ class PrisonTest {
 
   @Test
   fun `Should return a valid prison`() {
-
     val prisonId = "AKA"
     val csrPlanUnit = "We have a plan"
     val prisonName = "Arkham Asylum"
@@ -17,7 +16,7 @@ class PrisonTest {
       prisonId,
       csrPlanUnit,
       prisonName,
-      region
+      region,
     )
 
     Assertions.assertThat(prison.prisonId).isEqualTo(prisonId)

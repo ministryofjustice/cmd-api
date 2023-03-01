@@ -30,7 +30,9 @@ class ShiftControllerIntegrationTest(
   fun `It returns shifts`() {
     PrisonApiExtension.api.stubUsersMe()
     CsrApiExtension.api.stubUserDetails(
-      3, "2022-04-06", "2022-04-06", // WMI is region 3
+      3,
+      "2022-04-06",
+      "2022-04-06", // WMI is region 3
       """
       [
         {
@@ -44,14 +46,14 @@ class ShiftControllerIntegrationTest(
         "actionType" : "ADD"
         }
       ]
-      """.trimIndent()
+      """.trimIndent(),
     )
 
     val response = testRestTemplate.exchange(
       "/user/details?from=2022-04-06&to=2022-04-06",
       HttpMethod.GET,
       entityBuilder.entityWithJwtAuthorisation(A_USER, NO_ROLES),
-      String::class.java
+      String::class.java,
     )
     with(response) {
       assertThat(statusCode).isEqualTo(HttpStatus.OK)

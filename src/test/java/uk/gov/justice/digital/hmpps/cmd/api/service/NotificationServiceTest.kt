@@ -46,7 +46,7 @@ internal class NotificationServiceTest {
     3,
     notifyClient,
     csrClient,
-    TelemetryClient()
+    TelemetryClient(),
   )
 
   private val now = LocalDateTime.now(clock)
@@ -251,7 +251,7 @@ internal class NotificationServiceTest {
     fun `Should not send a notification if the user has a snooze preference set to future date`() {
       val quantumId1 = "XYZ"
       val shiftNotifications: List<Notification> = listOf(
-        Notification(1, quantumId1, now, now, now, null, ShiftType.SHIFT, DetailModificationType.ADD, false)
+        Notification(1, quantumId1, now, now, now, null, ShiftType.SHIFT, DetailModificationType.ADD, false),
       )
 
       val snoozePref = LocalDate.now(clock).plusDays(20)
@@ -271,7 +271,7 @@ internal class NotificationServiceTest {
     fun `Should not send a notification if the user has a snooze preference set to today's date`() {
       val quantumId1 = "XYZ"
       val shiftNotifications: List<Notification> = listOf(
-        Notification(1, quantumId1, now, now, now, null, ShiftType.SHIFT, DetailModificationType.ADD, false)
+        Notification(1, quantumId1, now, now, now, null, ShiftType.SHIFT, DetailModificationType.ADD, false),
       )
 
       val snoozePref = LocalDate.now(clock)
@@ -291,7 +291,7 @@ internal class NotificationServiceTest {
     fun `Should send a notification if the user has a snooze preference set to yesterday's date`() {
       val quantumId1 = "XYZ"
       val shiftNotifications: List<Notification> = listOf(
-        Notification(1, quantumId1, now, now, now, null, ShiftType.SHIFT, DetailModificationType.ADD, false)
+        Notification(1, quantumId1, now, now, now, null, ShiftType.SHIFT, DetailModificationType.ADD, false),
       )
 
       val snoozePref = LocalDate.now(clock).minusDays(1)
@@ -312,7 +312,7 @@ internal class NotificationServiceTest {
     fun `Should respect communication preferences Email`() {
       val quantumId1 = "XYZ"
       val shiftNotifications: List<Notification> = listOf(
-        Notification(1, quantumId1, now.plusDays(4), now.plusDays(4), now.plusDays(4), null, ShiftType.SHIFT, DetailModificationType.ADD, false)
+        Notification(1, quantumId1, now.plusDays(4), now.plusDays(4), now.plusDays(4), null, ShiftType.SHIFT, DetailModificationType.ADD, false),
       )
 
       every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
@@ -332,7 +332,7 @@ internal class NotificationServiceTest {
     fun `Should respect communication preferences Sms`() {
       val quantumId1 = "XYZ"
       val shiftNotifications: List<Notification> = listOf(
-        Notification(1, quantumId1, now.plusDays(4), now.plusDays(4), now.plusDays(4), null, ShiftType.SHIFT, DetailModificationType.ADD, false)
+        Notification(1, quantumId1, now.plusDays(4), now.plusDays(4), now.plusDays(4), null, ShiftType.SHIFT, DetailModificationType.ADD, false),
       )
 
       every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
@@ -352,7 +352,7 @@ internal class NotificationServiceTest {
     fun `Should respect communication preferences None`() {
       val quantumId1 = "XYZ"
       val shiftNotifications: List<Notification> = listOf(
-        Notification(1, quantumId1, now.plusDays(4), now.plusDays(4), now.plusDays(4), null, ShiftType.SHIFT, DetailModificationType.ADD, false)
+        Notification(1, quantumId1, now.plusDays(4), now.plusDays(4), now.plusDays(4), null, ShiftType.SHIFT, DetailModificationType.ADD, false),
       )
 
       every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
@@ -368,7 +368,6 @@ internal class NotificationServiceTest {
 
     @Test
     fun `Tidy notifications`() {
-
       every { shiftNotificationRepository.deleteAllByShiftModifiedBefore(any()) } returns 4
 
       service.tidyNotification()
@@ -399,7 +398,7 @@ internal class NotificationServiceTest {
         task,
         shiftType,
         actionType,
-        processed
+        processed,
       )
     }
   }

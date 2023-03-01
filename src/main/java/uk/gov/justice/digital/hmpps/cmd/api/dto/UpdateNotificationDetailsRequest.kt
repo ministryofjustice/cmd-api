@@ -20,5 +20,5 @@ data class UpdateNotificationDetailsRequest(
 
   @Schema(required = true, description = "Preferred method of contact", example = "EMAIL")
   @JsonProperty("preference")
-  val commPref: CommunicationPreference
+  val commPref: CommunicationPreference,
 )

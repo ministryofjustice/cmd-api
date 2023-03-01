@@ -41,8 +41,8 @@ class CsrMockServer : WireMockServer(WIREMOCK_PORT) {
         aResponse()
           .withHeader("Content-Type", "application/json")
           .withBody(if (status == 200) "pong" else "some error")
-          .withStatus(status)
-      )
+          .withStatus(status),
+      ),
     )
   }
 
@@ -53,8 +53,8 @@ class CsrMockServer : WireMockServer(WIREMOCK_PORT) {
           aResponse()
             .withHeader("Content-Type", "application/json")
             .withBody(response)
-            .withStatus(200)
-        )
+            .withStatus(200),
+        ),
     )
   }
 
@@ -64,8 +64,8 @@ class CsrMockServer : WireMockServer(WIREMOCK_PORT) {
         aResponse()
           .withHeader("Content-Type", "application/json")
           .withBody(response)
-          .withStatus(200)
-      )
+          .withStatus(200),
+      ),
     )
   }
 
@@ -75,8 +75,8 @@ class CsrMockServer : WireMockServer(WIREMOCK_PORT) {
         aResponse()
           .withHeader("Content-Type", "application/json")
           .withBody("""{ "status": $status, "userMessage": "id does not exist" }""")
-          .withStatus(status)
-      )
+          .withStatus(status),
+      ),
     )
   }
 
@@ -87,8 +87,8 @@ class CsrMockServer : WireMockServer(WIREMOCK_PORT) {
         .willReturn(
           aResponse()
             .withHeader("Content-Type", "application/json")
-            .withStatus(200)
-        )
+            .withStatus(200),
+        ),
     )
   }
 
@@ -96,8 +96,8 @@ class CsrMockServer : WireMockServer(WIREMOCK_PORT) {
     stubFor(
       get("/updates/$region").willReturn(
         aResponse()
-          .withFault(Fault.CONNECTION_RESET_BY_PEER)
-      )
+          .withFault(Fault.CONNECTION_RESET_BY_PEER),
+      ),
     )
   }
 

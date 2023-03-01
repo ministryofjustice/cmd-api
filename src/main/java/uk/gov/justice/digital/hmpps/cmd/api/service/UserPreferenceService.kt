@@ -12,7 +12,7 @@ import java.time.LocalDate
 @Service
 class UserPreferenceService(
   private val repository: UserPreferenceRepository,
-  private val authenticationFacade: AuthenticationFacade
+  private val authenticationFacade: AuthenticationFacade,
 ) {
 
   fun getUserPreference(): UserPreferenceDto =

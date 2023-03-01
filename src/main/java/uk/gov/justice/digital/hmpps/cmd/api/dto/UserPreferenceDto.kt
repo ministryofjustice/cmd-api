@@ -20,7 +20,7 @@ data class UserPreferenceDto @JsonCreator constructor(
   val sms: String?,
   @Schema(required = false, description = "User's preferred method of communication", example = "EMAIL")
   @JsonProperty("preference")
-  val preference: CommunicationPreference?
+  val preference: CommunicationPreference?,
 ) {
 
   companion object {
@@ -30,7 +30,7 @@ data class UserPreferenceDto @JsonCreator constructor(
           it.snoozeUntil,
           it.email,
           it.sms,
-          it.commPref
+          it.commPref,
         )
       }
   }

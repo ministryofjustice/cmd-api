@@ -18,14 +18,14 @@ interface NotificationRepository : CrudRepository<Notification, Long> {
     quantumId: String,
     detailStart: LocalDateTime,
     shiftType: ShiftType,
-    shiftModified: LocalDateTime
+    shiftModified: LocalDateTime,
   ): Int
 
   fun countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndActionType(
     quantumId: String,
     detailStart: LocalDateTime,
     shiftType: ShiftType,
-    actionType: DetailModificationType
+    actionType: DetailModificationType,
   ): Int
 
   fun deleteAllByShiftModifiedBefore(shiftModified: LocalDateTime): Int

@@ -26,14 +26,14 @@ import java.time.format.DateTimeFormatter
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @SqlGroup(
   Sql(scripts = ["classpath:notification/before-test.sql"], config = SqlConfig(transactionMode = SqlConfig.TransactionMode.ISOLATED)),
-  Sql(scripts = ["classpath:notification/after-test.sql"], config = SqlConfig(transactionMode = SqlConfig.TransactionMode.ISOLATED), executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+  Sql(scripts = ["classpath:notification/after-test.sql"], config = SqlConfig(transactionMode = SqlConfig.TransactionMode.ISOLATED), executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD),
 )
 @ActiveProfiles(value = ["test"])
 @DisplayName("Integration Tests for Notification Controller")
 class NotificationControllerGetIntegrationTest(
   @Autowired val testRestTemplate: TestRestTemplate,
   @Autowired val entityBuilder: EntityWithJwtAuthorisationBuilder,
-  @Autowired val objectMapper: ObjectMapper
+  @Autowired val objectMapper: ObjectMapper,
 ) {
   val jsonTester = BasicJsonTester(this.javaClass)
 
@@ -183,7 +183,7 @@ class NotificationControllerGetIntegrationTest(
       url,
       HttpMethod.GET,
       entityBuilder.entityWithJwtAuthorisation(user, NO_ROLES),
-      String::class.java
+      String::class.java,
     )
 
   companion object {

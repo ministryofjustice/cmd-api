@@ -22,5 +22,5 @@ data class ShiftDto @JsonCreator constructor(
 
   @Schema(description = "A collection of details that make up the shift")
   @JsonProperty("details")
-  val details: Collection<DetailDto>
+  val details: Collection<DetailDto>,
 )

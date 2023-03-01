@@ -19,7 +19,7 @@ class PollingScheduler(
   @Scheduled(cron = "17 */$INTERVAL 6-21 * * ?")
   @SchedulerLock(
     name = "pollNotificationsLock",
-    lockAtLeastFor = "PT${MIN_LOCK}M"
+    lockAtLeastFor = "PT${MIN_LOCK}M",
   )
   fun pollNotifications() {
     log.info("pollNotifications start")
@@ -35,9 +35,9 @@ class PollingScheduler(
       "PollingScheduler",
       mapOf(
         "durationMillis" to duration.toString(),
-        "duration" to DurationFormatUtils.formatDuration(duration, "HH:mm:ss")
+        "duration" to DurationFormatUtils.formatDuration(duration, "HH:mm:ss"),
       ),
-      null
+      null,
     )
     log.info("pollNotifications end")
   }
@@ -45,7 +45,7 @@ class PollingScheduler(
   @Scheduled(cron = "0 37 3 * * ?")
   @SchedulerLock(
     name = "tidyNotificationsLock",
-    lockAtLeastFor = "PT10M"
+    lockAtLeastFor = "PT10M",
   )
   fun tidyNotifications() {
     log.info("tidyNotifications start")
@@ -58,9 +58,9 @@ class PollingScheduler(
       "PollingSchedulerTidy",
       mapOf(
         "durationMillis" to duration.toString(),
-        "duration" to DurationFormatUtils.formatDuration(duration, "HH:mm:ss")
+        "duration" to DurationFormatUtils.formatDuration(duration, "HH:mm:ss"),
       ),
-      null
+      null,
     )
     log.info("tidyNotifications end")
   }

@@ -8,5 +8,5 @@ import java.time.LocalDate
 data class UpdateSnoozeUntilRequest(
   @Schema(required = true, description = "Date to snooze notifications until", example = "2020-08-27")
   @JsonProperty("snoozeUntil")
-  val snoozeUntil: LocalDate
+  val snoozeUntil: LocalDate,
 )

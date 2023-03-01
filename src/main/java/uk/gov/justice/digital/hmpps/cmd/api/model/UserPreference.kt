@@ -27,5 +27,5 @@ data class UserPreference(
 
   @Enumerated(EnumType.STRING)
   @Column
-  var commPref: CommunicationPreference = CommunicationPreference.NONE
+  var commPref: CommunicationPreference = CommunicationPreference.NONE,
 )
