@@ -63,7 +63,7 @@ class NotificationDtoTest {
         task,
         shiftType,
         actionType,
-        processed
+        processed,
       )
     }
 
@@ -88,7 +88,7 @@ class NotificationDtoTest {
         task,
         shiftType,
         actionType,
-        processed
+        processed,
       )
     }
   }

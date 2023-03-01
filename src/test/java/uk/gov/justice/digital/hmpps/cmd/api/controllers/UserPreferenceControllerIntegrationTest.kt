@@ -25,13 +25,13 @@ import java.time.LocalDate
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @SqlGroup(
   Sql(scripts = ["classpath:preference/before-test.sql"], config = SqlConfig(transactionMode = SqlConfig.TransactionMode.ISOLATED)),
-  Sql(scripts = ["classpath:preference/after-test.sql"], config = SqlConfig(transactionMode = SqlConfig.TransactionMode.ISOLATED), executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+  Sql(scripts = ["classpath:preference/after-test.sql"], config = SqlConfig(transactionMode = SqlConfig.TransactionMode.ISOLATED), executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD),
 )
 @ActiveProfiles(value = ["test"])
 @DisplayName("Integration Tests for userPreferencesController")
 class UserPreferenceControllerIntegrationTest(
   @Autowired val testRestTemplate: TestRestTemplate,
-  @Autowired val entityBuilder: EntityWithJwtAuthorisationBuilder
+  @Autowired val entityBuilder: EntityWithJwtAuthorisationBuilder,
 ) {
   val jsonTester = BasicJsonTester(this.javaClass)
 
@@ -140,7 +140,7 @@ class UserPreferenceControllerIntegrationTest(
       PUT_SNOOZE_PREFERENCES_TEMPLATE,
       HttpMethod.PUT,
       entityBuilder.entityWithJwtAuthorisation(user, NO_ROLES, UpdateSnoozeUntilRequest(date)),
-      Void::class.java
+      Void::class.java,
     )
 
   fun putNotificationPreference(user: String, email: String, sms: String?, pref: CommunicationPreference): ResponseEntity<Void> =
@@ -148,7 +148,7 @@ class UserPreferenceControllerIntegrationTest(
       PUT_NOTIFICATION_PREFERENCES_TEMPLATE,
       HttpMethod.PUT,
       entityBuilder.entityWithJwtAuthorisation(user, NO_ROLES, UpdateNotificationDetailsRequest(email, sms, pref)),
-      Void::class.java
+      Void::class.java,
     )
 
   fun getNotificationPreference(user: String): ResponseEntity<String> =
@@ -156,7 +156,7 @@ class UserPreferenceControllerIntegrationTest(
       NOTIFICATION_PREFERENCES_TEMPLATE,
       HttpMethod.GET,
       entityBuilder.entityWithJwtAuthorisation(user, NO_ROLES),
-      String::class.java
+      String::class.java,
     )
 
   fun getNotificationPreference2(user: String): ResponseEntity<String> =
@@ -164,7 +164,7 @@ class UserPreferenceControllerIntegrationTest(
       NOTIFICATION_PREFERENCES_TEMPLATE2,
       HttpMethod.GET,
       entityBuilder.entityWithJwtAuthorisation(user, NO_ROLES),
-      String::class.java
+      String::class.java,
     )
 
   companion object {

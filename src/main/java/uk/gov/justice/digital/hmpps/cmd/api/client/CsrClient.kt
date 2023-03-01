@@ -30,7 +30,7 @@ class CsrClient(
   @Cacheable(
     value = ["userDetails"],
     unless = "#result.size() == 0",
-    key = "{ #from.toEpochDay().toString(), #to.toEpochDay().toString(), #quantumId }"
+    key = "{ #from.toEpochDay().toString(), #to.toEpochDay().toString(), #quantumId }",
   )
   fun getDetailsForUser(from: LocalDate, to: LocalDate, region: Int?, quantumId: String): Collection<CsrDetailDto> {
     if (region != null) {
@@ -103,7 +103,7 @@ data class CsrDetailDto @JsonCreator constructor(
 
   var detailEnd: LocalDateTime,
 
-  var activity: String
+  var activity: String,
 )
 
 data class CsrModifiedDetailDto @JsonCreator constructor(
@@ -121,5 +121,5 @@ data class CsrModifiedDetailDto @JsonCreator constructor(
 
   val activity: String?,
 
-  var actionType: DetailModificationType?
+  var actionType: DetailModificationType?,
 )

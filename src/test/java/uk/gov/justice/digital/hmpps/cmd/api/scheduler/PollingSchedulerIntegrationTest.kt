@@ -60,7 +60,7 @@ class PollingSchedulerIntegrationTest(
         "actionType" : "ADD"
         }
       ]
-      """.trimIndent()
+      """.trimIndent(),
     )
     CsrApiExtension.api.stubGetUpdates(
       2,
@@ -73,7 +73,7 @@ class PollingSchedulerIntegrationTest(
         "detailEnd" : "2022-03-31T11:00:00",
         "activity" : "CCTV monitoring",
         "actionType" : "ADD"
-        }]"""
+        }]""",
     )
     CsrApiExtension.api.stubGetUpdates(3, "[]")
     CsrApiExtension.api.stubGetUpdates(4, "[]")
@@ -120,7 +120,6 @@ class PollingSchedulerIntegrationTest(
 
   @Test
   fun `tidy job functions`() {
-
     notificationRepository.save(
       Notification(
         quantumId = "user1",
@@ -131,7 +130,7 @@ class PollingSchedulerIntegrationTest(
         actionType = DetailModificationType.ADD,
         parentType = ShiftType.SHIFT,
         processed = true,
-      )
+      ),
     )
     notificationRepository.save(
       Notification(
@@ -143,7 +142,7 @@ class PollingSchedulerIntegrationTest(
         actionType = DetailModificationType.ADD,
         parentType = ShiftType.SHIFT,
         processed = true,
-      )
+      ),
     )
 
     pollingScheduler.tidyNotifications()
@@ -179,7 +178,7 @@ class PollingSchedulerIntegrationTest(
         "actionType" : "ADD"
         }
       ]
-      """.trimIndent()
+      """.trimIndent(),
     )
     CsrApiExtension.api.stubConnectionResetByPeer(2)
     CsrApiExtension.api.stubGetUpdates(
@@ -193,7 +192,7 @@ class PollingSchedulerIntegrationTest(
         "detailEnd" : "2022-03-31T11:00:00",
         "activity" : "CCTV monitoring",
         "actionType" : "ADD"
-        }]"""
+        }]""",
     )
     CsrApiExtension.api.stubGetUpdates(4, "[]")
     CsrApiExtension.api.stubGetUpdates(5, "[]")

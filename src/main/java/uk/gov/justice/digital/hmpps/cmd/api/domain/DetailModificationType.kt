@@ -6,7 +6,8 @@ enum class DetailModificationType(val description: String) {
   ADD("been added"),
   EDIT("changed"),
   DELETE("been removed"),
-  UNCHANGED("not changed");
+  UNCHANGED("not changed"),
+  ;
 
   companion object {
     fun from(value: String): DetailModificationType {

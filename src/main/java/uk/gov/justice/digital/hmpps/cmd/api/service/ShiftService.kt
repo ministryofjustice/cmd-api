@@ -22,7 +22,7 @@ class ShiftService(
   private val prisonService: PrisonService,
   private val csrClient: CsrClient,
   private val clock: Clock,
-  private val authenticationFacade: AuthenticationFacade
+  private val authenticationFacade: AuthenticationFacade,
 ) {
 
   fun getDetailsForUser(fromParam: Optional<LocalDate>, toParam: Optional<LocalDate>): Collection<ShiftDto> {
@@ -44,7 +44,7 @@ class ShiftService(
         date,
         FullDayActivityType.from(fullDayActivity), // This value can be different from the value below where we don't care about the activity e.g DetailType.SHIFT & "Secondment" rather than REST_DAY & "rest day"
         fullDayActivity,
-        fullDay
+        fullDay,
       )
     }.collect(Collectors.toList())
   }
@@ -112,7 +112,7 @@ class ShiftService(
 
   private fun getMiddleDetails(
     details: Collection<CsrDetailDto>,
-    startAndFinishDetails: Collection<DetailDto>
+    startAndFinishDetails: Collection<DetailDto>,
   ): Collection<DetailDto> =
 
     // The middle details are the fullDetails - the start and finish details
@@ -126,7 +126,7 @@ class ShiftService(
           it.detailStart,
           it.detailEnd,
           it.shiftType,
-          null
+          null,
         )
       }
 
@@ -159,7 +159,7 @@ class ShiftService(
               ShiftType.OVERTIME -> TaskDisplayType.OVERTIME_DAY_START
               else -> TaskDisplayType.DAY_START
             },
-            it.detailStart
+            it.detailStart,
           )
         }
 
@@ -176,7 +176,7 @@ class ShiftService(
               else -> TaskDisplayType.DAY_FINISH
             },
             it.detailEnd,
-            calculateShiftDuration(dayShiftDetails)
+            calculateShiftDuration(dayShiftDetails),
           )
         }
 
@@ -192,7 +192,7 @@ class ShiftService(
               ShiftType.OVERTIME -> TaskDisplayType.OVERTIME_NIGHT_START
               else -> TaskDisplayType.NIGHT_START
             },
-            it.detailStart
+            it.detailStart,
           )
         }
 
@@ -216,7 +216,7 @@ class ShiftService(
                          because the collection has multiple day's data in it
                          if we use calculateShiftDuration() it will be wrong.
                         */
-            Duration.between(it.detailStart, it.detailEnd).toSeconds()
+            Duration.between(it.detailStart, it.detailEnd).toSeconds(),
           )
         }
 
@@ -227,10 +227,10 @@ class ShiftService(
   private fun calculateShiftDuration(details: Collection<CsrDetailDto>): Long {
     // We have to exclude unpaid breaks
     return details.filter { detail -> FullDayActivityType.from(detail.activity) != FullDayActivityType.BREAK }.map {
-      detail ->
+        detail ->
       Duration.between(
         detail.detailStart,
-        detail.detailEnd
+        detail.detailEnd,
       ).toSeconds()
     }.sum()
   }

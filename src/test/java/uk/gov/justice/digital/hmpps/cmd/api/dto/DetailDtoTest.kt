@@ -10,7 +10,6 @@ class DetailDtoTest {
 
   @Test
   fun `Create Task Dto `() {
-
     val label = "anylabel"
     val start = LocalDateTime.of(1, 2, 3, 5, 6, 1)
     val end = LocalDateTime.of(2, 3, 4, 6, 7, 8)
@@ -26,7 +25,7 @@ class DetailDtoTest {
       entityType,
       displayType,
       eventTime,
-      finish
+      finish,
     )
 
     Assertions.assertThat(day.activity).isEqualTo(label)

@@ -19,5 +19,5 @@ data class Prison(
   var prisonName: String,
 
   @Column(nullable = false)
-  var region: Int
+  var region: Int,
 )

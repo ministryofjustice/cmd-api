@@ -21,7 +21,11 @@ class ShiftController(private val shiftService: ShiftService) {
   @Operation(summary = "Retrieve all details for a user between two dates")
   @GetMapping("/user/details")
   fun getShifts(
-    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) from: Optional<LocalDate>,
-    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) to: Optional<LocalDate>
+    @RequestParam
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    from: Optional<LocalDate>,
+    @RequestParam
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    to: Optional<LocalDate>,
   ): Collection<ShiftDto> = shiftService.getDetailsForUser(from, to)
 }

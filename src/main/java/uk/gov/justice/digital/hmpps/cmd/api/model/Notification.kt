@@ -51,16 +51,16 @@ data class Notification(
   var actionType: DetailModificationType,
 
   @Column(nullable = false)
-  var processed: Boolean
+  var processed: Boolean,
 ) {
   fun getNotificationDescription(communicationPreference: CommunicationPreference): String {
-
     val bulletPoint = getOptionalBulletPoint(communicationPreference)
     val date =
-      if (communicationPreference == CommunicationPreference.NONE)
+      if (communicationPreference == CommunicationPreference.NONE) {
         this.detailStart.getDateTimeFormattedForNotifications()
-      else
+      } else {
         this.detailStart.getDateTimeFormattedForTemplate()
+      }
     val taskTime = getOptionalTaskDescription(this.detailStart, this.detailEnd, this.activity)
     val shiftActionType = this.actionType
     val taskTo = getOptionalTaskTo(this.activity, communicationPreference, shiftActionType)
@@ -84,7 +84,7 @@ data class Notification(
         activity = dtoCsr.activity,
         parentType = dtoCsr.shiftType,
         actionType = dtoCsr.actionType!!,
-        processed = false
+        processed = false,
       )
     }
 
@@ -95,11 +95,13 @@ data class Notification(
       val day = this.dayOfMonth
       val ordinal = if (day in 11..13) {
         "th"
-      } else when (day % 10) {
-        1 -> "st"
-        2 -> "nd"
-        3 -> "rd"
-        else -> "th"
+      } else {
+        when (day % 10) {
+          1 -> "st"
+          2 -> "nd"
+          3 -> "rd"
+          else -> "th"
+        }
       }
 
       return DateTimeFormatter.ofPattern("EEEE, d'$ordinal' MMMM").format(this)
@@ -128,28 +130,34 @@ data class Notification(
         } else {
           "(full day) "
         }
-      } else ""
+      } else {
+        ""
+      }
     }
 
     private fun getOptionalTaskTo(
       task: String?,
       communicationPreference: CommunicationPreference,
-      shiftActionType: DetailModificationType
+      shiftActionType: DetailModificationType,
     ): String =
-      if (communicationPreference == CommunicationPreference.NONE && !task.isNullOrEmpty())
+      if (communicationPreference == CommunicationPreference.NONE && !task.isNullOrEmpty()) {
         when (shiftActionType) {
           ADD -> " as $task"
           EDIT -> " to $task"
           DELETE -> " (was $task)"
           else -> ""
         }
-      else ""
+      } else {
+        ""
+      }
 
     // Notify supports bullet points for Email but not Sms
     private fun getOptionalBulletPoint(communicationPreference: CommunicationPreference): String {
       return if (communicationPreference == CommunicationPreference.EMAIL) {
         "* "
-      } else ""
+      } else {
+        ""
+      }
     }
   }
 }

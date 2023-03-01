@@ -21,7 +21,7 @@ class OpenApiConfiguration(buildProperties: BuildProperties?) {
     .servers(
       listOf(
         Server().url("http://localhost:8080").description("Local"),
-      )
+      ),
     )
     .components(
       Components().addSecuritySchemes(
@@ -31,8 +31,8 @@ class OpenApiConfiguration(buildProperties: BuildProperties?) {
           .scheme("bearer")
           .bearerFormat("JWT")
           .`in`(SecurityScheme.In.HEADER)
-          .name("Authorization")
-      )
+          .name("Authorization"),
+      ),
     )
     .info(
       Info()
@@ -40,7 +40,7 @@ class OpenApiConfiguration(buildProperties: BuildProperties?) {
         .version(version)
         .description("Reference data API for CMD")
         .license(License().name("MIT").url("https://opensource.org/licenses/MIT"))
-        .contact(Contact().name("HMPPS Digital Studio").email("feedback@digital.justice.gov.uk"))
+        .contact(Contact().name("HMPPS Digital Studio").email("feedback@digital.justice.gov.uk")),
     )
     .addSecurityItem(SecurityRequirement().addList("bearer-jwt", listOf("read", "write")))
 }

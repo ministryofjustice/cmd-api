@@ -48,9 +48,10 @@ class ControllerAdvice {
       Consumer { error: ObjectError ->
         val fieldName = (error as FieldError).field
         val errorMessage = error.getDefaultMessage()
-        if (errorMessage != null)
+        if (errorMessage != null) {
           errors[fieldName] = errorMessage
-      }
+        }
+      },
     )
     return ResponseEntity
       .status(HttpStatus.BAD_REQUEST)

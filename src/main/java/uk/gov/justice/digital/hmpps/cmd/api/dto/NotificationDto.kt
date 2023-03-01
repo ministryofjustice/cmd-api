@@ -17,7 +17,7 @@ data class NotificationDto @JsonCreator constructor(
   val shiftModified: LocalDateTime,
   @Schema(required = true, description = "Whether the notification has been processed", example = "true")
   @JsonProperty("processed")
-  val processed: Boolean
+  val processed: Boolean,
 ) {
 
   companion object {
@@ -26,7 +26,7 @@ data class NotificationDto @JsonCreator constructor(
       return NotificationDto(
         notification.getNotificationDescription(communicationPreference),
         notification.shiftModified,
-        notification.processed
+        notification.processed,
       )
     }
   }

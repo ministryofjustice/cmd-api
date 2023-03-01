@@ -25,9 +25,9 @@ class UserPreferenceController(private val userPreferenceService: UserPreference
     responses = [
       ApiResponse(
         responseCode = "200",
-        content = [Content(mediaType = "application/json", schema = Schema(implementation = UserPreferenceDto::class))]
-      )
-    ]
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = UserPreferenceDto::class))],
+      ),
+    ],
   )
   @GetMapping("/preferences/notifications2")
   @Deprecated("No longer needed - use /preferences/notifications")
@@ -38,9 +38,9 @@ class UserPreferenceController(private val userPreferenceService: UserPreference
     responses = [
       ApiResponse(
         responseCode = "200",
-        content = [Content(mediaType = "application/json", schema = Schema(implementation = UserPreferenceDto::class))]
-      )
-    ]
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = UserPreferenceDto::class))],
+      ),
+    ],
   )
   @GetMapping("/preferences/notifications")
   fun getNotificationPreferences(): UserPreferenceDto = userPreferenceService.getUserPreference()
@@ -49,9 +49,9 @@ class UserPreferenceController(private val userPreferenceService: UserPreference
     summary = "Update the notification snooze until preference for a user",
     responses = [
       ApiResponse(
-        responseCode = "200"
-      )
-    ]
+        responseCode = "200",
+      ),
+    ],
   )
   @PutMapping("/preferences/notifications/snooze")
   fun updateSnoozeNotification(@RequestBody untilRequest: UpdateSnoozeUntilRequest) {
@@ -62,12 +62,15 @@ class UserPreferenceController(private val userPreferenceService: UserPreference
     summary = "Update the notification details for a user",
     responses = [
       ApiResponse(
-        responseCode = "200"
-      )
-    ]
+        responseCode = "200",
+      ),
+    ],
   )
   @PutMapping("/preferences/notifications/details")
-  fun updateNotificationDetails(@Valid @RequestBody detailsRequest: UpdateNotificationDetailsRequest) {
+  fun updateNotificationDetails(
+    @Valid @RequestBody
+    detailsRequest: UpdateNotificationDetailsRequest,
+  ) {
     userPreferenceService.updateNotificationDetails(detailsRequest.email, detailsRequest.sms, detailsRequest.commPref)
   }
 }

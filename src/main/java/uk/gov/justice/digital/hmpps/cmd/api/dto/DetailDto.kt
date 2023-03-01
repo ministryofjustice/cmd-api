@@ -35,5 +35,5 @@ data class DetailDto @JsonCreator constructor(
 
   @Schema(description = "If the type is a 'finish' we include the duration of the whole shift in seconds", example = "54321")
   @JsonProperty("finishDuration")
-  var finishDuration: Long? = null
+  var finishDuration: Long? = null,
 )

@@ -14,7 +14,7 @@ import java.time.LocalDate
 @ActiveProfiles("test")
 @DataJpaTest
 class PrisonRepositoryTest(
-  @Autowired val repository: PrisonRepository
+  @Autowired val repository: PrisonRepository,
 ) {
 
   private val now: LocalDate = LocalDate.now()
@@ -30,7 +30,6 @@ class PrisonRepositoryTest(
 
     @Test
     fun `Should return all prisons`() {
-
       val prison1 = Prison("AKA", "Big plan", "Arkham Asylum", 5)
       val prison2 = Prison("TPT", "Little plan", "The Pit", 3)
 

@@ -48,7 +48,7 @@ class NotificationService(
     processOnReadParam: Optional<Boolean>,
     unprocessedOnlyParam: Optional<Boolean>,
     fromParam: Optional<LocalDate>,
-    toParam: Optional<LocalDate>
+    toParam: Optional<LocalDate>,
   ): Collection<NotificationDto> {
     val quantumId = authenticationFacade.currentUsername
     val from = calculateStartDateTime(fromParam, toParam)
@@ -149,7 +149,7 @@ class NotificationService(
       telemetryClient.trackEvent(
         "notificationsError",
         mapOf("region" to region.toString()),
-        null
+        null,
       )
     }
   }
@@ -170,9 +170,9 @@ class NotificationService(
         "startOfDay" to "$startOfDay",
         "durationMillis" to duration.toString(),
         "duration" to DurationFormatUtils.formatDuration(duration, "HH:mm:ss"),
-        "rowsDeleted" to rows.toString()
+        "rowsDeleted" to rows.toString(),
       ),
-      null
+      null,
     )
   }
 
@@ -180,26 +180,32 @@ class NotificationService(
     quantumId: String,
     start: LocalDateTime,
     end: LocalDateTime,
-    unprocessedOnly: Boolean
+    unprocessedOnly: Boolean,
   ): Collection<Notification> {
     return notificationRepository.findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(
       quantumId,
       start,
-      end
+      end,
     )
       .filter { !unprocessedOnly || (unprocessedOnly && !it.processed) }
   }
 
   private fun thereIsNoADDForThisShift(it: CsrModifiedDetailDto) =
     notificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndActionType(
-      it.quantumId!!, it.detailStart, it.shiftType, DetailModificationType.ADD
+      it.quantumId!!,
+      it.detailStart,
+      it.shiftType,
+      DetailModificationType.ADD,
     ) == 0
 
   private fun shiftChangeAlreadyRecorded(it: CsrModifiedDetailDto) =
     (
       it.shiftModified != null &&
         notificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
-        it.quantumId!!, it.detailStart, it.shiftType, it.shiftModified
+        it.quantumId!!,
+        it.detailStart,
+        it.shiftType,
+        it.shiftModified,
       ) > 0
       ).also { result -> if (result) log.warn("shiftChangeAlreadyRecorded was true for ${it.quantumId} at ${it.shiftModified}") }
   // This check is probably redundant as triggers should not repeatedly find the same event (unlike the old polling),
@@ -209,7 +215,7 @@ class NotificationService(
     @Suppress("UNUSED_PARAMETER") key: String?,
     acc: CsrModifiedDetailDto?,
     item: CsrModifiedDetailDto,
-    first: Boolean
+    first: Boolean,
   ): CsrModifiedDetailDto =
     if (first || item.shiftModified == null || acc == null || (acc.shiftModified != null && item.shiftModified.isAfter(acc.shiftModified))) item else acc
 
@@ -273,13 +279,13 @@ class NotificationService(
               NotificationType.EMAIL_SUMMARY.value,
               userPreference.email,
               generateTemplateValues(chunk, communicationPreference),
-              null
+              null,
             )
             CommunicationPreference.SMS -> notifyClient.sendSms(
               NotificationType.SMS_SUMMARY.value,
               userPreference.sms,
               generateTemplateValues(chunk, communicationPreference),
-              null
+              null,
             )
             else -> {
               log.info("sendNotification: Skipping sending notifications for ${userPreference.quantumId}")
@@ -304,7 +310,7 @@ class NotificationService(
 
   private fun generateTemplateValues(
     chunk: List<Notification>,
-    communicationPreference: CommunicationPreference
+    communicationPreference: CommunicationPreference,
   ): MutableMap<String, String?> {
     val personalisation = mutableMapOf<String, String?>()
     // Get the oldest modified date "Changes since"
@@ -318,7 +324,7 @@ class NotificationService(
             chunk.getOrNull(index)?.getNotificationDescription(communicationPreference)
               ?: ""
             )
-        }.toMap()
+        }.toMap(),
     )
     return personalisation
   }

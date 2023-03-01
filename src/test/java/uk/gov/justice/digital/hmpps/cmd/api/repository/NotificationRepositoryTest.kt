@@ -17,7 +17,7 @@ import java.time.LocalDateTime
 @ActiveProfiles("test")
 @DataJpaTest
 class NotificationRepositoryTest(
-  @Autowired val repository: NotificationRepository
+  @Autowired val repository: NotificationRepository,
 ) {
 
   private val now: LocalDate = LocalDate.now()
@@ -41,7 +41,7 @@ class NotificationRepositoryTest(
       val notifications = repository.findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(
         quantumId,
         now.minusDays(1).atStartOfDay(),
-        now.plusDays(1).atStartOfDay()
+        now.plusDays(1).atStartOfDay(),
       )
       assertThat(notifications).isNotEmpty
 
@@ -58,7 +58,7 @@ class NotificationRepositoryTest(
       val notifications = repository.findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(
         quantumId,
         now.minusDays(1).atStartOfDay(),
-        now.plusDays(1).atStartOfDay()
+        now.plusDays(1).atStartOfDay(),
       )
       assertThat(notifications).isNotEmpty
 
@@ -75,7 +75,7 @@ class NotificationRepositoryTest(
       val notifications = repository.findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(
         quantumId,
         now.minusDays(1).atStartOfDay(),
-        now.plusDays(1).atStartOfDay()
+        now.plusDays(1).atStartOfDay(),
       )
       assertThat(notifications).isEmpty()
     }
@@ -90,7 +90,7 @@ class NotificationRepositoryTest(
       val notifications = repository.findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(
         quantumId,
         now.minusDays(1).atStartOfDay(),
-        now.plusDays(1).atStartOfDay()
+        now.plusDays(1).atStartOfDay(),
       )
       assertThat(notifications).isEmpty()
     }
@@ -103,7 +103,7 @@ class NotificationRepositoryTest(
         "XYZ",
         date,
         ShiftType.SHIFT,
-        date
+        date,
       )
       assertThat(notifications).isEqualTo(0)
     }
@@ -118,7 +118,7 @@ class NotificationRepositoryTest(
         "XyZ",
         date,
         ShiftType.SHIFT,
-        date
+        date,
       )
       assertThat(notifications).isEqualTo(1)
     }
@@ -133,7 +133,7 @@ class NotificationRepositoryTest(
         "XYZ",
         date,
         ShiftType.SHIFT,
-        date
+        date,
       )
       assertThat(notifications).isEqualTo(1)
     }
@@ -148,7 +148,7 @@ class NotificationRepositoryTest(
         "XYZ",
         date,
         ShiftType.SHIFT,
-        date
+        date,
       )
       assertThat(notifications).isEqualTo(2)
     }
@@ -161,7 +161,7 @@ class NotificationRepositoryTest(
         "XYZ",
         date,
         ShiftType.SHIFT,
-        DetailModificationType.ADD
+        DetailModificationType.ADD,
       )
       assertThat(notifications).isEqualTo(0)
     }
@@ -176,7 +176,7 @@ class NotificationRepositoryTest(
         "XYZ",
         date,
         ShiftType.SHIFT,
-        DetailModificationType.ADD
+        DetailModificationType.ADD,
       )
       assertThat(notifications).isEqualTo(1)
     }
@@ -191,7 +191,7 @@ class NotificationRepositoryTest(
         "XYZ",
         date,
         ShiftType.SHIFT,
-        DetailModificationType.ADD
+        DetailModificationType.ADD,
       )
       assertThat(notifications).isEqualTo(2)
     }
@@ -264,7 +264,7 @@ class NotificationRepositoryTest(
         activity = task,
         parentType = shiftType,
         actionType = actionType,
-        processed = processed
+        processed = processed,
       )
     }
   }
