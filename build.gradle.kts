@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.1.1-beta-3"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.1.3-beta"
   kotlin("plugin.spring") version "1.8.10"
   kotlin("plugin.jpa") version "1.8.10"
   idea
@@ -22,7 +22,7 @@ dependencies {
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
   runtimeOnly("com.h2database:h2:2.1.214")
-  runtimeOnly("org.postgresql:postgresql:42.5.4")
+  runtimeOnly("org.postgresql:postgresql:42.6.0")
   runtimeOnly("com.zaxxer:HikariCP")
   runtimeOnly("org.flywaydb:flyway-core")
 
@@ -34,13 +34,13 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-cache")
   implementation("com.github.ben-manes.caffeine:caffeine")
 
-  implementation("net.javacrumbs.shedlock:shedlock-spring:5.1.0")
-  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:5.1.0")
+  implementation("net.javacrumbs.shedlock:shedlock-spring:5.2.0")
+  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:5.2.0")
 
   implementation("org.springframework:spring-webflux")
   implementation("org.springframework.boot:spring-boot-starter-reactor-netty")
 
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4")
 
   implementation("org.apache.commons:commons-lang3:3.12.0")
   implementation("uk.gov.service.notify:notifications-java-client:3.19.1-RELEASE")
@@ -55,7 +55,7 @@ dependencies {
   testImplementation("com.tngtech.java:junit-dataprovider:1.13.1")
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.36.1")
   testImplementation("io.github.http-builder-ng:http-builder-ng-apache:1.0.4")
-  testImplementation("com.ninja-squad:springmockk:4.0.0")
+  testImplementation("com.ninja-squad:springmockk:4.0.2")
   testImplementation("io.jsonwebtoken:jjwt-impl:0.11.5")
   testImplementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
   testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:2.35.0")
