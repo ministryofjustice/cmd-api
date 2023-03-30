@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.1.3-beta"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.1.3-beta-2"
   kotlin("plugin.spring") version "1.8.10"
   kotlin("plugin.jpa") version "1.8.10"
   idea
@@ -53,7 +53,7 @@ dependencies {
   }
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.tngtech.java:junit-dataprovider:1.13.1")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.36.1")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.37.0")
   testImplementation("io.github.http-builder-ng:http-builder-ng-apache:1.0.4")
   testImplementation("com.ninja-squad:springmockk:4.0.2")
   testImplementation("io.jsonwebtoken:jjwt-impl:0.11.5")
