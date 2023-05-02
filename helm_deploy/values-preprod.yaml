@@ -19,7 +19,7 @@ generic-service:
 
   scheduledDowntime:
     enabled: true
-    startup: '20 6 0 * 1-5' # Start at 6.20am UTC Monday-Friday
+    startup: '20 6 * * 1-5' # Start at 6.20am UTC Monday-Friday
     shutdown: '50 21 * * 1-5' # Stop at 9.50pm UTC Monday-Friday
   
 cron:
