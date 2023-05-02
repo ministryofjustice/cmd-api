@@ -50,27 +50,13 @@ workflows:
               ignore: /.*/
       - hmpps/helm_lint:
           name: helm_lint
+          env: preprod
       - hmpps/build_multiplatform_docker:
           name: build_docker
           filters:
             branches:
               only:
                 - main
-      - hmpps/deploy_env:
-          name: deploy_dev
-          env: "dev"
-          jira_update: true
-          context: hmpps-common-vars
-          filters:
-            branches:
-              only:
-                - main
-          requires:
-            - validate
-            - helm_lint
-            - build_docker
-      # CMD uses the preprod environment as a dev env (CSR dev no longer exists)
-      # so there is no reason to wait before preprod deployment
       - hmpps/deploy_env:
           name: deploy_preprod
           env: "preprod"
@@ -80,7 +66,13 @@ workflows:
             - check-my-diary-preprod # we only need the kube override settings, the purpose of a context is to share across projects.
             - hmpps-common-vars
           requires:
-            - deploy_dev
+            - validate
+            - helm_lint
+            - build_docker
+          filters:
+            branches:
+              only:
+                - main
       - request-prod-approval:
           type: approval
           requires:

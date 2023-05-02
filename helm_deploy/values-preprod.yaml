@@ -16,6 +16,11 @@ generic-service:
     OAUTH_ENDPOINT_URL: "https://sign-in-preprod.hmpps.service.justice.gov.uk/auth"
     ELITE2API_ENDPOINT_URL: "https://api-preprod.prison.service.justice.gov.uk"
     CSR_ENDPOINT_URL: "https://csr-api-prprod.aks-live-1.studio-hosting.service.justice.gov.uk"
+
+  scheduledDowntime:
+    enabled: true
+    startup: '20 6 0 * 1-5' # Start at 6.20am UTC Monday-Friday
+    shutdown: '50 21 * * 1-5' # Stop at 9.50pm UTC Monday-Friday
   
 cron:
   namespace: check-my-diary-preprod
