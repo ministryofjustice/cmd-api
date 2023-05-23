@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.1.4-beta-4"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.2.0-beta"
   kotlin("plugin.spring") version "1.8.21"
   kotlin("plugin.jpa") version "1.8.21"
   idea
@@ -34,8 +34,8 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-cache")
   implementation("com.github.ben-manes.caffeine:caffeine")
 
-  implementation("net.javacrumbs.shedlock:shedlock-spring:5.2.0")
-  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:5.2.0")
+  implementation("net.javacrumbs.shedlock:shedlock-spring:5.3.0")
+  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:5.3.0")
 
   implementation("org.springframework:spring-webflux")
   implementation("org.springframework.boot:spring-boot-starter-reactor-netty")
@@ -43,7 +43,7 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
 
   implementation("org.apache.commons:commons-lang3:3.12.0")
-  implementation("uk.gov.service.notify:notifications-java-client:3.19.1-RELEASE")
+  implementation("uk.gov.service.notify:notifications-java-client:4.1.0-RELEASE")
 
   testAnnotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
@@ -53,7 +53,7 @@ dependencies {
   }
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.tngtech.java:junit-dataprovider:1.13.1")
-  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.37.0")
+  testImplementation("net.javacrumbs.json-unit:json-unit-assertj:2.38.0")
   testImplementation("io.github.http-builder-ng:http-builder-ng-apache:1.0.4")
   testImplementation("com.ninja-squad:springmockk:4.0.2")
   testImplementation("io.jsonwebtoken:jjwt-impl:0.11.5")
