@@ -24,3 +24,6 @@ generic-service:
   
 cron:
   namespace: check-my-diary-preprod
+
+generic-prometheus-alerts:
+  businessHoursOnly: true
