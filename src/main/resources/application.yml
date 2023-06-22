@@ -13,6 +13,9 @@ spring:
 
   security:
     oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${oauth.endpoint.url}/.well-known/jwks.json
       client:
         registration:
           elite2-api:
@@ -28,10 +31,6 @@ spring:
   datasource:
     hikari:
       maximum-pool-size: 25
-
-  cache:
-    cache-names: userDetails
-    caffeine.spec: maximumSize=2000,expireAfterWrite=300s,recordStats
 
   quartz:
     job-store-type: jdbc

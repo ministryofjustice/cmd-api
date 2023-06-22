@@ -17,11 +17,6 @@ spring:
       enabled: true
       path: /h2-console
 
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          public-key-location: classpath:local-public-key.pub
 oauth:
   client:
     id: my-diary
