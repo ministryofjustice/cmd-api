@@ -1,6 +1,7 @@
 ---
 generic-service:
   nameOverride: cmd-api
+  productId: DPS052
 
   image:
     repository: quay.io/hmpps/cmd-api
