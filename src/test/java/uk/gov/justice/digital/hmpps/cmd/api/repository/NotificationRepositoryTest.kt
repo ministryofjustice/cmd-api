@@ -141,8 +141,7 @@ class NotificationRepositoryTest(
     @Test
     fun `Should return count if 2 matches`() {
       val date = now.plusDays(3).atStartOfDay()
-      val notification = getValidNotification(date, date)
-      repository.saveAll(listOf(notification, notification))
+      repository.saveAll(listOf(getValidNotification(date, date), getValidNotification(date, date)))
 
       val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
         "XYZ",
@@ -184,8 +183,7 @@ class NotificationRepositoryTest(
     @Test
     fun `Add Type Check Should return count if 2 matches`() {
       val date = now.plusDays(3).atStartOfDay()
-      val notification = getValidNotification(date, date)
-      repository.saveAll(listOf(notification, notification))
+      repository.saveAll(listOf(getValidNotification(date, date), getValidNotification(date, date)))
 
       val notifications = repository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndActionType(
         "XYZ",
@@ -256,7 +254,6 @@ class NotificationRepositoryTest(
       val actionType = DetailModificationType.ADD
 
       return Notification(
-        id = 1L,
         quantumId = quantumId,
         shiftModified = shiftModified,
         detailStart = shiftDate,
