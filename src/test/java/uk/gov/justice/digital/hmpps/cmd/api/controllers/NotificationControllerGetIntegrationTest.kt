@@ -5,38 +5,28 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.json.BasicJsonTester
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.context.jdbc.SqlConfig
 import org.springframework.test.context.jdbc.SqlGroup
-import org.springframework.test.context.junit.jupiter.SpringExtension
 import uk.gov.justice.digital.hmpps.cmd.api.dto.NotificationDto
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-@ExtendWith(SpringExtension::class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @SqlGroup(
   Sql(scripts = ["classpath:notification/before-test.sql"], config = SqlConfig(transactionMode = SqlConfig.TransactionMode.ISOLATED)),
   Sql(scripts = ["classpath:notification/after-test.sql"], config = SqlConfig(transactionMode = SqlConfig.TransactionMode.ISOLATED), executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD),
 )
-@ActiveProfiles(value = ["test"])
 @DisplayName("Integration Tests for Notification Controller")
 class NotificationControllerGetIntegrationTest(
   @Autowired val testRestTemplate: TestRestTemplate,
   @Autowired val entityBuilder: EntityWithJwtAuthorisationBuilder,
   @Autowired val objectMapper: ObjectMapper,
-) {
-  val jsonTester = BasicJsonTester(this.javaClass)
-
+) : ResourceTest() {
   @Test
   fun `It returns notifications`() {
     val response = getNotifications(A_USER, "/notifications")
@@ -182,7 +172,7 @@ class NotificationControllerGetIntegrationTest(
     testRestTemplate.exchange(
       url,
       HttpMethod.GET,
-      entityBuilder.entityWithJwtAuthorisation(user, NO_ROLES),
+      entityBuilder.entityWithJwtAuthorisation(user, CMD_ROLE),
       String::class.java,
     )
 
@@ -190,6 +180,6 @@ class NotificationControllerGetIntegrationTest(
 
     private const val A_USER = "API_TEST_USER"
     private const val A_USER_NO_DATA = "API_TEST_USER_NO_DATA"
-    private val NO_ROLES = listOf<String>()
+    private val CMD_ROLE = listOf("ROLE_CMD")
   }
 }

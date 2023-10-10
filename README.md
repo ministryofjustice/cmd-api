@@ -5,7 +5,7 @@
 CMD API queries CSR API and turns the raw shift data into calendar days.
 
 It applies business logic such as identifying whether shifts are day or night shifts, which activities are overtime and calculating the shift start, finish and duration. It then groups the shift data into ‘days’ (so one night shift spans 2 days)
-This codebase also includes Quartz which is used as a cluster aware cron to schedule checking for modified shifts via CSR-API. This data is then sent to users via Gov Notify and stored in a table and made available over rest.
+This codebase also includes Spring scheduling with Shedlock which is used as a cluster aware cron to schedule checking for modified shifts via CSR-API. This data is then sent to users via Gov Notify and stored in a table and made available over rest.
 
 Continuous Integration:
 https://app.circleci.com/pipelines/github/ministryofjustice/cmd-api

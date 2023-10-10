@@ -5,26 +5,20 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.json.BasicJsonTester
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
-import org.springframework.test.context.ActiveProfiles
 import uk.gov.justice.digital.hmpps.cmd.api.dto.ShiftDto
 import uk.gov.justice.digital.hmpps.prisonertonomisupdate.wiremock.CsrApiExtension
 import uk.gov.justice.digital.hmpps.prisonertonomisupdate.wiremock.HmppsAuthApiExtension
 import uk.gov.justice.digital.hmpps.prisonertonomisupdate.wiremock.PrisonApiExtension
 
 @ExtendWith(PrisonApiExtension::class, CsrApiExtension::class, HmppsAuthApiExtension::class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles(value = ["test"])
 @DisplayName("Integration Tests for Shift Controller")
 class ShiftControllerIntegrationTest(
   @Autowired val testRestTemplate: TestRestTemplate,
   @Autowired val entityBuilder: EntityWithJwtAuthorisationBuilder,
-) {
-  val jsonTester = BasicJsonTester(this.javaClass)
+) : ResourceTest() {
 
   @Test
   fun `It returns shifts`() {
@@ -52,7 +46,7 @@ class ShiftControllerIntegrationTest(
     val response = testRestTemplate.exchange(
       "/user/details?from=2022-04-06&to=2022-04-06",
       HttpMethod.GET,
-      entityBuilder.entityWithJwtAuthorisation(A_USER, NO_ROLES),
+      entityBuilder.entityWithJwtAuthorisation(A_USER, CMD_ROLE),
       String::class.java,
     )
     with(response) {
@@ -65,7 +59,6 @@ class ShiftControllerIntegrationTest(
   companion object {
 
     private const val A_USER = "API_TEST_USER"
-    private const val A_USER_NO_DATA = "API_TEST_USER_NO_DATA"
-    private val NO_ROLES = listOf<String>()
+    private val CMD_ROLE = listOf("ROLE_CMD")
   }
 }
