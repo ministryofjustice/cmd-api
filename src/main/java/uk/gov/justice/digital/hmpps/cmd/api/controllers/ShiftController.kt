@@ -17,11 +17,11 @@ import java.util.Optional
 @RestController
 @Tag(name = "shift controller")
 @RequestMapping(produces = [APPLICATION_JSON_VALUE])
+@PreAuthorize("hasRole('ROLE_PRISON')")
 class ShiftController(private val shiftService: ShiftService) {
 
   @Operation(summary = "Retrieve all details for a user between two dates")
   @GetMapping("/user/details")
-  @PreAuthorize("hasRole('ROLE_CMD')")
   fun getShifts(
     @RequestParam
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)

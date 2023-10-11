@@ -59,6 +59,6 @@ class ShiftControllerIntegrationTest(
   companion object {
 
     private const val A_USER = "API_TEST_USER"
-    private val CMD_ROLE = listOf("ROLE_CMD")
+    private val CMD_ROLE = listOf("ROLE_PRISON")
   }
 }

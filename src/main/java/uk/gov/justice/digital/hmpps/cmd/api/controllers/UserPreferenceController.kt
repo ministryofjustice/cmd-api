@@ -19,6 +19,7 @@ import uk.gov.justice.digital.hmpps.cmd.api.service.UserPreferenceService
 
 @RestController
 @RequestMapping(produces = [APPLICATION_JSON_VALUE])
+@PreAuthorize("hasRole('ROLE_PRISON')")
 class UserPreferenceController(private val userPreferenceService: UserPreferenceService) {
 
   @Operation(
@@ -31,7 +32,6 @@ class UserPreferenceController(private val userPreferenceService: UserPreference
     ],
   )
   @GetMapping("/preferences/notifications")
-  @PreAuthorize("hasRole('ROLE_CMD')")
   fun getNotificationPreferences(): UserPreferenceDto = userPreferenceService.getUserPreference()
 
   @Operation(
@@ -43,7 +43,6 @@ class UserPreferenceController(private val userPreferenceService: UserPreference
     ],
   )
   @PutMapping("/preferences/notifications/snooze")
-  @PreAuthorize("hasRole('ROLE_CMD')")
   fun updateSnoozeNotification(@RequestBody untilRequest: UpdateSnoozeUntilRequest) {
     userPreferenceService.updateSnoozePreference(untilRequest.snoozeUntil)
   }
@@ -57,7 +56,6 @@ class UserPreferenceController(private val userPreferenceService: UserPreference
     ],
   )
   @PutMapping("/preferences/notifications/details")
-  @PreAuthorize("hasRole('ROLE_CMD')")
   fun updateNotificationDetails(
     @Valid @RequestBody
     detailsRequest: UpdateNotificationDetailsRequest,

@@ -180,6 +180,6 @@ class NotificationControllerGetIntegrationTest(
 
     private const val A_USER = "API_TEST_USER"
     private const val A_USER_NO_DATA = "API_TEST_USER_NO_DATA"
-    private val CMD_ROLE = listOf("ROLE_CMD")
+    private val CMD_ROLE = listOf("ROLE_PRISON")
   }
 }

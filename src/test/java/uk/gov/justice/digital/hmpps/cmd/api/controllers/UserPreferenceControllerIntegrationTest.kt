@@ -157,6 +157,6 @@ class UserPreferenceControllerIntegrationTest(
     private const val A_USER = "API_TEST_USER"
     private const val A_USER_OLD = "API_TEST_USER_OLD_P"
     private const val A_USER_NO_PREFERENCE = "API_TEST_USER_NP"
-    private val CMD_ROLE = listOf("ROLE_CMD")
+    private val CMD_ROLE = listOf("ROLE_PRISON")
   }
 }

@@ -17,11 +17,11 @@ import java.util.Optional
 @RestController
 @RequestMapping(produces = [APPLICATION_JSON_VALUE])
 @Tag(name = "notifications")
+@PreAuthorize("hasRole('ROLE_PRISON')")
 class NotificationController(private val notificationService: NotificationService) {
 
   @Operation(summary = "Retrieve all notifications for a user between two dates")
   @GetMapping("/notifications")
-  @PreAuthorize("hasRole('ROLE_CMD')")
   fun getNotifications(
     @RequestParam processOnRead: Optional<Boolean>,
     @RequestParam unprocessedOnly: Optional<Boolean>,
