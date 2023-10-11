@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -16,6 +17,7 @@ import java.util.Optional
 @RestController
 @Tag(name = "shift controller")
 @RequestMapping(produces = [APPLICATION_JSON_VALUE])
+@PreAuthorize("hasRole('ROLE_PRISON')")
 class ShiftController(private val shiftService: ShiftService) {
 
   @Operation(summary = "Retrieve all details for a user between two dates")

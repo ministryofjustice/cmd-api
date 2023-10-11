@@ -23,7 +23,7 @@ import java.time.LocalDateTime
 @ExtendWith(PrisonApiExtension::class, CsrApiExtension::class, HmppsAuthApiExtension::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = ["csr.timeout=1s"])
 @ActiveProfiles(value = ["test"])
-@DisplayName("Integration Tests for Shift Controller")
+@DisplayName("Integration Tests for Polling Scheduler")
 class PollingSchedulerIntegrationTest(
   @Autowired val pollingScheduler: PollingScheduler,
   @Autowired val notificationRepository: NotificationRepository,
