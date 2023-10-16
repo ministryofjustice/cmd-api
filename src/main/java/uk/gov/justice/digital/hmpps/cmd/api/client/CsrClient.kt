@@ -50,7 +50,7 @@ class CsrClient(
   fun getModified(region: Int): List<CsrModifiedDetailDto> {
     val csrModifiedDetails: List<CsrModifiedDetailDto> = csrApiServiceAccountWebClient
       .get()
-      .uri("/updates/$region")
+      .uri("/updates/{region}", region)
       .retrieve()
       .bodyToMono(object : ParameterizedTypeReference<List<CsrModifiedDetailDto>>() {})
       .timeout(csrApiTimeout, Mono.just(emptyList()))
@@ -64,7 +64,7 @@ class CsrClient(
 
     csrApiServiceAccountWebClient
       .put()
-      .uri("/updates/$region")
+      .uri("/updates/{region}", region)
       .contentType(MediaType.APPLICATION_JSON)
       .bodyValue(ids)
       .retrieve()
@@ -79,7 +79,7 @@ class CsrClient(
     log.debug("User Details: finding User ${authenticationFacade.currentUsername}, Region $region")
     val csrDetails: Collection<CsrDetailDto> = csrClient
       .get()
-      .uri("/user/details/$region?from=$from&to=$to")
+      .uri("/user/details/{region}?from={from}&to={to}", region, from, to)
       .retrieve()
       .bodyToMono(CSR_DETAIL_DTO_LIST_TYPE)
       .timeout(csrApiTimeout, Mono.just(emptyList()))
