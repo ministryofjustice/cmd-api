@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.5.1"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.7.0"
   kotlin("plugin.spring") version "1.9.10"
   kotlin("plugin.jpa") version "1.9.10"
   idea
@@ -34,8 +34,8 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-cache")
   implementation("com.github.ben-manes.caffeine:caffeine")
 
-  implementation("net.javacrumbs.shedlock:shedlock-spring:5.8.0")
-  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:5.8.0")
+  implementation("net.javacrumbs.shedlock:shedlock-spring:5.9.0")
+  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:5.9.0")
 
   implementation("org.springframework:spring-webflux")
   implementation("org.springframework.boot:spring-boot-starter-reactor-netty")
@@ -56,8 +56,8 @@ dependencies {
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:3.2.2")
   testImplementation("io.github.http-builder-ng:http-builder-ng-apache:1.0.4")
   testImplementation("com.ninja-squad:springmockk:4.0.2")
-  testImplementation("io.jsonwebtoken:jjwt-impl:0.12.2")
-  testImplementation("io.jsonwebtoken:jjwt-jackson:0.12.2")
+  testImplementation("io.jsonwebtoken:jjwt-impl:0.12.3")
+  testImplementation("io.jsonwebtoken:jjwt-jackson:0.12.3")
   testImplementation("org.wiremock:wiremock:3.2.0")
   testImplementation("io.opentelemetry:opentelemetry-sdk-testing")
 }
