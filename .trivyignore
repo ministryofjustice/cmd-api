@@ -3,3 +3,4 @@
 CVE-2022-1471
 # Suppression for GOV UK Notify as we don't pass in untrusted json
 CVE-2023-5072
+GHSA-4jq9-2xhw-jpx7
