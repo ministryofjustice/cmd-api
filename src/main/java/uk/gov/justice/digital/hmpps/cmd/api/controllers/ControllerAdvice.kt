@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.cmd.api.controllers
 
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.FieldError
 import org.springframework.validation.ObjectError
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestClientResponseException
+import org.springframework.web.servlet.resource.NoResourceFoundException
 import uk.gov.justice.digital.hmpps.cmd.api.dto.ErrorResponse
 import uk.gov.justice.digital.hmpps.cmd.api.service.NotFoundException
 import java.util.function.Consumer
@@ -67,11 +69,15 @@ class ControllerAdvice {
   }
 
   @ExceptionHandler(NotFoundException::class)
-  fun handleNotFoundException(e: NotFoundException): ResponseEntity<ErrorResponse> {
-    return ResponseEntity
-      .status(HttpStatus.NOT_FOUND)
-      .body(ErrorResponse(status = HttpStatus.NOT_FOUND.value(), developerMessage = e.message))
-  }
+  fun handleNotFoundException(e: NotFoundException): ResponseEntity<ErrorResponse> = ResponseEntity
+    .status(HttpStatus.NOT_FOUND)
+    .body(ErrorResponse(status = HttpStatus.NOT_FOUND.value(), developerMessage = e.message))
+
+  @ExceptionHandler(NoResourceFoundException::class)
+  fun handleEntityNotFoundException(e: NoResourceFoundException): ResponseEntity<ErrorResponse> = ResponseEntity
+    .status(HttpStatus.NOT_FOUND)
+    .contentType(MediaType.APPLICATION_JSON)
+    .body(ErrorResponse(status = HttpStatus.NOT_FOUND.value(), developerMessage = e.message))
 
   @ExceptionHandler(Exception::class)
   fun handleException(e: Exception): ResponseEntity<ErrorResponse> {
