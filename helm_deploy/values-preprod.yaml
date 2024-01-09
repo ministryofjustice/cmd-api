@@ -13,7 +13,7 @@ generic-service:
   env:
     JAVA_OPTS: "-Xmx1536m"
     OAUTH_ENDPOINT_URL: "https://sign-in-preprod.hmpps.service.justice.gov.uk/auth"
-    ELITE2API_ENDPOINT_URL: "https://api-preprod.prison.service.justice.gov.uk"
+    ELITE2API_ENDPOINT_URL: "https://prison-api-preprod.prison.service.justice.gov.uk"
     CSR_ENDPOINT_URL: "https://csr-api-prprod.aks-live-1.studio-hosting.service.justice.gov.uk"
 
   scheduledDowntime:
