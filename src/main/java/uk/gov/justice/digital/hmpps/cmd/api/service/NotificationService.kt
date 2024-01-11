@@ -202,11 +202,11 @@ class NotificationService(
     (
       it.shiftModified != null &&
         notificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
-        it.quantumId!!,
-        it.detailStart,
-        it.shiftType,
-        it.shiftModified,
-      ) > 0
+          it.quantumId!!,
+          it.detailStart,
+          it.shiftType,
+          it.shiftModified,
+        ) > 0
       ).also { result -> if (result) log.warn("shiftChangeAlreadyRecorded was true for ${it.quantumId} at ${it.shiftModified}") }
   // This check is probably redundant as triggers should not repeatedly find the same event (unlike the old polling),
   // so if this log message never happens, it can be removed ^
@@ -253,11 +253,11 @@ class NotificationService(
   }
 
   /*
-  * Chunk the notifications into 10s -
-  * Notify doesn't support vertical lists
-  * so we have to have a fixed size template with 'slots'
-  * 10 means we can cover 99.9% of scenarios in one email.
-  */
+   * Chunk the notifications into 10s -
+   * Notify doesn't support vertical lists
+   * so we have to have a fixed size template with 'slots'
+   * 10 means we can cover 99.9% of scenarios in one email.
+   */
   private fun sendNotification(quantumId: String, notificationGroup: List<Notification>) {
     val userPreference = userPreferenceService.getUserPreference(quantumId)
     userPreference?.also {

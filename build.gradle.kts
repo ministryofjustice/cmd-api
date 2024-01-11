@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.13.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.14.0"
   kotlin("plugin.spring") version "1.9.22"
   kotlin("plugin.jpa") version "1.9.22"
   idea
@@ -13,7 +13,7 @@ allOpen {
   annotations(
     "javax.persistence.Entity",
     "javax.persistence.MappedSuperclass",
-    "javax.persistence.Embeddable"
+    "javax.persistence.Embeddable",
   )
 }
 
@@ -47,7 +47,7 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
 
   implementation("org.apache.commons:commons-lang3:3.14.0")
-  implementation("uk.gov.service.notify:notifications-java-client:4.1.1-RELEASE")
+  implementation("uk.gov.service.notify:notifications-java-client:5.0.0-RELEASE")
 
   testAnnotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 

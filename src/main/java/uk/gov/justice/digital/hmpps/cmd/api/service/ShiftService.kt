@@ -42,7 +42,8 @@ class ShiftService(
       val fullDayActivity = calculateFullDayActivity(fullDay)
       ShiftDto(
         date,
-        FullDayActivityType.from(fullDayActivity), // This value can be different from the value below where we don't care about the activity e.g DetailType.SHIFT & "Secondment" rather than REST_DAY & "rest day"
+        // This value can be different from the value below where we don't care about the activity e.g DetailType.SHIFT & "Secondment" rather than REST_DAY & "rest day"
+        FullDayActivityType.from(fullDayActivity),
         fullDayActivity,
         fullDay,
       )
@@ -215,7 +216,7 @@ class ShiftService(
                          nightshift_start and nightshift_finish only.
                          because the collection has multiple day's data in it
                          if we use calculateShiftDuration() it will be wrong.
-                        */
+                         */
             Duration.between(it.detailStart, it.detailEnd).toSeconds(),
           )
         }

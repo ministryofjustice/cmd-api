@@ -9,5 +9,4 @@ enum class TaskDisplayType {
   OVERTIME_DAY_FINISH,
   OVERTIME_NIGHT_START,
   OVERTIME_NIGHT_FINISH,
-  ;
 }

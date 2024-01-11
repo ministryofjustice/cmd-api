@@ -38,7 +38,7 @@ class FullDayActivityTypeTest {
 
   @Nested
   @DisplayName("'from' tests")
-  inner class fromValueTests {
+  inner class FromValueTests {
 
     @Test
     fun `It should match BREAK`() {

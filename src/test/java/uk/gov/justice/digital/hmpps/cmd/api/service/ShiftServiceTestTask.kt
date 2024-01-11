@@ -28,7 +28,7 @@ import java.util.Optional
 
 @ExtendWith(MockKExtension::class)
 @DisplayName("Shift Service tests")
-internal class ShiftServiceTest_Task {
+internal class ShiftServiceTestTask {
   private val csrApiClient: CsrClient = mockk(relaxUnitFun = true)
   private val prisonService: PrisonService = mockk(relaxUnitFun = true)
   private val authenticationFacade: AuthenticationFacade = mockk(relaxUnitFun = true)

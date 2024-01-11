@@ -28,7 +28,7 @@ import java.time.ZoneId
 
 @ExtendWith(MockKExtension::class)
 @DisplayName("Notification Service tests Generate Shift")
-internal class NotificationServiceTest_Generate_Shift {
+internal class NotificationServiceTestGenerateShift {
   private val notificationRepository: NotificationRepository = mockk(relaxUnitFun = true)
   private val userPreferenceService: UserPreferenceService = mockk(relaxUnitFun = true)
   private val authenticationFacade: AuthenticationFacade = mockk(relaxUnitFun = true)
