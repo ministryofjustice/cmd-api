@@ -28,7 +28,7 @@ import java.util.Optional
 
 @ExtendWith(MockKExtension::class)
 @DisplayName("Shift Service tests with Overtime")
-internal class ShiftServiceTest_Overtime_Scenarios {
+internal class ShiftServiceTestOvertimeScenarios {
   private val csrApiClient: CsrClient = mockk(relaxUnitFun = true)
   private val prisonService: PrisonService = mockk(relaxUnitFun = true)
   private val authenticationFacade: AuthenticationFacade = mockk(relaxUnitFun = true)

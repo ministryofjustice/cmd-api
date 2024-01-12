@@ -27,7 +27,7 @@ import java.util.Optional
 
 @ExtendWith(MockKExtension::class)
 @DisplayName("Shift Service Full Day Type tests")
-internal class ShiftServiceTest_DayModelFullDayType {
+internal class ShiftServiceTestDayModelFullDayType {
   private val csrApiClient: CsrClient = mockk(relaxUnitFun = true)
   private val prisonService: PrisonService = mockk(relaxUnitFun = true)
   private val authenticationFacade: AuthenticationFacade = mockk(relaxUnitFun = true)

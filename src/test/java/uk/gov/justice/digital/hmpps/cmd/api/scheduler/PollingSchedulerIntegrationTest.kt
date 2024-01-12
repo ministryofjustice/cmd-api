@@ -94,7 +94,8 @@ class PollingSchedulerIntegrationTest(
     val saved = notificationRepository.findAll()
     assertThat(saved).asList().containsExactly(
       Notification(
-        id = saved.first().id, // generated
+        // generated
+        id = saved.first().id,
         quantumId = A_USER,
         shiftModified = LocalDateTime.parse("2022-03-25T15:00:00"),
         detailStart = LocalDateTime.parse("2022-03-31T10:00:00"),
@@ -214,7 +215,8 @@ class PollingSchedulerIntegrationTest(
     val saved = notificationRepository.findAll()
     assertThat(saved).asList().containsExactly(
       Notification(
-        id = saved.first().id, // generated
+        // generated
+        id = saved.first().id,
         quantumId = A_USER,
         shiftModified = LocalDateTime.parse("2022-03-25T15:00:00"),
         detailStart = LocalDateTime.parse("2022-03-31T10:00:00"),

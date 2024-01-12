@@ -26,7 +26,8 @@ class ShiftControllerIntegrationTest(
     CsrApiExtension.api.stubUserDetails(
       3,
       "2022-04-06",
-      "2022-04-06", // WMI is region 3
+      // WMI is region 3
+      "2022-04-06",
       """
       [
         {

@@ -10,12 +10,12 @@ import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 data class UpdateNotificationDetailsRequest(
   @Schema(required = true, description = "Users email address", example = "user@example.com")
   @JsonProperty("email")
-  @get: Email(message = "Not a valid Email address.")
+  @get:Email(message = "Not a valid Email address.")
   val email: String,
 
   @Schema(required = false, description = "Users sms number", example = "07123456789")
   @JsonProperty("sms")
-  @get: Pattern(regexp = "((07)[0-9]{8,9})|^\$", message = "Not a valid mobile number")
+  @get:Pattern(regexp = "((07)[0-9]{8,9})|^\$", message = "Not a valid mobile number")
   val sms: String?,
 
   @Schema(required = true, description = "Preferred method of contact", example = "EMAIL")
