@@ -19,4 +19,6 @@ generic-service:
 cron:
   namespace: check-my-diary-prod
 
-# Note: postgres database monitoring configured in CMD UI
+generic-prometheus-alerts:
+  rdsAlertsDatabases:
+    cloud-platform-61e5a328954063a7: "check my diary"
