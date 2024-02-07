@@ -26,3 +26,5 @@ cron:
 
 generic-prometheus-alerts:
   businessHoursOnly: true
+  rdsAlertsDatabases:
+    cloud-platform-d07334102a08ef5d: "check my diary"
