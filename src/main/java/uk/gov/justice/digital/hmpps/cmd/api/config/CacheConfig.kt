@@ -14,7 +14,6 @@ import java.time.Duration
 class CacheConfig : CachingConfigurer {
   @Bean
   fun cacheManagerCustomizer(): CacheManagerCustomizer<CaffeineCacheManager> = CacheManagerCustomizer {
-    it.registerCustomCache("jwks", Caffeine.newBuilder().maximumSize(1).build())
     it.registerCustomCache(
       "userDetails",
       Caffeine.newBuilder()
