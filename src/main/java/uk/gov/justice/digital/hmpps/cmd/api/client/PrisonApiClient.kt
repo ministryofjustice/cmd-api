@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 
 @Component
-class Elite2ApiClient(@Qualifier("elite2ApiWebClient") private val webClient: WebClient) {
+class PrisonApiClient(@Qualifier("prisonApiWebClient") private val webClient: WebClient) {
 
   fun getCurrentPrisonIdForUser(): String {
     return webClient
