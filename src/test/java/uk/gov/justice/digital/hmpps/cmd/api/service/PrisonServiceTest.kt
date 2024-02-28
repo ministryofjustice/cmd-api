@@ -12,7 +12,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import uk.gov.justice.digital.hmpps.cmd.api.client.Elite2ApiClient
+import uk.gov.justice.digital.hmpps.cmd.api.client.PrisonApiClient
 import uk.gov.justice.digital.hmpps.cmd.api.model.Prison
 import uk.gov.justice.digital.hmpps.cmd.api.repository.PrisonRepository
 
@@ -20,8 +20,8 @@ import uk.gov.justice.digital.hmpps.cmd.api.repository.PrisonRepository
 @DisplayName("Prison Service tests")
 internal class PrisonServiceTest {
   private val prisonRepository: PrisonRepository = mockk(relaxUnitFun = true)
-  private val elite2Client: Elite2ApiClient = mockk(relaxUnitFun = true)
-  private val service = PrisonService(prisonRepository, elite2Client)
+  private val prisonApiClient: PrisonApiClient = mockk(relaxUnitFun = true)
+  private val service = PrisonService(prisonRepository, prisonApiClient)
 
   @BeforeEach
   fun resetAllMocks() {
@@ -36,7 +36,7 @@ internal class PrisonServiceTest {
     fun `Should get Prison`() {
       val prisonId = "AKA"
 
-      every { elite2Client.getCurrentPrisonIdForUser() } returns prisonId
+      every { prisonApiClient.getCurrentPrisonIdForUser() } returns prisonId
       every { prisonRepository.findByPrisonId(prisonId) } returns prison1
 
       val prison = service.getPrisonForUser()
@@ -51,7 +51,7 @@ internal class PrisonServiceTest {
     fun `Should get Prison not found`() {
       val prisonId = "AKA"
 
-      every { elite2Client.getCurrentPrisonIdForUser() } returns prisonId
+      every { prisonApiClient.getCurrentPrisonIdForUser() } returns prisonId
       every { prisonRepository.findByPrisonId(prisonId) } returns null
 
       val prison = service.getPrisonForUser()
