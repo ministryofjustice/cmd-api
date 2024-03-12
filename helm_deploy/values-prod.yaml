@@ -14,8 +14,7 @@ generic-service:
     JAVA_OPTS: "-Xmx1536m"
     API_BASE_URL_HMPPS_AUTH: "https://sign-in.hmpps.service.justice.gov.uk/auth"
     API_BASE_URL_PRISON_API: "https://api.prison.service.justice.gov.uk"
-    API_BASE_URL_CSR: "https://csr-api.aks-live-1.studio-hosting.service.justice.gov.uk"
-
+    API_BASE_URL_CSR: "http://csr-api.check-my-diary-prod.svc.cluster.local"
 cron:
   namespace: check-my-diary-prod
 
