@@ -129,7 +129,7 @@ class UserPreferenceControllerIntegrationTest(
     testRestTemplate.exchange(
       PUT_SNOOZE_PREFERENCES_TEMPLATE,
       HttpMethod.PUT,
-      entityBuilder.entityWithJwtAuthorisation(user, CMD_ROLE, UpdateSnoozeUntilRequest(date)),
+      entityBuilder.entityWithJwtAuthorisation(user, PRISON_ROLE, UpdateSnoozeUntilRequest(date)),
       Void::class.java,
     )
 
@@ -137,7 +137,7 @@ class UserPreferenceControllerIntegrationTest(
     testRestTemplate.exchange(
       PUT_NOTIFICATION_PREFERENCES_TEMPLATE,
       HttpMethod.PUT,
-      entityBuilder.entityWithJwtAuthorisation(user, CMD_ROLE, UpdateNotificationDetailsRequest(email, sms, pref)),
+      entityBuilder.entityWithJwtAuthorisation(user, PRISON_ROLE, UpdateNotificationDetailsRequest(email, sms, pref)),
       Void::class.java,
     )
 
@@ -145,7 +145,7 @@ class UserPreferenceControllerIntegrationTest(
     testRestTemplate.exchange(
       NOTIFICATION_PREFERENCES_TEMPLATE,
       HttpMethod.GET,
-      entityBuilder.entityWithJwtAuthorisation(user, CMD_ROLE),
+      entityBuilder.entityWithJwtAuthorisation(user, PRISON_ROLE),
       String::class.java,
     )
 
@@ -157,6 +157,6 @@ class UserPreferenceControllerIntegrationTest(
     private const val A_USER = "API_TEST_USER"
     private const val A_USER_OLD = "API_TEST_USER_OLD_P"
     private const val A_USER_NO_PREFERENCE = "API_TEST_USER_NP"
-    private val CMD_ROLE = listOf("ROLE_PRISON")
+    private val PRISON_ROLE = listOf("ROLE_PRISON")
   }
 }

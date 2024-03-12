@@ -47,7 +47,7 @@ class ShiftControllerIntegrationTest(
     val response = testRestTemplate.exchange(
       "/user/details?from=2022-04-06&to=2022-04-06",
       HttpMethod.GET,
-      entityBuilder.entityWithJwtAuthorisation(A_USER, CMD_ROLE),
+      entityBuilder.entityWithJwtAuthorisation(A_USER, PRISON_ROLE),
       String::class.java,
     )
     with(response) {
@@ -60,6 +60,6 @@ class ShiftControllerIntegrationTest(
   companion object {
 
     private const val A_USER = "API_TEST_USER"
-    private val CMD_ROLE = listOf("ROLE_PRISON")
+    private val PRISON_ROLE = listOf("ROLE_PRISON")
   }
 }
