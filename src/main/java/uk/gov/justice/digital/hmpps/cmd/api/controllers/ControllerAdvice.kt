@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestClientResponseException
+import org.springframework.web.servlet.resource.NoResourceFoundException
 import uk.gov.justice.digital.hmpps.cmd.api.service.NotFoundException
 import uk.gov.justice.hmpps.kotlin.common.ErrorResponse
 import java.util.function.Consumer
@@ -18,28 +19,25 @@ import java.util.function.Consumer
 @RestControllerAdvice(basePackages = ["uk.gov.justice.digital.hmpps.cmd.api.controllers"])
 class ControllerAdvice {
   @ExceptionHandler(RestClientResponseException::class)
-  fun handleRestClientResponseException(e: RestClientResponseException): ResponseEntity<ByteArray> {
-    log.error("Unexpected exception", e)
-    return ResponseEntity
-      .status(e.statusCode)
-      .body(e.responseBodyAsByteArray)
-  }
+  fun handleRestClientResponseException(e: RestClientResponseException): ResponseEntity<ByteArray> = ResponseEntity
+    .status(e.statusCode)
+    .body(e.responseBodyAsByteArray).also {
+      log.error("Unexpected exception", e)
+    }
 
   @ExceptionHandler(RestClientException::class)
-  fun handleRestClientException(e: RestClientException): ResponseEntity<ErrorResponse> {
-    log.error("Unexpected exception", e)
-    return ResponseEntity
-      .status(HttpStatus.INTERNAL_SERVER_ERROR)
-      .body(ErrorResponse(status = (HttpStatus.INTERNAL_SERVER_ERROR), developerMessage = (e.message)))
-  }
+  fun handleRestClientException(e: RestClientException): ResponseEntity<ErrorResponse> = ResponseEntity
+    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+    .body(ErrorResponse(status = HttpStatus.INTERNAL_SERVER_ERROR, developerMessage = e.message)).also {
+      log.error("Unexpected exception", e)
+    }
 
   @ExceptionHandler(AccessDeniedException::class)
-  fun handleAccessDeniedException(e: AccessDeniedException?): ResponseEntity<ErrorResponse> {
-    log.debug("Forbidden (403) returned", e)
-    return ResponseEntity
-      .status(HttpStatus.FORBIDDEN)
-      .body(ErrorResponse(status = (HttpStatus.FORBIDDEN)))
-  }
+  fun handleAccessDeniedException(e: AccessDeniedException): ResponseEntity<ErrorResponse> = ResponseEntity
+    .status(HttpStatus.FORBIDDEN)
+    .body(ErrorResponse(status = HttpStatus.FORBIDDEN)).also {
+      log.debug("Forbidden (403) returned: {}", e.message)
+    }
 
   @ExceptionHandler(MethodArgumentNotValidException::class)
   fun handleValidationExceptions(e: MethodArgumentNotValidException): ResponseEntity<ErrorResponse> {
@@ -55,28 +53,40 @@ class ControllerAdvice {
     )
     return ResponseEntity
       .status(HttpStatus.BAD_REQUEST)
-      .body(ErrorResponse(status = (HttpStatus.INTERNAL_SERVER_ERROR), developerMessage = (errors.toString())))
+      .body(ErrorResponse(status = HttpStatus.INTERNAL_SERVER_ERROR, developerMessage = errors.toString()))
   }
 
   @ExceptionHandler(MissingServletRequestParameterException::class)
-  fun handleValidationException(e: MissingServletRequestParameterException): ResponseEntity<ErrorResponse> {
-    log.debug("Bad Request (400) returned", e)
-    return ResponseEntity
+  fun handleValidationException(e: MissingServletRequestParameterException): ResponseEntity<ErrorResponse> =
+    ResponseEntity
       .status(HttpStatus.BAD_REQUEST)
-      .body(ErrorResponse(status = (HttpStatus.BAD_REQUEST), developerMessage = (e.message)))
-  }
+      .body(ErrorResponse(status = HttpStatus.BAD_REQUEST, developerMessage = e.message)).also {
+        log.debug("Bad Request (400) returned: {}", e.message)
+      }
 
   @ExceptionHandler(NotFoundException::class)
   fun handleNotFoundException(e: NotFoundException): ResponseEntity<ErrorResponse> = ResponseEntity
     .status(HttpStatus.NOT_FOUND)
     .body(ErrorResponse(status = HttpStatus.NOT_FOUND, developerMessage = e.message))
 
+  @ExceptionHandler(NoResourceFoundException::class)
+  fun handleNoResourceFoundException(e: NoResourceFoundException): ResponseEntity<ErrorResponse> = ResponseEntity
+    .status(HttpStatus.NOT_FOUND)
+    .body(
+      ErrorResponse(
+        status = HttpStatus.NOT_FOUND,
+        userMessage = "No resource found failure: ${e.message}",
+        developerMessage = e.message,
+      ),
+    ).also { log.info("No resource found exception: {}", e.message) }
+
   @ExceptionHandler(Exception::class)
   fun handleException(e: Exception): ResponseEntity<ErrorResponse> {
-    log.error("Unexpected exception", e)
     return ResponseEntity
       .status(HttpStatus.INTERNAL_SERVER_ERROR)
-      .body(ErrorResponse(status = (HttpStatus.INTERNAL_SERVER_ERROR), developerMessage = (e.message)))
+      .body(ErrorResponse(status = HttpStatus.INTERNAL_SERVER_ERROR, developerMessage = e.message)).also {
+        log.error("Unexpected exception", e)
+      }
   }
 
   companion object {
