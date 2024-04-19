@@ -17,10 +17,6 @@ allOpen {
   )
 }
 
-dependencyCheck {
-  suppressionFiles.add("dependency-check-suppress-json.xml")
-}
-
 dependencies {
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
