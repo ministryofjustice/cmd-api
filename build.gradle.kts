@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.15.5"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.15.6"
   kotlin("plugin.spring") version "1.9.23"
   kotlin("plugin.jpa") version "1.9.23"
   idea
@@ -36,16 +36,16 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-cache")
   implementation("com.github.ben-manes.caffeine:caffeine")
 
-  implementation("net.javacrumbs.shedlock:shedlock-spring:5.12.0")
-  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:5.12.0")
+  implementation("net.javacrumbs.shedlock:shedlock-spring:5.13.0")
+  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:5.13.0")
 
   implementation("org.springframework:spring-webflux")
   implementation("org.springframework.boot:spring-boot-starter-reactor-netty")
 
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.4.0")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
 
   implementation("org.apache.commons:commons-lang3:3.14.0")
-  implementation("uk.gov.service.notify:notifications-java-client:5.0.0-RELEASE")
+  implementation("uk.gov.service.notify:notifications-java-client:5.0.1-RELEASE")
 
   testAnnotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
@@ -60,7 +60,7 @@ dependencies {
   testImplementation("com.ninja-squad:springmockk:4.0.2")
   testImplementation("io.jsonwebtoken:jjwt-impl:0.12.5")
   testImplementation("io.jsonwebtoken:jjwt-jackson:0.12.5")
-  testImplementation("org.wiremock:wiremock-standalone:3.4.2")
+  testImplementation("org.wiremock:wiremock-standalone:3.5.3")
   testImplementation("io.opentelemetry:opentelemetry-sdk-testing")
 }
 
