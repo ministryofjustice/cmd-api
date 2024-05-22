@@ -42,7 +42,7 @@ class ShiftService(
       val fullDayActivity = calculateFullDayActivity(fullDay)
       ShiftDto(
         date,
-        // This value can be different from the value below where we don't care about the activity e.g DetailType.SHIFT & "Secondment" rather than REST_DAY & "rest day"
+        // This value can be different from the value below where we don't care about the activity e.g. DetailType.SHIFT & "Secondment" rather than REST_DAY & "rest day"
         FullDayActivityType.from(fullDayActivity),
         fullDayActivity,
         fullDay,
@@ -77,7 +77,7 @@ class ShiftService(
     if (tasks.any()) {
       val shiftTasks = tasks.filter { it.detail == ShiftType.SHIFT }
       shiftTasks.forEach {
-        val activity = FullDayActivityType.from(it.activity!!)
+        val activity = FullDayActivityType.from(it.activity)
         if (
           (activity == FullDayActivityType.REST_DAY && onlyHasBreaksOrNightShiftFinish(shiftTasks, FullDayActivityType.REST_DAY)) ||
           (activity == FullDayActivityType.HOLIDAY && onlyHasBreaksOrNightShiftFinish(shiftTasks, FullDayActivityType.HOLIDAY)) ||
@@ -107,7 +107,7 @@ class ShiftService(
   private fun onlyHasBreaksOrNightShiftFinish(tasks: Collection<DetailDto>, type: FullDayActivityType): Boolean =
     tasks.none {
       it.displayType != TaskDisplayType.NIGHT_FINISH &&
-        FullDayActivityType.from(it.activity!!) != type &&
+        FullDayActivityType.from(it.activity) != type &&
         FullDayActivityType.from(it.activity) != FullDayActivityType.BREAK
     }
 
