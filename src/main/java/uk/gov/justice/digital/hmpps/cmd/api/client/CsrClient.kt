@@ -96,14 +96,13 @@ class CsrClient(
 }
 
 data class CsrDetailDto @JsonCreator constructor(
-
   var shiftType: ShiftType,
 
   var detailStart: LocalDateTime,
 
   var detailEnd: LocalDateTime,
 
-  var activity: String,
+  var activity: String? = null,
 )
 
 data class CsrModifiedDetailDto @JsonCreator constructor(
