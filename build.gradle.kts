@@ -25,6 +25,7 @@ dependencies {
   runtimeOnly("org.postgresql:postgresql:42.7.3")
   runtimeOnly("com.zaxxer:HikariCP")
   runtimeOnly("org.flywaydb:flyway-core")
+  runtimeOnly("org.flywaydb:flyway-database-postgresql")
 
   implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:0.2.4")
   implementation("org.springframework.boot:spring-boot-starter-jdbc")
