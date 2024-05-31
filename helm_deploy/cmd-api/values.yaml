@@ -8,6 +8,10 @@ generic-service:
     tag: latest    # override at deployment time
     port: 8080
 
+  ingress:
+    enabled: true
+    tlsSecretName: cmd-api-cert
+
   livenessProbe:
     periodSeconds: 30
     initialDelaySeconds: 90
