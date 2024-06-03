@@ -3,7 +3,7 @@ generic-service:
   replicaCount: 4
 
   ingress:
-    host: cmd-api.service.justice.gov.uk
+    host: cmd-api.prison.service.justice.gov.uk
 
   resources:
     requests:
