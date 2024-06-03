@@ -2,6 +2,9 @@
 generic-service:
   replicaCount: 4
 
+  ingress:
+    host: cmd-api.service.justice.gov.uk
+
   resources:
     requests:
       cpu: 150m

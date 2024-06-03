@@ -2,6 +2,9 @@
 generic-service:
   replicaCount: 2
 
+  ingress:
+    host: cmd-api-preprod.service.justice.gov.uk
+
   resources:
     requests:
       cpu: 150m
