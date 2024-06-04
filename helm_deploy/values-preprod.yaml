@@ -17,7 +17,7 @@ generic-service:
     JAVA_OPTS: "-Xmx1536m"
     API_BASE_URL_HMPPS_AUTH: "https://sign-in-preprod.hmpps.service.justice.gov.uk/auth"
     API_BASE_URL_PRISON_API: "https://prison-api-preprod.prison.service.justice.gov.uk"
-    API_BASE_URL_CSR: "http://csr-api.check-my-diary-preprod.svc.cluster.local"
+    API_BASE_URL_CSR: "https://csr-api-preprod.prison.service.justice.gov.uk"
 
   scheduledDowntime:
     enabled: true
