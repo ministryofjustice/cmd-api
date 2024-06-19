@@ -5,6 +5,6 @@ spring:
     baseline-on-migrate: true
 
   datasource:
-    url: 'jdbc:postgresql://${DATABASE_ENDPOINT:localhost:5432}/${DATABASE_NAME:cmd-api-db}'
+    url: 'jdbc:postgresql://${DATABASE_ENDPOINT:localhost:5432}/${DATABASE_NAME:cmd-api-db}?sslMode=verify-full'
     username: '${DATABASE_USERNAME:root}'
     password: '${DATABASE_PASSWORD:dev}'
