@@ -17,9 +17,9 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.config.ClientTrackingConfiguration
 import uk.gov.justice.digital.hmpps.cmd.api.uk.gov.justice.digital.hmpps.cmd.api.config.ClientTrackingInterceptor
-import uk.gov.justice.digital.hmpps.cmd.api.utils.JwtAuthenticationHelper
+import uk.gov.justice.hmpps.test.kotlin.auth.JwtAuthorisationHelper
 
-@Import(JwtAuthenticationHelper::class, ClientTrackingInterceptor::class, ClientTrackingConfiguration::class)
+@Import(JwtAuthorisationHelper::class, ClientTrackingInterceptor::class, ClientTrackingConfiguration::class)
 @ContextConfiguration(initializers = [ConfigDataApplicationContextInitializer::class])
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension::class)
@@ -30,13 +30,13 @@ class ClientTrackingConfigurationTest {
 
   @Suppress("SpringJavaInjectionPointsAutowiringInspection")
   @Autowired
-  private lateinit var jwtAuthHelper: JwtAuthenticationHelper
+  private lateinit var jwtAuthHelper: JwtAuthorisationHelper
 
   private val tracer: Tracer = otelTesting.openTelemetry.getTracer("test")
 
   @Test
   fun shouldAddClientIdAndUserNameToInsightTelemetry() {
-    val token = jwtAuthHelper.createJwt("bob")
+    val token = jwtAuthHelper.createJwtAccessToken(username = "bob")
     val req = MockHttpServletRequest()
     req.addHeader(HttpHeaders.AUTHORIZATION, "Bearer $token")
     val res = MockHttpServletResponse()
@@ -54,7 +54,7 @@ class ClientTrackingConfigurationTest {
 
   @Test
   fun shouldAddOnlyClientIdIfUsernameNullToInsightTelemetry() {
-    val token = jwtAuthHelper.createJwt(null)
+    val token = jwtAuthHelper.createJwtAccessToken()
     val req = MockHttpServletRequest()
     req.addHeader(HttpHeaders.AUTHORIZATION, "Bearer $token")
     val res = MockHttpServletResponse()
