@@ -15,14 +15,14 @@ import org.junit.jupiter.api.extension.ExtendWith
 import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
 import uk.gov.justice.digital.hmpps.cmd.api.repository.UserPreferenceRepository
-import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
+import uk.gov.justice.hmpps.kotlin.auth.HmppsAuthenticationHolder
 import java.time.LocalDate
 
 @ExtendWith(MockKExtension::class)
 @DisplayName("Snooze Notification Preference Service tests")
 internal class UserPreferenceServiceTest {
   private val repository: UserPreferenceRepository = mockk(relaxUnitFun = true)
-  private val authenticationFacade: AuthenticationFacade = mockk(relaxUnitFun = true)
+  private val authenticationFacade: HmppsAuthenticationHolder = mockk(relaxUnitFun = true)
   private val now = LocalDate.now()
   private val service = UserPreferenceService(repository, authenticationFacade)
 
@@ -46,7 +46,7 @@ internal class UserPreferenceServiceTest {
         CommunicationPreference.EMAIL,
       )
       every { repository.findByQuantumIdIgnoreCase(any()) } returns userPref
-      every { authenticationFacade.currentUsername } returns quantumId
+      every { authenticationFacade.username } returns quantumId
 
       val returnValue = service.getOrCreateUserPreference()
 
@@ -65,7 +65,7 @@ internal class UserPreferenceServiceTest {
       val quantumId = "XYZ"
       val userPref = UserPreference(quantumId, now)
       every { repository.findByQuantumIdIgnoreCase(any()) } returns userPref
-      every { authenticationFacade.currentUsername } returns quantumId
+      every { authenticationFacade.username } returns quantumId
 
       val returnValue = service.getOrCreateUserPreference()
 
@@ -81,7 +81,7 @@ internal class UserPreferenceServiceTest {
       val quantumId = "XYZ"
       every { repository.findByQuantumIdIgnoreCase(any()) } returns null
       every { repository.save<UserPreference>(any()) } returns UserPreference(quantumId)
-      every { authenticationFacade.currentUsername } returns quantumId
+      every { authenticationFacade.username } returns quantumId
 
       val returnValue = service.getOrCreateUserPreference()
 
@@ -101,7 +101,7 @@ internal class UserPreferenceServiceTest {
       val quantumId = "XyZ"
       val userPref = UserPreference(quantumId.lowercase(), now)
       every { repository.findByQuantumIdIgnoreCase(any()) } returns userPref
-      every { authenticationFacade.currentUsername } returns quantumId
+      every { authenticationFacade.username } returns quantumId
 
       val returnValue = service.getOrCreateUserPreference()
 
@@ -142,7 +142,7 @@ internal class UserPreferenceServiceTest {
 
       every { repository.findByQuantumIdIgnoreCase(any()) } returns userPref
       every { repository.save(userPref) } returns userPref
-      every { authenticationFacade.currentUsername } returns quantumId
+      every { authenticationFacade.username } returns quantumId
 
       service.updateSnoozePreference(newDate)
 
@@ -158,7 +158,7 @@ internal class UserPreferenceServiceTest {
       val newDate = now.minusDays(3)
       every { repository.findByQuantumIdIgnoreCase(any()) } returns userPref
       every { repository.save(userPref) } returns userPref
-      every { authenticationFacade.currentUsername } returns quantumId
+      every { authenticationFacade.username } returns quantumId
 
       service.updateSnoozePreference(newDate)
 
@@ -173,7 +173,7 @@ internal class UserPreferenceServiceTest {
       val newDate = now.plusDays(3)
       every { repository.findByQuantumIdIgnoreCase(any()) } returns null
       every { repository.save<UserPreference>(any()) } returns UserPreference(quantumId)
-      every { authenticationFacade.currentUsername } returns quantumId
+      every { authenticationFacade.username } returns quantumId
 
       service.updateSnoozePreference(newDate)
 
@@ -189,7 +189,7 @@ internal class UserPreferenceServiceTest {
 
       every { repository.findByQuantumIdIgnoreCase(any()) } returns null
       every { repository.save<UserPreference>(any()) } returns UserPreference(quantumId)
-      every { authenticationFacade.currentUsername } returns quantumId
+      every { authenticationFacade.username } returns quantumId
 
       service.updateSnoozePreference(newDate)
 
@@ -216,7 +216,7 @@ internal class UserPreferenceServiceTest {
 
       every { repository.findByQuantumIdIgnoreCase(any()) } returns userPref
       every { repository.save(userPref) } returns userPref
-      every { authenticationFacade.currentUsername } returns quantumId
+      every { authenticationFacade.username } returns quantumId
 
       service.updateNotificationDetails("new Email", "new Sms", CommunicationPreference.EMAIL)
 
@@ -230,7 +230,7 @@ internal class UserPreferenceServiceTest {
       val quantumId = "XYZ"
       every { repository.findByQuantumIdIgnoreCase(any()) } returns null
       every { repository.save<UserPreference>(any()) } returns UserPreference(quantumId)
-      every { authenticationFacade.currentUsername } returns quantumId
+      every { authenticationFacade.username } returns quantumId
 
       service.updateNotificationDetails("new Email", "new Sms", CommunicationPreference.EMAIL)
 
