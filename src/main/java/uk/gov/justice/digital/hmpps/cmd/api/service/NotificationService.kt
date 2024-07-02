@@ -18,7 +18,7 @@ import uk.gov.justice.digital.hmpps.cmd.api.model.Notification
 import uk.gov.justice.digital.hmpps.cmd.api.model.Notification.Companion.getDateTimeFormattedForTemplate
 import uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
 import uk.gov.justice.digital.hmpps.cmd.api.repository.NotificationRepository
-import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
+import uk.gov.justice.hmpps.kotlin.auth.HmppsAuthenticationHolder
 import uk.gov.service.notify.NotificationClientApi
 import uk.gov.service.notify.NotificationClientException
 import java.time.Clock
@@ -36,7 +36,7 @@ class NotificationService(
   private val notificationRepository: NotificationRepository,
   private val userPreferenceService: UserPreferenceService,
   private val clock: Clock,
-  private val authenticationFacade: AuthenticationFacade,
+  private val authenticationFacade: HmppsAuthenticationHolder,
   @Value("\${application.to.defaultMonths}")
   private val monthStep: Long,
   private val notifyClient: NotificationClientApi,
@@ -50,7 +50,7 @@ class NotificationService(
     fromParam: Optional<LocalDate>,
     toParam: Optional<LocalDate>,
   ): Collection<NotificationDto> {
-    val quantumId = authenticationFacade.currentUsername
+    val quantumId = authenticationFacade.username!!
     val from = calculateStartDateTime(fromParam, toParam)
     val to = calculateEndDateTime(toParam, from)
     val unprocessedOnly = unprocessedOnlyParam.orElse(false)

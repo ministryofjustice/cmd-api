@@ -20,7 +20,7 @@ import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.cmd.api.model.Notification
 import uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
 import uk.gov.justice.digital.hmpps.cmd.api.repository.NotificationRepository
-import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
+import uk.gov.justice.hmpps.kotlin.auth.HmppsAuthenticationHolder
 import uk.gov.service.notify.NotificationClient
 import java.time.Clock
 import java.time.LocalDate
@@ -34,7 +34,7 @@ import java.util.Optional
 internal class NotificationServiceTest {
   private val shiftNotificationRepository: NotificationRepository = mockk(relaxUnitFun = true)
   private val userPreferenceService: UserPreferenceService = mockk(relaxUnitFun = true)
-  private val authenticationFacade: AuthenticationFacade = mockk(relaxUnitFun = true)
+  private val authenticationFacade: HmppsAuthenticationHolder = mockk(relaxUnitFun = true)
   private val notifyClient: NotificationClient = mockk(relaxUnitFun = true)
   private val csrClient: CsrClient = mockk(relaxUnitFun = true)
   private val clock = Clock.fixed(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
@@ -73,7 +73,7 @@ internal class NotificationServiceTest {
 
       val shiftNotifications = listOf(getValidNotification(now))
       every { shiftNotificationRepository.findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(quantumId, from.get().atTime(LocalTime.MIN), to.get().atTime(LocalTime.MAX)) } returns shiftNotifications
-      every { authenticationFacade.currentUsername } returns quantumId
+      every { authenticationFacade.username } returns quantumId
       every { shiftNotificationRepository.saveAll(shiftNotifications) } returns listOf()
       val returnValue = service.getNotifications(processOnRead, unprocessedOnly, from, to)
 
@@ -92,7 +92,7 @@ internal class NotificationServiceTest {
 
       val shiftNotifications = listOf(getValidNotification(now), getValidNotification(now), getValidNotification(now))
       every { shiftNotificationRepository.findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(quantumId, from.get().atTime(LocalTime.MIN), to.get().atTime(LocalTime.MAX)) } returns shiftNotifications
-      every { authenticationFacade.currentUsername } returns quantumId
+      every { authenticationFacade.username } returns quantumId
       every { shiftNotificationRepository.saveAll(shiftNotifications) } returns listOf()
 
       val returnValue = service.getNotifications(processOnRead, unprocessedOnly, from, to)
@@ -113,7 +113,7 @@ internal class NotificationServiceTest {
 
       val shiftNotifications = listOf(getValidNotification(now))
       every { shiftNotificationRepository.findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(quantumId, from.get().atTime(LocalTime.MIN), to.get().atTime(LocalTime.MAX)) } returns shiftNotifications
-      every { authenticationFacade.currentUsername } returns quantumId
+      every { authenticationFacade.username } returns quantumId
       every { shiftNotificationRepository.saveAll(shiftNotifications) } returns listOf()
 
       val returnValue = service.getNotifications(processOnRead, unprocessedOnly, from, to)
@@ -134,7 +134,7 @@ internal class NotificationServiceTest {
 
       val shiftNotifications: List<Notification> = listOf()
       every { shiftNotificationRepository.findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(quantumId, from.get().atTime(LocalTime.MIN), to.get().atTime(LocalTime.MAX)) } returns shiftNotifications
-      every { authenticationFacade.currentUsername } returns quantumId
+      every { authenticationFacade.username } returns quantumId
       every { shiftNotificationRepository.saveAll(shiftNotifications) } returns listOf()
 
       val returnValue = service.getNotifications(processOnRead, unprocessedOnly, from, to)
@@ -156,7 +156,7 @@ internal class NotificationServiceTest {
 
       val shiftNotifications: List<Notification> = listOf()
       every { shiftNotificationRepository.findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(quantumId, from.get().atTime(LocalTime.MIN), to.get().atTime(LocalTime.MAX)) } returns shiftNotifications
-      every { authenticationFacade.currentUsername } returns quantumId
+      every { authenticationFacade.username } returns quantumId
       every { shiftNotificationRepository.saveAll(shiftNotifications) } returns listOf()
 
       service.getNotifications(processOnRead, unprocessedOnly, from, to)
@@ -182,7 +182,7 @@ internal class NotificationServiceTest {
 
       val shiftNotifications: List<Notification> = listOf()
       every { shiftNotificationRepository.findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(quantumId, defaultFrom.atTime(LocalTime.MIN), defaultTo.atTime(LocalTime.MAX)) } returns shiftNotifications
-      every { authenticationFacade.currentUsername } returns quantumId
+      every { authenticationFacade.username } returns quantumId
       every { shiftNotificationRepository.saveAll(shiftNotifications) } returns listOf()
 
       service.getNotifications(processOnRead, unprocessedOnly, from, to)
@@ -206,7 +206,7 @@ internal class NotificationServiceTest {
 
       val shiftNotifications: List<Notification> = listOf()
       every { shiftNotificationRepository.findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(quantumId, defaultFrom.atTime(LocalTime.MIN), to.get().atTime(LocalTime.MAX)) } returns shiftNotifications
-      every { authenticationFacade.currentUsername } returns quantumId
+      every { authenticationFacade.username } returns quantumId
       every { shiftNotificationRepository.saveAll(shiftNotifications) } returns listOf()
 
       service.getNotifications(processOnRead, unprocessedOnly, from, to)
@@ -231,7 +231,7 @@ internal class NotificationServiceTest {
 
       val shiftNotifications: List<Notification> = listOf()
       every { shiftNotificationRepository.findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(quantumId, from.get().atTime(LocalTime.MIN), defaultTo.atTime(LocalTime.MAX)) } returns shiftNotifications
-      every { authenticationFacade.currentUsername } returns quantumId
+      every { authenticationFacade.username } returns quantumId
       every { shiftNotificationRepository.saveAll(shiftNotifications) } returns listOf()
 
       service.getNotifications(processOnRead, unprocessedOnly, from, to)

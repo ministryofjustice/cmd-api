@@ -21,7 +21,7 @@ import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.cmd.api.model.Notification
 import uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
 import uk.gov.justice.digital.hmpps.cmd.api.repository.NotificationRepository
-import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
+import uk.gov.justice.hmpps.kotlin.auth.HmppsAuthenticationHolder
 import uk.gov.service.notify.NotificationClient
 import uk.gov.service.notify.NotificationClientException
 import java.time.Clock
@@ -34,7 +34,7 @@ import java.time.ZoneId
 internal class NotificationServiceTestSend {
   private val shiftNotificationRepository: NotificationRepository = mockk(relaxUnitFun = true)
   private val userPreferenceService: UserPreferenceService = mockk(relaxUnitFun = true)
-  private val authenticationFacade: AuthenticationFacade = mockk(relaxUnitFun = true)
+  private val authenticationFacade: HmppsAuthenticationHolder = mockk(relaxUnitFun = true)
   private val notifyClient: NotificationClient = mockk(relaxUnitFun = true)
   private val csrClient: CsrClient = mockk(relaxUnitFun = true)
   private val clock = Clock.fixed(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())

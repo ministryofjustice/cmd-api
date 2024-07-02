@@ -12,8 +12,8 @@ import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
 import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
-import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
 import uk.gov.justice.digital.hmpps.cmd.api.utils.region.Regions
+import uk.gov.justice.hmpps.kotlin.auth.HmppsAuthenticationHolder
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -22,7 +22,7 @@ import java.time.LocalDateTime
 class CsrClient(
   @Qualifier("csrApiWebClient") private val csrClient: WebClient,
   @Qualifier("csrAPIWebClientAppScope") private val csrApiServiceAccountWebClient: WebClient,
-  private val authenticationFacade: AuthenticationFacade,
+  private val authenticationFacade: HmppsAuthenticationHolder,
   private val regionData: Regions,
   @Value("\${csr.timeout}") private val csrApiTimeout: Duration,
 ) {
@@ -76,7 +76,7 @@ class CsrClient(
   }
 
   private fun getDetails(from: LocalDate, to: LocalDate, region: String): Collection<CsrDetailDto> {
-    log.debug("User Details: finding User ${authenticationFacade.currentUsername}, Region $region")
+    log.debug("User Details: finding User ${authenticationFacade.username}, Region $region")
     val csrDetails: Collection<CsrDetailDto> = csrClient
       .get()
       .uri("/user/details/{region}?from={from}&to={to}", region, from, to)
@@ -84,7 +84,7 @@ class CsrClient(
       .bodyToMono(CSR_DETAIL_DTO_LIST_TYPE)
       .timeout(csrApiTimeout, Mono.just(emptyList()))
       .block() ?: listOf()
-    log.info("User Details: found ${csrDetails.size}, User ${authenticationFacade.currentUsername}, $from - $to, Region $region")
+    log.info("User Details: found ${csrDetails.size}, User ${authenticationFacade.username}, $from - $to, Region $region")
 
     return csrDetails
   }

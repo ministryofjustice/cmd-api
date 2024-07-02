@@ -9,7 +9,7 @@ import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.cmd.api.domain.TaskDisplayType
 import uk.gov.justice.digital.hmpps.cmd.api.dto.DetailDto
 import uk.gov.justice.digital.hmpps.cmd.api.dto.ShiftDto
-import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
+import uk.gov.justice.hmpps.kotlin.auth.HmppsAuthenticationHolder
 import java.time.Clock
 import java.time.Duration
 import java.time.LocalDate
@@ -22,14 +22,14 @@ class ShiftService(
   private val prisonService: PrisonService,
   private val csrClient: CsrClient,
   private val clock: Clock,
-  private val authenticationFacade: AuthenticationFacade,
+  private val authenticationFacade: HmppsAuthenticationHolder,
 ) {
 
   fun getDetailsForUser(fromParam: Optional<LocalDate>, toParam: Optional<LocalDate>): Collection<ShiftDto> {
     val start = fromParam.orElse(LocalDate.now(clock))
     val end = toParam.orElse(LocalDate.now(clock))
 
-    log.info("getDetailsForUser: getting for User ${authenticationFacade.currentUsername}, $start - $end")
+    log.info("getDetailsForUser: getting for User ${authenticationFacade.username}, $start - $end")
 
     val detailsByDate: Map<LocalDate, Collection<CsrDetailDto>> = getDetailsGroupedByDate(start, end)
 
@@ -56,7 +56,7 @@ class ShiftService(
      */
   private fun getDetailsGroupedByDate(start: LocalDate, end: LocalDate): Map<LocalDate, Collection<CsrDetailDto>> {
     val region = prisonService.getPrisonForUser()?.region
-    val details = csrClient.getDetailsForUser(start, end, region, authenticationFacade.currentUsername)
+    val details = csrClient.getDetailsForUser(start, end, region, authenticationFacade.username!!)
     val detailStartGroup = details.groupBy { it.detailStart.toLocalDate() }
     val detailEndGroup = details.groupBy { it.detailEnd.toLocalDate() }
     return (detailStartGroup.keys + detailEndGroup.keys)

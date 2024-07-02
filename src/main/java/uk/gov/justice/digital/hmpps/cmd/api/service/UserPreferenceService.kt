@@ -6,18 +6,18 @@ import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import uk.gov.justice.digital.hmpps.cmd.api.dto.UserPreferenceDto
 import uk.gov.justice.digital.hmpps.cmd.api.model.UserPreference
 import uk.gov.justice.digital.hmpps.cmd.api.repository.UserPreferenceRepository
-import uk.gov.justice.digital.hmpps.cmd.api.security.AuthenticationFacade
+import uk.gov.justice.hmpps.kotlin.auth.HmppsAuthenticationHolder
 import java.time.LocalDate
 
 @Service
 class UserPreferenceService(
   private val repository: UserPreferenceRepository,
-  private val authenticationFacade: AuthenticationFacade,
+  private val authenticationFacade: HmppsAuthenticationHolder,
 ) {
 
   fun getUserPreference(): UserPreferenceDto =
-    UserPreferenceDto.from(getUserPreference(authenticationFacade.currentUsername))
-      ?: throw NotFoundException("Preferences not found for ${authenticationFacade.currentUsername}")
+    UserPreferenceDto.from(getUserPreference(authenticationFacade.username!!))
+      ?: throw NotFoundException("Preferences not found for ${authenticationFacade.username}")
 
   fun updateSnoozePreference(newDate: LocalDate) {
     val userPreferences = getOrCreateUserPreference()
@@ -37,7 +37,7 @@ class UserPreferenceService(
     repository.save(userPreferences)
   }
 
-  fun getOrCreateUserPreference(quantumId: String = authenticationFacade.currentUsername): UserPreference =
+  fun getOrCreateUserPreference(quantumId: String = authenticationFacade.username!!): UserPreference =
     getUserPreference(quantumId) ?: repository.save(UserPreference(quantumId.uppercase()))
       .also { log.info("getOrCreateUserPreference: Created new user preference for $quantumId") }
 
