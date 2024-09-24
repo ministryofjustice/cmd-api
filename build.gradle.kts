@@ -21,7 +21,7 @@ dependencies {
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
-  runtimeOnly("com.h2database:h2:2.3.232")
+  runtimeOnly("com.h2database:h2:2.0.204")
   runtimeOnly("org.postgresql:postgresql:42.7.4")
   runtimeOnly("com.zaxxer:HikariCP")
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
@@ -40,7 +40,7 @@ dependencies {
 
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
 
-  implementation("org.apache.commons:commons-lang3:3.17.0")
+  implementation("org.apache.commons:commons-lang3:3.12.0")
   implementation("uk.gov.service.notify:notifications-java-client:5.2.0-RELEASE")
 
   testAnnotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
