@@ -41,7 +41,7 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
 
   implementation("org.apache.commons:commons-lang3:3.17.0")
-  implementation("uk.gov.service.notify:notifications-java-client:5.2.0-RELEASE")
+  implementation("uk.gov.service.notify:notifications-java-client:5.2.1-RELEASE")
 
   testAnnotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
