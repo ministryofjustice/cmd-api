@@ -181,33 +181,29 @@ class NotificationService(
     start: LocalDateTime,
     end: LocalDateTime,
     unprocessedOnly: Boolean,
-  ): Collection<Notification> {
-    return notificationRepository.findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(
-      quantumId,
-      start,
-      end,
-    )
-      .filter { !unprocessedOnly || (unprocessedOnly && !it.processed) }
-  }
+  ): Collection<Notification> = notificationRepository.findAllByQuantumIdIgnoreCaseAndShiftModifiedIsBetween(
+    quantumId,
+    start,
+    end,
+  )
+    .filter { !unprocessedOnly || (unprocessedOnly && !it.processed) }
 
-  private fun thereIsNoADDForThisShift(it: CsrModifiedDetailDto) =
-    notificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndActionType(
-      it.quantumId!!,
-      it.detailStart,
-      it.shiftType,
-      DetailModificationType.ADD,
-    ) == 0
+  private fun thereIsNoADDForThisShift(it: CsrModifiedDetailDto) = notificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndActionType(
+    it.quantumId!!,
+    it.detailStart,
+    it.shiftType,
+    DetailModificationType.ADD,
+  ) == 0
 
-  private fun shiftChangeAlreadyRecorded(it: CsrModifiedDetailDto) =
-    (
-      it.shiftModified != null &&
-        notificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
-          it.quantumId!!,
-          it.detailStart,
-          it.shiftType,
-          it.shiftModified,
-        ) > 0
-      ).also { result -> if (result) log.warn("shiftChangeAlreadyRecorded was true for ${it.quantumId} at ${it.shiftModified}") }
+  private fun shiftChangeAlreadyRecorded(it: CsrModifiedDetailDto) = (
+    it.shiftModified != null &&
+      notificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
+        it.quantumId!!,
+        it.detailStart,
+        it.shiftType,
+        it.shiftModified,
+      ) > 0
+    ).also { result -> if (result) log.warn("shiftChangeAlreadyRecorded was true for ${it.quantumId} at ${it.shiftModified}") }
   // This check is probably redundant as triggers should not repeatedly find the same event (unlike the old polling),
   // so if this log message never happens, it can be removed ^
 
@@ -216,8 +212,7 @@ class NotificationService(
     acc: CsrModifiedDetailDto?,
     item: CsrModifiedDetailDto,
     first: Boolean,
-  ): CsrModifiedDetailDto =
-    if (first || item.shiftModified == null || acc == null || (acc.shiftModified != null && item.shiftModified.isAfter(acc.shiftModified))) item else acc
+  ): CsrModifiedDetailDto = if (first || item.shiftModified == null || acc == null || (acc.shiftModified != null && item.shiftModified.isAfter(acc.shiftModified))) item else acc
 
   private fun calculateStartDateTime(fromParam: Optional<LocalDate>, toParam: Optional<LocalDate>): LocalDateTime {
     val start = when {

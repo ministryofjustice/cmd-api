@@ -8,14 +8,12 @@ import org.springframework.web.reactive.function.client.WebClient
 @Component
 class PrisonApiClient(@Qualifier("prisonApiWebClient") private val webClient: WebClient) {
 
-  fun getCurrentPrisonIdForUser(): String {
-    return webClient
-      .get()
-      .uri("/api/users/me")
-      .retrieve()
-      .bodyToMono(CaseLoad::class.java)
-      .block()?.activeCaseLoadId ?: ""
-  }
+  fun getCurrentPrisonIdForUser(): String = webClient
+    .get()
+    .uri("/api/users/me")
+    .retrieve()
+    .bodyToMono(CaseLoad::class.java)
+    .block()?.activeCaseLoadId ?: ""
 }
 
 data class CaseLoad(

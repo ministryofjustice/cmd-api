@@ -19,12 +19,8 @@ class CmdApiApplication {
   }
 
   @Bean
-  fun initialiseClock(): Clock {
-    return Clock.systemDefaultZone()
-  }
+  fun initialiseClock(): Clock = Clock.systemDefaultZone()
 
   @Bean
-  fun notificationClient(@Value("\${application.notify.key}") key: String?): NotificationClientApi? {
-    return NotificationClient(key)
-  }
+  fun notificationClient(@Value("\${application.notify.key}") key: String?): NotificationClientApi? = NotificationClient(key)
 }

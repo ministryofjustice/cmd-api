@@ -24,14 +24,13 @@ data class UserPreferenceDto @JsonCreator constructor(
 ) {
 
   companion object {
-    fun from(userPreference: UserPreference?): UserPreferenceDto? =
-      userPreference?.let {
-        UserPreferenceDto(
-          it.snoozeUntil,
-          it.email,
-          it.sms,
-          it.commPref,
-        )
-      }
+    fun from(userPreference: UserPreference?): UserPreferenceDto? = userPreference?.let {
+      UserPreferenceDto(
+        it.snoozeUntil,
+        it.email,
+        it.sms,
+        it.commPref,
+      )
+    }
   }
 }

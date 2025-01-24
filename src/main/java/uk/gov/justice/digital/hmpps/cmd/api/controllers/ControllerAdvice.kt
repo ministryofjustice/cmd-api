@@ -57,12 +57,11 @@ class ControllerAdvice {
   }
 
   @ExceptionHandler(MissingServletRequestParameterException::class)
-  fun handleValidationException(e: MissingServletRequestParameterException): ResponseEntity<ErrorResponse> =
-    ResponseEntity
-      .status(HttpStatus.BAD_REQUEST)
-      .body(ErrorResponse(status = HttpStatus.BAD_REQUEST, developerMessage = e.message)).also {
-        log.debug("Bad Request (400) returned: {}", e.message)
-      }
+  fun handleValidationException(e: MissingServletRequestParameterException): ResponseEntity<ErrorResponse> = ResponseEntity
+    .status(HttpStatus.BAD_REQUEST)
+    .body(ErrorResponse(status = HttpStatus.BAD_REQUEST, developerMessage = e.message)).also {
+      log.debug("Bad Request (400) returned: {}", e.message)
+    }
 
   @ExceptionHandler(NotFoundException::class)
   fun handleNotFoundException(e: NotFoundException): ResponseEntity<ErrorResponse> = ResponseEntity
@@ -81,13 +80,11 @@ class ControllerAdvice {
     ).also { log.info("No resource found exception: {}", e.message) }
 
   @ExceptionHandler(Exception::class)
-  fun handleException(e: Exception): ResponseEntity<ErrorResponse> {
-    return ResponseEntity
-      .status(HttpStatus.INTERNAL_SERVER_ERROR)
-      .body(ErrorResponse(status = HttpStatus.INTERNAL_SERVER_ERROR, developerMessage = e.message)).also {
-        log.error("Unexpected exception", e)
-      }
-  }
+  fun handleException(e: Exception): ResponseEntity<ErrorResponse> = ResponseEntity
+    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+    .body(ErrorResponse(status = HttpStatus.INTERNAL_SERVER_ERROR, developerMessage = e.message)).also {
+      log.error("Unexpected exception", e)
+    }
 
   companion object {
     private val log = LoggerFactory.getLogger(ControllerAdvice::class.java)

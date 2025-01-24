@@ -168,13 +168,12 @@ class NotificationControllerGetIntegrationTest(
     }
   }
 
-  fun getNotifications(user: String, url: String): ResponseEntity<String> =
-    testRestTemplate.exchange(
-      url,
-      HttpMethod.GET,
-      entityBuilder.entityWithJwtAuthorisation(user, PRISON_ROLE),
-      String::class.java,
-    )
+  fun getNotifications(user: String, url: String): ResponseEntity<String> = testRestTemplate.exchange(
+    url,
+    HttpMethod.GET,
+    entityBuilder.entityWithJwtAuthorisation(user, PRISON_ROLE),
+    String::class.java,
+  )
 
   companion object {
 

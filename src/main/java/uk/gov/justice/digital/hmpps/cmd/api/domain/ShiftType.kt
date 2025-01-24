@@ -8,10 +8,8 @@ enum class ShiftType(val description: String) {
   ;
 
   companion object {
-    fun from(value: String): ShiftType {
-      return Arrays.stream(values())
-        .filter { type -> type.name.equals(value, true) }
-        .findFirst().orElseThrow { IllegalArgumentException() }
-    }
+    fun from(value: String): ShiftType = Arrays.stream(values())
+      .filter { type -> type.name.equals(value, true) }
+      .findFirst().orElseThrow { IllegalArgumentException() }
   }
 }

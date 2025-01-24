@@ -12,13 +12,12 @@ import org.springframework.scheduling.annotation.EnableScheduling
 @Configuration
 class LockProviderConfiguration {
   @Bean
-  fun lockProvider(jdbcTemplate: JdbcTemplate): LockProvider =
-    JdbcTemplateLockProvider(
-      JdbcTemplateLockProvider.Configuration.builder()
-        .withJdbcTemplate(jdbcTemplate)
-        .usingDbTime()
-        .build(),
-    )
+  fun lockProvider(jdbcTemplate: JdbcTemplate): LockProvider = JdbcTemplateLockProvider(
+    JdbcTemplateLockProvider.Configuration.builder()
+      .withJdbcTemplate(jdbcTemplate)
+      .usingDbTime()
+      .build(),
+  )
 }
 
 @Configuration
