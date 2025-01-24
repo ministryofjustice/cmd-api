@@ -54,25 +54,23 @@ class WebClientConfiguration(
   fun prisonWebClientAppScope(
     @Qualifier("authorizedClientManager") authorizedClientManager: OAuth2AuthorizedClientManager,
     builder: WebClient.Builder,
-  ): WebClient =
-    builder.authorisedWebClient(
-      authorizedClientManager = authorizedClientManager,
-      registrationId = "prison-api",
-      url = prisonApiRootUri,
-      timeout = timeout,
-    )
+  ): WebClient = builder.authorisedWebClient(
+    authorizedClientManager = authorizedClientManager,
+    registrationId = "prison-api",
+    url = prisonApiRootUri,
+    timeout = timeout,
+  )
 
   @Bean
   fun csrAPIWebClientAppScope(
     @Qualifier("authorizedClientManager") authorizedClientManager: OAuth2AuthorizedClientManager,
     builder: WebClient.Builder,
-  ): WebClient =
-    builder.authorisedWebClient(
-      authorizedClientManager = authorizedClientManager,
-      registrationId = "prison-api",
-      url = csrRootUri,
-      timeout = timeout,
-    )
+  ): WebClient = builder.authorisedWebClient(
+    authorizedClientManager = authorizedClientManager,
+    registrationId = "prison-api",
+    url = csrRootUri,
+    timeout = timeout,
+  )
 
   private fun authorizedClientManagerRequestScope(
     clientRegistrationRepository: ClientRegistrationRepository,

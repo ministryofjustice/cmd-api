@@ -20,15 +20,14 @@ enum class FullDayActivityType(val description: String) {
   ;
 
   companion object {
-    fun from(value: String?): FullDayActivityType =
-      if (value == null) {
-        log.warn("FullDayActivityType: Activity is missing - possibly using deleted Day Model")
-        SHIFT
-      } else {
-        entries
-          .find { type -> value.contains(type.description, true) }
-          ?: SHIFT
-      }
+    fun from(value: String?): FullDayActivityType = if (value == null) {
+      log.warn("FullDayActivityType: Activity is missing - possibly using deleted Day Model")
+      SHIFT
+    } else {
+      entries
+        .find { type -> value.contains(type.description, true) }
+        ?: SHIFT
+    }
 
     private val log = LoggerFactory.getLogger(FullDayActivityType::class.java)
   }

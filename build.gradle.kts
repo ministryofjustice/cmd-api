@@ -1,7 +1,7 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.1.2"
-  kotlin("plugin.spring") version "2.0.21"
-  kotlin("plugin.jpa") version "2.0.21"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "7.0.0-beta"
+  kotlin("plugin.spring") version "2.1.0"
+  kotlin("plugin.jpa") version "2.1.0"
   idea
 }
 
@@ -22,7 +22,7 @@ dependencies {
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
   runtimeOnly("com.h2database:h2:2.3.232")
-  runtimeOnly("org.postgresql:postgresql:42.7.4")
+  runtimeOnly("org.postgresql:postgresql:42.7.5")
   runtimeOnly("com.zaxxer:HikariCP")
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
 
@@ -32,13 +32,13 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-cache")
   implementation("com.github.ben-manes.caffeine:caffeine")
 
-  implementation("net.javacrumbs.shedlock:shedlock-spring:6.0.2")
-  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:6.0.2")
+  implementation("net.javacrumbs.shedlock:shedlock-spring:6.2.0")
+  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:6.2.0")
 
   implementation("org.springframework:spring-webflux")
   implementation("org.springframework.boot:spring-boot-starter-reactor-netty")
 
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.3")
 
   implementation("org.apache.commons:commons-lang3:3.17.0")
   implementation("uk.gov.service.notify:notifications-java-client:5.2.1-RELEASE")

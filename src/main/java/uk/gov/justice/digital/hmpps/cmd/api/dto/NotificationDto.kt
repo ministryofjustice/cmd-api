@@ -22,12 +22,10 @@ data class NotificationDto @JsonCreator constructor(
 
   companion object {
 
-    fun from(notification: Notification, communicationPreference: CommunicationPreference): NotificationDto {
-      return NotificationDto(
-        notification.getNotificationDescription(communicationPreference),
-        notification.shiftModified,
-        notification.processed,
-      )
-    }
+    fun from(notification: Notification, communicationPreference: CommunicationPreference): NotificationDto = NotificationDto(
+      notification.getNotificationDescription(communicationPreference),
+      notification.shiftModified,
+      notification.processed,
+    )
   }
 }

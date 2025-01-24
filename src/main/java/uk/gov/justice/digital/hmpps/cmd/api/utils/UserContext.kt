@@ -6,17 +6,13 @@ object UserContext {
   private val authToken = ThreadLocal<String>()
   private val authentication = ThreadLocal<Authentication>()
 
-  fun getAuthToken(): String {
-    return authToken.get()
-  }
+  fun getAuthToken(): String = authToken.get()
 
   fun setAuthToken(aToken: String?) {
     authToken.set(aToken)
   }
 
-  fun getAuthentication(): Authentication {
-    return authentication.get()
-  }
+  fun getAuthentication(): Authentication = authentication.get()
 
   fun setAuthentication(auth: Authentication?) {
     authentication.set(auth)

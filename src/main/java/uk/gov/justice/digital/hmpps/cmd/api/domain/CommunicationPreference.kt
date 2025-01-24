@@ -9,10 +9,8 @@ enum class CommunicationPreference {
   ;
 
   companion object {
-    fun from(value: String): CommunicationPreference {
-      return Arrays.stream(values())
-        .filter { type -> type.name.equals(value, true) }
-        .findFirst().orElseThrow { IllegalArgumentException() }
-    }
+    fun from(value: String): CommunicationPreference = Arrays.stream(values())
+      .filter { type -> type.name.equals(value, true) }
+      .findFirst().orElseThrow { IllegalArgumentException() }
   }
 }

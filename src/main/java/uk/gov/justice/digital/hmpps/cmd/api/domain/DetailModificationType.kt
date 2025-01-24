@@ -10,10 +10,8 @@ enum class DetailModificationType(val description: String) {
   ;
 
   companion object {
-    fun from(value: String): DetailModificationType {
-      return Arrays.stream(values())
-        .filter { type -> type.name.equals(value, true) }
-        .findFirst().orElseThrow { IllegalArgumentException() }
-    }
+    fun from(value: String): DetailModificationType = Arrays.stream(values())
+      .filter { type -> type.name.equals(value, true) }
+      .findFirst().orElseThrow { IllegalArgumentException() }
   }
 }

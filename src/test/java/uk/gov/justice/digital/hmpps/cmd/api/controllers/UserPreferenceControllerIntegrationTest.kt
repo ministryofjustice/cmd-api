@@ -125,29 +125,26 @@ class UserPreferenceControllerIntegrationTest(
     }
   }
 
-  fun putSnoozeUntilPreference(user: String, date: LocalDate): ResponseEntity<Void> =
-    testRestTemplate.exchange(
-      PUT_SNOOZE_PREFERENCES_TEMPLATE,
-      HttpMethod.PUT,
-      entityBuilder.entityWithJwtAuthorisation(user, PRISON_ROLE, UpdateSnoozeUntilRequest(date)),
-      Void::class.java,
-    )
+  fun putSnoozeUntilPreference(user: String, date: LocalDate): ResponseEntity<Void> = testRestTemplate.exchange(
+    PUT_SNOOZE_PREFERENCES_TEMPLATE,
+    HttpMethod.PUT,
+    entityBuilder.entityWithJwtAuthorisation(user, PRISON_ROLE, UpdateSnoozeUntilRequest(date)),
+    Void::class.java,
+  )
 
-  fun putNotificationPreference(user: String, email: String, sms: String?, pref: CommunicationPreference): ResponseEntity<Void> =
-    testRestTemplate.exchange(
-      PUT_NOTIFICATION_PREFERENCES_TEMPLATE,
-      HttpMethod.PUT,
-      entityBuilder.entityWithJwtAuthorisation(user, PRISON_ROLE, UpdateNotificationDetailsRequest(email, sms, pref)),
-      Void::class.java,
-    )
+  fun putNotificationPreference(user: String, email: String, sms: String?, pref: CommunicationPreference): ResponseEntity<Void> = testRestTemplate.exchange(
+    PUT_NOTIFICATION_PREFERENCES_TEMPLATE,
+    HttpMethod.PUT,
+    entityBuilder.entityWithJwtAuthorisation(user, PRISON_ROLE, UpdateNotificationDetailsRequest(email, sms, pref)),
+    Void::class.java,
+  )
 
-  fun getNotificationPreference(user: String): ResponseEntity<String> =
-    testRestTemplate.exchange(
-      NOTIFICATION_PREFERENCES_TEMPLATE,
-      HttpMethod.GET,
-      entityBuilder.entityWithJwtAuthorisation(user, PRISON_ROLE),
-      String::class.java,
-    )
+  fun getNotificationPreference(user: String): ResponseEntity<String> = testRestTemplate.exchange(
+    NOTIFICATION_PREFERENCES_TEMPLATE,
+    HttpMethod.GET,
+    entityBuilder.entityWithJwtAuthorisation(user, PRISON_ROLE),
+    String::class.java,
+  )
 
   companion object {
     private const val NOTIFICATION_PREFERENCES_TEMPLATE = "/preferences/notifications"

@@ -15,9 +15,8 @@ class UserPreferenceService(
   private val authenticationFacade: HmppsAuthenticationHolder,
 ) {
 
-  fun getUserPreference(): UserPreferenceDto =
-    UserPreferenceDto.from(getUserPreference(authenticationFacade.username!!))
-      ?: throw NotFoundException("Preferences not found for ${authenticationFacade.username}")
+  fun getUserPreference(): UserPreferenceDto = UserPreferenceDto.from(getUserPreference(authenticationFacade.username!!))
+    ?: throw NotFoundException("Preferences not found for ${authenticationFacade.username}")
 
   fun updateSnoozePreference(newDate: LocalDate) {
     val userPreferences = getOrCreateUserPreference()
@@ -37,9 +36,8 @@ class UserPreferenceService(
     repository.save(userPreferences)
   }
 
-  fun getOrCreateUserPreference(quantumId: String = authenticationFacade.username!!): UserPreference =
-    getUserPreference(quantumId) ?: repository.save(UserPreference(quantumId.uppercase()))
-      .also { log.info("getOrCreateUserPreference: Created new user preference for $quantumId") }
+  fun getOrCreateUserPreference(quantumId: String = authenticationFacade.username!!): UserPreference = getUserPreference(quantumId) ?: repository.save(UserPreference(quantumId.uppercase()))
+    .also { log.info("getOrCreateUserPreference: Created new user preference for $quantumId") }
 
   fun getUserPreference(quantumId: String): UserPreference? {
     val userPreference = repository.findByQuantumIdIgnoreCase(quantumId)

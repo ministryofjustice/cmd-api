@@ -71,25 +71,20 @@ data class Notification(
 
   companion object {
 
-    fun fromDto(dtoCsrs: Collection<CsrModifiedDetailDto>): Collection<Notification> {
-      return dtoCsrs.map { fromDto(it) }
-    }
+    fun fromDto(dtoCsrs: Collection<CsrModifiedDetailDto>): Collection<Notification> = dtoCsrs.map { fromDto(it) }
 
-    fun fromDto(dtoCsr: CsrModifiedDetailDto): Notification {
-      return Notification(
-        quantumId = dtoCsr.quantumId!!,
-        shiftModified = dtoCsr.shiftModified!!,
-        detailStart = dtoCsr.detailStart,
-        detailEnd = dtoCsr.detailEnd,
-        activity = dtoCsr.activity,
-        parentType = dtoCsr.shiftType,
-        actionType = dtoCsr.actionType!!,
-        processed = false,
-      )
-    }
+    fun fromDto(dtoCsr: CsrModifiedDetailDto): Notification = Notification(
+      quantumId = dtoCsr.quantumId!!,
+      shiftModified = dtoCsr.shiftModified!!,
+      detailStart = dtoCsr.detailStart,
+      detailEnd = dtoCsr.detailEnd,
+      activity = dtoCsr.activity,
+      parentType = dtoCsr.shiftType,
+      actionType = dtoCsr.actionType!!,
+      processed = false,
+    )
 
-    fun LocalDateTime.getDateTimeFormattedForNotifications(): String =
-      DateTimeFormatter.ofPattern("EEEE d MMMM").format(this)
+    fun LocalDateTime.getDateTimeFormattedForNotifications(): String = DateTimeFormatter.ofPattern("EEEE d MMMM").format(this)
 
     fun LocalDateTime.getDateTimeFormattedForTemplate(): String {
       val day = this.dayOfMonth
@@ -107,57 +102,50 @@ data class Notification(
       return DateTimeFormatter.ofPattern("EEEE, d'$ordinal' MMMM").format(this)
     }
 
-    private fun getNotificationType(shiftNotificationType: ShiftType, activity: String?): String {
-      return if (shiftNotificationType == ShiftType.SHIFT) {
-        if (activity == null) {
-          "shift"
-        } else {
-          "detail"
-        }
+    private fun getNotificationType(shiftNotificationType: ShiftType, activity: String?): String = if (shiftNotificationType == ShiftType.SHIFT) {
+      if (activity == null) {
+        "shift"
       } else {
-        if (activity == null) {
-          "overtime shift"
-        } else {
-          "overtime detail"
-        }
+        "detail"
+      }
+    } else {
+      if (activity == null) {
+        "overtime shift"
+      } else {
+        "overtime detail"
       }
     }
 
-    private fun getOptionalTaskDescription(from: LocalDateTime, to: LocalDateTime, task: String?): String {
-      return if (!task.isNullOrEmpty()) {
-        if (from.toLocalTime().isAfter(LocalTime.MIN) && to.toLocalTime().isAfter(LocalTime.MIN)) {
-          "(${from.toLocalTime()} - ${to.toLocalTime()}) "
-        } else {
-          "(full day) "
-        }
+    private fun getOptionalTaskDescription(from: LocalDateTime, to: LocalDateTime, task: String?): String = if (!task.isNullOrEmpty()) {
+      if (from.toLocalTime().isAfter(LocalTime.MIN) && to.toLocalTime().isAfter(LocalTime.MIN)) {
+        "(${from.toLocalTime()} - ${to.toLocalTime()}) "
       } else {
-        ""
+        "(full day) "
       }
+    } else {
+      ""
     }
 
     private fun getOptionalTaskTo(
       task: String?,
       communicationPreference: CommunicationPreference,
       shiftActionType: DetailModificationType,
-    ): String =
-      if (communicationPreference == CommunicationPreference.NONE && !task.isNullOrEmpty()) {
-        when (shiftActionType) {
-          ADD -> " as $task"
-          EDIT -> " to $task"
-          DELETE -> " (was $task)"
-          else -> ""
-        }
-      } else {
-        ""
+    ): String = if (communicationPreference == CommunicationPreference.NONE && !task.isNullOrEmpty()) {
+      when (shiftActionType) {
+        ADD -> " as $task"
+        EDIT -> " to $task"
+        DELETE -> " (was $task)"
+        else -> ""
       }
+    } else {
+      ""
+    }
 
     // Notify supports bullet points for Email but not Sms
-    private fun getOptionalBulletPoint(communicationPreference: CommunicationPreference): String {
-      return if (communicationPreference == CommunicationPreference.EMAIL) {
-        "* "
-      } else {
-        ""
-      }
+    private fun getOptionalBulletPoint(communicationPreference: CommunicationPreference): String = if (communicationPreference == CommunicationPreference.EMAIL) {
+      "* "
+    } else {
+      ""
     }
   }
 }

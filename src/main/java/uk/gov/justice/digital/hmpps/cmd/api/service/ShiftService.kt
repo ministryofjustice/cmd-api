@@ -101,22 +101,18 @@ class ShiftService(
     }
   }
 
-  private fun isStartType(displayType: TaskDisplayType?): Boolean =
-    (displayType == TaskDisplayType.DAY_START || displayType == TaskDisplayType.NIGHT_START)
+  private fun isStartType(displayType: TaskDisplayType?): Boolean = (displayType == TaskDisplayType.DAY_START || displayType == TaskDisplayType.NIGHT_START)
 
-  private fun onlyHasBreaksOrNightShiftFinish(tasks: Collection<DetailDto>, type: FullDayActivityType): Boolean =
-    tasks.none {
-      it.displayType != TaskDisplayType.NIGHT_FINISH &&
-        FullDayActivityType.from(it.activity) != type &&
-        FullDayActivityType.from(it.activity) != FullDayActivityType.BREAK
-    }
+  private fun onlyHasBreaksOrNightShiftFinish(tasks: Collection<DetailDto>, type: FullDayActivityType): Boolean = tasks.none {
+    it.displayType != TaskDisplayType.NIGHT_FINISH &&
+      FullDayActivityType.from(it.activity) != type &&
+      FullDayActivityType.from(it.activity) != FullDayActivityType.BREAK
+  }
 
   private fun getMiddleDetails(
     details: Collection<CsrDetailDto>,
     startAndFinishDetails: Collection<DetailDto>,
-  ): Collection<DetailDto> =
-
-    // The middle details are the fullDetails - the start and finish details
+  ): Collection<DetailDto> = // The middle details are the fullDetails - the start and finish details
     details
       .filter { detail ->
         startAndFinishDetails.all { sfd -> detail.detailStart != sfd.start && detail.detailEnd != sfd.end }
@@ -227,8 +223,7 @@ class ShiftService(
 
   private fun calculateShiftDuration(details: Collection<CsrDetailDto>): Long {
     // We have to exclude unpaid breaks
-    return details.filter { detail -> FullDayActivityType.from(detail.activity) != FullDayActivityType.BREAK }.map {
-        detail ->
+    return details.filter { detail -> FullDayActivityType.from(detail.activity) != FullDayActivityType.BREAK }.map { detail ->
       Duration.between(
         detail.detailStart,
         detail.detailEnd,
