@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "7.1.1"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "7.1.2"
   kotlin("plugin.spring") version "2.1.10"
   kotlin("plugin.jpa") version "2.1.10"
   idea
@@ -55,7 +55,7 @@ dependencies {
   testImplementation("net.javacrumbs.json-unit:json-unit-assertj:4.1.0")
   testImplementation("io.github.http-builder-ng:http-builder-ng-apache:1.0.4")
   testImplementation("com.ninja-squad:springmockk:4.0.2")
-  testImplementation("org.wiremock:wiremock-standalone:3.11.0")
+  testImplementation("org.wiremock:wiremock-standalone:3.12.0")
   testImplementation("io.opentelemetry:opentelemetry-sdk-testing")
 }
 
