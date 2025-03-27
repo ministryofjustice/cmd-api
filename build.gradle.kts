@@ -38,7 +38,7 @@ dependencies {
   implementation("org.springframework:spring-webflux")
   implementation("org.springframework.boot:spring-boot-starter-reactor-netty")
 
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6")
 
   implementation("org.apache.commons:commons-lang3:3.17.0")
   implementation("uk.gov.service.notify:notifications-java-client:5.2.1-RELEASE")
