@@ -1,7 +1,6 @@
 # Check my diary
 [![repo standards badge](https://img.shields.io/badge/endpoint.svg?&style=flat&logo=github&url=https%3A%2F%2Foperations-engineering-reports.cloud-platform.service.justice.gov.uk%2Fapi%2Fv1%2Fcompliant_public_repositories%2Fcmd-api)](https://operations-engineering-reports.cloud-platform.service.justice.gov.uk/public-report/cmd-api "Link to report")
-[![CircleCI](https://circleci.com/gh/ministryofjustice/cmd-api/tree/main.svg?style=svg)](https://circleci.com/gh/ministryofjustice/cmd-api)
-[![Docker Repository on Quay](https://img.shields.io/badge/quay.io-repository-2496ED.svg?logo=docker)](https://quay.io/repository/hmpps/cmd-api)
+[![Docker Repository on ghcr](https://img.shields.io/badge/ghcr.io-repository-2496ED.svg?logo=docker)](https://ghcr.io/ministryofjustice/cmd-api)
 [![API docs](https://img.shields.io/badge/API_docs_-view-85EA2D.svg?logo=swagger)](https://cmd-api-preprod.prison.service.justice.gov.uk/swagger-ui/index.html)
 
 ## Check my diary backend api service
@@ -10,9 +9,6 @@ CMD API queries CSR API and turns the raw shift data into calendar days.
 
 It applies business logic such as identifying whether shifts are day or night shifts, which activities are overtime and calculating the shift start, finish and duration. It then groups the shift data into ‘days’ (so one night shift spans 2 days)
 This codebase also includes Spring scheduling with Shedlock which is used as a cluster aware cron to schedule checking for modified shifts via CSR-API. This data is then sent to users via Gov Notify and stored in a table and made available over rest.
-
-Continuous Integration:
-https://app.circleci.com/pipelines/github/ministryofjustice/cmd-api
 
 ### Prerequisites
 - Java JDK 17+
