@@ -4,7 +4,7 @@ generic-service:
   productId: DPS052
 
   image:
-    repository: quay.io/hmpps/cmd-api
+    repository: ghcr.io/ministryofjustice/cmd-api
     tag: latest    # override at deployment time
     port: 8080
 
@@ -64,15 +64,10 @@ generic-service:
     SERVER_PORT: 8080
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
 
-  # Pre-existing kubernetes secrets to load as environment variables in the deployment.
-  # namespace_secrets:
-  #   [name of kubernetes secret]:
-  #     [name of environment variable as seen by app]: [key of kubernetes secret to load]
-
   namespace_secrets:
-    application-insights:
+    cmd-api-application-insights:
       APPLICATIONINSIGHTS_CONNECTION_STRING: "APPLICATIONINSIGHTS_CONNECTION_STRING"
-    cmd-api:
+    cmd-api-client-creds:
       OAUTH_CLIENT_ID: "API_CLIENT_ID"
       OAUTH_CLIENT_SECRET: "API_CLIENT_SECRET"
 
