@@ -32,22 +32,26 @@ jobs:
     secrets: inherit
     with:
       environment: ${{ matrix.environments }}
-  kotlin_validate:
+  gradle_verify:
     name: Validate the kotlin
-    uses: ministryofjustice/hmpps-github-actions/.github/workflows/kotlin_validate.yml@v2 # WORKFLOW_VERSION
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/gradle_verify.yml@v2 # WORKFLOW_VERSION
     secrets: inherit
+    with:
+      gradle-command: './gradlew assemble check'
+      upload-build-artifacts: true
   build:
     name: Build docker image from hmpps-github-actions
     if: github.ref == 'refs/heads/main'
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/docker_build.yml@v2 # WORKFLOW_VERSION
     needs:
-      - kotlin_validate
+      - gradle_verify
     with:
       docker_registry: 'ghcr.io'
       registry_org: 'ministryofjustice'
       additional_docker_tag: ${{ inputs.additional_docker_tag }}
       push: ${{ inputs.push || true }}
       docker_multiplatform: false
+      download_build_artifacts: true
   deploy_preprod:
     name: Deploy to the preprod environment
     if: github.ref == 'refs/heads/main'
