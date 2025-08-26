@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "8.3.6"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "8.3.7"
   kotlin("plugin.spring") version "2.2.10"
   kotlin("plugin.jpa") version "2.2.10"
   idea
@@ -32,13 +32,13 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-cache")
   implementation("com.github.ben-manes.caffeine:caffeine")
 
-  implementation("net.javacrumbs.shedlock:shedlock-spring:6.9.2")
-  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:6.9.2")
+  implementation("net.javacrumbs.shedlock:shedlock-spring:6.10.0")
+  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:6.10.0")
 
   implementation("org.springframework:spring-webflux")
   implementation("org.springframework.boot:spring-boot-starter-reactor-netty")
 
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.11")
 
   implementation("org.apache.commons:commons-lang3:3.18.0")
   implementation("uk.gov.service.notify:notifications-java-client:5.2.1-RELEASE")
