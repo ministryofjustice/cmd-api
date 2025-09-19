@@ -28,5 +28,6 @@ interface NotificationRepository : CrudRepository<Notification, Long> {
     actionType: DetailModificationType,
   ): Int
 
-  fun deleteAllByShiftModifiedBefore(shiftModified: LocalDateTime): Int
+  // Workaround for https://github.com/spring-projects/spring-data-jpa/issues/4018 by returning java.lang.Integer
+  fun deleteAllByShiftModifiedBefore(shiftModified: LocalDateTime): Integer
 }
