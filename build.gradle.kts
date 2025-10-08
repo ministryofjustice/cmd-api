@@ -9,6 +9,10 @@ repositories {
   maven("https://dl.bintray.com/gov-uk-notify/maven")
 }
 
+configurations {
+  implementation { exclude(module = "commons-logging") }
+}
+
 allOpen {
   annotations(
     "javax.persistence.Entity",
@@ -60,14 +64,18 @@ dependencies {
 }
 
 kotlin {
-  jvmToolchain(21)
   compilerOptions {
     freeCompilerArgs.addAll("-Xjvm-default=all", "-Xwhen-guards", "-Xannotation-default-target=param-property")
   }
 }
 
+java {
+  sourceCompatibility = JavaVersion.VERSION_24
+  targetCompatibility = JavaVersion.VERSION_24
+}
+
 tasks {
   withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
+    compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24
   }
 }
