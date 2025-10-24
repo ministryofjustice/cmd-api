@@ -368,7 +368,7 @@ internal class NotificationServiceTest {
 
     @Test
     fun `Tidy notifications`() {
-      every { shiftNotificationRepository.deleteAllByShiftModifiedBefore(any()) } returns 4 as Integer
+      every { shiftNotificationRepository.deleteAllByShiftModifiedBefore(any()) } returns 4
 
       service.tidyNotification()
 
