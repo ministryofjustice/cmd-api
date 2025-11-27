@@ -92,7 +92,7 @@ class PollingSchedulerIntegrationTest(
     assertThat(CsrApiExtension.api.putCountFor("/updates/6")).isEqualTo(0)
 
     val saved = notificationRepository.findAll()
-    assertThat(saved).asList().containsExactly(
+    assertThat(saved).containsExactly(
       Notification(
         // generated
         id = saved.first().id,
@@ -149,7 +149,7 @@ class PollingSchedulerIntegrationTest(
     pollingScheduler.tidyNotifications()
 
     val all = notificationRepository.findAll()
-    assertThat(all).asList().hasSize(1)
+    assertThat(all).hasSize(1)
     assertThat(all.first().quantumId).isEqualTo("user2")
   }
 
@@ -213,7 +213,7 @@ class PollingSchedulerIntegrationTest(
     CsrApiExtension.api.verify(putRequestedFor(urlEqualTo("/updates/3")).withRequestBody(equalTo("[102]")))
 
     val saved = notificationRepository.findAll()
-    assertThat(saved).asList().containsExactly(
+    assertThat(saved).containsExactly(
       Notification(
         // generated
         id = saved.first().id,
