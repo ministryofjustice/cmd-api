@@ -541,7 +541,7 @@ internal class NotificationServiceTestGenerateShift {
       )
       val notification2 =
         notification1.copy(shiftModified = now.minusMinutes(7), detailStart = start, activity = "Guard Duty")
-      assertThat(results[0]).asList().containsExactly(notification1, notification2)
+      assertThat(results[0]).containsExactly(notification1, notification2)
       verify { csrClient.deleteProcessed(1, listOf(1L, 3L)) }
     }
 
@@ -584,7 +584,7 @@ internal class NotificationServiceTestGenerateShift {
 
       service.getNotifications(1)
 
-      assertThat(results[0]).asList().hasSize(1)
+      assertThat(results[0]).hasSize(1)
       verify { csrClient.deleteProcessed(1, listOf(1L, 2L, 3L, 4L, 5L)) }
     }
   }

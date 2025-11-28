@@ -6,19 +6,19 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.web.client.TestRestTemplate
-import org.springframework.http.HttpMethod
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient
 import org.springframework.http.HttpStatus
+import org.springframework.test.web.servlet.client.RestTestClient
 import uk.gov.justice.digital.hmpps.cmd.api.dto.DetailDto
-import uk.gov.justice.digital.hmpps.cmd.api.dto.ShiftDto
 import uk.gov.justice.digital.hmpps.prisonertonomisupdate.wiremock.CsrApiExtension
 import uk.gov.justice.digital.hmpps.prisonertonomisupdate.wiremock.HmppsAuthApiExtension
 import uk.gov.justice.digital.hmpps.prisonertonomisupdate.wiremock.PrisonApiExtension
 
 @ExtendWith(PrisonApiExtension::class, CsrApiExtension::class, HmppsAuthApiExtension::class)
 @DisplayName("Integration Tests for Shift Controller")
+@AutoConfigureRestTestClient
 class ShiftControllerIntegrationTest(
-  @Autowired val testRestTemplate: TestRestTemplate,
+  @Autowired val restTestClient: RestTestClient,
   @Autowired val entityBuilder: EntityWithJwtAuthorisationBuilder,
 ) : ResourceTest() {
 
@@ -46,17 +46,14 @@ class ShiftControllerIntegrationTest(
       """.trimIndent(),
     )
 
-    val response = testRestTemplate.exchange(
-      "/user/details?from=2022-04-06&to=2022-04-06",
-      HttpMethod.GET,
-      entityBuilder.entityWithJwtAuthorisation(A_USER, PRISON_ROLE),
-      String::class.java,
-    )
-    with(response) {
-      assertThat(statusCode).isEqualTo(HttpStatus.OK)
-      assertThat(jsonTester.from(body)).extractingJsonPathArrayValue<ShiftDto>("$").hasSize(1)
-      assertThat(jsonTester.from(body)).extractingJsonPathStringValue("$[0].date").isEqualTo("2022-04-06")
-    }
+    restTestClient.get()
+      .uri("/user/details?from=2022-04-06&to=2022-04-06")
+      .headers(entityBuilder.entityWithJwtAuthorisation(A_USER, PRISON_ROLE))
+      .exchange()
+      .expectStatus().isOk
+      .expectBody()
+      .jsonPath("$.length()").isEqualTo(1)
+      .jsonPath("$[0].date").isEqualTo("2022-04-06")
   }
 
   @Test
@@ -82,27 +79,24 @@ class ShiftControllerIntegrationTest(
       """.trimIndent(),
     )
 
-    val response = testRestTemplate.exchange(
-      "/user/details?from=2022-04-01&to=2022-04-30",
-      HttpMethod.GET,
-      entityBuilder.entityWithJwtAuthorisation(A_USER, PRISON_ROLE),
-      String::class.java,
-    )
-    with(response) {
-      assertThat(statusCode).isEqualTo(HttpStatus.OK)
-      val content = jsonTester.from(body)
-      assertThat(content).extractingJsonPathArrayValue<ShiftDto>("$").hasSize(30)
-      assertThat(content).extractingJsonPathStringValue("$[4].date").isEqualTo("2022-04-05")
-      assertThat(content).extractingJsonPathStringValue("$[4].fullDayTypeDescription").isEqualTo("None")
-      assertThat(content).extractingJsonPathStringValue("$[5].date").isEqualTo("2022-04-06")
-      assertThat(content).extractingJsonPathStringValue("$[5].fullDayType").isEqualTo("SHIFT")
-      assertThat(content).extractingJsonPathArrayValue<DetailDto>("$[5].details")
-        .extracting("activity", "displayType", "displayTypeTime", "start", "end", "parentType", "finishDuration")
-        .containsExactly(
-          Tuple(null, "DAY_START", "2022-04-06T10:00:00", "2022-04-06T10:00:00", "2022-04-06T11:00:00", "SHIFT", null),
-          Tuple(null, "DAY_FINISH", "2022-04-06T11:00:00", "2022-04-06T10:00:00", "2022-04-06T11:00:00", "SHIFT", 3600),
-        )
-    }
+    restTestClient.get().uri("/user/details?from=2022-04-01&to=2022-04-30")
+      .headers(entityBuilder.entityWithJwtAuthorisation(A_USER, PRISON_ROLE))
+      .exchange()
+      .expectStatus().isEqualTo(HttpStatus.OK)
+      .expectBody()
+      .jsonPath("$.length()").isEqualTo(30)
+      .jsonPath("$[4].date").isEqualTo("2022-04-05")
+      .jsonPath("$[4].fullDayTypeDescription").isEqualTo("None")
+      .jsonPath("$[5].date").isEqualTo("2022-04-06")
+      .jsonPath("$[5].fullDayType").isEqualTo("SHIFT")
+      .jsonPath("$[5].details").value<List<DetailDto>> { details ->
+        assertThat(details)
+          .extracting("activity", "displayType", "displayTypeTime", "start", "end", "parentType", "finishDuration")
+          .containsExactly(
+            Tuple(null, "DAY_START", "2022-04-06T10:00:00", "2022-04-06T10:00:00", "2022-04-06T11:00:00", "SHIFT", null),
+            Tuple(null, "DAY_FINISH", "2022-04-06T11:00:00", "2022-04-06T10:00:00", "2022-04-06T11:00:00", "SHIFT", 3600),
+          )
+      }
   }
 
   companion object {

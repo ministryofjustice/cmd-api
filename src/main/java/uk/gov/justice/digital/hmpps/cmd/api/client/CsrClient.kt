@@ -3,28 +3,24 @@ package uk.gov.justice.digital.hmpps.cmd.api.client
 import com.fasterxml.jackson.annotation.JsonCreator
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
-import org.springframework.web.reactive.function.client.WebClient
-import reactor.core.publisher.Mono
+import org.springframework.web.client.RestClient
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
 import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.cmd.api.utils.region.Regions
 import uk.gov.justice.hmpps.kotlin.auth.HmppsAuthenticationHolder
-import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Component
 class CsrClient(
-  @Qualifier("csrApiWebClient") private val csrClient: WebClient,
-  @Qualifier("csrAPIWebClientAppScope") private val csrApiServiceAccountWebClient: WebClient,
+  @Qualifier("csrApiWebClient") private val csrClient: RestClient,
+  @Qualifier("csrAPIWebClientAppScope") private val csrApiServiceAccountWebClient: RestClient,
   private val authenticationFacade: HmppsAuthenticationHolder,
   private val regionData: Regions,
-  @Value("\${csr.timeout}") private val csrApiTimeout: Duration,
 ) {
 
   @Cacheable(
@@ -52,9 +48,7 @@ class CsrClient(
       .get()
       .uri("/updates/{region}", region)
       .retrieve()
-      .bodyToMono(object : ParameterizedTypeReference<List<CsrModifiedDetailDto>>() {})
-      .timeout(csrApiTimeout, Mono.just(emptyList()))
-      .block() ?: emptyList()
+      .body(object : ParameterizedTypeReference<List<CsrModifiedDetailDto>>() {}) ?: emptyList()
     log.info("getModified: found ${csrModifiedDetails.size}, Region $region")
     return csrModifiedDetails
   }
@@ -66,11 +60,9 @@ class CsrClient(
       .put()
       .uri("/updates/{region}", region)
       .contentType(MediaType.APPLICATION_JSON)
-      .bodyValue(ids)
+      .body(ids)
       .retrieve()
-      .bodyToMono(Unit::class.java)
-      .timeout(csrApiTimeout)
-      .block()
+      .toBodilessEntity()
 
     log.info("deleteProcessed: end, Region $region")
   }
@@ -81,9 +73,7 @@ class CsrClient(
       .get()
       .uri("/user/details/{region}?from={from}&to={to}", region, from, to)
       .retrieve()
-      .bodyToMono(CSR_DETAIL_DTO_LIST_TYPE)
-      .timeout(csrApiTimeout, Mono.just(emptyList()))
-      .block() ?: listOf()
+      .body(CSR_DETAIL_DTO_LIST_TYPE) ?: emptyList()
     log.info("User Details: found ${csrDetails.size}, User ${authenticationFacade.username}, $from - $to, Region $region")
 
     return csrDetails
