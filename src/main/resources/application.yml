@@ -3,9 +3,9 @@ spring:
     name: cmd-api
   profiles:
     include: stdout
-
-  codec:
-    max-in-memory-size: 100MB
+  http:
+    codecs:
+      max-in-memory-size: 100MB
 
   jpa:
     open-in-view: false
@@ -31,11 +31,6 @@ spring:
   datasource:
     hikari:
       maximum-pool-size: 25
-
-  quartz:
-    job-store-type: jdbc
-    jdbc:
-      initialize-schema: always
 
   task:
     scheduling:
