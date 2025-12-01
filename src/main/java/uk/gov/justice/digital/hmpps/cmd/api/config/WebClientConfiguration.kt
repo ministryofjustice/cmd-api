@@ -112,5 +112,9 @@ fun RestClient.Builder.authorisedRestClient(
       this.setReadTimeout(timeout)
     },
   )
-  .requestInterceptor(OAuth2ClientHttpRequestInterceptor(authorizedClientManager))
+  .requestInterceptor(
+    OAuth2ClientHttpRequestInterceptor(authorizedClientManager).kotlinApply {
+      setClientRegistrationIdResolver { registrationId }
+    },
+  )
   .build()

@@ -105,5 +105,5 @@ class CsrMockServer : WireMockServer(WIREMOCK_PORT) {
   }
 
   fun putCountFor(url: String) = this.findAll(WireMock.putRequestedFor(WireMock.urlEqualTo(url))).count()
-  fun getCountFor(url: String) = this.findAll(WireMock.getRequestedFor(WireMock.urlEqualTo(url))).count()
+  fun getFor(url: String) = this.findAll(WireMock.getRequestedFor(WireMock.urlEqualTo(url)))
 }
