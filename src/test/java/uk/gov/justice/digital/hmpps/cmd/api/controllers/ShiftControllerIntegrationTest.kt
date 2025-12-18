@@ -26,9 +26,9 @@ class ShiftControllerIntegrationTest(
   fun `It returns shifts`() {
     PrisonApiExtension.api.stubUsersMe()
     CsrApiExtension.api.stubUserDetails(
+      // WMI is region 3
       3,
       "2022-04-06",
-      // WMI is region 3
       "2022-04-06",
       """
       [
@@ -60,9 +60,9 @@ class ShiftControllerIntegrationTest(
   fun `It returns shifts with missing activity`() {
     PrisonApiExtension.api.stubUsersMe()
     CsrApiExtension.api.stubUserDetails(
+      // WMI is region 3
       3,
       "2022-04-01",
-      // WMI is region 3
       "2022-04-30",
       """
       [
@@ -97,6 +97,28 @@ class ShiftControllerIntegrationTest(
             Tuple(null, "DAY_FINISH", "2022-04-06T11:00:00", "2022-04-06T10:00:00", "2022-04-06T11:00:00", "SHIFT", 3600),
           )
       }
+  }
+
+  @Test
+  fun `It calls csr api with authentication`() {
+    PrisonApiExtension.api.stubUsersMe()
+    CsrApiExtension.api.stubUserDetails(
+      // WMI is region 3
+      3,
+      "2022-04-06",
+      "2022-04-06",
+      "[]",
+    )
+
+    restTestClient.get()
+      .uri("/user/details?from=2022-04-06&to=2022-04-06")
+      .headers(entityBuilder.entityWithJwtAuthorisation(A_USER, PRISON_ROLE))
+      .exchange()
+      .expectStatus().isOk
+
+    val requests = CsrApiExtension.api.getFor("/user/details/3?from=2022-04-06&to=2022-04-06")
+    assertThat(requests).hasSize(1)
+    assertThat(requests[0].getHeader("Authorization")).isEqualTo("Bearer ABCDE")
   }
 
   companion object {
