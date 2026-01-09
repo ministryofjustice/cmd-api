@@ -4,8 +4,9 @@ spring:
   profiles:
     include: stdout
 
-  codec:
-    max-in-memory-size: 100MB
+  http:
+    codecs:
+      max-in-memory-size: 10MB
 
   jpa:
     open-in-view: false
@@ -84,3 +85,9 @@ csr:
     - name: 5
     - name: 6
   timeout: 10m
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

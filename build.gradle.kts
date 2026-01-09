@@ -17,6 +17,12 @@ allOpen {
   )
 }
 
+configurations {
+  implementation {
+    exclude(group = "com.fasterxml.jackson.module", module = "jackson-module-kotlin")
+  }
+}
+
 dependencies {
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
