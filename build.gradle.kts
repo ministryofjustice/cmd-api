@@ -17,12 +17,6 @@ allOpen {
   )
 }
 
-configurations {
-  implementation {
-    exclude(group = "com.fasterxml.jackson.module", module = "jackson-module-kotlin")
-  }
-}
-
 dependencies {
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
@@ -59,6 +53,9 @@ dependencies {
   testImplementation("com.ninja-squad:springmockk:5.0.1")
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
   testImplementation("io.opentelemetry:opentelemetry-sdk-testing")
+  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.37") {
+    exclude(group = "io.swagger.core.v3")
+  }
 }
 
 kotlin {
