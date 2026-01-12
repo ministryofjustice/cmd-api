@@ -40,3 +40,9 @@ api:
       hmpps-auth: http://localhost:8998/auth
       prison-api: http://localhost:8082
       csr: http://localhost:8081
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
