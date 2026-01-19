@@ -31,7 +31,8 @@ class OpenApiConfiguration(buildProperties: BuildProperties?) {
           .scheme("bearer")
           .bearerFormat("JWT")
           .`in`(SecurityScheme.In.HEADER)
-          .name("Authorization"),
+          .name("Authorization")
+          .description("An HMPPS Auth access token."),
       ),
     )
     .info(
