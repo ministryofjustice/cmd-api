@@ -61,7 +61,6 @@ generic-service:
 
   # Environment variables to load into the deployment
   env:
-    JAVA_OPTS: "-Xmx512m"
     SPRING_PROFILES_ACTIVE: "postgres"
     SERVER_PORT: 8080
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json

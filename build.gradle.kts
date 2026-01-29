@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.0.2"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.0.3"
   kotlin("plugin.spring") version "2.3.0"
   kotlin("plugin.jpa") version "2.3.0"
   idea
@@ -34,8 +34,8 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-cache")
   implementation("com.github.ben-manes.caffeine:caffeine")
 
-  implementation("net.javacrumbs.shedlock:shedlock-spring:7.5.0")
-  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:7.5.0")
+  implementation("net.javacrumbs.shedlock:shedlock-spring:7.6.0")
+  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:7.6.0")
 
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.1")
 
