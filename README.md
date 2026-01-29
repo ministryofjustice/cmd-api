@@ -20,7 +20,7 @@ This codebase also includes Spring scheduling with Shedlock which is used as a c
 
 In order to run the service locally, Nomis OAuth Service is required. This can be run locally using the docker-compose.yml file which will pull down the latest version. From the command line run:
 ```bash
- docker-compose up
+ docker compose up
 ``` 
 ### Build service and run tests
 This service is built using Gradle. In order to build the project from the command line and run the tests, use:
