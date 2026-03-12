@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.cmd.api.controllers
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient
@@ -149,6 +150,35 @@ class NotificationControllerGetIntegrationTest(
       .expectBody()
       // there should now be 0 unprocessed notifications
       .jsonPath("$.length()").isEqualTo(4)
+  }
+
+  @Nested
+  inner class Security {
+    @Test
+    fun `access forbidden when no role`() {
+      restTestClient.get()
+        .uri("/notifications")
+        .headers(entityBuilder.entityWithJwtAuthorisation(A_USER, emptyList()))
+        .exchange()
+        .expectStatus().isForbidden
+    }
+
+    @Test
+    fun `access forbidden with wrong role`() {
+      restTestClient.get()
+        .uri("/notifications")
+        .headers(entityBuilder.entityWithJwtAuthorisation(A_USER, listOf("BANANAS")))
+        .exchange()
+        .expectStatus().isForbidden
+    }
+
+    @Test
+    fun `access unauthorised with no auth token`() {
+      restTestClient.get()
+        .uri("/notifications")
+        .exchange()
+        .expectStatus().isUnauthorized
+    }
   }
 
   fun getNotifications(user: String, url: String): RestTestClient.ResponseSpec = restTestClient.get()

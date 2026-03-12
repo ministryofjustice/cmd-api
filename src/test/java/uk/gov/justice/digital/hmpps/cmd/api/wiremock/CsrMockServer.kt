@@ -61,6 +61,18 @@ class CsrMockServer : WireMockServer(WIREMOCK_PORT) {
     )
   }
 
+  fun stubUserDetailsWithError(region: Int, from: String, to: String, status: Int = 500) {
+    stubFor(
+      get("/user/details/$region?from=$from&to=$to")
+        .willReturn(
+          aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withBody("""{ "status": $status, "userMessage": "Error $status" }""")
+            .withStatus(status),
+        ),
+    )
+  }
+
   fun stubGetUpdates(region: Int, response: String) {
     stubFor(
       get("/updates/$region").willReturn(

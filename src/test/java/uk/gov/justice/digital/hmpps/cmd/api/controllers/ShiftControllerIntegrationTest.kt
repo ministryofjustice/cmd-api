@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.cmd.api.controllers
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.groups.Tuple
 import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -119,6 +120,69 @@ class ShiftControllerIntegrationTest(
     val requests = CsrApiExtension.api.getFor("/user/details/3?from=2022-04-06&to=2022-04-06")
     assertThat(requests).hasSize(1)
     assertThat(requests[0].getHeader("Authorization")).isEqualTo("Bearer ABCDE")
+  }
+
+  @Test
+  fun `csr api 401 error handled correctly`() {
+    PrisonApiExtension.api.stubUsersMe()
+    CsrApiExtension.api.stubUserDetailsWithError(
+      3,
+      "2022-04-06",
+      "2022-04-06",
+      401,
+    )
+
+    restTestClient.get()
+      .uri("/user/details?from=2022-04-06&to=2022-04-06")
+      .headers(entityBuilder.entityWithJwtAuthorisation(A_USER, PRISON_ROLE))
+      .exchange()
+      .expectStatus().isUnauthorized
+  }
+
+  @Test
+  fun `csr api 403 error handled correctly`() {
+    PrisonApiExtension.api.stubUsersMe()
+    CsrApiExtension.api.stubUserDetailsWithError(
+      3,
+      "2022-04-06",
+      "2022-04-06",
+      403,
+    )
+
+    restTestClient.get()
+      .uri("/user/details?from=2022-04-06&to=2022-04-06")
+      .headers(entityBuilder.entityWithJwtAuthorisation(A_USER, PRISON_ROLE))
+      .exchange()
+      .expectStatus().isForbidden
+  }
+
+  @Nested
+  inner class Security {
+    @Test
+    fun `access forbidden when no role`() {
+      restTestClient.get()
+        .uri("/user/details?from=2022-04-06&to=2022-04-06")
+        .headers(entityBuilder.entityWithJwtAuthorisation(A_USER, emptyList()))
+        .exchange()
+        .expectStatus().isForbidden
+    }
+
+    @Test
+    fun `access forbidden with wrong role`() {
+      restTestClient.get()
+        .uri("/user/details?from=2022-04-06&to=2022-04-06")
+        .headers(entityBuilder.entityWithJwtAuthorisation(A_USER, listOf("BANANAS")))
+        .exchange()
+        .expectStatus().isForbidden
+    }
+
+    @Test
+    fun `access unauthorised with no auth token`() {
+      restTestClient.get()
+        .uri("/user/details?from=2022-04-06&to=2022-04-06")
+        .exchange()
+        .expectStatus().isUnauthorized
+    }
   }
 
   companion object {
