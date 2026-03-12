@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.cmd.api.controllers
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.authorization.AuthorizationDeniedException
 import org.springframework.validation.FieldError
 import org.springframework.validation.ObjectError
 import org.springframework.web.bind.MethodArgumentNotValidException
@@ -32,7 +33,7 @@ class ControllerAdvice {
       log.error("Unexpected exception", e)
     }
 
-  @ExceptionHandler(AccessDeniedException::class)
+  @ExceptionHandler(exception = [AccessDeniedException::class, AuthorizationDeniedException::class])
   fun handleAccessDeniedException(e: AccessDeniedException): ResponseEntity<ErrorResponse> = ResponseEntity
     .status(HttpStatus.FORBIDDEN)
     .body(ErrorResponse(status = HttpStatus.FORBIDDEN)).also {

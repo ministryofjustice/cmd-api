@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.cmd.api.controllers
 
 import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient
@@ -100,6 +101,103 @@ class UserPreferenceControllerIntegrationTest(
   fun `It creates a new preference even if the snooze date is older than today`() {
     putSnoozeUntilPreference(A_USER_NO_PREFERENCE, LocalDate.now().minusDays(45))
       .expectStatus().isEqualTo(HttpStatus.OK)
+  }
+
+  @Nested
+  inner class SecurityGet {
+    @Test
+    fun `access forbidden when no role`() {
+      restTestClient.get()
+        .uri(NOTIFICATION_PREFERENCES_TEMPLATE)
+        .headers(entityBuilder.entityWithJwtAuthorisation(A_USER, emptyList()))
+        .exchange()
+        .expectStatus().isForbidden
+    }
+
+    @Test
+    fun `access forbidden with wrong role`() {
+      restTestClient.get()
+        .uri(NOTIFICATION_PREFERENCES_TEMPLATE)
+        .headers(entityBuilder.entityWithJwtAuthorisation(A_USER, listOf("BANANAS")))
+        .exchange()
+        .expectStatus().isForbidden
+    }
+
+    @Test
+    fun `access unauthorised with no auth token`() {
+      restTestClient.get()
+        .uri(NOTIFICATION_PREFERENCES_TEMPLATE)
+        .exchange()
+        .expectStatus().isUnauthorized
+    }
+  }
+
+  @Nested
+  inner class SecurityPutNotification {
+    private val body = UpdateNotificationDetailsRequest("", null, CommunicationPreference.EMAIL)
+
+    @Test
+    fun `access forbidden when no role`() {
+      restTestClient.put()
+        .uri(PUT_NOTIFICATION_PREFERENCES_TEMPLATE)
+        .headers(entityBuilder.entityWithJwtAuthorisation(A_USER, emptyList()))
+        .body(body)
+        .exchange()
+        .expectStatus().isForbidden
+    }
+
+    @Test
+    fun `access forbidden with wrong role`() {
+      restTestClient.put()
+        .uri(PUT_NOTIFICATION_PREFERENCES_TEMPLATE)
+        .headers(entityBuilder.entityWithJwtAuthorisation(A_USER, listOf("BANANAS")))
+        .body(body)
+        .exchange()
+        .expectStatus().isForbidden
+    }
+
+    @Test
+    fun `access unauthorised with no auth token`() {
+      restTestClient.put()
+        .uri(PUT_NOTIFICATION_PREFERENCES_TEMPLATE)
+        .body(body)
+        .exchange()
+        .expectStatus().isUnauthorized
+    }
+  }
+
+  @Nested
+  inner class SecurityPutSnooze {
+    val body = UpdateSnoozeUntilRequest(LocalDate.now())
+
+    @Test
+    fun `access forbidden when no role`() {
+      restTestClient.put()
+        .uri(PUT_SNOOZE_PREFERENCES_TEMPLATE)
+        .headers(entityBuilder.entityWithJwtAuthorisation(A_USER, emptyList()))
+        .body(body)
+        .exchange()
+        .expectStatus().isForbidden
+    }
+
+    @Test
+    fun `access forbidden with wrong role`() {
+      restTestClient.put()
+        .uri(PUT_SNOOZE_PREFERENCES_TEMPLATE)
+        .headers(entityBuilder.entityWithJwtAuthorisation(A_USER, listOf("BANANAS")))
+        .body(body)
+        .exchange()
+        .expectStatus().isForbidden
+    }
+
+    @Test
+    fun `access unauthorised with no auth token`() {
+      restTestClient.put()
+        .uri(PUT_SNOOZE_PREFERENCES_TEMPLATE)
+        .body(body)
+        .exchange()
+        .expectStatus().isUnauthorized
+    }
   }
 
   fun putSnoozeUntilPreference(user: String, date: LocalDate): RestTestClient.ResponseSpec = restTestClient.put()
