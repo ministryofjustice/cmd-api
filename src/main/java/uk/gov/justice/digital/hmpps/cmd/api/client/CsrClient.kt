@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.cmd.api.client
 
-import com.fasterxml.jackson.annotation.JsonCreator
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.cache.annotation.Cacheable
@@ -11,6 +10,8 @@ import org.springframework.web.client.RestClient
 import uk.gov.justice.digital.hmpps.cmd.api.config.Regions
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
 import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
+import uk.gov.justice.digital.hmpps.cmd.api.model.CmdNotification
+import uk.gov.justice.digital.hmpps.cmd.api.model.Detail
 import uk.gov.justice.hmpps.kotlin.auth.HmppsAuthenticationHolder
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -85,30 +86,81 @@ class CsrClient(
   }
 }
 
-data class CsrDetailDto @JsonCreator constructor(
-  var shiftType: ShiftType,
+// if both start and end are this magic number then detail is a full day activity
+private const val FULL_DAY_ACTIVITY = -2_147_483_648L
 
-  var detailStart: LocalDateTime,
+/*
+CSR database uses positive or negative numbers to offset the shiftDate.
+e.g. 04/09/2020T00:00:00 with a detail start of -10 is actually 03/09/2020T23:59:50
+*/
+private fun calculateDetailDateTime(shiftDate: LocalDate, detailTime: Long): LocalDateTime {
+  val normalisedTime = if (detailTime == 86400L) {
+    0
+  } else {
+    detailTime
+  }
 
-  var detailEnd: LocalDateTime,
+  return if (normalisedTime != FULL_DAY_ACTIVITY) {
+    // plusSeconds allows negative numbers.
+    shiftDate.atStartOfDay().plusSeconds(normalisedTime)
+  } else {
+    shiftDate.atStartOfDay()
+  }
+}
 
-  var activity: String? = null,
-)
-
-data class CsrModifiedDetailDto @JsonCreator constructor(
-  val id: Long? = null,
-
-  val quantumId: String?,
-
-  val shiftModified: LocalDateTime?,
-
+data class CsrDetailDto(
   val shiftType: ShiftType,
-
   val detailStart: LocalDateTime,
-
   val detailEnd: LocalDateTime,
+  val activity: String? = null,
+) {
+  companion object {
+    fun from(detail: Detail): CsrDetailDto = CsrDetailDto(
+      shiftType = ShiftType.from(detail.shiftType),
 
+      // We don't care about the shiftDate on its own
+      // We want to include it in the detail's start/end values
+      // So that our clients don't have to work it out themselves
+      detailStart = calculateDetailDateTime(detail.shiftDate, detail.startTimeInSeconds ?: 0L),
+      detailEnd = calculateDetailDateTime(detail.shiftDate, detail.endTimeInSeconds ?: 0L),
+
+      activity = detail.activity,
+    )
+  }
+}
+
+data class CsrModifiedDetailDto(
+  val id: Long? = null,
+  val quantumId: String?,
+  val shiftModified: LocalDateTime?,
+  val shiftType: ShiftType,
+  val detailStart: LocalDateTime,
+  val detailEnd: LocalDateTime,
   val activity: String?,
-
   var actionType: DetailModificationType?,
-)
+) {
+  companion object {
+    fun from(detail: CmdNotification): CsrModifiedDetailDto = CsrModifiedDetailDto(
+      id = detail.id,
+      quantumId = detail.quantumId,
+      shiftModified = detail.lastModified,
+      shiftType = if (detail.levelId == 4000) ShiftType.OVERTIME else ShiftType.SHIFT,
+
+      // We don't care about the shiftDate on its own
+      // We want to include it in the detail's start/end values
+      // So that our clients don't have to work it out themselves
+      detailStart = calculateDetailDateTime(detail.onDate, detail.startTimeInSeconds ?: 0L),
+      detailEnd = calculateDetailDateTime(detail.onDate, detail.endTimeInSeconds ?: 0L),
+
+      activity = detail.activity,
+      actionType = detail.actionType.let {
+        when (it) {
+          47012 -> DetailModificationType.DELETE
+          0, 47001 -> DetailModificationType.EDIT
+          47006, 47015 -> DetailModificationType.ADD
+          else -> DetailModificationType.UNCHANGED
+        }
+      },
+    )
+  }
+}
