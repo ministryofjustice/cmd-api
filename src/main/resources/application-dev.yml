@@ -12,11 +12,6 @@ spring:
     username: cmd
     password: dummy
 
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
-
 oauth:
   client:
     id: my-diary

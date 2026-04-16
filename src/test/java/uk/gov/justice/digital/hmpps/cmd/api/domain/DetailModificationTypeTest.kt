@@ -25,4 +25,28 @@ class DetailModificationTypeTest {
       assertThat(DetailModificationType.from("eDIt")).isEqualTo(DetailModificationType.EDIT)
     }
   }
+
+  @Nested
+  @DisplayName("Convert from Int")
+  inner class CaseInsensitiveFromInt {
+    @Test
+    fun `It should match 0 and Unchanged`() {
+      assertThat(DetailModificationType.from(0)).isEqualTo(DetailModificationType.UNCHANGED)
+    }
+
+    @Test
+    fun `It should match 1 and Add`() {
+      assertThat(DetailModificationType.from(1)).isEqualTo(DetailModificationType.ADD)
+    }
+
+    @Test
+    fun `It should match 2 and Edit`() {
+      assertThat(DetailModificationType.from(2)).isEqualTo(DetailModificationType.EDIT)
+    }
+
+    @Test
+    fun `It should match 3 and Delete`() {
+      assertThat(DetailModificationType.from(3)).isEqualTo(DetailModificationType.DELETE)
+    }
+  }
 }

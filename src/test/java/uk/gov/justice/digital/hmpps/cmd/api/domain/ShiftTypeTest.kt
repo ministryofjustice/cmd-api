@@ -25,4 +25,18 @@ class ShiftTypeTest {
       assertThat(ShiftType.from("sHIFt")).isEqualTo(ShiftType.SHIFT)
     }
   }
+
+  @Nested
+  @DisplayName("Convert from Int")
+  inner class CaseInsensitiveFromInt {
+    @Test
+    fun `It should match 0 and Shift`() {
+      assertThat(ShiftType.from(0)).isEqualTo(ShiftType.SHIFT)
+    }
+
+    @Test
+    fun `It should match 1 and Overtime`() {
+      assertThat(ShiftType.from(1)).isEqualTo(ShiftType.OVERTIME)
+    }
+  }
 }

@@ -2,14 +2,18 @@ package uk.gov.justice.digital.hmpps.cmd.api.domain
 
 import java.util.Arrays
 
-enum class ShiftType(val description: String) {
-  SHIFT("shift"),
-  OVERTIME("overtime shift"),
+enum class ShiftType(val value: Int, val description: String) {
+  SHIFT(0, "shift"),
+  OVERTIME(1, "overtime shift"),
   ;
 
   companion object {
-    fun from(value: String): ShiftType = Arrays.stream(values())
-      .filter { type -> type.name.equals(value, true) }
+    private val map = entries.associateBy(ShiftType::value)
+
+    fun from(type: Int) = map.getOrDefault(type, SHIFT)
+
+    fun from(value: String): ShiftType = Arrays.stream(entries.toTypedArray())
+      .filter { it.name.equals(value, true) }
       .findFirst().orElseThrow { IllegalArgumentException() }
   }
 }
