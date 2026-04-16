@@ -17,12 +17,16 @@ allOpen {
   )
 }
 
+// Leave oracle at 21.20.0.0 to match Prison API etc.
+val oracleVersion = "21.20.0.0"
+
 dependencies {
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
   runtimeOnly("com.h2database:h2:2.4.240")
   runtimeOnly("org.postgresql:postgresql:42.7.10")
+  runtimeOnly("com.oracle.database.jdbc:ojdbc11:$oracleVersion")
   runtimeOnly("com.zaxxer:HikariCP")
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
 
