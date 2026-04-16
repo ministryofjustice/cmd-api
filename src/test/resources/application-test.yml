@@ -1,13 +1,8 @@
 spring:
   flyway:
+    enabled: true
     locations: classpath:db/migration/h2,classpath:db/migration/general
     baselineOnMigrate: true
-    enabled: true
-
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
 
   jpa:
     show-sql: true
@@ -21,6 +16,23 @@ spring:
     init:
       mode: always
       continue-on-error: true
+
+csr:
+  flyway:
+    enabled: true
+  regions:
+    - name: 1
+      url: 'jdbc:h2:mem:csr-api-test;DB_CLOSE_DELAY=-1;Mode=Oracle'
+      username: csr
+      password: dummy
+      driverClassName: org.h2.Driver
+      schema: PUBLIC
+    - name: 2
+      url: 'jdbc:h2:mem:csr-api-test;DB_CLOSE_DELAY=-1;Mode=Oracle'
+      username: csr
+      password: dummy
+      driverClassName: org.h2.Driver
+      schema: R2
 
 server:
   shutdown: immediate

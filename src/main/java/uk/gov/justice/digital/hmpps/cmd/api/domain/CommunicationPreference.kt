@@ -1,7 +1,5 @@
 package uk.gov.justice.digital.hmpps.cmd.api.domain
 
-import java.util.Arrays
-
 enum class CommunicationPreference {
   EMAIL,
   SMS,
@@ -9,8 +7,7 @@ enum class CommunicationPreference {
   ;
 
   companion object {
-    fun from(value: String): CommunicationPreference = Arrays.stream(values())
-      .filter { type -> type.name.equals(value, true) }
-      .findFirst().orElseThrow { IllegalArgumentException() }
+    fun from(value: String): CommunicationPreference = entries
+      .firstOrNull { type -> type.name.equals(value, true) } ?: throw IllegalArgumentException()
   }
 }
