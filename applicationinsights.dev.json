@@ -31,6 +31,17 @@
         "telemetryType": "dependency",
         "attributes": [
           {
+            "key": "db.system",
+            "value": "oracle",
+            "matchType": "strict"
+          }
+        ],
+        "percentage": 100
+      },
+      {
+        "telemetryType": "dependency",
+        "attributes": [
+          {
             "key": "server.address",
             "value": "(sign-in|prison-api).*",
             "matchType": "regexp"

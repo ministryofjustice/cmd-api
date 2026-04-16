@@ -33,11 +33,6 @@ spring:
     hikari:
       maximum-pool-size: 25
 
-  quartz:
-    job-store-type: jdbc
-    jdbc:
-      initialize-schema: always
-
   task:
     scheduling:
       pool:
