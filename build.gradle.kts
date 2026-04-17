@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.1.2"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.2.1"
   kotlin("plugin.spring") version "2.3.20"
   kotlin("plugin.jpa") version "2.3.20"
   idea
@@ -42,6 +42,9 @@ dependencies {
   implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:7.7.0")
 
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2")
+  constraints {
+    implementation("org.webjars:swagger-ui:5.32.2")
+  }
 
   implementation("org.apache.commons:commons-lang3:3.20.0")
   implementation("uk.gov.service.notify:notifications-java-client:6.0.0-RELEASE")
