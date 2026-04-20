@@ -4,7 +4,8 @@ object RegionContext {
   private val regionStore = ThreadLocal<Int>()
   fun getRegion(): Int? = regionStore.get()
 
-  fun setRegion(region: Int) {
+  fun <T> setRegion(region: Int, function: () -> T): T {
     regionStore.set(region)
+    return function().also { regionStore.remove() }
   }
 }
