@@ -34,7 +34,6 @@ application:
 api.base.url:
   hmpps-auth: https://sign-in-dev.hmpps.service.justice.gov.uk/auth
   prison-api: http://localhost:8082
-  csr: http://localhost:8081
 
 server:
   shutdown: immediate

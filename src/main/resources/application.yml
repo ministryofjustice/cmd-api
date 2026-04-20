@@ -79,7 +79,6 @@ csr:
     - name: 4
     - name: 5
     - name: 6
-  timeout: 10m
 
 springdoc:
   api-docs:
