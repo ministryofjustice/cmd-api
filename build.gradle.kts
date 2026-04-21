@@ -41,10 +41,7 @@ dependencies {
   implementation("net.javacrumbs.shedlock:shedlock-spring:7.7.0")
   implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:7.7.0")
 
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2")
-  constraints {
-    implementation("org.webjars:swagger-ui:5.32.2")
-  }
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3")
 
   implementation("org.apache.commons:commons-lang3:3.20.0")
   implementation("uk.gov.service.notify:notifications-java-client:6.0.0-RELEASE")
