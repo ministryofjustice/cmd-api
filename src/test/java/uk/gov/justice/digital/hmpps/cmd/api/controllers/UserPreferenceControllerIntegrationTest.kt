@@ -21,7 +21,7 @@ import java.time.LocalDate
 )
 @DisplayName("Integration Tests for userPreferencesController")
 @AutoConfigureRestTestClient
-class UserPreferenceControllerMockCsrIntTest(
+class UserPreferenceControllerIntegrationTest(
   @Autowired val restTestClient: RestTestClient,
   @Autowired val entityBuilder: EntityWithJwtAuthorisationBuilder,
 ) : ResourceTest() {

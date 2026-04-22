@@ -21,8 +21,10 @@ import kotlin.apply as kotlinApply
 
 @Configuration
 class WebClientConfiguration(
-  @Value($$"${api.base.url.prison-api}") private val prisonApiRootUri: String,
-  @Value($$"${api.timeout:90s}") val timeout: Duration,
+  @Value("\${api.base.url.prison-api}") private val prisonApiRootUri: String,
+  @Value("\${api.base.url.csr}") private val csrRootUri: String,
+  @Value("\${api.timeout:90s}") val timeout: Duration,
+  @Value("\${csr.timeout}") private val csrApiTimeout: Duration,
 ) {
 
   @Bean
@@ -39,6 +41,19 @@ class WebClientConfiguration(
   )
 
   @Bean
+  @RequestScope
+  fun csrApiWebClient(
+    clientRegistrationRepository: ClientRegistrationRepository,
+    authorizedClientRepository: OAuth2AuthorizedClientRepository,
+    builder: RestClient.Builder,
+  ): RestClient = builder.authorisedRestClient(
+    authorizedClientManager = authorizedClientManagerRequestScope(clientRegistrationRepository, authorizedClientRepository),
+    registrationId = "prison-api",
+    url = csrRootUri,
+    timeout = csrApiTimeout,
+  )
+
+  @Bean
   fun prisonWebClientAppScope(
     @Qualifier("authorizedClientManager") authorizedClientManager: OAuth2AuthorizedClientManager,
     builder: RestClient.Builder,
@@ -47,6 +62,17 @@ class WebClientConfiguration(
     registrationId = "prison-api",
     url = prisonApiRootUri,
     timeout = timeout,
+  )
+
+  @Bean
+  fun csrAPIWebClientAppScope(
+    @Qualifier("authorizedClientManager") authorizedClientManager: OAuth2AuthorizedClientManager,
+    builder: RestClient.Builder,
+  ): RestClient = builder.authorisedRestClient(
+    authorizedClientManager = authorizedClientManager,
+    registrationId = "prison-api",
+    url = csrRootUri,
+    timeout = csrApiTimeout,
   )
 
   private fun authorizedClientManagerRequestScope(
