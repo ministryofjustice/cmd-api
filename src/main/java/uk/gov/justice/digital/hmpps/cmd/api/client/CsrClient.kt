@@ -7,7 +7,7 @@ import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
-import uk.gov.justice.digital.hmpps.cmd.api.config.Regions
+import uk.gov.justice.digital.hmpps.cmd.api.config.CsrConfiguration
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
 import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.cmd.api.model.CmdNotification
@@ -21,7 +21,7 @@ class CsrClient(
   @Qualifier("csrApiWebClient") private val csrClient: RestClient,
   @Qualifier("csrAPIWebClientAppScope") private val csrApiServiceAccountWebClient: RestClient,
   private val authenticationFacade: HmppsAuthenticationHolder,
-  private val regionData: Regions,
+  private val regionData: CsrConfiguration,
 ) {
 
   @Cacheable(
@@ -31,7 +31,7 @@ class CsrClient(
   )
   fun getDetailsForUser(from: LocalDate, to: LocalDate, region: Int?, quantumId: String): Collection<CsrDetailDto> {
     if (region != null) {
-      return getDetails(from, to, region.toString())
+      return getDetails(from, to, region)
     } else {
       // Fallback to checking each region until we get some results.
       regionData.regions.forEach {
@@ -68,7 +68,7 @@ class CsrClient(
     log.info("deleteProcessed: end, Region $region")
   }
 
-  private fun getDetails(from: LocalDate, to: LocalDate, region: String): Collection<CsrDetailDto> {
+  private fun getDetails(from: LocalDate, to: LocalDate, region: Int): Collection<CsrDetailDto> {
     log.debug("User Details: finding User ${authenticationFacade.username}, Region $region")
     val csrDetails: Collection<CsrDetailDto> = csrClient
       .get()

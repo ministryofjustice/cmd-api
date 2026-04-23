@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.RowMapper
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.stereotype.Repository
+import uk.gov.justice.digital.hmpps.cmd.api.config.CsrConfiguration
 import uk.gov.justice.digital.hmpps.cmd.api.model.CmdNotification
 import uk.gov.justice.digital.hmpps.cmd.api.model.Detail
 import uk.gov.justice.digital.hmpps.cmd.api.model.DetailTemplate
@@ -15,8 +16,15 @@ const val DAY_MODEL = 6001
 const val ACTIVITY = 6003
 
 @Repository
-class CsrSqlRepository(@Qualifier("regionJdbcTemplate") private val regionJdbcTemplate: NamedParameterJdbcTemplate) {
-
+class CsrSqlRepository(
+  @Qualifier("regionJdbcTemplate") private val regionJdbcTemplate: NamedParameterJdbcTemplate,
+  csrConfiguration: CsrConfiguration,
+) {
+  private val schemaCommand = if (csrConfiguration.driverClassName.contains("h2")) {
+    "SET SCHEMA "
+  } else {
+    "ALTER SESSION SET CURRENT_SCHEMA = "
+  }
   fun getDetails(from: LocalDate, to: LocalDate, quantumId: String): Collection<Detail> = regionJdbcTemplate.query(
     GET_DETAILS,
     MapSqlParameterSource()
@@ -40,6 +48,8 @@ class CsrSqlRepository(@Qualifier("regionJdbcTemplate") private val regionJdbcTe
       .addValue("values", templateNames),
     detailsTemplateRowMapper,
   )
+
+  fun setSchema(schemaName: String) = regionJdbcTemplate.update("$schemaCommand $schemaName", emptyMap<String, String>())
 
   companion object {
 
