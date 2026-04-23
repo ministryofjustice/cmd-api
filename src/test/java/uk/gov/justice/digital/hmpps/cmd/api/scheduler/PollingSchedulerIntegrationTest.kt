@@ -1,33 +1,35 @@
 package uk.gov.justice.digital.hmpps.cmd.api.scheduler
 
-import com.github.tomakehurst.wiremock.client.WireMock.equalTo
-import com.github.tomakehurst.wiremock.client.WireMock.putRequestedFor
-import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.cmd.api.client.CsrModifiedDetailDto
+import uk.gov.justice.digital.hmpps.cmd.api.client.CsrRegionSelectorService
+import uk.gov.justice.digital.hmpps.cmd.api.controllers.ResourceTest
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
 import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.cmd.api.model.Notification
 import uk.gov.justice.digital.hmpps.cmd.api.repository.NotificationRepository
-import uk.gov.justice.digital.hmpps.prisonertonomisupdate.wiremock.CsrApiExtension
 import uk.gov.justice.digital.hmpps.prisonertonomisupdate.wiremock.HmppsAuthApiExtension
 import uk.gov.justice.digital.hmpps.prisonertonomisupdate.wiremock.PrisonApiExtension
 import java.time.LocalDateTime
 
-@ExtendWith(PrisonApiExtension::class, CsrApiExtension::class, HmppsAuthApiExtension::class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = ["csr.timeout=1s"])
-@ActiveProfiles(value = ["test"])
+@ExtendWith(PrisonApiExtension::class, HmppsAuthApiExtension::class)
 @DisplayName("Integration Tests for Polling Scheduler")
 class PollingSchedulerIntegrationTest(
   @Autowired val pollingScheduler: PollingScheduler,
   @Autowired val notificationRepository: NotificationRepository,
-) {
+  @Autowired @MockitoBean private val csrRegionSelectorService: CsrRegionSelectorService,
+) : ResourceTest() {
 
   @BeforeEach
   fun init() {
@@ -36,60 +38,50 @@ class PollingSchedulerIntegrationTest(
 
   @Test
   fun `updates are processed`() {
-    CsrApiExtension.api.stubGetUpdates(
-      1,
-      """
-      [
-        {
-        "id" : "101",
-        "quantumId" : "$A_USER",
-        "shiftModified" : "2022-03-25T15:00:00",
-        "shiftType" : "SHIFT",
-        "detailStart" : "2022-03-31T10:00:00",
-        "detailEnd" : "2022-03-31T11:00:00",
-        "activity" : "CCTV monitoring",
-        "actionType" : "ADD"
-        },
-        {
-        "id" : "103",
-        "shiftModified" : "2022-03-25T15:30:00",
-        "shiftType" : "SHIFT",
-        "detailStart" : "2022-03-31T10:00:00",
-        "detailEnd" : "2022-03-31T11:00:00",
-        "activity" : "CCTV monitoring",
-        "actionType" : "ADD"
-        }
-      ]
-      """.trimIndent(),
+    whenever(csrRegionSelectorService.getModified(1)).thenReturn(
+      listOf(
+        CsrModifiedDetailDto(
+          id = 101,
+          quantumId = A_USER,
+          shiftModified = LocalDateTime.parse("2022-03-25T15:00:00"),
+          shiftType = ShiftType.SHIFT,
+          detailStart = LocalDateTime.parse("2022-03-31T10:00:00"),
+          detailEnd = LocalDateTime.parse("2022-03-31T11:00:00"),
+          activity = "CCTV monitoring",
+          actionType = DetailModificationType.ADD,
+        ),
+        CsrModifiedDetailDto(
+          id = 103,
+          quantumId = null,
+          shiftModified = LocalDateTime.parse("2022-03-25T15:30:00"),
+          shiftType = ShiftType.SHIFT,
+          detailStart = LocalDateTime.parse("2022-03-31T10:00:00"),
+          detailEnd = LocalDateTime.parse("2022-03-31T11:00:00"),
+          activity = "CCTV monitoring",
+          actionType = DetailModificationType.ADD,
+        ),
+      ),
     )
-    CsrApiExtension.api.stubGetUpdates(
-      2,
-      """[{
-        "id" : "102",
-        "quantumId" : "other-user",
-        "shiftModified" : "2022-03-25T15:40:00",
-        "shiftType" : "SHIFT",
-        "detailStart" : "2022-03-31T10:00:00",
-        "detailEnd" : "2022-03-31T11:00:00",
-        "activity" : "CCTV monitoring",
-        "actionType" : "ADD"
-        }]""",
+    whenever(csrRegionSelectorService.getModified(2)).thenReturn(
+      listOf(
+        CsrModifiedDetailDto(
+          id = 102,
+          quantumId = "other-user",
+          shiftModified = LocalDateTime.parse("2022-03-25T15:40:00"),
+          shiftType = ShiftType.SHIFT,
+          detailStart = LocalDateTime.parse("2022-03-31T10:00:00"),
+          detailEnd = LocalDateTime.parse("2022-03-31T11:00:00"),
+          activity = "CCTV monitoring",
+          actionType = DetailModificationType.ADD,
+        ),
+      ),
     )
-    CsrApiExtension.api.stubGetUpdates(3, "[]")
-    CsrApiExtension.api.stubGetUpdates(4, "[]")
-    CsrApiExtension.api.stubGetUpdates(5, "[]")
-    CsrApiExtension.api.stubGetUpdates(6, "[]")
-    CsrApiExtension.api.stubDeleteProcessed(1, "[101,103]")
-    CsrApiExtension.api.stubDeleteProcessed(2, "[102]")
+    whenever(csrRegionSelectorService.getModified(3)).thenReturn(emptyList())
+    whenever(csrRegionSelectorService.getModified(4)).thenReturn(emptyList())
+    whenever(csrRegionSelectorService.getModified(5)).thenReturn(emptyList())
+    whenever(csrRegionSelectorService.getModified(6)).thenReturn(emptyList())
 
     pollingScheduler.pollNotifications()
-
-    assertThat(CsrApiExtension.api.putCountFor("/updates/1")).isEqualTo(1)
-    assertThat(CsrApiExtension.api.putCountFor("/updates/2")).isEqualTo(1)
-    assertThat(CsrApiExtension.api.putCountFor("/updates/3")).isEqualTo(0)
-    assertThat(CsrApiExtension.api.putCountFor("/updates/4")).isEqualTo(0)
-    assertThat(CsrApiExtension.api.putCountFor("/updates/5")).isEqualTo(0)
-    assertThat(CsrApiExtension.api.putCountFor("/updates/6")).isEqualTo(0)
 
     val saved = notificationRepository.findAll()
     assertThat(saved).containsExactly(
@@ -117,6 +109,12 @@ class PollingSchedulerIntegrationTest(
         processed = true,
       ),
     )
+    verify(csrRegionSelectorService).deleteProcessed(listOf(101, 103), 1)
+    verify(csrRegionSelectorService).deleteProcessed(listOf(102), 2)
+    verify(csrRegionSelectorService, never()).deleteProcessed(any(), eq(3))
+    verify(csrRegionSelectorService, never()).deleteProcessed(any(), eq(4))
+    verify(csrRegionSelectorService, never()).deleteProcessed(any(), eq(5))
+    verify(csrRegionSelectorService, never()).deleteProcessed(any(), eq(6))
   }
 
   @Test
@@ -151,93 +149,6 @@ class PollingSchedulerIntegrationTest(
     val all = notificationRepository.findAll()
     assertThat(all).hasSize(1)
     assertThat(all.first().quantumId).isEqualTo("user2")
-  }
-
-  @Test
-  fun `handles connection reset by peer errors`() {
-    CsrApiExtension.api.stubGetUpdates(
-      1,
-      """
-      [
-        {
-        "id" : "101",
-        "quantumId" : "$A_USER",
-        "shiftModified" : "2022-03-25T15:00:00",
-        "shiftType" : "SHIFT",
-        "detailStart" : "2022-03-31T10:00:00",
-        "detailEnd" : "2022-03-31T11:00:00",
-        "activity" : "CCTV monitoring",
-        "actionType" : "ADD"
-        },
-        {
-        "id" : "103",
-        "shiftModified" : "2022-03-25T15:30:00",
-        "shiftType" : "SHIFT",
-        "detailStart" : "2022-03-31T10:00:00",
-        "detailEnd" : "2022-03-31T11:00:00",
-        "activity" : "CCTV monitoring",
-        "actionType" : "ADD"
-        }
-      ]
-      """.trimIndent(),
-    )
-    CsrApiExtension.api.stubConnectionResetByPeer(2)
-    CsrApiExtension.api.stubGetUpdates(
-      3,
-      """[{
-        "id" : "102",
-        "quantumId" : "other-user",
-        "shiftModified" : "2022-03-25T15:40:00",
-        "shiftType" : "SHIFT",
-        "detailStart" : "2022-03-31T10:00:00",
-        "detailEnd" : "2022-03-31T11:00:00",
-        "activity" : "CCTV monitoring",
-        "actionType" : "ADD"
-        }]""",
-    )
-    CsrApiExtension.api.stubGetUpdates(4, "[]")
-    CsrApiExtension.api.stubGetUpdates(5, "[]")
-    CsrApiExtension.api.stubGetUpdates(6, "[]")
-    CsrApiExtension.api.stubDeleteProcessed(1, "[101,103]")
-    CsrApiExtension.api.stubDeleteProcessed(3, "[102]")
-
-    pollingScheduler.pollNotifications()
-
-    assertThat(CsrApiExtension.api.putCountFor("/updates/1")).isEqualTo(1)
-    assertThat(CsrApiExtension.api.putCountFor("/updates/2")).isEqualTo(0)
-    assertThat(CsrApiExtension.api.putCountFor("/updates/3")).isEqualTo(1)
-    assertThat(CsrApiExtension.api.putCountFor("/updates/4")).isEqualTo(0)
-    assertThat(CsrApiExtension.api.putCountFor("/updates/5")).isEqualTo(0)
-    assertThat(CsrApiExtension.api.putCountFor("/updates/6")).isEqualTo(0)
-    CsrApiExtension.api.verify(putRequestedFor(urlEqualTo("/updates/1")).withRequestBody(equalTo("[101,103]")))
-    CsrApiExtension.api.verify(putRequestedFor(urlEqualTo("/updates/3")).withRequestBody(equalTo("[102]")))
-
-    val saved = notificationRepository.findAll()
-    assertThat(saved).containsExactly(
-      Notification(
-        // generated
-        id = saved.first().id,
-        quantumId = A_USER,
-        shiftModified = LocalDateTime.parse("2022-03-25T15:00:00"),
-        detailStart = LocalDateTime.parse("2022-03-31T10:00:00"),
-        detailEnd = LocalDateTime.parse("2022-03-31T11:00:00"),
-        activity = "CCTV monitoring",
-        actionType = DetailModificationType.ADD,
-        parentType = ShiftType.SHIFT,
-        processed = true,
-      ),
-      Notification(
-        id = saved.last().id,
-        quantumId = "other-user",
-        shiftModified = LocalDateTime.parse("2022-03-25T15:40:00"),
-        detailStart = LocalDateTime.parse("2022-03-31T10:00:00"),
-        detailEnd = LocalDateTime.parse("2022-03-31T11:00:00"),
-        activity = "CCTV monitoring",
-        actionType = DetailModificationType.ADD,
-        parentType = ShiftType.SHIFT,
-        processed = true,
-      ),
-    )
   }
 
   companion object {

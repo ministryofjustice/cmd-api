@@ -47,12 +47,12 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
     )
   }
 
-  fun stubUsersMe() {
+  fun stubUsersMe(prison: String = "WMI") {
     stubFor(
       get("/api/users/me").willReturn(
         aResponse()
           .withHeader("Content-Type", "application/json")
-          .withBody("""{ "activeCaseLoadId": "WMI" }""")
+          .withBody("""{ "activeCaseLoadId": "$prison" }""")
           .withStatus(200),
       ),
     )
