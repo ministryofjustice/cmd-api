@@ -1,38 +1,18 @@
 csr:
+  url: ${csr.database.url}
+  username: ${csr.database.username}
+  password: ${csr.database.password}
+  driverClassName: oracle.jdbc.OracleDriver
   regions:
     - name: 1
-      url: ${csr.database.url}
-      username: ${csr.database.username}
-      password: ${csr.database.password}
-      driverClassName: oracle.jdbc.OracleDriver
       schema: ${csr.region1.schema}
     - name: 2
-      url: ${csr.database.url}
-      username: ${csr.database.username}
-      password: ${csr.database.password}
-      driverClassName: oracle.jdbc.OracleDriver
       schema: ${csr.region2.schema}
     - name: 3
-      url: ${csr.database.url}
-      username: ${csr.database.username}
-      password: ${csr.database.password}
-      driverClassName: oracle.jdbc.OracleDriver
       schema: ${csr.region3.schema}
     - name: 4
-      url: ${csr.database.url}
-      username: ${csr.database.username}
-      password: ${csr.database.password}
-      driverClassName: oracle.jdbc.OracleDriver
       schema: ${csr.region4.schema}
     - name: 5
-      url: ${csr.database.url}
-      username: ${csr.database.username}
-      password: ${csr.database.password}
-      driverClassName: oracle.jdbc.OracleDriver
       schema: ${csr.region5.schema}
     - name: 6
-      url: ${csr.database.url}
-      username: ${csr.database.username}
-      password: ${csr.database.password}
-      driverClassName: oracle.jdbc.OracleDriver
       schema: ${csr.region6.schema}
