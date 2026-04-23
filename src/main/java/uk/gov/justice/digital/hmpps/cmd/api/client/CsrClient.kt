@@ -1,12 +1,8 @@
 package uk.gov.justice.digital.hmpps.cmd.api.client
 
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.cache.annotation.Cacheable
-import org.springframework.core.ParameterizedTypeReference
-import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
-import org.springframework.web.client.RestClient
 import uk.gov.justice.digital.hmpps.cmd.api.config.CsrConfiguration
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
 import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
@@ -18,8 +14,7 @@ import java.time.LocalDateTime
 
 @Component
 class CsrClient(
-  @Qualifier("csrApiWebClient") private val csrClient: RestClient,
-  @Qualifier("csrAPIWebClientAppScope") private val csrApiServiceAccountWebClient: RestClient,
+  private val csrRegionSelectorService: CsrRegionSelectorService,
   private val authenticationFacade: HmppsAuthenticationHolder,
   private val regionData: CsrConfiguration,
 ) {
@@ -44,45 +39,26 @@ class CsrClient(
     return listOf()
   }
 
-  fun getModified(region: Int): List<CsrModifiedDetailDto> {
-    val csrModifiedDetails: List<CsrModifiedDetailDto> = csrApiServiceAccountWebClient
-      .get()
-      .uri("/updates/{region}", region)
-      .retrieve()
-      .body(object : ParameterizedTypeReference<List<CsrModifiedDetailDto>>() {}) ?: emptyList()
-    log.info("getModified: found ${csrModifiedDetails.size}, Region $region")
-    return csrModifiedDetails
+  fun getModified(region: Int): List<CsrModifiedDetailDto> = csrRegionSelectorService.getModified(region).also {
+    log.info("getModified: found ${it.size}, Region $region")
   }
 
   fun deleteProcessed(region: Int, ids: List<Long>) {
     log.info("deleteProcessed: Region $region")
-
-    csrApiServiceAccountWebClient
-      .put()
-      .uri("/updates/{region}", region)
-      .contentType(MediaType.APPLICATION_JSON)
-      .body(ids)
-      .retrieve()
-      .toBodilessEntity()
+    csrRegionSelectorService.deleteProcessed(ids, region)
 
     log.info("deleteProcessed: end, Region $region")
   }
 
   private fun getDetails(from: LocalDate, to: LocalDate, region: Int): Collection<CsrDetailDto> {
     log.debug("User Details: finding User ${authenticationFacade.username}, Region $region")
-    val csrDetails: Collection<CsrDetailDto> = csrClient
-      .get()
-      .uri("/user/details/{region}?from={from}&to={to}", region, from, to)
-      .retrieve()
-      .body(CSR_DETAIL_DTO_LIST_TYPE) ?: emptyList()
-    log.info("User Details: found ${csrDetails.size}, User ${authenticationFacade.username}, $from - $to, Region $region")
-
-    return csrDetails
+    return csrRegionSelectorService.getStaffDetails(from, to, region).also {
+      log.info("User Details: found ${it.size}, User ${authenticationFacade.username}, $from - $to, Region $region")
+    }
   }
 
   companion object {
     private val log = LoggerFactory.getLogger(CsrClient::class.java)
-    private val CSR_DETAIL_DTO_LIST_TYPE = object : ParameterizedTypeReference<Collection<CsrDetailDto>>() {}
   }
 }
 
