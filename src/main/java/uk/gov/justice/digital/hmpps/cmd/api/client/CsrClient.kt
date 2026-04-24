@@ -12,6 +12,8 @@ import uk.gov.justice.hmpps.kotlin.auth.HmppsAuthenticationHolder
 import java.time.LocalDate
 import java.time.LocalDateTime
 
+private const val DELETE_CHUNK_SIZE = 100
+
 @Component
 class CsrClient(
   private val csrRegionSelectorService: CsrRegionSelectorService,
@@ -44,10 +46,18 @@ class CsrClient(
   }
 
   fun deleteProcessed(region: Int, ids: List<Long>) {
-    log.info("deleteProcessed: Region $region")
-    csrRegionSelectorService.deleteProcessed(ids, region)
+    val startTime = System.currentTimeMillis()
 
-    log.info("deleteProcessed: end, Region $region")
+    log.info("deleteProcessed: region {}", region)
+    ids.chunked(DELETE_CHUNK_SIZE).forEach {
+      try {
+        val deleted = csrRegionSelectorService.deleteProcessed(it, region)
+        log.info("deleteProcessed: deleted {} rows for region {}", deleted, region)
+      } catch (e: Exception) {
+        log.error("Unexpected exception", e)
+      }
+    }
+    log.info("deleteProcessed: Received {} ids, time taken {}s, region {}", ids.size, elapsed(startTime), region)
   }
 
   private fun getDetails(from: LocalDate, to: LocalDate, region: Int): Collection<CsrDetailDto> {
@@ -56,6 +66,8 @@ class CsrClient(
       log.info("User Details: found ${it.size}, User ${authenticationFacade.username}, $from - $to, Region $region")
     }
   }
+
+  private fun elapsed(startTime: Long) = (System.currentTimeMillis() - startTime) / 1000.0
 
   companion object {
     private val log = LoggerFactory.getLogger(CsrClient::class.java)

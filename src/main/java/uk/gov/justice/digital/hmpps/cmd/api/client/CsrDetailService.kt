@@ -2,15 +2,12 @@ package uk.gov.justice.digital.hmpps.cmd.api.client
 
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.cmd.api.model.CmdNotification
 import uk.gov.justice.digital.hmpps.cmd.api.model.Detail
 import uk.gov.justice.digital.hmpps.cmd.api.model.DetailTemplate
 import uk.gov.justice.digital.hmpps.cmd.api.repository.CsrSqlRepository
 import uk.gov.justice.hmpps.kotlin.auth.HmppsAuthenticationHolder
 import java.time.LocalDate
-
-private const val DELETECHUNKSIZE = 1000
 
 @Service
 class CsrDetailService(
@@ -47,23 +44,12 @@ class CsrDetailService(
     return modified
   }
 
-  // Intentionally not transactional: we want chunks to get deleted even if one fails
   fun deleteProcessed(ids: List<Long>) {
-    val startTime = System.currentTimeMillis()
-
-    ids.chunked(DELETECHUNKSIZE).forEach {
-      try {
-        val deleted = sqlRepository.deleteProcessed(it)
-        log.info("deleteProcessed: deleted {} rows", deleted)
-      } catch (e: Exception) {
-        log.error("Unexpected exception", e)
-      }
+    sqlRepository.deleteProcessed(ids).also {
+      log.info("deleteProcessed: deleted {} rows", it)
     }
-
-    log.info("deleteProcessed: Received {} ids, time taken {}s", ids.size, elapsed(startTime))
   }
 
-  @Transactional(transactionManager = "regionTransactionManager")
   fun deleteOld(date: LocalDate): String {
     val startTime = System.currentTimeMillis()
 

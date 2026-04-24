@@ -1,10 +1,12 @@
 package uk.gov.justice.digital.hmpps.cmd.api.client
 
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.cmd.api.config.CsrConfiguration
 import uk.gov.justice.digital.hmpps.cmd.api.repository.CsrSqlRepository
 import java.time.LocalDate
 
+@Transactional(transactionManager = "regionTransactionManager", readOnly = true)
 @Service
 class CsrRegionSelectorService(
   private val csrDetailService: CsrDetailService,
@@ -21,6 +23,7 @@ class CsrRegionSelectorService(
     csrDetailService.getStaffDetails(from, to)
   }
 
+  @Transactional(transactionManager = "regionTransactionManager")
   fun deleteProcessed(ids: List<Long>, region: Int) {
     setDatabaseSchema(region) {
       csrDetailService.deleteProcessed(ids)

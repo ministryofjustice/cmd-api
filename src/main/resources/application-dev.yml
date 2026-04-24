@@ -39,8 +39,14 @@ application:
     key: aaaaaaaaaa-11111111-1111-1111-1111-111111111111-11111111-1111-1111-aaaa-aaaaaaaaaaaa
 
 api.base.url:
-  hmpps-auth: http://localhost:9090
+  hmpps-auth: http://localhost:9090/auth
   prison-api: http://localhost:8082
 
 server:
   shutdown: immediate
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true

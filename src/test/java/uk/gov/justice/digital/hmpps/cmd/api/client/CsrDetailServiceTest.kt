@@ -448,40 +448,13 @@ internal class CsrDetailServiceTest {
   @DisplayName("Delete processed tests")
   inner class DeleteProcessedTests {
     @Test
-    fun `Should split large id array into several SQL calls`() {
-      val ids = List<Long>(1002) { it + 1L }
-      val chunk1 = List<Long>(1000) { it + 1L }
-      val chunk2 = List<Long>(2) { it + 1001L }
-      whenever(sqlRepository.deleteProcessed(any())).thenReturn(1)
-
-      service.deleteProcessed(ids)
-
-      verify(sqlRepository).deleteProcessed(chunk1)
-      verify(sqlRepository).deleteProcessed(chunk2)
-    }
-
-    @Test
-    fun `Should do small id array in one go`() {
-      val ids = List<Long>(10) { it + 1L }
+    fun `Should call delete processed`() {
+      val ids = List(10) { it + 1L }
       whenever(sqlRepository.deleteProcessed(any())).thenReturn(1)
 
       service.deleteProcessed(ids)
 
       verify(sqlRepository).deleteProcessed(ids)
-    }
-
-    @Test
-    fun `Should continue after failure`() {
-      val ids = List<Long>(1002) { it + 1L }
-      val chunk1 = List<Long>(1000) { it + 1L }
-      val chunk2 = List<Long>(2) { it + 1001L }
-      whenever(sqlRepository.deleteProcessed(chunk1)).thenThrow(RuntimeException("test"))
-      whenever(sqlRepository.deleteProcessed(chunk2)).thenReturn(1)
-
-      service.deleteProcessed(ids)
-
-      verify(sqlRepository).deleteProcessed(chunk1)
-      verify(sqlRepository).deleteProcessed(chunk2)
     }
   }
 
