@@ -37,11 +37,13 @@ class NotificationService(
   private val userPreferenceService: UserPreferenceService,
   private val clock: Clock,
   private val authenticationFacade: HmppsAuthenticationHolder,
-  @Value("\${application.to.defaultMonths}")
+  @Value($$"${application.to.defaultMonths}")
   private val monthStep: Long,
   private val notifyClient: NotificationClientApi,
   private val csrClient: CsrClient,
   private val telemetryClient: TelemetryClient,
+  @Value($$"${application.notify.users:}")
+  private val allowedUsersToNotify: Set<String>,
 ) {
 
   fun getNotifications(
@@ -254,12 +256,12 @@ class NotificationService(
    * 10 means we can cover 99.9% of scenarios in one email.
    */
   private fun sendNotification(quantumId: String, notificationGroup: List<Notification>) {
-    val userPreference = userPreferenceService.getUserPreference(quantumId)
-    userPreference?.also {
-      data class Key(val shiftType: ShiftType, val quantumId: String, val detailStart: LocalDateTime)
-
-      fun Notification.toKeyDuplicates() = Key(this.parentType, this.quantumId.uppercase(), this.detailStart)
-
+    if (allowedUsersToNotify.isNotEmpty() && !allowedUsersToNotify.contains(quantumId)) {
+      // For non-production environments we don't want to send real users notifications so maintain an allowlist
+      log.warn("sendNotification: allowlist not empty and {} is not on the list", quantumId)
+      return
+    }
+    userPreferenceService.getUserPreference(quantumId)?.also { userPreference ->
       // Only send the latest notification for a shift if there are multiple
       val mostRecentNotifications = notificationGroup
         .groupBy { it.toKeyDuplicates() }
@@ -323,6 +325,10 @@ class NotificationService(
     )
     return personalisation
   }
+
+  data class Key(val shiftType: ShiftType, val quantumId: String, val detailStart: LocalDateTime)
+
+  fun Notification.toKeyDuplicates() = Key(this.parentType, this.quantumId.uppercase(), this.detailStart)
 
   companion object {
     private val log = LoggerFactory.getLogger(NotificationService::class.java)
