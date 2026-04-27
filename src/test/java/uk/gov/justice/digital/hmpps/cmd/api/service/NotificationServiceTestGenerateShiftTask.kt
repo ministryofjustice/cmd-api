@@ -35,14 +35,15 @@ internal class NotificationServiceTestGenerateShiftTask {
   private val csrClient: CsrClient = mockk(relaxUnitFun = true)
   private val clock = Clock.fixed(Instant.parse("2022-04-01T10:00:00Z"), ZoneId.systemDefault())
   private val service = NotificationService(
-    notificationRepository,
-    userPreferenceService,
-    clock,
-    authenticationFacade,
-    3,
-    notifyClient,
-    csrClient,
-    TelemetryClient(),
+    notificationRepository = notificationRepository,
+    userPreferenceService = userPreferenceService,
+    clock = clock,
+    authenticationFacade = authenticationFacade,
+    monthStep = 3,
+    notifyClient = notifyClient,
+    csrClient = csrClient,
+    telemetryClient = TelemetryClient(),
+    allowedUsersToNotify = emptySet(),
   )
 
   @BeforeEach

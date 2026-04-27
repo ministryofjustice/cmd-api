@@ -37,14 +37,15 @@ internal class NotificationServiceTestSendDuplicates {
   private val csrClient: CsrClient = mockk(relaxUnitFun = true)
   private val clock = Clock.fixed(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
   private val service = NotificationService(
-    shiftNotificationRepository,
-    userPreferenceService,
-    clock,
-    authenticationFacade,
-    3,
-    notifyClient,
-    csrClient,
-    TelemetryClient(),
+    notificationRepository = shiftNotificationRepository,
+    userPreferenceService = userPreferenceService,
+    clock = clock,
+    authenticationFacade = authenticationFacade,
+    monthStep = 3,
+    notifyClient = notifyClient,
+    csrClient = csrClient,
+    telemetryClient = TelemetryClient(),
+    allowedUsersToNotify = emptySet(),
   )
 
   @BeforeEach
