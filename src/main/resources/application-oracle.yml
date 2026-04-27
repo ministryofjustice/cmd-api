@@ -1,4 +1,6 @@
 csr:
+  flyway:
+    enabled: false
   url: ${csr.database.url}
   username: ${csr.database.username}
   password: ${csr.database.password}

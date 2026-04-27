@@ -26,8 +26,8 @@ class CsrRegionDataSourceConfiguration(
     it.jdbcUrl = csrConfiguration.url
     it.username = csrConfiguration.username
     it.password = csrConfiguration.password
-    it.setReadOnly(true)
-    it.setMaximumPoolSize(20)
+    it.minimumIdle = 5
+    it.maximumPoolSize = 30
   }.also {
     if (flywayEnabled) {
       migrateRegionDb(it)
@@ -41,7 +41,6 @@ class CsrRegionDataSourceConfiguration(
   fun regionTransactionManager(@Qualifier("regionDataSource") regionDataSource: DataSource): PlatformTransactionManager = DataSourceTransactionManager(regionDataSource)
 
   private fun migrateRegionDb(regionDataSource: HikariDataSource) {
-    regionDataSource.setReadOnly(false)
     Flyway.configure()
       .dataSource(regionDataSource)
       .locations("classpath:csr/migration/h2")
