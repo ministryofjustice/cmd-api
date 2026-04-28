@@ -1,18 +1,20 @@
 package uk.gov.justice.digital.hmpps.cmd.api.service
 
 import com.microsoft.applicationinsights.TelemetryClient
-import io.mockk.clearMocks
-import io.mockk.every
-import io.mockk.junit5.MockKExtension
-import io.mockk.mockk
-import io.mockk.slot
-import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mockito.mock
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.isNull
+import org.mockito.kotlin.reset
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.cmd.api.client.CsrClient
 import uk.gov.justice.digital.hmpps.cmd.api.domain.CommunicationPreference
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
@@ -27,14 +29,13 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 
-@ExtendWith(MockKExtension::class)
 @DisplayName("Notification Service tests")
 internal class NotificationServiceTestSendDuplicates {
-  private val shiftNotificationRepository: NotificationRepository = mockk(relaxUnitFun = true)
-  private val userPreferenceService: UserPreferenceService = mockk(relaxUnitFun = true)
-  private val authenticationFacade: HmppsAuthenticationHolder = mockk(relaxUnitFun = true)
-  private val notifyClient: NotificationClient = mockk(relaxUnitFun = true)
-  private val csrClient: CsrClient = mockk(relaxUnitFun = true)
+  private val shiftNotificationRepository: NotificationRepository = mock()
+  private val userPreferenceService: UserPreferenceService = mock()
+  private val authenticationFacade: HmppsAuthenticationHolder = mock()
+  private val notifyClient: NotificationClient = mock()
+  private val csrClient: CsrClient = mock()
   private val clock = Clock.fixed(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault())
   private val service = NotificationService(
     notificationRepository = shiftNotificationRepository,
@@ -50,9 +51,7 @@ internal class NotificationServiceTestSendDuplicates {
 
   @BeforeEach
   fun resetAllMocks() {
-    clearMocks(shiftNotificationRepository)
-    clearMocks(userPreferenceService)
-    clearMocks(notifyClient)
+    reset(shiftNotificationRepository, userPreferenceService, notifyClient)
   }
 
   @Nested
@@ -74,25 +73,25 @@ internal class NotificationServiceTestSendDuplicates {
         Notification(1, quantumId, modified3, date, date, null, ShiftType.SHIFT, DetailModificationType.ADD, false),
       )
 
-      every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
-      every { userPreferenceService.getUserPreference(quantumId) } returns UserPreference(quantumId, null, "email", "sms", CommunicationPreference.EMAIL)
-      every { notifyClient.sendEmail(any(), "email", any(), any()) } returns null
-      every { notifyClient.sendSms(any(), "sms", any(), any()) } returns null
-      every { shiftNotificationRepository.saveAll(shiftNotifications) } returns shiftNotifications
+      whenever(shiftNotificationRepository.findAllByProcessedIsFalse()).thenReturn(shiftNotifications)
+      whenever(userPreferenceService.getUserPreference(quantumId)).thenReturn(UserPreference(quantumId, null, "email", "sms", CommunicationPreference.EMAIL))
+      whenever(notifyClient.sendEmail(any(), eq("email"), any(), isNull())).thenReturn(null)
+      whenever(notifyClient.sendSms(any(), eq("sms"), any(), isNull())).thenReturn(null)
+      whenever(shiftNotificationRepository.saveAll(shiftNotifications)).thenReturn(shiftNotifications)
 
-      val slot = slot<Map<String, String>>()
-      every { notifyClient.sendEmail(any(), any(), capture(slot), null) } returns null
+      val slot = argumentCaptor<Map<String, String>>()
+      whenever(notifyClient.sendEmail(any(), any(), slot.capture(), isNull())).thenReturn(null)
 
       service.sendNotifications()
 
-      verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
-      verify { userPreferenceService.getUserPreference(quantumId) }
-      verify(exactly = 1) { notifyClient.sendEmail(any(), "email", any(), null) }
-      verify(exactly = 0) { notifyClient.sendSms(any(), "sms", any(), null) }
-      verify { shiftNotificationRepository.saveAll(shiftNotifications) }
+      verify(shiftNotificationRepository).findAllByProcessedIsFalse()
+      verify(userPreferenceService).getUserPreference(quantumId)
+      verify(notifyClient).sendEmail(any(), eq("email"), any(), isNull())
+      verify(notifyClient, times(0)).sendSms(any(), eq("sms"), any(), isNull())
+      verify(shiftNotificationRepository).saveAll(shiftNotifications)
 
-      assertThat(slot.captured.getValue("not1")).isEqualTo("* Your shift on Tuesday, 2nd November has been added.")
-      assertThat(slot.captured.getValue("not2")).isEqualTo("")
+      assertThat(slot.firstValue.getValue("not1")).isEqualTo("* Your shift on Tuesday, 2nd November has been added.")
+      assertThat(slot.firstValue.getValue("not2")).isEqualTo("")
     }
 
     @Test
@@ -109,26 +108,26 @@ internal class NotificationServiceTestSendDuplicates {
         Notification(1, quantumId, modified1, date.atStartOfDay().plusSeconds(1234), date.atStartOfDay().plusSeconds(4567), "Any Task", ShiftType.SHIFT, DetailModificationType.ADD, false),
       )
 
-      every { shiftNotificationRepository.findAllByProcessedIsFalse() } returns shiftNotifications
-      every { userPreferenceService.getUserPreference(quantumId) } returns UserPreference(quantumId, null, "email", "sms", CommunicationPreference.EMAIL)
-      every { notifyClient.sendEmail(any(), "email", any(), any()) } returns null
-      every { notifyClient.sendSms(any(), "sms", any(), any()) } returns null
-      every { shiftNotificationRepository.saveAll(shiftNotifications) } returns shiftNotifications
+      whenever(shiftNotificationRepository.findAllByProcessedIsFalse()).thenReturn(shiftNotifications)
+      whenever(userPreferenceService.getUserPreference(quantumId)).thenReturn(UserPreference(quantumId, null, "email", "sms", CommunicationPreference.EMAIL))
+      whenever(notifyClient.sendEmail(any(), eq("email"), any(), isNull())).thenReturn(null)
+      whenever(notifyClient.sendSms(any(), eq("sms"), any(), isNull())).thenReturn(null)
+      whenever(shiftNotificationRepository.saveAll(shiftNotifications)).thenReturn(shiftNotifications)
 
-      val slot = slot<Map<String, String>>()
-      every { notifyClient.sendEmail(any(), any(), capture(slot), null) } returns null
+      val slot = argumentCaptor<Map<String, String>>()
+      whenever(notifyClient.sendEmail(any(), any(), slot.capture(), isNull())).thenReturn(null)
 
       service.sendNotifications()
 
-      verify { shiftNotificationRepository.findAllByProcessedIsFalse() }
-      verify { userPreferenceService.getUserPreference(quantumId) }
-      verify(exactly = 1) { notifyClient.sendEmail(any(), "email", any(), null) }
-      verify(exactly = 0) { notifyClient.sendSms(any(), "sms", any(), null) }
-      verify { shiftNotificationRepository.saveAll(shiftNotifications) }
+      verify(shiftNotificationRepository).findAllByProcessedIsFalse()
+      verify(userPreferenceService).getUserPreference(quantumId)
+      verify(notifyClient).sendEmail(any(), eq("email"), any(), isNull())
+      verify(notifyClient, times(0)).sendSms(any(), eq("sms"), any(), isNull())
+      verify(shiftNotificationRepository).saveAll(shiftNotifications)
 
-      assertThat(slot.captured.getValue("not1")).isEqualTo("* Your shift on Tuesday, 2nd November has been added.")
-      assertThat(slot.captured.getValue("not2")).isEqualTo("* Your detail on Tuesday, 2nd November (00:20:34 - 01:16:07) has been added.")
-      assertThat(slot.captured.getValue("not3")).isEqualTo("* Your detail on Tuesday, 2nd November (02:44:36 - 01:49:04) has been added.")
+      assertThat(slot.firstValue.getValue("not1")).isEqualTo("* Your shift on Tuesday, 2nd November has been added.")
+      assertThat(slot.firstValue.getValue("not2")).isEqualTo("* Your detail on Tuesday, 2nd November (00:20:34 - 01:16:07) has been added.")
+      assertThat(slot.firstValue.getValue("not3")).isEqualTo("* Your detail on Tuesday, 2nd November (02:44:36 - 01:49:04) has been added.")
     }
   }
 }
