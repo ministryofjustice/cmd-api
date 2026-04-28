@@ -19,6 +19,7 @@ allOpen {
 
 // Leave oracle at 19.30.0.0 which is same as old csr api was
 val oracleVersion = "10:19.30.0.0"
+val appinsightsCore = "core:2.6.4"
 
 dependencies {
 
@@ -43,7 +44,7 @@ dependencies {
 
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3")
   implementation("io.micrometer:micrometer-registry-azure-monitor:1.16.5")
-  implementation("com.microsoft.azure:applicationinsights-core:2.6.4")
+  implementation("com.microsoft.azure:applicationinsights-$appinsightsCore")
 
   implementation("org.apache.commons:commons-lang3:3.20.0")
   implementation("uk.gov.service.notify:notifications-java-client:6.0.0-RELEASE")
