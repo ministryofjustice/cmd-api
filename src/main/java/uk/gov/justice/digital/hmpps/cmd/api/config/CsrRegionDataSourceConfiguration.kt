@@ -22,6 +22,7 @@ class CsrRegionDataSourceConfiguration(
 
   @Bean(defaultCandidate = false)
   fun regionDataSource(@Value($$"${csr.flyway.enabled:false}") flywayEnabled: Boolean): DataSource = HikariDataSource().also {
+    it.poolName = "CsrOracleHikariPool"
     it.driverClassName = csrConfiguration.driverClassName
     it.jdbcUrl = csrConfiguration.url
     it.username = csrConfiguration.username
