@@ -1,17 +1,19 @@
 package uk.gov.justice.digital.hmpps.cmd.api.service
 
 import com.microsoft.applicationinsights.TelemetryClient
-import io.mockk.clearMocks
-import io.mockk.every
-import io.mockk.junit5.MockKExtension
-import io.mockk.mockk
-import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mockito.mock
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.reset
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.cmd.api.client.CsrClient
 import uk.gov.justice.digital.hmpps.cmd.api.client.CsrModifiedDetailDto
 import uk.gov.justice.digital.hmpps.cmd.api.domain.DetailModificationType
@@ -26,14 +28,13 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 
-@ExtendWith(MockKExtension::class)
 @DisplayName("Notification Service tests Generate Shift")
 internal class NotificationServiceTestGenerateShift {
-  private val notificationRepository: NotificationRepository = mockk(relaxUnitFun = true)
-  private val userPreferenceService: UserPreferenceService = mockk(relaxUnitFun = true)
-  private val authenticationFacade: HmppsAuthenticationHolder = mockk(relaxUnitFun = true)
-  private val notifyClient: NotificationClient = mockk(relaxUnitFun = true)
-  private val csrClient: CsrClient = mockk(relaxUnitFun = true)
+  private val notificationRepository: NotificationRepository = mock()
+  private val userPreferenceService: UserPreferenceService = mock()
+  private val authenticationFacade: HmppsAuthenticationHolder = mock()
+  private val notifyClient: NotificationClient = mock()
+  private val csrClient: CsrClient = mock()
   private val clock = Clock.fixed(Instant.parse("2022-04-01T10:00:00Z"), ZoneId.systemDefault())
   private val service = NotificationService(
     notificationRepository = notificationRepository,
@@ -51,10 +52,7 @@ internal class NotificationServiceTestGenerateShift {
 
   @BeforeEach
   fun resetAllMocks() {
-    clearMocks(notificationRepository)
-    clearMocks(userPreferenceService)
-    clearMocks(notifyClient)
-    clearMocks(csrClient)
+    reset(notificationRepository, userPreferenceService, notifyClient, csrClient)
   }
 
   @Nested
@@ -80,20 +78,20 @@ internal class NotificationServiceTestGenerateShift {
         actionType = DetailModificationType.ADD,
       )
 
-      every { csrClient.getModified(1) } returns listOf(dto1)
+      whenever(csrClient.getModified(1)).thenReturn(listOf(dto1))
 
-      every {
+      whenever(
         notificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
           quantumId,
           start,
           shiftType,
           today,
-        )
-      } returns 1
+        ),
+      ).thenReturn(1)
 
       service.getNotifications(1)
 
-      verify(exactly = 0) { notificationRepository.saveAll<Notification>(allAny()) }
+      verify(notificationRepository, times(0)).saveAll<Notification>(any())
     }
 
     @Test
@@ -116,19 +114,19 @@ internal class NotificationServiceTestGenerateShift {
       val dto2 = dto1.copy(id = 2, detailStart = start.plusDays(2), detailEnd = end.plusDays(2))
       val dto3 = dto1.copy(id = 3, detailStart = start.plusDays(3), detailEnd = end.plusDays(3))
 
-      every { csrClient.getModified(any()) } returns listOf(dto1, dto2, dto3)
+      whenever(csrClient.getModified(any())).thenReturn(listOf(dto1, dto2, dto3))
 
-      every {
+      whenever(
         notificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
-          quantumId,
+          eq(quantumId),
           any(),
-          shiftType,
-          today,
-        )
-      } returns 0
+          eq(shiftType),
+          eq(today),
+        ),
+      ).thenReturn(0)
 
-      val results = mutableListOf<Collection<Notification>>()
-      every { notificationRepository.saveAll(capture(results)) } returns listOf()
+      val results = argumentCaptor<Collection<Notification>>()
+      whenever(notificationRepository.saveAll(results.capture())).thenReturn(listOf())
 
       service.getNotifications(1)
       val notification1 = Notification(
@@ -143,7 +141,7 @@ internal class NotificationServiceTestGenerateShift {
       )
       val notification2 = notification1.copy(detailStart = start.plusDays(2), detailEnd = end.plusDays(2))
       val notification3 = notification1.copy(detailStart = start.plusDays(3), detailEnd = end.plusDays(3))
-      assertThat(results[0]).isEqualTo(listOf(notification1, notification2, notification3))
+      assertThat(results.firstValue).isEqualTo(listOf(notification1, notification2, notification3))
     }
 
     @Test
@@ -166,19 +164,19 @@ internal class NotificationServiceTestGenerateShift {
       val dto2 = dto1.copy(id = 2L)
       val dto3 = dto1.copy(id = 3L)
 
-      every { csrClient.getModified(any()) } returns listOf(dto1, dto2, dto3)
+      whenever(csrClient.getModified(any())).thenReturn(listOf(dto1, dto2, dto3))
 
-      every {
+      whenever(
         notificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
-          quantumId,
+          eq(quantumId),
           any(),
-          shiftType,
-          today,
-        )
-      } returns 0
+          eq(shiftType),
+          eq(today),
+        ),
+      ).thenReturn(0)
 
-      val results = mutableListOf<Collection<Notification>>()
-      every { notificationRepository.saveAll(capture(results)) } returns listOf()
+      val results = argumentCaptor<Collection<Notification>>()
+      whenever(notificationRepository.saveAll(results.capture())).thenReturn(listOf())
 
       service.getNotifications(1)
       val notification1 = Notification(
@@ -192,7 +190,7 @@ internal class NotificationServiceTestGenerateShift {
         actionType = DetailModificationType.ADD,
         processed = false,
       )
-      assertThat(results[0]).isEqualTo(listOf(notification1))
+      assertThat(results.firstValue).isEqualTo(listOf(notification1))
     }
 
     @Test
@@ -224,22 +222,19 @@ internal class NotificationServiceTestGenerateShift {
       val dto4 = dto1.copy(id = 4, actionType = DetailModificationType.EDIT)
       val dto5 = dto4.copy(id = 5, shiftModified = shiftModified2, detailStart = start2)
       val dto6 = dto4.copy(id = 6, shiftModified = shiftModified3, detailStart = start3)
-      every { csrClient.getModified(any()) } returns listOf(dto1, dto2, dto3, dto4, dto5, dto6)
+      whenever(csrClient.getModified(any())).thenReturn(listOf(dto1, dto2, dto3, dto4, dto5, dto6))
 
-      every {
+      whenever(
         notificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
           quantumId,
           start3,
           shiftType,
           shiftModified3,
-        )
-      } returns 0
+        ),
+      ).thenReturn(0)
 
-      val results = mutableListOf<Collection<Notification>>()
-      every { notificationRepository.saveAll(capture(results)) } returns listOf()
-
-      val ids = mutableListOf<List<Long>>()
-      every { csrClient.deleteProcessed(1, capture(ids)) }
+      val results = argumentCaptor<Collection<Notification>>()
+      whenever(notificationRepository.saveAll(results.capture())).thenReturn(listOf())
 
       service.getNotifications(1)
       val notification1 = Notification(
@@ -253,8 +248,13 @@ internal class NotificationServiceTestGenerateShift {
         processed = false,
       )
       val notification2 = notification1.copy(actionType = DetailModificationType.EDIT)
-      assertThat(results[0]).isEqualTo(listOf(notification1, notification2))
-      assertThat(ids[0]).isEqualTo(listOf(1L, 2L, 3L, 4L, 5L, 6L))
+
+      assertThat(results.firstValue).isEqualTo(listOf(notification1, notification2))
+
+      val ids = argumentCaptor<List<Long>>()
+      verify(csrClient).deleteProcessed(eq(1), ids.capture())
+
+      assertThat(ids.firstValue).isEqualTo(listOf(1L, 2L, 3L, 4L, 5L, 6L))
     }
 
     @Test
@@ -273,28 +273,28 @@ internal class NotificationServiceTestGenerateShift {
         actionType = DetailModificationType.EDIT,
       )
 
-      every { csrClient.getModified(any()) } returns listOf(dto1)
+      whenever(csrClient.getModified(any())).thenReturn(listOf(dto1))
 
-      every {
+      whenever(
         notificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndActionType(
           quantumId,
           today,
           shiftType,
           DetailModificationType.ADD,
-        )
-      } returns 1
-      every {
+        ),
+      ).thenReturn(1)
+      whenever(
         notificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
           quantumId,
           today,
           shiftType,
           today,
-        )
-      } returns 0
+        ),
+      ).thenReturn(0)
 
       service.getNotifications(1)
 
-      verify(exactly = 0) { notificationRepository.saveAll<Notification>(allAny()) }
+      verify(notificationRepository, times(0)).saveAll<Notification>(any())
     }
 
     @Test
@@ -313,19 +313,19 @@ internal class NotificationServiceTestGenerateShift {
         actionType = DetailModificationType.ADD,
       )
 
-      every { csrClient.getModified(any()) } returns listOf(dto1)
+      whenever(csrClient.getModified(any())).thenReturn(listOf(dto1))
 
-      every {
+      whenever(
         notificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
           quantumId,
           today,
           shiftType,
           today,
-        )
-      } returns 0
+        ),
+      ).thenReturn(0)
 
-      val results = mutableListOf<Collection<Notification>>()
-      every { notificationRepository.saveAll(capture(results)) } returns listOf()
+      val results = argumentCaptor<Collection<Notification>>()
+      whenever(notificationRepository.saveAll(results.capture())).thenReturn(listOf())
       service.getNotifications(1)
 
       val expected = Notification(
@@ -338,8 +338,8 @@ internal class NotificationServiceTestGenerateShift {
         actionType = DetailModificationType.ADD,
         processed = false,
       )
-      assertThat(results[0]).isEqualTo(listOf(expected))
-      verify { csrClient.deleteProcessed(1, listOf(1L)) }
+      assertThat(results.firstValue).isEqualTo(listOf(expected))
+      verify(csrClient).deleteProcessed(1, listOf(1L))
     }
 
     @Test
@@ -358,19 +358,19 @@ internal class NotificationServiceTestGenerateShift {
         actionType = DetailModificationType.DELETE,
       )
 
-      every { csrClient.getModified(any()) } returns listOf(dto1)
+      whenever(csrClient.getModified(any())).thenReturn(listOf(dto1))
 
-      every {
+      whenever(
         notificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
           quantumId,
           today,
           shiftType,
           today,
-        )
-      } returns 0
+        ),
+      ).thenReturn(0)
 
-      val results = mutableListOf<Collection<Notification>>()
-      every { notificationRepository.saveAll(capture(results)) } returns listOf()
+      val results = argumentCaptor<Collection<Notification>>()
+      whenever(notificationRepository.saveAll(results.capture())).thenReturn(listOf())
 
       service.getNotifications(1)
 
@@ -384,7 +384,7 @@ internal class NotificationServiceTestGenerateShift {
         actionType = DetailModificationType.DELETE,
         processed = false,
       )
-      assertThat(results[0]).isEqualTo(listOf(expected))
+      assertThat(results.firstValue).isEqualTo(listOf(expected))
     }
 
     @Test
@@ -406,29 +406,29 @@ internal class NotificationServiceTestGenerateShift {
         actionType = DetailModificationType.ADD,
       )
 
-      every { csrClient.getModified(any()) } returns listOf(dto1)
+      whenever(csrClient.getModified(any())).thenReturn(listOf(dto1))
 
-      every {
+      whenever(
         notificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
           quantumId,
           start,
           shiftType,
           today,
-        )
-      } returns 1
+        ),
+      ).thenReturn(1)
 
       service.getNotifications(1)
 
-      verify(exactly = 0) { notificationRepository.saveAll<Notification>(allAny()) }
+      verify(notificationRepository, times(0)).saveAll<Notification>(any())
     }
 
     @Test
     fun `Should do nothing if there is nothing to do`() {
-      every { csrClient.getModified(any()) } returns listOf()
+      whenever(csrClient.getModified(any())).thenReturn(listOf())
 
       service.getNotifications(1)
 
-      verify(exactly = 0) { notificationRepository.saveAll<Notification>(allAny()) }
+      verify(notificationRepository, times(0)).saveAll<Notification>(any())
     }
 
     @Test
@@ -447,27 +447,27 @@ internal class NotificationServiceTestGenerateShift {
         actionType = DetailModificationType.EDIT,
       )
 
-      every { csrClient.getModified(any()) } returns listOf(dto1, dto1)
+      whenever(csrClient.getModified(any())).thenReturn(listOf(dto1, dto1))
 
-      every {
+      whenever(
         notificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndActionType(
           quantumId,
           today,
           shiftType,
           DetailModificationType.ADD,
-        )
-      } returns 0
-      every {
+        ),
+      ).thenReturn(0)
+      whenever(
         notificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
           quantumId,
           today,
           shiftType,
           today,
-        )
-      } returns 0
+        ),
+      ).thenReturn(0)
 
-      val results = mutableListOf<Collection<Notification>>()
-      every { notificationRepository.saveAll(capture(results)) } returns listOf()
+      val results = argumentCaptor<Collection<Notification>>()
+      whenever(notificationRepository.saveAll(results.capture())).thenReturn(listOf())
 
       service.getNotifications(1)
 
@@ -481,7 +481,7 @@ internal class NotificationServiceTestGenerateShift {
         actionType = DetailModificationType.ADD,
         processed = false,
       )
-      assertThat(results[0]).isEqualTo(listOf(expected))
+      assertThat(results.firstValue).isEqualTo(listOf(expected))
     }
 
     @Test
@@ -514,19 +514,19 @@ internal class NotificationServiceTestGenerateShift {
       val dto4 =
         dto1.copy(id = 4, shiftModified = now.minusMinutes(4), quantumId = "STILL_CHANGING_USER", detailStart = start2)
 
-      every { csrClient.getModified(any()) } returns listOf(dto1, dto2, dto3, dto4)
+      whenever(csrClient.getModified(any())).thenReturn(listOf(dto1, dto2, dto3, dto4))
 
-      every {
+      whenever(
         notificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
-          "FINISHED_USER",
+          eq("FINISHED_USER"),
           any(),
-          shiftType,
+          eq(shiftType),
           any(),
-        )
-      } returns 0
+        ),
+      ).thenReturn(0)
 
-      val results = mutableListOf<Collection<Notification>>()
-      every { notificationRepository.saveAll(capture(results)) } returns listOf()
+      val results = argumentCaptor<Collection<Notification>>()
+      whenever(notificationRepository.saveAll(results.capture())).thenReturn(listOf())
 
       service.getNotifications(1)
 
@@ -542,8 +542,8 @@ internal class NotificationServiceTestGenerateShift {
       )
       val notification2 =
         notification1.copy(shiftModified = now.minusMinutes(7), detailStart = start, activity = "Guard Duty")
-      assertThat(results[0]).containsExactly(notification1, notification2)
-      verify { csrClient.deleteProcessed(1, listOf(1L, 3L)) }
+      assertThat(results.firstValue).containsExactly(notification1, notification2)
+      verify(csrClient).deleteProcessed(1, listOf(1L, 3L))
     }
 
     @Test
@@ -569,24 +569,24 @@ internal class NotificationServiceTestGenerateShift {
       val dto4 = dto1.copy(id = 4, quantumId = null, shiftModified = null)
       val dto5 = dto1.copy(id = 5)
 
-      every { csrClient.getModified(any()) } returns listOf(dto1, dto2, dto3, dto4, dto5)
+      whenever(csrClient.getModified(any())).thenReturn(listOf(dto1, dto2, dto3, dto4, dto5))
 
-      every {
+      whenever(
         notificationRepository.countAllByQuantumIdIgnoreCaseAndDetailStartAndParentTypeAndShiftModified(
           quantumId,
           start,
           shiftType,
           today,
-        )
-      } returns 0
+        ),
+      ).thenReturn(0)
 
-      val results = mutableListOf<Collection<Notification>>()
-      every { notificationRepository.saveAll(capture(results)) } returns listOf()
+      val results = argumentCaptor<Collection<Notification>>()
+      whenever(notificationRepository.saveAll(results.capture())).thenReturn(listOf())
 
       service.getNotifications(1)
 
-      assertThat(results[0]).hasSize(1)
-      verify { csrClient.deleteProcessed(1, listOf(1L, 2L, 3L, 4L, 5L)) }
+      assertThat(results.firstValue).hasSize(1)
+      verify(csrClient).deleteProcessed(1, listOf(1L, 2L, 3L, 4L, 5L))
     }
   }
 }

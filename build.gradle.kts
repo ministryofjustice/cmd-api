@@ -56,7 +56,6 @@ dependencies {
   testImplementation("org.springframework.boot:spring-boot-resttestclient")
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("com.tngtech.java:junit-dataprovider:1.13.1")
-  testImplementation("com.ninja-squad:springmockk:5.0.1")
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
   testImplementation("io.opentelemetry:opentelemetry-sdk-testing")
   testImplementation("io.swagger.parser.v3:swagger-parser:2.1.37") {
