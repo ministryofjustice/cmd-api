@@ -21,6 +21,10 @@ allOpen {
 val oracleVersion = "10:19.30.0.0"
 val appinsightsCore = "core:2.6.4"
 
+dependencyCheck {
+  suppressionFiles.add("azure-dependency-check-suppress.xml")
+}
+
 dependencies {
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
