@@ -7,15 +7,17 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.info.BuildProperties
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.client.RestTestClient
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 @AutoConfigureRestTestClient
-class OpenApiDocsTest(@Autowired val restTestClient: RestTestClient) : ResourceTest() {
+class OpenApiDocsTest(
+  @Autowired private val restTestClient: RestTestClient,
+  @Autowired private val buildProperties: BuildProperties,
+) : ResourceTest() {
   @LocalServerPort
   private val port: Int = 0
 
@@ -62,9 +64,7 @@ class OpenApiDocsTest(@Autowired val restTestClient: RestTestClient) : ResourceT
       .accept(MediaType.APPLICATION_JSON)
       .exchange()
       .expectStatus().isOk
-      .expectBody().jsonPath("info.version").value<String> {
-        assertThat(it).startsWith(DateTimeFormatter.ISO_DATE.format(LocalDate.now()))
-      }
+      .expectBody().jsonPath("info.version").isEqualTo(buildProperties.version)
   }
 
   @Test
