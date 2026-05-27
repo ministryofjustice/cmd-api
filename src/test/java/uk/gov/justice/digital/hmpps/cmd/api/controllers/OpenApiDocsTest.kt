@@ -17,9 +17,8 @@ import org.springframework.test.web.servlet.client.RestTestClient
 class OpenApiDocsTest(
   @Autowired private val restTestClient: RestTestClient,
   @Autowired private val buildProperties: BuildProperties,
+  @LocalServerPort private val port: Int = 0,
 ) : ResourceTest() {
-  @LocalServerPort
-  private val port: Int = 0
 
   @Test
   fun `open api docs are available`() {
