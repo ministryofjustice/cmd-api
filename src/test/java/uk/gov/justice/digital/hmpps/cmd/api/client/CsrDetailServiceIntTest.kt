@@ -214,7 +214,7 @@ class CsrDetailServiceIntTest(
 
         detailService.deleteProcessed(listOf(101, 103, 999))
 
-        assertThat(jdbcTemplate.query("SELECT ID FROM CMD_NOTIFICATION", testRowMapper)).asList().containsExactly(102L)
+        assertThat(jdbcTemplate.query("SELECT ID FROM CMD_NOTIFICATION", testRowMapper)).containsExactly(102L)
       }
     }
 
@@ -228,8 +228,7 @@ class CsrDetailServiceIntTest(
 
         assertThat(detailService.deleteOld(LocalDate.parse("2022-03-03"))).contains("Deleted 2 rows up to 2022-03-03, time taken ")
 
-        assertThat(jdbcTemplate.query("SELECT ID FROM CMD_NOTIFICATION", testRowMapper)).asList()
-          .containsExactly(103L, 104L)
+        assertThat(jdbcTemplate.query("SELECT ID FROM CMD_NOTIFICATION", testRowMapper)).containsExactly(103L, 104L)
       }
     }
   }
