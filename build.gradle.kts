@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.5"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.6"
   kotlin("plugin.spring") version "2.4.10"
   kotlin("plugin.jpa") version "2.4.10"
   idea
@@ -34,7 +34,7 @@ dependencies {
   runtimeOnly("com.zaxxer:HikariCP")
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
 
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.1")
   implementation("org.springframework.boot:spring-boot-starter-restclient")
   implementation("org.springframework.boot:spring-boot-starter-jdbc")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -42,13 +42,13 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-cache")
   implementation("com.github.ben-manes.caffeine:caffeine")
 
-  implementation("net.javacrumbs.shedlock:shedlock-spring:7.7.0")
-  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:7.7.0")
+  implementation("net.javacrumbs.shedlock:shedlock-spring:7.9.0")
+  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:7.9.0")
 
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3")
 
   implementation("org.apache.commons:commons-lang3:3.20.0")
-  implementation("uk.gov.service.notify:notifications-java-client:6.0.0-RELEASE")
+  implementation("uk.gov.service.notify:notifications-java-client:6.2.0-RELEASE")
 
   testAnnotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
