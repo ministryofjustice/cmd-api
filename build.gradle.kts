@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.11"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.12"
   kotlin("plugin.spring") version "2.4.20"
   kotlin("plugin.jpa") version "2.4.20"
   idea
@@ -24,13 +24,13 @@ dependencies {
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
-  runtimeOnly("com.h2database:h2:2.5.250")
-  runtimeOnly("org.postgresql:postgresql:42.7.13")
+  runtimeOnly("com.h2database:h2:2.5.252")
+  runtimeOnly("org.postgresql:postgresql:42.7.14")
   runtimeOnly("com.oracle.database.jdbc:ojdbc$oracleVersion")
   runtimeOnly("com.zaxxer:HikariCP")
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
 
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.2")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.3")
   implementation("org.springframework.boot:spring-boot-starter-restclient")
   implementation("org.springframework.boot:spring-boot-starter-jdbc")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -43,14 +43,14 @@ dependencies {
 
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.1")
 
-  implementation("org.apache.commons:commons-lang3:3.20.0")
+  implementation("org.apache.commons:commons-lang3:3.21.0")
   implementation("uk.gov.service.notify:notifications-java-client:6.2.1-RELEASE") {
     exclude(group = "org.apache.httpcomponents.client5", module = "httpclient5")
   }
 
   testAnnotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
-  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:3.0.2")
+  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:3.0.3")
   testImplementation("org.springframework.boot:spring-boot-starter-test")
   testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
   testImplementation("org.springframework.boot:spring-boot-resttestclient")
