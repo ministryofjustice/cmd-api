@@ -32,6 +32,5 @@ cron:
 
 generic-prometheus-alerts:
   businessHoursOnly: true
-  alertSeverity: syscon-nonprod
   rdsAlertsDatabases:
     cloud-platform-d07334102a08ef5d: "check my diary"
