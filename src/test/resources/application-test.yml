@@ -46,7 +46,7 @@ api:
   base:
     url:
       hmpps-auth: http://localhost:8998/auth
-      prison-api: http://localhost:8082
+      manage-users-api: http://localhost:8082
 
 springdoc:
   api-docs:

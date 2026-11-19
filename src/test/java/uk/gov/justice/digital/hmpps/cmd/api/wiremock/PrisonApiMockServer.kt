@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.get
+import com.github.tomakehurst.wiremock.client.WireMock.okJson
 import org.junit.jupiter.api.extension.AfterAllCallback
 import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
@@ -49,11 +50,22 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
 
   fun stubUsersMe(prison: String = "WMI") {
     stubFor(
-      get("/api/users/me").willReturn(
-        aResponse()
-          .withHeader("Content-Type", "application/json")
-          .withBody("""{ "activeCaseLoadId": "$prison" }""")
-          .withStatus(200),
+      get("/users/me/caseloads").willReturn(
+        okJson(
+          """
+    { 
+      "username": "TESTUSER1",
+      "active": true,
+      "accountType": "GENERAL",
+      "activeCaseload": {
+        "id": "$prison",
+        "name": "HMP $prison",
+        "function": "INST"
+      },  
+      "caseloads": []
+    }    
+          """.trimIndent(),
+        ),
       ),
     )
   }

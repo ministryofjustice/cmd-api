@@ -13,7 +13,7 @@ import uk.gov.justice.digital.hmpps.prisonertonomisupdate.wiremock.HmppsAuthApiE
 import uk.gov.justice.digital.hmpps.prisonertonomisupdate.wiremock.PrisonApiExtension
 
 @ExtendWith(PrisonApiExtension::class, HmppsAuthApiExtension::class)
-@DisplayName("Integration Tests for Shift Controller")
+@DisplayName("CSR Integration Tests for Shift Controller")
 @AutoConfigureRestTestClient
 class ShiftControllerIntTest(
   @Autowired private val restTestClient: RestTestClient,

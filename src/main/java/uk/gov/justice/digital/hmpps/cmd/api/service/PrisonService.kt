@@ -13,11 +13,8 @@ class PrisonService(
 ) {
   fun getPrisonForUser(): Prison? {
     val prisonId = prisonApiClient.getCurrentPrisonIdForUser()
-    log.debug("Finding prison by id $prisonId")
     val prison = repository.findByPrisonId(prisonId)
-    if (prison != null) {
-      log.debug("Found prison ${prison.prisonName} by id $prisonId")
-    } else {
+    if (prison == null) {
       log.warn("No prison found for id $prisonId")
     }
     return prison

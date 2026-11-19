@@ -43,7 +43,7 @@
         "attributes": [
           {
             "key": "server.address",
-            "value": "(sign-in|prison-api).*",
+            "value": "(sign-in|manage-users-api).*",
             "matchType": "regexp"
           }
         ],

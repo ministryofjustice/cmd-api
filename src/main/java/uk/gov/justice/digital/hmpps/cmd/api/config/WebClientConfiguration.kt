@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.cmd.api.config
 
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -21,31 +20,19 @@ import kotlin.apply as kotlinApply
 
 @Configuration
 class WebClientConfiguration(
-  @Value($$"${api.base.url.prison-api}") private val prisonApiRootUri: String,
+  @Value($$"${api.base.url.manage-users-api}") private val manageUsersApiRootUri: String,
   @Value($$"${api.timeout:90s}") val timeout: Duration,
 ) {
-
   @Bean
   @RequestScope
-  fun prisonApiWebClient(
+  fun manageUsersApiWebClient(
     clientRegistrationRepository: ClientRegistrationRepository,
     authorizedClientRepository: OAuth2AuthorizedClientRepository,
     builder: RestClient.Builder,
   ): RestClient = builder.authorisedRestClient(
     authorizedClientManager = authorizedClientManagerRequestScope(clientRegistrationRepository, authorizedClientRepository),
-    registrationId = "prison-api",
-    url = prisonApiRootUri,
-    timeout = timeout,
-  )
-
-  @Bean
-  fun prisonWebClientAppScope(
-    @Qualifier("authorizedClientManager") authorizedClientManager: OAuth2AuthorizedClientManager,
-    builder: RestClient.Builder,
-  ): RestClient = builder.authorisedRestClient(
-    authorizedClientManager = authorizedClientManager,
-    registrationId = "prison-api",
-    url = prisonApiRootUri,
+    registrationId = "manage-users-api",
+    url = manageUsersApiRootUri,
     timeout = timeout,
   )
 
@@ -60,9 +47,7 @@ class WebClientConfiguration(
     }
     val authorizedClientProvider = OAuth2AuthorizedClientProviderBuilder.builder()
       .clientCredentials { clientCredentialsGrantBuilder: OAuth2AuthorizedClientProviderBuilder.ClientCredentialsGrantBuilder ->
-        clientCredentialsGrantBuilder.accessTokenResponseClient(
-          responseClient,
-        )
+        clientCredentialsGrantBuilder.accessTokenResponseClient(responseClient)
       }
       .build()
     val authorizedClientManager =

@@ -24,7 +24,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 @ExtendWith(PrisonApiExtension::class, HmppsAuthApiExtension::class)
-@DisplayName("Integration Tests for Shift Controller")
+@DisplayName("CMD Integration Tests for Shift Controller")
 @AutoConfigureRestTestClient
 class ShiftControllerMockCsrIntTest(
   @Autowired private val restTestClient: RestTestClient,

@@ -40,7 +40,7 @@ application:
 
 api.base.url:
   hmpps-auth: http://localhost:9090/auth
-  prison-api: http://localhost:8082
+  manage-users-api: http://localhost:8082
 
 oauth.client:
   id: omicadmin

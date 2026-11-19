@@ -33,7 +33,7 @@ application:
 
 api.base.url:
   hmpps-auth: https://sign-in-dev.hmpps.service.justice.gov.uk/auth
-  prison-api: http://localhost:8082
+  manage-users-api: http://localhost:8082
 
 server:
   shutdown: immediate
