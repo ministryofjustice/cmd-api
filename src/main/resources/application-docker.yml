@@ -18,11 +18,6 @@ spring:
         jwt:
           jwk-set-uri: https://sign-in-dev.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json
 
-oauth:
-  client:
-    id: my-diary
-    secret: clientsecret
-
 logging:
   level:
     uk.gov: DEBUG
@@ -33,7 +28,7 @@ application:
 
 api.base.url:
   hmpps-auth: https://sign-in-dev.hmpps.service.justice.gov.uk/auth
-  prison-api: http://localhost:8082
+  manage-users-api: http://localhost:8082
 
 server:
   shutdown: immediate

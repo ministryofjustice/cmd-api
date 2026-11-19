@@ -1,22 +1,25 @@
 package uk.gov.justice.digital.hmpps.cmd.api.client
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
+import org.springframework.web.client.body
 
 @Component
-class PrisonApiClient(@Qualifier("prisonApiWebClient") private val restClient: RestClient) {
+class PrisonApiClient(@Qualifier("manageUsersApiWebClient") private val restClient: RestClient) {
 
   fun getCurrentPrisonIdForUser(): String = restClient
     .get()
-    .uri("/api/users/me")
+    .uri("/users/me/caseloads")
     .retrieve()
-    .body(CaseLoad::class.java)
-    ?.activeCaseLoadId ?: ""
+    .body<UserCaseloadDetail>()
+    ?.activeCaseload?.id ?: ""
 }
 
-data class CaseLoad(
-  @JsonProperty("activeCaseLoadId")
-  val activeCaseLoadId: String?,
+data class UserCaseloadDetail(
+  val activeCaseload: PrisonCaseload?,
+)
+
+data class PrisonCaseload(
+  val id: String,
 )

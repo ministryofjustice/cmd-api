@@ -25,11 +25,6 @@ csr:
     - name: 2
       schema: PUBLIC
 
-oauth:
-  client:
-    id: my-diary
-    secret: clientsecret
-
 logging:
   level:
     uk.gov: DEBUG
@@ -40,11 +35,7 @@ application:
 
 api.base.url:
   hmpps-auth: http://localhost:9090/auth
-  prison-api: http://localhost:8082
-
-oauth.client:
-  id: omicadmin
-  secret: clientsecret
+  manage-users-api: http://localhost:8082
 
 server:
   shutdown: immediate

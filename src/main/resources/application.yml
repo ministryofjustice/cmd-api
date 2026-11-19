@@ -19,10 +19,10 @@ spring:
           jwk-set-uri: ${api.base.url.hmpps-auth}/.well-known/jwks.json
       client:
         registration:
-          prison-api:
+          manage-users-api:
             provider: hmpps-auth
-            client-id: ${oauth.client.id}
-            client-secret: ${oauth.client.secret}
+            client-id: ${manage-users.client.id}
+            client-secret: ${manage-users.client.secret}
             authorization-grant-type: client_credentials
             scope: read
         provider:
