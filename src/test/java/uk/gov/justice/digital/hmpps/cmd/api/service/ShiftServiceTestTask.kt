@@ -14,13 +14,14 @@ import uk.gov.justice.digital.hmpps.cmd.api.client.CsrDetailDto
 import uk.gov.justice.digital.hmpps.cmd.api.domain.FullDayActivityType
 import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.cmd.api.domain.TaskDisplayType
-import uk.gov.justice.digital.hmpps.cmd.api.model.Prison
 import uk.gov.justice.hmpps.kotlin.auth.HmppsAuthenticationHolder
 import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
 import java.util.Optional
+
+private val prison = "prison" to 1
 
 @DisplayName("Shift Service tests")
 internal class ShiftServiceTestTask {
@@ -46,7 +47,7 @@ internal class ShiftServiceTestTask {
     reset(csrApiClient, prisonService)
 
     whenever(authenticationFacade.username).thenReturn("xyz")
-    whenever(prisonService.getPrisonForUser()).thenReturn(Prison("prison", "", "", 1))
+    whenever(prisonService.getPrisonAndRegionForUser()).thenReturn(prison)
   }
 
   @Nested
@@ -59,7 +60,7 @@ internal class ShiftServiceTestTask {
 
       val dayModel = service.getDetailsForUser(Optional.empty(), Optional.empty())
 
-      verify(prisonService).getPrisonForUser()
+      verify(prisonService).getPrisonAndRegionForUser()
       verify(csrApiClient).getDetailsForUser(day1, day1, 1, "xyz")
 
       assertThat(dayModel.first().date).isEqualTo(day1)
@@ -67,12 +68,12 @@ internal class ShiftServiceTestTask {
 
     @Test
     fun `Should not modify passed in dates`() {
-      whenever(prisonService.getPrisonForUser()).thenReturn(Prison("prison", "", "", 1))
+      whenever(prisonService.getPrisonAndRegionForUser()).thenReturn(prison)
       whenever(csrApiClient.getDetailsForUser(day1, day1, 1, "xyz")).thenReturn(validShifts)
 
       val dayModel = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
-      verify(prisonService).getPrisonForUser()
+      verify(prisonService).getPrisonAndRegionForUser()
       verify(csrApiClient).getDetailsForUser(day1, day1, 1, "xyz")
 
       assertThat(dayModel)
@@ -84,7 +85,7 @@ internal class ShiftServiceTestTask {
 
       val dayModel = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
-      verify(prisonService).getPrisonForUser()
+      verify(prisonService).getPrisonAndRegionForUser()
       verify(csrApiClient).getDetailsForUser(day1, day1, 1, "xyz")
 
       assertThat(dayModel.first().date).isEqualTo(day1)
@@ -97,7 +98,7 @@ internal class ShiftServiceTestTask {
 
       val dayModel = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
-      verify(prisonService).getPrisonForUser()
+      verify(prisonService).getPrisonAndRegionForUser()
       verify(csrApiClient).getDetailsForUser(day1, day1, 1, "xyz")
 
       assertThat(dayModel.first().date).isEqualTo(day1)
@@ -116,7 +117,7 @@ internal class ShiftServiceTestTask {
 
       val dayModel = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
-      verify(prisonService).getPrisonForUser()
+      verify(prisonService).getPrisonAndRegionForUser()
       verify(csrApiClient).getDetailsForUser(day1, day1, 1, "xyz")
 
       assertThat(dayModel.first().date).isEqualTo(day1)
@@ -129,7 +130,7 @@ internal class ShiftServiceTestTask {
 
       val dayModel = service.getDetailsForUser(Optional.of(day2), Optional.of(day2))
 
-      verify(prisonService).getPrisonForUser()
+      verify(prisonService).getPrisonAndRegionForUser()
       verify(csrApiClient).getDetailsForUser(day2, day2, 1, "xyz")
 
       assertThat(dayModel.first().date).isEqualTo(day2)
@@ -143,7 +144,7 @@ internal class ShiftServiceTestTask {
 
       val dayModel = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
-      verify(prisonService).getPrisonForUser()
+      verify(prisonService).getPrisonAndRegionForUser()
       verify(csrApiClient).getDetailsForUser(day1, day1, 1, "xyz")
 
       assertThat(dayModel.first().date).isEqualTo(day1)
@@ -162,7 +163,7 @@ internal class ShiftServiceTestTask {
 
       val dayModel = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
-      verify(prisonService).getPrisonForUser()
+      verify(prisonService).getPrisonAndRegionForUser()
       verify(csrApiClient).getDetailsForUser(day1, day1, 1, "xyz")
 
       assertThat(dayModel.first().date).isEqualTo(day1)
@@ -181,7 +182,7 @@ internal class ShiftServiceTestTask {
 
       val dayModel = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
-      verify(prisonService).getPrisonForUser()
+      verify(prisonService).getPrisonAndRegionForUser()
       verify(csrApiClient).getDetailsForUser(day1, day1, 1, "xyz")
 
       assertThat(dayModel.first().date).isEqualTo(day1)
@@ -201,7 +202,7 @@ internal class ShiftServiceTestTask {
 
       val dayModel = service.getDetailsForUser(Optional.of(day2), Optional.of(day2))
 
-      verify(prisonService).getPrisonForUser()
+      verify(prisonService).getPrisonAndRegionForUser()
       verify(csrApiClient).getDetailsForUser(day2, day2, 1, "xyz")
 
       assertThat(dayModel.first().date).isEqualTo(day2)
@@ -224,7 +225,7 @@ internal class ShiftServiceTestTask {
 
       val dayModel = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
-      verify(prisonService).getPrisonForUser()
+      verify(prisonService).getPrisonAndRegionForUser()
       verify(csrApiClient).getDetailsForUser(day1, day1, 1, "xyz")
 
       assertThat(dayModel.first().date).isEqualTo(day1)
@@ -246,7 +247,7 @@ internal class ShiftServiceTestTask {
 
       val dayModel = service.getDetailsForUser(Optional.of(day2), Optional.of(day2))
 
-      verify(prisonService).getPrisonForUser()
+      verify(prisonService).getPrisonAndRegionForUser()
       verify(csrApiClient).getDetailsForUser(day2, day2, 1, "xyz")
 
       assertThat(dayModel.first().date).isEqualTo(day2)
@@ -273,12 +274,12 @@ internal class ShiftServiceTestTask {
         CsrDetailDto(ShiftType.SHIFT, day2.atTime(LocalTime.of(20, 15)), day3.atTime(LocalTime.of(12, 30)), "Nights OSG"),
       )
 
-      whenever(prisonService.getPrisonForUser()).thenReturn(Prison("prison", "", "", 1))
+      whenever(prisonService.getPrisonAndRegionForUser()).thenReturn(prison)
       whenever(csrApiClient.getDetailsForUser(day2, day2, 1, "xyz")).thenReturn(shifts)
 
       val dayModel = service.getDetailsForUser(Optional.of(day2), Optional.of(day2))
 
-      verify(prisonService).getPrisonForUser()
+      verify(prisonService).getPrisonAndRegionForUser()
       verify(csrApiClient).getDetailsForUser(day2, day2, 1, "xyz")
 
       assertThat(dayModel.first().date).isEqualTo(day2)

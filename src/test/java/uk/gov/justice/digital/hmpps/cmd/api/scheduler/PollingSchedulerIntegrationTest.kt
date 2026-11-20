@@ -20,10 +20,10 @@ import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.cmd.api.model.Notification
 import uk.gov.justice.digital.hmpps.cmd.api.repository.NotificationRepository
 import uk.gov.justice.digital.hmpps.prisonertonomisupdate.wiremock.HmppsAuthApiExtension
-import uk.gov.justice.digital.hmpps.prisonertonomisupdate.wiremock.PrisonApiExtension
+import uk.gov.justice.digital.hmpps.prisonertonomisupdate.wiremock.ManageUsersApiExtension
 import java.time.LocalDateTime
 
-@ExtendWith(PrisonApiExtension::class, HmppsAuthApiExtension::class)
+@ExtendWith(ManageUsersApiExtension::class, HmppsAuthApiExtension::class)
 @DisplayName("Integration Tests for Polling Scheduler")
 class PollingSchedulerIntegrationTest(
   @Autowired val pollingScheduler: PollingScheduler,

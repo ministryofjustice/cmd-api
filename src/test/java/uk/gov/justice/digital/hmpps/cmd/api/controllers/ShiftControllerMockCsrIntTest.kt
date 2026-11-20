@@ -19,11 +19,11 @@ import uk.gov.justice.digital.hmpps.cmd.api.client.CsrRegionSelectorService
 import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.cmd.api.dto.DetailDto
 import uk.gov.justice.digital.hmpps.prisonertonomisupdate.wiremock.HmppsAuthApiExtension
-import uk.gov.justice.digital.hmpps.prisonertonomisupdate.wiremock.PrisonApiExtension
+import uk.gov.justice.digital.hmpps.prisonertonomisupdate.wiremock.ManageUsersApiExtension
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-@ExtendWith(PrisonApiExtension::class, HmppsAuthApiExtension::class)
+@ExtendWith(ManageUsersApiExtension::class, HmppsAuthApiExtension::class)
 @DisplayName("CMD Integration Tests for Shift Controller")
 @AutoConfigureRestTestClient
 class ShiftControllerMockCsrIntTest(
@@ -34,7 +34,7 @@ class ShiftControllerMockCsrIntTest(
 
   @Test
   fun `It returns shifts`() {
-    PrisonApiExtension.api.stubUsersMe()
+    ManageUsersApiExtension.api.stubUsersMe(A_USER, "WMI")
     whenever(csrRegionSelectorService.getStaffDetails(any(), any(), eq(3))).thenReturn(
       listOf(
         CsrDetailDto(
@@ -58,7 +58,7 @@ class ShiftControllerMockCsrIntTest(
 
   @Test
   fun `It returns shifts with missing activity`() {
-    PrisonApiExtension.api.stubUsersMe()
+    ManageUsersApiExtension.api.stubUsersMe(A_USER, "WMI")
     whenever(csrRegionSelectorService.getStaffDetails(any(), any(), eq(3))).thenReturn(
       listOf(
         CsrDetailDto(
@@ -94,7 +94,7 @@ class ShiftControllerMockCsrIntTest(
 
   @Test
   fun `It calls csr api correctly`() {
-    PrisonApiExtension.api.stubUsersMe()
+    ManageUsersApiExtension.api.stubUsersMe(A_USER, "WMI")
     whenever(csrRegionSelectorService.getStaffDetails(any(), any(), eq(3))).thenReturn(emptyList())
 
     restTestClient.get()

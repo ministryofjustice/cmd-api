@@ -26,7 +26,7 @@ class CsrClient(
     unless = "#result.size() == 0",
     key = "{ #from.toEpochDay().toString(), #to.toEpochDay().toString(), #quantumId }",
   )
-  fun getDetailsForUser(from: LocalDate, to: LocalDate, region: Int?, quantumId: String): Collection<CsrDetailDto> {
+  fun getDetailsForUser(from: LocalDate, to: LocalDate, region: Int?, quantumId: String, prisonId: String = "prison"): Collection<CsrDetailDto> {
     if (region != null) {
       return getDetails(from, to, region)
     } else {
@@ -34,10 +34,12 @@ class CsrClient(
       regionData.regions.forEach {
         val data = getDetails(from, to, it.name)
         if (!data.isEmpty()) {
+          log.info("Found region in fallback for user ${authenticationFacade.username}, Region ${it.name}, prison $prisonId")
           return data
         }
       }
     }
+    log.warn("No region found in fallback for user ${authenticationFacade.username}, prison $prisonId")
     return listOf()
   }
 

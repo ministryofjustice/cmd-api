@@ -10,19 +10,21 @@ import org.mockito.kotlin.reset
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
-import uk.gov.justice.digital.hmpps.cmd.api.client.PrisonApiClient
+import uk.gov.justice.digital.hmpps.cmd.api.client.ManageUsersApiClient
 import uk.gov.justice.digital.hmpps.cmd.api.model.Prison
 import uk.gov.justice.digital.hmpps.cmd.api.repository.PrisonRepository
+import uk.gov.justice.hmpps.kotlin.auth.HmppsAuthenticationHolder
 
 @DisplayName("Prison Service tests")
 internal class PrisonServiceTest {
   private val prisonRepository: PrisonRepository = mock()
-  private val prisonApiClient: PrisonApiClient = mock()
-  private val service = PrisonService(prisonRepository, prisonApiClient)
+  private val manageUsersApiClient: ManageUsersApiClient = mock()
+  private val authenticationFacade: HmppsAuthenticationHolder = mock()
+  private val service = PrisonService(prisonRepository, manageUsersApiClient, authenticationFacade)
 
   @BeforeEach
   fun resetAllMocks() {
-    reset(prisonRepository)
+    reset(prisonRepository, manageUsersApiClient, authenticationFacade)
   }
 
   @Nested
@@ -33,30 +35,34 @@ internal class PrisonServiceTest {
     fun `Should get Prison`() {
       val prisonId = "AKA"
 
-      whenever(prisonApiClient.getCurrentPrisonIdForUser()).thenReturn(prisonId)
+      whenever(authenticationFacade.username).thenReturn("user1")
+      whenever(manageUsersApiClient.getCurrentPrisonIdForUser("user1")).thenReturn(prisonId)
       whenever(prisonRepository.findByPrisonId(prisonId)).thenReturn(prison1)
 
-      val prison = service.getPrisonForUser()
+      val pair = service.getPrisonAndRegionForUser()
 
       verify(prisonRepository).findByPrisonId(prisonId)
       verifyNoMoreInteractions(prisonRepository)
 
-      assertThat(prison).isEqualTo(prison1)
+      assertThat(pair.first).isEqualTo(prison1.prisonId)
+      assertThat(pair.second).isEqualTo(prison1.region)
     }
 
     @Test
     fun `Should get Prison not found`() {
       val prisonId = "AKA"
 
-      whenever(prisonApiClient.getCurrentPrisonIdForUser()).thenReturn(prisonId)
+      whenever(authenticationFacade.username).thenReturn("user1")
+      whenever(manageUsersApiClient.getCurrentPrisonIdForUser("user1")).thenReturn(prisonId)
       whenever(prisonRepository.findByPrisonId(prisonId)).thenReturn(null)
 
-      val prison = service.getPrisonForUser()
+      val pair = service.getPrisonAndRegionForUser()
 
       verify(prisonRepository).findByPrisonId(prisonId)
       verifyNoMoreInteractions(prisonRepository)
 
-      assertThat(prison).isEqualTo(null)
+      assertThat(pair.first).isEqualTo(prisonId)
+      assertThat(pair.second).isNull()
     }
   }
 
