@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.15"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.1.1"
   kotlin("plugin.spring") version "2.4.21"
   kotlin("plugin.jpa") version "2.4.21"
   idea
@@ -38,8 +38,8 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-cache")
   implementation("com.github.ben-manes.caffeine:caffeine")
 
-  implementation("net.javacrumbs.shedlock:shedlock-spring:7.10.1")
-  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:7.10.1")
+  implementation("net.javacrumbs.shedlock:shedlock-spring:7.11.0")
+  implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:7.11.0")
 
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.2.0")
   // Temporarily pin swagger-ui for dompurify issues CVE-2026-11680(2-4)
@@ -47,7 +47,7 @@ dependencies {
     implementation("org.webjars:swagger-ui:5.34.1")
   }
 
-  implementation("org.apache.commons:commons-lang3:3.21.0")
+  implementation("org.apache.commons:commons-lang3:3.22.0")
   implementation("uk.gov.service.notify:notifications-java-client:6.2.1-RELEASE") {
     exclude(group = "org.apache.httpcomponents.client5", module = "httpclient5")
   }
@@ -61,7 +61,7 @@ dependencies {
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
   testImplementation("io.opentelemetry:opentelemetry-sdk-testing")
-  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.48") {
+  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.49") {
     exclude(group = "io.swagger.core.v3")
   }
 }
