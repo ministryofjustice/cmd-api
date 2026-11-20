@@ -5,16 +5,9 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.client.SimpleClientHttpRequestFactory
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder
-import org.springframework.security.oauth2.client.endpoint.RestClientClientCredentialsTokenResponseClient
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository
-import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizedClientManager
-import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository
 import org.springframework.security.oauth2.client.web.client.OAuth2ClientHttpRequestInterceptor
-import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestClient
 import org.springframework.web.context.annotation.RequestScope
-import uk.gov.justice.digital.hmpps.cmd.api.utils.UserContext.getAuthentication
 import java.time.Duration
 import kotlin.apply as kotlinApply
 
@@ -26,35 +19,14 @@ class WebClientConfiguration(
   @Bean
   @RequestScope
   fun manageUsersApiWebClient(
-    clientRegistrationRepository: ClientRegistrationRepository,
-    authorizedClientRepository: OAuth2AuthorizedClientRepository,
+    authorizedClientManager: OAuth2AuthorizedClientManager,
     builder: RestClient.Builder,
   ): RestClient = builder.authorisedRestClient(
-    authorizedClientManager = authorizedClientManagerRequestScope(clientRegistrationRepository, authorizedClientRepository),
+    authorizedClientManager = authorizedClientManager,
     registrationId = "manage-users-api",
     url = manageUsersApiRootUri,
     timeout = timeout,
   )
-
-  private fun authorizedClientManagerRequestScope(
-    clientRegistrationRepository: ClientRegistrationRepository,
-    authorizedClientRepository: OAuth2AuthorizedClientRepository,
-  ): OAuth2AuthorizedClientManager {
-    val responseClient = RestClientClientCredentialsTokenResponseClient().kotlinApply {
-      addParametersConverter {
-        LinkedMultiValueMap<String, String>().kotlinApply { this.add("username", getAuthentication().name) }
-      }
-    }
-    val authorizedClientProvider = OAuth2AuthorizedClientProviderBuilder.builder()
-      .clientCredentials { clientCredentialsGrantBuilder: OAuth2AuthorizedClientProviderBuilder.ClientCredentialsGrantBuilder ->
-        clientCredentialsGrantBuilder.accessTokenResponseClient(responseClient)
-      }
-      .build()
-    val authorizedClientManager =
-      DefaultOAuth2AuthorizedClientManager(clientRegistrationRepository, authorizedClientRepository)
-    authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider)
-    return authorizedClientManager
-  }
 }
 
 private const val DEFAULT_TIMEOUT_SECONDS: Long = 30

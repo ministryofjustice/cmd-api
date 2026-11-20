@@ -14,13 +14,14 @@ import uk.gov.justice.digital.hmpps.cmd.api.client.CsrDetailDto
 import uk.gov.justice.digital.hmpps.cmd.api.domain.FullDayActivityType
 import uk.gov.justice.digital.hmpps.cmd.api.domain.ShiftType
 import uk.gov.justice.digital.hmpps.cmd.api.domain.TaskDisplayType
-import uk.gov.justice.digital.hmpps.cmd.api.model.Prison
 import uk.gov.justice.hmpps.kotlin.auth.HmppsAuthenticationHolder
 import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
 import java.util.Optional
+
+private val prison = "prison" to 1
 
 @DisplayName("Shift Service tests")
 internal class ShiftServiceTest {
@@ -51,12 +52,12 @@ internal class ShiftServiceTest {
         CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(13, 30)), day1.atTime(LocalTime.of(17, 0)), "Present"),
       )
 
-      whenever(prisonService.getPrisonForUser()).thenReturn(Prison("prison", "", "", 1))
+      whenever(prisonService.getPrisonAndRegionForUser()).thenReturn(prison)
       whenever(csrApiClient.getDetailsForUser(day1, day1, 1, "xyz")).thenReturn(shifts)
 
       val dayModelList = service.getDetailsForUser(Optional.empty(), Optional.empty())
 
-      verify(prisonService).getPrisonForUser()
+      verify(prisonService).getPrisonAndRegionForUser()
       verify(csrApiClient).getDetailsForUser(day1, day1, 1, "xyz")
 
       assertThat(dayModelList).hasSize(1)
@@ -71,12 +72,12 @@ internal class ShiftServiceTest {
         CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(13, 30)), day1.atTime(LocalTime.of(17, 0)), "Present"),
       )
 
-      whenever(prisonService.getPrisonForUser()).thenReturn(Prison("prison", "", "", 1))
+      whenever(prisonService.getPrisonAndRegionForUser()).thenReturn(prison)
       whenever(csrApiClient.getDetailsForUser(day1, day2, 1, "xyz")).thenReturn(shifts)
 
       val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day2))
 
-      verify(prisonService).getPrisonForUser()
+      verify(prisonService).getPrisonAndRegionForUser()
       verify(csrApiClient).getDetailsForUser(day1, day2, 1, "xyz")
 
       assertThat(dayModelList).hasSize(2)
@@ -84,12 +85,12 @@ internal class ShiftServiceTest {
 
     @Test
     fun `Should return 'no day' for no task data`() {
-      whenever(prisonService.getPrisonForUser()).thenReturn(Prison("prison", "", "", 1))
+      whenever(prisonService.getPrisonAndRegionForUser()).thenReturn(prison)
       whenever(csrApiClient.getDetailsForUser(day1, day1, 1, "xyz")).thenReturn(listOf())
 
       val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
-      verify(prisonService).getPrisonForUser()
+      verify(prisonService).getPrisonAndRegionForUser()
       verify(csrApiClient).getDetailsForUser(day1, day1, 1, "xyz")
 
       assertThat(dayModelList).hasSize(1)
@@ -107,12 +108,12 @@ internal class ShiftServiceTest {
         CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(13, 30)), day1.atTime(LocalTime.of(17, 0)), "Present"),
       )
 
-      whenever(prisonService.getPrisonForUser()).thenReturn(Prison("prison", "", "", 1))
+      whenever(prisonService.getPrisonAndRegionForUser()).thenReturn(prison)
       whenever(csrApiClient.getDetailsForUser(day1, day1, 1, "xyz")).thenReturn(shifts)
 
       val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
-      verify(prisonService).getPrisonForUser()
+      verify(prisonService).getPrisonAndRegionForUser()
       verify(csrApiClient).getDetailsForUser(day1, day1, 1, "xyz")
 
       assertThat(dayModelList).hasSize(1)
@@ -130,12 +131,12 @@ internal class ShiftServiceTest {
         CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(13, 30)), day1.atTime(LocalTime.of(17, 0)), "Present"),
       )
 
-      whenever(prisonService.getPrisonForUser()).thenReturn(Prison("prison", "", "", 1))
+      whenever(prisonService.getPrisonAndRegionForUser()).thenReturn(prison)
       whenever(csrApiClient.getDetailsForUser(day1, day1, 1, "xyz")).thenReturn(shifts)
 
       val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
-      verify(prisonService).getPrisonForUser()
+      verify(prisonService).getPrisonAndRegionForUser()
       verify(csrApiClient).getDetailsForUser(day1, day1, 1, "xyz")
 
       assertThat(dayModelList).hasSize(1)
@@ -154,12 +155,12 @@ internal class ShiftServiceTest {
         CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(13, 30)), day1.atTime(LocalTime.of(17, 0)), "Present"),
       )
 
-      whenever(prisonService.getPrisonForUser()).thenReturn(Prison("prison", "", "", 1))
+      whenever(prisonService.getPrisonAndRegionForUser()).thenReturn(prison)
       whenever(csrApiClient.getDetailsForUser(day2, day2, 1, "xyz")).thenReturn(shifts)
 
       val dayModelList = service.getDetailsForUser(Optional.of(day2), Optional.of(day2))
 
-      verify(prisonService).getPrisonForUser()
+      verify(prisonService).getPrisonAndRegionForUser()
       verify(csrApiClient).getDetailsForUser(day2, day2, 1, "xyz")
 
       assertThat(dayModelList).hasSize(1)
@@ -178,12 +179,12 @@ internal class ShiftServiceTest {
         CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(13, 30)), day1.atTime(LocalTime.of(17, 0)), "Present"),
       )
 
-      whenever(prisonService.getPrisonForUser()).thenReturn(Prison("prison", "", "", 1))
+      whenever(prisonService.getPrisonAndRegionForUser()).thenReturn(prison)
       whenever(csrApiClient.getDetailsForUser(day1, day1, 1, "xyz")).thenReturn(shifts)
 
       val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
-      verify(prisonService).getPrisonForUser()
+      verify(prisonService).getPrisonAndRegionForUser()
       verify(csrApiClient).getDetailsForUser(day1, day1, 1, "xyz")
 
       assertThat(dayModelList).hasSize(1)
@@ -205,12 +206,12 @@ internal class ShiftServiceTest {
         CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(13, 30)), day1.atTime(LocalTime.of(17, 0)), "Present"),
       )
 
-      whenever(prisonService.getPrisonForUser()).thenReturn(Prison("prison", "", "", 1))
+      whenever(prisonService.getPrisonAndRegionForUser()).thenReturn(prison)
       whenever(csrApiClient.getDetailsForUser(day1, day1, 1, "xyz")).thenReturn(shifts)
 
       val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
-      verify(prisonService).getPrisonForUser()
+      verify(prisonService).getPrisonAndRegionForUser()
       verify(csrApiClient).getDetailsForUser(day1, day1, 1, "xyz")
 
       assertThat(dayModelList).hasSize(1)
@@ -232,12 +233,12 @@ internal class ShiftServiceTest {
         CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(13, 30)), day1.atTime(LocalTime.of(17, 0)), "Present"),
       )
 
-      whenever(prisonService.getPrisonForUser()).thenReturn(Prison("prison", "", "", 1))
+      whenever(prisonService.getPrisonAndRegionForUser()).thenReturn(prison)
       whenever(csrApiClient.getDetailsForUser(day1, day1, 1, "xyz")).thenReturn(shifts)
 
       val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
-      verify(prisonService).getPrisonForUser()
+      verify(prisonService).getPrisonAndRegionForUser()
       verify(csrApiClient).getDetailsForUser(day1, day1, 1, "xyz")
 
       assertThat(dayModelList).hasSize(1)
@@ -259,12 +260,12 @@ internal class ShiftServiceTest {
         CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(13, 30)), day1.atTime(LocalTime.of(17, 0)), "Present"),
       )
 
-      whenever(prisonService.getPrisonForUser()).thenReturn(Prison("prison", "", "", 1))
+      whenever(prisonService.getPrisonAndRegionForUser()).thenReturn(prison)
       whenever(csrApiClient.getDetailsForUser(day1, day1, 1, "xyz")).thenReturn(shifts)
 
       val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day1))
 
-      verify(prisonService).getPrisonForUser()
+      verify(prisonService).getPrisonAndRegionForUser()
       verify(csrApiClient).getDetailsForUser(day1, day1, 1, "xyz")
 
       assertThat(dayModelList).hasSize(1)
@@ -285,12 +286,12 @@ internal class ShiftServiceTest {
         CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(20, 15)), day2.atTime(LocalTime.of(12, 30)), "Night OSG"),
       )
 
-      whenever(prisonService.getPrisonForUser()).thenReturn(Prison("prison", "", "", 1))
+      whenever(prisonService.getPrisonAndRegionForUser()).thenReturn(prison)
       whenever(csrApiClient.getDetailsForUser(day1, day2, 1, "xyz")).thenReturn(shifts)
 
       val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day2))
 
-      verify(prisonService).getPrisonForUser()
+      verify(prisonService).getPrisonAndRegionForUser()
       verify(csrApiClient).getDetailsForUser(day1, day2, 1, "xyz")
 
       assertThat(dayModelList).hasSize(2)
@@ -311,12 +312,12 @@ internal class ShiftServiceTest {
         CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(20, 15)), day2.atTime(LocalTime.of(12, 30)), "Night OSG"),
       )
 
-      whenever(prisonService.getPrisonForUser()).thenReturn(Prison("prison", "", "", 1))
+      whenever(prisonService.getPrisonAndRegionForUser()).thenReturn(prison)
       whenever(csrApiClient.getDetailsForUser(day1, day2, 1, "xyz")).thenReturn(shifts)
 
       val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day2))
 
-      verify(prisonService).getPrisonForUser()
+      verify(prisonService).getPrisonAndRegionForUser()
       verify(csrApiClient).getDetailsForUser(day1, day2, 1, "xyz")
 
       assertThat(dayModelList).hasSize(2)
@@ -337,12 +338,12 @@ internal class ShiftServiceTest {
         CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(11, 15)), day2.atTime(LocalTime.of(12, 30)), "Night OSG"),
       )
 
-      whenever(prisonService.getPrisonForUser()).thenReturn(Prison("prison", "", "", 1))
+      whenever(prisonService.getPrisonAndRegionForUser()).thenReturn(prison)
       whenever(csrApiClient.getDetailsForUser(day1, day2, 1, "xyz")).thenReturn(shifts)
 
       val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day2))
 
-      verify(prisonService).getPrisonForUser()
+      verify(prisonService).getPrisonAndRegionForUser()
       verify(csrApiClient).getDetailsForUser(day1, day2, 1, "xyz")
 
       assertThat(dayModelList).hasSize(2)
@@ -363,12 +364,12 @@ internal class ShiftServiceTest {
         CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(11, 15)), day2.atTime(LocalTime.of(12, 30)), "Night OSG"),
       )
 
-      whenever(prisonService.getPrisonForUser()).thenReturn(Prison("prison", "", "", 1))
+      whenever(prisonService.getPrisonAndRegionForUser()).thenReturn(prison)
       whenever(csrApiClient.getDetailsForUser(day1, day2, 1, "xyz")).thenReturn(shifts)
 
       val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day2))
 
-      verify(prisonService).getPrisonForUser()
+      verify(prisonService).getPrisonAndRegionForUser()
       verify(csrApiClient).getDetailsForUser(day1, day2, 1, "xyz")
 
       assertThat(dayModelList).hasSize(2)
@@ -389,12 +390,12 @@ internal class ShiftServiceTest {
         CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(20, 15)), day2.atTime(LocalTime.of(12, 30)), "Night OSG"),
       )
 
-      whenever(prisonService.getPrisonForUser()).thenReturn(Prison("prison", "", "", 1))
+      whenever(prisonService.getPrisonAndRegionForUser()).thenReturn(prison)
       whenever(csrApiClient.getDetailsForUser(day1, day2, 1, "xyz")).thenReturn(shifts)
 
       val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day2))
 
-      verify(prisonService).getPrisonForUser()
+      verify(prisonService).getPrisonAndRegionForUser()
       verify(csrApiClient).getDetailsForUser(day1, day2, 1, "xyz")
 
       assertThat(dayModelList).hasSize(2)
@@ -415,12 +416,12 @@ internal class ShiftServiceTest {
         CsrDetailDto(ShiftType.OVERTIME, day1.atTime(LocalTime.of(20, 15)), day2.atTime(LocalTime.of(12, 30)), "Night OSG"),
       )
 
-      whenever(prisonService.getPrisonForUser()).thenReturn(Prison("prison", "", "", 1))
+      whenever(prisonService.getPrisonAndRegionForUser()).thenReturn(prison)
       whenever(csrApiClient.getDetailsForUser(day1, day2, 1, "xyz")).thenReturn(shifts)
 
       val dayModelList = service.getDetailsForUser(Optional.of(day1), Optional.of(day2))
 
-      verify(prisonService).getPrisonForUser()
+      verify(prisonService).getPrisonAndRegionForUser()
       verify(csrApiClient).getDetailsForUser(day1, day2, 1, "xyz")
 
       assertThat(dayModelList).hasSize(2)

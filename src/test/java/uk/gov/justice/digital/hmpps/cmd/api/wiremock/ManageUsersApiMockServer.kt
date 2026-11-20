@@ -10,13 +10,13 @@ import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
 
-class PrisonApiExtension :
+class ManageUsersApiExtension :
   BeforeAllCallback,
   AfterAllCallback,
   BeforeEachCallback {
   companion object {
     @JvmField
-    val api = PrisonApiMockServer()
+    val api = ManageUsersApiMockServer()
   }
 
   override fun beforeAll(context: ExtensionContext) {
@@ -32,7 +32,7 @@ class PrisonApiExtension :
   }
 }
 
-class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
+class ManageUsersApiMockServer : WireMockServer(WIREMOCK_PORT) {
   companion object {
     private const val WIREMOCK_PORT = 8082
   }
@@ -48,22 +48,33 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
     )
   }
 
-  fun stubUsersMe(prison: String = "WMI") {
+  fun stubUsersMe(user: String, prison: String) {
     stubFor(
-      get("/users/me/caseloads").willReturn(
+      get("/prisonusers/$user/details").willReturn(
         okJson(
           """
-    { 
-      "username": "TESTUSER1",
-      "active": true,
+    {
+      "username": "testuser1",
+      "staffId": 324323,
+      "firstName": "John",
+      "lastName": "Smith",
+      "activeCaseloadId": "$prison",
+      "accountStatus": "OPEN",
       "accountType": "GENERAL",
-      "activeCaseload": {
-        "id": "$prison",
-        "name": "HMP $prison",
-        "function": "INST"
-      },  
-      "caseloads": []
-    }    
+      "primaryEmail": "test@test.com",
+      "dpsRoleCodes": [],
+      "administratorOfUserGroups": [],
+      "accountNonLocked": true,
+      "credentialsNonExpired": true,
+      "enabled": true,
+      "admin": true,
+      "active": true,
+      "staffStatus": "ACTIVE",
+      "lastLogonDate": "2023-01-01T12:13:14.123",
+      "userId": 0,
+      "name": "string",
+      "authSource": "auth"
+    } 
           """.trimIndent(),
         ),
       ),

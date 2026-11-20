@@ -10,9 +10,9 @@ import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTe
 import org.springframework.test.web.servlet.client.RestTestClient
 import uk.gov.justice.digital.hmpps.cmd.api.dto.DetailDto
 import uk.gov.justice.digital.hmpps.prisonertonomisupdate.wiremock.HmppsAuthApiExtension
-import uk.gov.justice.digital.hmpps.prisonertonomisupdate.wiremock.PrisonApiExtension
+import uk.gov.justice.digital.hmpps.prisonertonomisupdate.wiremock.ManageUsersApiExtension
 
-@ExtendWith(PrisonApiExtension::class, HmppsAuthApiExtension::class)
+@ExtendWith(ManageUsersApiExtension::class, HmppsAuthApiExtension::class)
 @DisplayName("CSR Integration Tests for Shift Controller")
 @AutoConfigureRestTestClient
 class ShiftControllerIntTest(
@@ -22,7 +22,7 @@ class ShiftControllerIntTest(
 
   @Test
   fun `It returns shifts`() {
-    PrisonApiExtension.api.stubUsersMe("WNI") // WNI is in the region 1
+    ManageUsersApiExtension.api.stubUsersMe(A_USER, "WNI") // WNI is in the region 1
 
     restTestClient.get()
       .uri("/user/details?from=2022-04-06&to=2022-04-06")
@@ -36,7 +36,7 @@ class ShiftControllerIntTest(
 
   @Test
   fun `It returns shifts with missing activity`() {
-    PrisonApiExtension.api.stubUsersMe("WNI") // WNI is in the region 1
+    ManageUsersApiExtension.api.stubUsersMe(A_USER, "WNI") // WNI is in the region 1
 
     restTestClient.get().uri("/user/details?from=2013-08-01&to=2013-08-30")
       .headers(entityBuilder.entityWithJwtAuthorisation(A_USER, PRISON_ROLE))

@@ -24,10 +24,9 @@ class ShiftService(
   private val clock: Clock,
   private val authenticationFacade: HmppsAuthenticationHolder,
 ) {
-
   fun getDetailsForUser(fromParam: Optional<LocalDate>, toParam: Optional<LocalDate>): Collection<ShiftDto> {
-    val start = fromParam.orElse(LocalDate.now(clock))
-    val end = toParam.orElse(LocalDate.now(clock))
+    val start = fromParam.orElse(LocalDate.now(clock))!!
+    val end = toParam.orElse(LocalDate.now(clock))!!
 
     log.info("getDetailsForUser: getting for User ${authenticationFacade.username}, $start - $end")
 
@@ -55,8 +54,8 @@ class ShiftService(
     A night shift will be in two buckets.
      */
   private fun getDetailsGroupedByDate(start: LocalDate, end: LocalDate): Map<LocalDate, Collection<CsrDetailDto>> {
-    val region = prisonService.getPrisonForUser()?.region
-    val details = csrClient.getDetailsForUser(start, end, region, authenticationFacade.username!!)
+    val (prisonId, region) = prisonService.getPrisonAndRegionForUser()
+    val details = csrClient.getDetailsForUser(start, end, region, authenticationFacade.username!!, prisonId)
     val detailStartGroup = details.groupBy { it.detailStart.toLocalDate() }
     val detailEndGroup = details.groupBy { it.detailEnd.toLocalDate() }
     return (detailStartGroup.keys + detailEndGroup.keys)

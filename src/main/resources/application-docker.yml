@@ -18,6 +18,10 @@ spring:
         jwt:
           jwk-set-uri: https://sign-in-dev.hmpps.service.justice.gov.uk/auth/.well-known/jwks.json
 
+manage-users.client:
+  id: omicadmin
+  secret: clientsecret
+
 logging:
   level:
     uk.gov: DEBUG
