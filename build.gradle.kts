@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.1.1"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.1.2"
   kotlin("plugin.spring") version "2.4.21"
   kotlin("plugin.jpa") version "2.4.21"
   idea
@@ -17,8 +17,8 @@ allOpen {
   )
 }
 
-// Leave oracle at 19.30.0.0 which is same as old csr api was
-val oracleVersion = "10:19.30.0.0"
+// Leave oracle at 19.33.0.0
+val oracleVersion = "10:19.33.0.0"
 
 dependencies {
 
@@ -47,7 +47,6 @@ dependencies {
     implementation("org.webjars:swagger-ui:5.34.1")
   }
 
-  implementation("org.apache.commons:commons-lang3:3.22.0")
   implementation("uk.gov.service.notify:notifications-java-client:6.2.1-RELEASE") {
     exclude(group = "org.apache.httpcomponents.client5", module = "httpclient5")
   }
